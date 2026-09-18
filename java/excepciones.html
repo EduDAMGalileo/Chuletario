@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Excepciones · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Excepciones</span></nav>
+          <h1>Excepciones</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">try-catch, excepciones comprobadas y no comprobadas, recursos que se cierran solos y errores propios.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="strings.html">Strings</a><a href="poo.html">Orientación a objetos</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="excepciones.html" aria-current="page">Excepciones</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="fechas.html">Fechas y horas</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>try, catch y finally</a><a href="#s2"><b>2</b>Multi-catch</a><a href="#s3"><b>3</b>try-with-resources</a><a href="#s4"><b>4</b>Lanzar excepciones</a><a href="#s5"><b>5</b>Excepciones más habituales</a><a href="#s6"><b>6</b>Crear tus propias excepciones</a><a href="#s7"><b>7</b>Leer una traza de error</a><a href="#s8"><b>8</b>Buenas prácticas</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Jerarquía de excepciones</p>
+        <div class="cols">
+          <div>
+            <figure class="codigo"><pre data-lang="text"><code>Throwable
+├── Error                        no se capturan: fallos graves de la JVM
+│   ├── OutOfMemoryError
+│   └── StackOverflowError
+└── Exception
+    ├── IOException              COMPROBADAS: hay que capturarlas
+    ├── SQLException             o declararlas con throws
+    ├── FileNotFoundException
+    └── RuntimeException         NO COMPROBADAS: el compilador no obliga
+        ├── NullPointerException
+        ├── ArrayIndexOutOfBoundsException
+        ├── NumberFormatException
+        ├── ArithmeticException
+        └── IllegalArgumentException</code></pre></figure>
+          </div>
+          <div><p class="nota"><strong>Comprobadas:</strong> situaciones previsibles del entorno (no existe el fichero, la base de datos no responde). El compilador obliga a tratarlas.<br><br><strong>No comprobadas:</strong> normalmente errores de programación (un índice mal, un objeto a null). Se arreglan corrigiendo el código, no capturándolas.</p></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. try, catch y finally -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>try, catch y finally</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> {
+    <span class="tok-tipo">int</span> n = <span class="tok-tipo">Integer</span>.parseInt(entrada);
+    <span class="tok-tipo">IO</span>.println(<span class="tok-numero">100</span> / n);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">NumberFormatException</span> e) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Eso no es un número entero"</span>);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">ArithmeticException</span> e) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"No se puede dividir entre cero"</span>);
+} <span class="tok-clave">finally</span> {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Esto se ejecuta siempre, haya fallado o no"</span>);
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>try</code></th><td>código que puede fallar</td></tr>
+                  <tr><th scope="row"><code>catch</code></th><td>qué hacer si falla; puede haber varios</td></tr>
+                  <tr><th scope="row"><code>finally</code></th><td>se ejecuta siempre, incluso con <code>return</code> dentro del try</td></tr>
+                  <tr><th scope="row"><code>e.getMessage()</code></th><td>descripción del error</td></tr>
+                  <tr><th scope="row"><code>e.printStackTrace()</code></th><td>traza completa; útil al depurar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> los <code>catch</code> se prueban en orden, así que los más específicos van primero. Si pones <code>catch (Exception e)</code> el primero, los demás nunca se ejecutan (y el compilador lo rechaza).</p>
+          </div>
+        </section>
+        <!-- 2. Multi-catch -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Multi-catch</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> {
+    procesar(fichero);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">IOException</span> | <span class="tok-tipo">NumberFormatException</span> e) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"No se pudo procesar: "</span> + e.getMessage());
+}</code></pre></figure>
+            <p class="nota">Sirve cuando la reacción es la misma para varios tipos. Los tipos no pueden ser padre e hijo entre sí.</p>
+          </div>
+        </section>
+        <!-- 3. try-with-resources -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>try-with-resources</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> (<span class="tok-tipo">BufferedReader</span> br = <span class="tok-tipo">Files</span>.newBufferedReader(ruta)) {
+    <span class="tok-tipo">String</span> linea;
+    <span class="tok-clave">while</span> ((linea = br.readLine()) != <span class="tok-clave">null</span>) {
+        <span class="tok-tipo">IO</span>.println(linea);
+    }
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">IOException</span> e) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Error al leer: "</span> + e.getMessage());
+}
+<span class="tok-coment">// el fichero se cierra solo, aunque salte una excepción</span>
+
+<span class="tok-coment">// varios recursos separados por punto y coma</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Connection</span> con = <span class="tok-tipo">DriverManager</span>.getConnection(url, usuario, clave);
+     <span class="tok-tipo">PreparedStatement</span> ps = con.prepareStatement(sql)) {
+    ...
+}</code></pre></figure>
+            <p class="nota">Vale para cualquier objeto que implemente <code>AutoCloseable</code>: ficheros, conexiones, <code>Scanner</code>… Evita el viejo <code>finally</code> con <code>close()</code> dentro de otro try.</p>
+          </div>
+        </section>
+        <!-- 4. Lanzar excepciones -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Lanzar excepciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">void</span> ingresar(<span class="tok-tipo">double</span> cantidad) {
+    <span class="tok-clave">if</span> (cantidad &lt;= <span class="tok-numero">0</span>) {
+        <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">IllegalArgumentException</span>(<span class="tok-texto">"La cantidad debe ser positiva"</span>);
+    }
+    saldo += cantidad;
+}
+
+<span class="tok-coment">// declarar que este método puede lanzarla y que la trate quien lo llame</span>
+<span class="tok-clave">public</span> <span class="tok-tipo">String</span> leerConfiguracion(<span class="tok-tipo">Path</span> ruta) <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+    <span class="tok-clave">return</span> <span class="tok-tipo">Files</span>.readString(ruta);
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>throw</code></th><td>lanza una excepción ahora mismo</td></tr>
+                  <tr><th scope="row"><code>throws</code></th><td>avisa en la cabecera de que el método puede lanzarla</td></tr>
+                  <tr><th scope="row" class="larga"><code>throw new X("mensaje", causa)</code></th><td>conserva la excepción original como causa</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Regla práctica: captura la excepción donde realmente puedas hacer algo con ella. Si no, deja que suba con <code>throws</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Excepciones más habituales -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Excepciones más habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>NullPointerException</code></th><td>usar un objeto que vale <code>null</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>ArrayIndexOutOfBoundsException</code></th><td>posición fuera del array</td></tr>
+                  <tr><th scope="row" class="larga"><code>StringIndexOutOfBoundsException</code></th><td>lo mismo con <code>substring</code> o <code>charAt</code></td></tr>
+                  <tr><th scope="row"><code>NumberFormatException</code></th><td><code>parseInt</code> con un texto que no es un número</td></tr>
+                  <tr><th scope="row"><code>ArithmeticException</code></th><td>dividir un entero entre cero</td></tr>
+                  <tr><th scope="row"><code>ClassCastException</code></th><td>convertir a un tipo que no es</td></tr>
+                  <tr><th scope="row"><code>IllegalArgumentException</code></th><td>parámetro con un valor no válido</td></tr>
+                  <tr><th scope="row"><code>IllegalStateException</code></th><td>el objeto no está en condiciones de hacer eso</td></tr>
+                  <tr><th scope="row" class="larga"><code>ConcurrentModificationException</code></th><td>modificar una colección mientras se recorre</td></tr>
+                  <tr><th scope="row"><code>InputMismatchException</code></th><td><code>nextInt()</code> con un texto que no es un número</td></tr>
+                  <tr><th scope="row"><code>IOException</code></th><td>problema al leer o escribir</td></tr>
+                  <tr><th scope="row"><code>FileNotFoundException</code></th><td>la ruta no existe o no hay permisos</td></tr>
+                  <tr><th scope="row"><code>SQLException</code></th><td>error de la base de datos</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6. Crear tus propias excepciones -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Crear tus propias excepciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">SaldoInsuficienteException</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Exception</span> {   <span class="tok-coment">// comprobada</span>
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">double</span> faltan;
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">SaldoInsuficienteException</span>(<span class="tok-tipo">double</span> faltan) {
+        <span class="tok-clave">super</span>(<span class="tok-texto">"Faltan "</span> + faltan + <span class="tok-texto">" € para completar la operación"</span>);
+        <span class="tok-clave">this</span>.faltan = faltan;
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">double</span> getFaltan() { <span class="tok-clave">return</span> faltan; }
+}
+
+<span class="tok-coment">// uso</span>
+<span class="tok-clave">public</span> <span class="tok-clave">void</span> retirar(<span class="tok-tipo">double</span> cantidad) <span class="tok-clave">throws</span> <span class="tok-tipo">SaldoInsuficienteException</span> {
+    <span class="tok-clave">if</span> (cantidad &gt; saldo) {
+        <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">SaldoInsuficienteException</span>(cantidad - saldo);
+    }
+    saldo -= cantidad;
+}</code></pre></figure>
+            <p class="nota">Hereda de <code>Exception</code> si quien llama debe tratarla obligatoriamente, y de <code>RuntimeException</code> si es un error de uso que no tiene sentido capturar.</p>
+          </div>
+        </section>
+        <!-- 7. Leer una traza de error -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Leer una traza de error</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="text"><code>Exception in thread "main" java.lang.NullPointerException: Cannot invoke
+    "String.length()" because "nombre" is null
+        at es.ejemplo.Alumno.longitudNombre(Alumno.java:42)   ← aquí falló
+        at es.ejemplo.Main.procesar(Main.java:18)             ← quién lo llamó
+        at es.ejemplo.Main.main(Main.java:7)                  ← y quién a ese</code></pre></figure>
+            <p class="nota">Se lee de arriba abajo: la primera línea dice qué pasó, y la primera línea <code>at</code> de tu código dice dónde. El número entre paréntesis es la línea exacta del fichero.</p>
+          </div>
+        </section>
+        <!-- 8. Buenas prácticas -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Buenas prácticas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>catch vacío</code></th><td>nunca: el error desaparece y luego no hay quien lo encuentre</td></tr>
+                  <tr><th scope="row"><code>catch (Exception e)</code></th><td>demasiado amplio; captura lo que esperas</td></tr>
+                  <tr><th scope="row"><code>e.printStackTrace()</code></th><td>vale mientras aprendes; en una aplicación real se registra en un log</td></tr>
+                  <tr><th scope="row"><code>Mensajes útiles</code></th><td>indica el dato que falló, no solo «error»</td></tr>
+                  <tr><th scope="row"><code>No para el flujo normal</code></th><td>que un usuario escriba mal no debería costar una excepción por letra</td></tr>
+                  <tr><th scope="row"><code>Valida antes</code></th><td>comprobar <code>if (ruta == null)</code> es más barato que capturar la excepción</td></tr>
+                  <tr><th scope="row"><code>Conserva la causa</code></th><td><code>throw new MiError("no pude", e)</code> mantiene la traza original</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="streams.html">← Lambdas y streams</a><a class="siguiente" href="ficheros.html">Ficheros y entrada/salida →</a></nav>
+      <footer class="pie">Para gestionar errores al leer y escribir, mira <a href="ficheros.html">Ficheros y entrada/salida</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

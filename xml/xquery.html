@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>XQuery · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="xml">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">XML</a><span aria-hidden="true">›</span><span>XQuery</span></nav>
+          <h1>XQuery</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Consultas FLWOR, construcción de XML, agrupación, joins y modificación de documentos.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de XML">
+      <div class="wrap"><a href="dtd.html">DTD</a><a href="xsd.html">XML Schema</a><a href="xpath.html">XPath</a><a href="xquery.html" aria-current="page">XQuery</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Primera consulta</a><a href="#s2"><b>2</b>Construir XML en la salida</a><a href="#s3"><b>3</b>Generar HTML</a><a href="#s4"><b>4</b>Posición, contador y condicionales</a><a href="#s5"><b>5</b>Cuantificadores</a><a href="#s6"><b>6</b>Agregación y agrupación</a><a href="#s7"><b>7</b>Combinar documentos (join)</a><a href="#s8"><b>8</b>Variables y funciones propias</a><a href="#s9"><b>9</b>Operadores y secuencias</a><a href="#s10"><b>10</b>Modificar documentos (XQuery Update)</a><a href="#s11"><b>11</b>Herramientas</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Expresión FLWOR: el SELECT de XQuery</p>
+        <div class="pasos">
+          <div class="paso"><span class="n">1</span><b>for</b><small>recorre una secuencia (como FROM)</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">2</span><b>let</b><small>guarda un valor en una variable</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">3</span><b>where</b><small>filtra (como WHERE)</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">4</span><b>group by</b><small>agrupa (XQuery 3.0)</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">5</span><b>order by</b><small>ordena</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">6</span><b>return</b><small>lo que se devuelve (como SELECT)</small></div>
+        </div>
+        <p class="nota" style="margin-top:10px;border:1px solid var(--notel);border-radius:6px">Los ejemplos usan el mismo <code>biblioteca.xml</code> que la <a href="xpath.html">chuleta de XPath</a>: cuatro libros con <code>@id</code>, <code>@categoria</code>, <code>titulo</code>, <code>autor</code>, <code>anio</code> y <code>precio</code>. Todos los resultados están comprobados.</p>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Primera consulta -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Primera consulta</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">for</span> <span class="tok-variable">$libro</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro
+<span class="tok-clave">let</span> <span class="tok-variable">$precio</span> := <span class="tok-funcion">number</span>(<span class="tok-variable">$libro</span>/precio)
+<span class="tok-clave">where</span> <span class="tok-variable">$libro</span>/<span class="tok-atributo">@categoria</span> = <span class="tok-texto">"novela"</span>
+<span class="tok-clave">order</span> <span class="tok-clave">by</span> <span class="tok-variable">$libro</span>/titulo
+<span class="tok-clave">return</span> <span class="tok-variable">$libro</span>/titulo</code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;titulo</span> <span class="tok-atributo">idioma</span>=<span class="tok-texto">"es"</span><span class="tok-etiqueta">&gt;</span>Cien años de soledad<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;titulo</span> <span class="tok-atributo">idioma</span>=<span class="tok-texto">"es"</span><span class="tok-etiqueta">&gt;</span>Nada<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>doc("fichero.xml")</code></th><td>abre un documento</td></tr>
+                  <tr><th scope="row"><code>collection("carpeta")</code></th><td>abre varios documentos</td></tr>
+                  <tr><th scope="row"><code>$variable</code></th><td>las variables empiezan por <code>$</code></td></tr>
+                  <tr><th scope="row"><code>:=</code></th><td>asignación en <code>let</code></td></tr>
+                  <tr><th scope="row"><code>(: comentario :)</code></th><td>comentarios</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Solo <code>return</code> es obligatorio junto a <code>for</code> o <code>let</code>. Cualquier expresión XPath ya es una consulta XQuery válida.</p>
+          </div>
+        </section>
+        <!-- 2. Construir XML en la salida -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Construir XML en la salida</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-etiqueta">&lt;novelas</span><span class="tok-etiqueta">&gt;</span>{
+  <span class="tok-clave">for</span> <span class="tok-variable">$l</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro[<span class="tok-atributo">@categoria</span> = <span class="tok-texto">"novela"</span>]
+  <span class="tok-clave">order</span> <span class="tok-clave">by</span> <span class="tok-funcion">number</span>(<span class="tok-variable">$l</span>/anio)
+  <span class="tok-clave">return</span> <span class="tok-etiqueta">&lt;novela</span> anio=<span class="tok-texto">"{$l/anio}"</span><span class="tok-etiqueta">&gt;</span>{<span class="tok-funcion">data</span>(<span class="tok-variable">$l</span>/titulo)}<span class="tok-etiqueta">&lt;/novela</span><span class="tok-etiqueta">&gt;</span>
+}<span class="tok-etiqueta">&lt;/novelas</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;novelas</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;novela</span> <span class="tok-atributo">anio</span>=<span class="tok-texto">"1945"</span><span class="tok-etiqueta">&gt;</span>Nada<span class="tok-etiqueta">&lt;/novela</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;novela</span> <span class="tok-atributo">anio</span>=<span class="tok-texto">"1967"</span><span class="tok-etiqueta">&gt;</span>Cien años de soledad<span class="tok-etiqueta">&lt;/novela</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/novelas</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>{ … }</code></th><td>dentro de XML literal, evalúa una expresión</td></tr>
+                  <tr><th scope="row"><code>data($x)  string($x)</code></th><td>solo el valor, sin la etiqueta</td></tr>
+                  <tr><th scope="row"><code>$x/text()</code></th><td>el nodo de texto</td></tr>
+                  <tr><th scope="row"><code>$x</code></th><td>el elemento completo, con etiqueta y atributos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> sin llaves, <code>&lt;novela&gt;$l/titulo&lt;/novela&gt;</code> escribe literalmente el texto «$l/titulo».</p>
+          </div>
+        </section>
+        <!-- 3. Generar HTML -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Generar HTML</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-etiqueta">&lt;ul</span><span class="tok-etiqueta">&gt;</span>{
+  <span class="tok-clave">for</span> <span class="tok-variable">$l</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro
+  <span class="tok-clave">order</span> <span class="tok-clave">by</span> <span class="tok-variable">$l</span>/titulo
+  <span class="tok-clave">return</span> <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>{<span class="tok-variable">$l</span>/titulo/<span class="tok-funcion">text</span>()} ({<span class="tok-variable">$l</span>/anio/<span class="tok-funcion">text</span>()})<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+}<span class="tok-etiqueta">&lt;/ul</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;ul</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>Cien años de soledad (1967)<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>Clean Code (2008)<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>Design Patterns (1994)<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>Nada (1945)<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/ul</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Posición, contador y condicionales -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Posición, contador y condicionales</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">for</span> <span class="tok-variable">$l</span> <span class="tok-clave">at</span> <span class="tok-variable">$pos</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro
+<span class="tok-clave">return</span> <span class="tok-funcion">concat</span>(<span class="tok-variable">$pos</span>, <span class="tok-texto">". "</span>, <span class="tok-variable">$l</span>/titulo)</code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code>1. Nada  2. Clean Code  3. Cien años de soledad  4. Design Patterns</code></pre></figure>
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">for</span> <span class="tok-variable">$l</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro
+<span class="tok-clave">return</span>
+  <span class="tok-clave">if</span> (<span class="tok-funcion">number</span>(<span class="tok-variable">$l</span>/precio) <span class="tok-etiqueta">&gt;</span> <span class="tok-numero">20</span>)
+  <span class="tok-clave">then</span> <span class="tok-etiqueta">&lt;caro</span><span class="tok-etiqueta">&gt;</span>{<span class="tok-funcion">data</span>(<span class="tok-variable">$l</span>/titulo)}<span class="tok-etiqueta">&lt;/caro</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-clave">else</span> <span class="tok-etiqueta">&lt;barato</span><span class="tok-etiqueta">&gt;</span>{<span class="tok-funcion">data</span>(<span class="tok-variable">$l</span>/titulo)}<span class="tok-etiqueta">&lt;/barato</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;barato</span><span class="tok-etiqueta">&gt;</span>Nada<span class="tok-etiqueta">&lt;/barato</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;caro</span><span class="tok-etiqueta">&gt;</span>Clean Code<span class="tok-etiqueta">&lt;/caro</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;barato</span><span class="tok-etiqueta">&gt;</span>Cien años de soledad<span class="tok-etiqueta">&lt;/barato</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;caro</span><span class="tok-etiqueta">&gt;</span>Design Patterns<span class="tok-etiqueta">&lt;/caro</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-coment">(: los 2 libros más antiguos: count numera tras ordenar :)</span>
+<span class="tok-clave">for</span> <span class="tok-variable">$l</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro
+<span class="tok-clave">order</span> <span class="tok-clave">by</span> <span class="tok-funcion">number</span>(<span class="tok-variable">$l</span>/anio)
+<span class="tok-clave">count</span> <span class="tok-variable">$n</span>
+<span class="tok-clave">where</span> <span class="tok-variable">$n</span> &lt;= <span class="tok-numero">2</span>
+<span class="tok-clave">return</span> <span class="tok-funcion">data</span>(<span class="tok-variable">$l</span>/titulo)</code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code>Nada  Cien años de soledad</code></pre></figure>
+            <p class="nota">En XQuery el <code>else</code> es obligatorio. Si no quieres devolver nada, usa <code>else ()</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Cuantificadores -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Cuantificadores</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">some</span> <span class="tok-variable">$p</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//precio <span class="tok-clave">satisfies</span> <span class="tok-variable">$p</span> <span class="tok-etiqueta">&gt;</span> <span class="tok-numero">40</span>
+<span class="tok-coment">(: true: al menos uno cuesta más de 40 :)</span>
+
+<span class="tok-clave">every</span> <span class="tok-variable">$l</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro <span class="tok-clave">satisfies</span> <span class="tok-variable">$l</span>/anio &lt; <span class="tok-numero">2000</span>
+<span class="tok-coment">(: false: Clean Code es de 2008 :)</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Agregación y agrupación -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Agregación y agrupación</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">let</span> <span class="tok-variable">$libros</span> := <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro
+<span class="tok-clave">return</span> (
+  <span class="tok-clave">count</span>(<span class="tok-variable">$libros</span>),                       <span class="tok-coment">(: 4 :)</span>
+  <span class="tok-funcion">sum</span>(<span class="tok-variable">$libros</span>/precio),                  <span class="tok-coment">(: 111.4 :)</span>
+  <span class="tok-funcion">max</span>(<span class="tok-variable">$libros</span>/anio),                    <span class="tok-coment">(: 2008 :)</span>
+  <span class="tok-funcion">string-join</span>(<span class="tok-variable">$libros</span>/titulo, <span class="tok-texto">" | "</span>)
+)</code></pre></figure>
+            <h3>group by (XQuery 3.0)</h3>
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">for</span> <span class="tok-variable">$l</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro
+<span class="tok-clave">group</span> <span class="tok-clave">by</span> <span class="tok-variable">$cat</span> := <span class="tok-funcion">string</span>(<span class="tok-variable">$l</span>/<span class="tok-atributo">@categoria</span>)
+<span class="tok-clave">order</span> <span class="tok-clave">by</span> <span class="tok-variable">$cat</span>
+<span class="tok-clave">return</span> <span class="tok-etiqueta">&lt;categoria</span> nombre=<span class="tok-texto">"{$cat}"</span>
+                  libros=<span class="tok-texto">"{count($l)}"</span>
+                  media=<span class="tok-texto">"{avg($l/precio)}"</span><span class="tok-etiqueta">/&gt;</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;categoria</span> <span class="tok-atributo">nombre</span>=<span class="tok-texto">"informatica"</span> <span class="tok-atributo">libros</span>=<span class="tok-texto">"2"</span> <span class="tok-atributo">media</span>=<span class="tok-texto">"41.95"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;categoria</span> <span class="tok-atributo">nombre</span>=<span class="tok-texto">"novela"</span> <span class="tok-atributo">libros</span>=<span class="tok-texto">"2"</span> <span class="tok-atributo">media</span>=<span class="tok-texto">"13.75"</span><span class="tok-etiqueta">/&gt;</span></code></pre></figure>
+            <h3>Sin group by (XQuery 1.0)</h3>
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">for</span> <span class="tok-variable">$cat</span> <span class="tok-clave">in</span> <span class="tok-funcion">distinct-values</span>(<span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro/<span class="tok-atributo">@categoria</span>)
+<span class="tok-clave">let</span> <span class="tok-variable">$libros</span> := <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro[<span class="tok-atributo">@categoria</span> = <span class="tok-variable">$cat</span>]
+<span class="tok-clave">return</span> <span class="tok-etiqueta">&lt;categoria</span> nombre=<span class="tok-texto">"{$cat}"</span> total=<span class="tok-texto">"{count($libros)}"</span><span class="tok-etiqueta">/&gt;</span></code></pre></figure>
+            <p class="nota">Después de <code>group by</code>, las variables del <code>for</code> pasan a contener todos los elementos del grupo: por eso <code>count($l)</code> funciona.</p>
+          </div>
+        </section>
+        <!-- 7. Combinar documentos (join) -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Combinar documentos (join)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-coment">(: autores.xml
+&lt;autores&gt;
+  &lt;autor nombre="Carmen Laforet" pais="España"/&gt;
+  &lt;autor nombre="Gabriel García Márquez" pais="Colombia"/&gt;
+  &lt;autor nombre="Robert C. Martin" pais="EE. UU."/&gt;
+&lt;/autores&gt; :)</span>
+
+<span class="tok-clave">for</span> <span class="tok-variable">$l</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro,
+    <span class="tok-variable">$a</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"autores.xml"</span>)//autor
+<span class="tok-clave">where</span> <span class="tok-variable">$l</span>/autor = <span class="tok-variable">$a</span>/<span class="tok-atributo">@nombre</span>
+<span class="tok-clave">return</span> <span class="tok-etiqueta">&lt;libro</span> titulo=<span class="tok-texto">"{$l/titulo}"</span> pais=<span class="tok-texto">"{$a/@pais}"</span><span class="tok-etiqueta">/&gt;</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">titulo</span>=<span class="tok-texto">"Nada"</span> <span class="tok-atributo">pais</span>=<span class="tok-texto">"España"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">titulo</span>=<span class="tok-texto">"Clean Code"</span> <span class="tok-atributo">pais</span>=<span class="tok-texto">"EE. UU."</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">titulo</span>=<span class="tok-texto">"Cien años de soledad"</span> <span class="tok-atributo">pais</span>=<span class="tok-texto">"Colombia"</span><span class="tok-etiqueta">/&gt;</span></code></pre></figure>
+            <p class="nota">Design Patterns no aparece porque sus autores no están en <code>autores.xml</code>: equivale a un INNER JOIN.</p>
+          </div>
+        </section>
+        <!-- 8. Variables y funciones propias -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Variables y funciones propias</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">declare</span> <span class="tok-clave">variable</span> <span class="tok-variable">$iva</span> := <span class="tok-numero">0.21</span>;
+
+<span class="tok-clave">declare</span> <span class="tok-clave">function</span> <span class="tok-funcion">local:con-iva</span>(<span class="tok-variable">$precio</span> <span class="tok-clave">as</span> xs:decimal) <span class="tok-clave">as</span> xs:decimal {
+  <span class="tok-funcion">round</span>(<span class="tok-variable">$precio</span> * (<span class="tok-numero">1</span> + <span class="tok-variable">$iva</span>), <span class="tok-numero">2</span>)
+};
+
+<span class="tok-clave">for</span> <span class="tok-variable">$l</span> <span class="tok-clave">in</span> <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro
+<span class="tok-clave">return</span> <span class="tok-etiqueta">&lt;precio</span> titulo=<span class="tok-texto">"{$l/titulo}"</span><span class="tok-etiqueta">&gt;</span>{
+  <span class="tok-funcion">local:con-iva</span>(<span class="tok-funcion">xs:decimal</span>(<span class="tok-variable">$l</span>/precio))
+}<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Resultado</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;precio</span> <span class="tok-atributo">titulo</span>=<span class="tok-texto">"Nada"</span><span class="tok-etiqueta">&gt;</span>15.13<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;precio</span> <span class="tok-atributo">titulo</span>=<span class="tok-texto">"Clean Code"</span><span class="tok-etiqueta">&gt;</span>43.44<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;precio</span> <span class="tok-atributo">titulo</span>=<span class="tok-texto">"Cien años de soledad"</span><span class="tok-etiqueta">&gt;</span>18.15<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;precio</span> <span class="tok-atributo">titulo</span>=<span class="tok-texto">"Design Patterns"</span><span class="tok-etiqueta">&gt;</span>58.08<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">Las declaraciones van al principio (el prólogo) y terminan en <code>;</code>. Las funciones propias usan el prefijo <code>local:</code>.</p>
+          </div>
+        </section>
+        <!-- 9. Operadores y secuencias -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Operadores y secuencias</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>=  !=  &lt;  &gt;</code></th><td>comparación general: cierta si <strong>algún</strong> valor cumple</td></tr>
+                  <tr><th scope="row"><code>eq  ne  lt  le  gt  ge</code></th><td>comparación de valores: exige un único valor a cada lado</td></tr>
+                  <tr><th scope="row"><code>and  or  not()</code></th><td>lógicos</td></tr>
+                  <tr><th scope="row"><code>+  -  *  div  idiv  mod</code></th><td><code>7 idiv 2</code> = 3 · <code>7 mod 2</code> = 1</td></tr>
+                  <tr><th scope="row"><code>"a" || "b"</code></th><td>concatena textos (3.0)</td></tr>
+                  <tr><th scope="row"><code>1 to 5</code></th><td>secuencia 1, 2, 3, 4, 5</td></tr>
+                  <tr><th scope="row"><code>(1, "dos", &lt;tres/&gt;)</code></th><td>secuencia de valores y nodos</td></tr>
+                  <tr><th scope="row"><code>()</code></th><td>secuencia vacía</td></tr>
+                  <tr><th scope="row"><code>union  intersect  except</code></th><td>operaciones con conjuntos de nodos</td></tr>
+                  <tr><th scope="row"><code>is  &lt;&lt;  &gt;&gt;</code></th><td>mismo nodo / va antes / va después en el documento</td></tr>
+                  <tr><th scope="row" class="larga"><code>$x instance of xs:integer</code></th><td>comprueba el tipo</td></tr>
+                  <tr><th scope="row"><code>$x cast as xs:date</code></th><td>convierte de tipo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> los datos de un XML sin esquema son texto. <code>order by $l/precio</code> ordena alfabéticamente («9.99» quedaría detrás de «48.00»). Convierte antes: <code>order by number($l/precio)</code>.</p>
+          </div>
+        </section>
+        <!-- 10. Modificar documentos (XQuery Update) -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Modificar documentos (XQuery Update)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-clave">let</span> <span class="tok-variable">$b</span> := <span class="tok-funcion">db:get</span>(<span class="tok-texto">"biblioteca"</span>)/biblioteca
+<span class="tok-clave">return</span> (
+  <span class="tok-clave">insert</span> <span class="tok-clave">node</span> <span class="tok-etiqueta">&lt;socio</span> num=<span class="tok-texto">"S2"</span><span class="tok-etiqueta">&gt;</span>Luis<span class="tok-etiqueta">&lt;/socio</span><span class="tok-etiqueta">&gt;</span> <span class="tok-clave">as</span> <span class="tok-clave">last</span> <span class="tok-clave">into</span> <span class="tok-variable">$b</span>,
+  <span class="tok-clave">delete</span> <span class="tok-clave">node</span> <span class="tok-variable">$b</span>/libro[<span class="tok-atributo">@id</span> = <span class="tok-texto">"L2"</span>],
+  <span class="tok-clave">replace</span> <span class="tok-clave">value</span> <span class="tok-clave">of</span> <span class="tok-clave">node</span> <span class="tok-variable">$b</span>/libro[<span class="tok-atributo">@id</span> = <span class="tok-texto">"L1"</span>]/precio <span class="tok-clave">with</span> <span class="tok-texto">"13.00"</span>,
+  <span class="tok-clave">replace</span> <span class="tok-clave">node</span> <span class="tok-variable">$b</span>/libro[<span class="tok-atributo">@id</span> = <span class="tok-texto">"L3"</span>]/anio <span class="tok-clave">with</span> <span class="tok-etiqueta">&lt;anio</span><span class="tok-etiqueta">&gt;</span><span class="tok-numero">1967</span><span class="tok-etiqueta">&lt;/anio</span><span class="tok-etiqueta">&gt;</span>,
+  <span class="tok-clave">rename</span> <span class="tok-clave">node</span> <span class="tok-variable">$b</span>/libro[<span class="tok-atributo">@id</span> = <span class="tok-texto">"L4"</span>]/anio <span class="tok-clave">as</span> <span class="tok-texto">"publicacion"</span>,
+  <span class="tok-clave">insert</span> <span class="tok-clave">node</span> attribute stock { <span class="tok-numero">3</span> } <span class="tok-clave">into</span> <span class="tok-variable">$b</span>/libro[<span class="tok-atributo">@id</span> = <span class="tok-texto">"L4"</span>]
+)</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>into</code></th><td>como hijo (en BaseX, al final)</td></tr>
+                  <tr><th scope="row" class="larga"><code>as first into  as last into</code></th><td>como primer o último hijo</td></tr>
+                  <tr><th scope="row"><code>before  after</code></th><td>como hermano anterior o posterior</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="xquery"><code><span class="tok-coment">(: copia modificada, sin tocar el original :)</span>
+<span class="tok-clave">copy</span> <span class="tok-variable">$c</span> := <span class="tok-funcion">doc</span>(<span class="tok-texto">"biblioteca.xml"</span>)//libro[<span class="tok-atributo">@id</span> = <span class="tok-texto">"L1"</span>]
+<span class="tok-clave">modify</span> <span class="tok-clave">replace</span> <span class="tok-clave">value</span> <span class="tok-clave">of</span> <span class="tok-clave">node</span> <span class="tok-variable">$c</span>/precio <span class="tok-clave">with</span> <span class="tok-texto">"10.00"</span>
+<span class="tok-clave">return</span> <span class="tok-variable">$c</span></code></pre></figure>
+            <p class="nota">Los cambios se aplican todos juntos al terminar la consulta. En BaseX se trabaja sobre una base de datos (<code>db:get</code>; en versiones anteriores a la 10, <code>db:open</code>).</p>
+          </div>
+        </section>
+        <!-- 11. Herramientas -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Herramientas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-coment"># BaseX desde terminal</span>
+basex<span class="tok-atributo"> -i</span> biblioteca.xml consulta.xq
+
+<span class="tok-coment"># crear una base de datos y consultarla</span>
+basex<span class="tok-atributo"> -c</span> <span class="tok-texto">"CREATE DB biblioteca biblioteca.xml"</span> <span class="tok-texto">"count(//libro)"</span></code></pre></figure>
+            <p class="nota">BaseX tiene una interfaz gráfica muy cómoda para practicar: abre el XML, escribe la consulta y ve el resultado al momento. Alternativas: eXist-db y Saxon.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="xpath.html">← XPath</a><span></span></nav>
+      <footer class="pie">Especificación: <a href="https://www.w3.org/TR/xquery-31/">W3C XQuery 3.1</a>. Documentación de <a href="https://docs.basex.org/">BaseX</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

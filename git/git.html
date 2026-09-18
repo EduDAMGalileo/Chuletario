@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Git · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="git">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../index.html">Control de versiones</a><span aria-hidden="true">›</span><span>Git</span></nav>
+          <h1>Git</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Configuración, flujo diario, ramas, merge y cómo deshacer cambios. <code>&lt;rama&gt;</code> indica un valor que pones tú.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Configuración inicial</a><a href="#s2"><b>2</b>Crear u obtener un repositorio</a><a href="#s3"><b>3</b>El día a día</a><a href="#s4"><b>4</b>Historial</a><a href="#s5"><b>5</b>Ramas</a><a href="#s6"><b>6</b>Merge: fusionar ramas</a><a href="#s7"><b>7</b>Resolver conflictos</a><a href="#s8"><b>8</b>Deshacer cambios</a><a href="#s9"><b>9</b>Stash: guardar trabajo a medias</a><a href="#s10"><b>10</b>Etiquetas: versiones y entregas</a><a href="#s11"><b>11</b>.gitignore</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Dónde está tu código en cada momento</p>
+        <div class="flujo">
+          <div class="caja caja-1">Directorio de trabajo<small>tus ficheros</small></div>
+          <div class="flecha"><span class="ida">git add</span><br><span class="linea">──────▶<br>◀──────</span><br><span class="vuelta">git restore --staged</span></div>
+          <div class="caja caja-2">Staging<small>índice</small></div>
+          <div class="flecha"><span class="ida">git commit</span><br><span class="linea">──────▶<br>◀──────</span><br><span class="vuelta">git reset --soft HEAD~1</span></div>
+          <div class="caja caja-3">Repositorio local<small>carpeta .git</small></div>
+          <div class="flecha"><span class="ida">git push</span><br><span class="linea">──────▶<br>◀──────</span><br><span class="vuelta">git pull / git fetch</span></div>
+          <div class="caja caja-4">Remoto<small>GitHub, GitLab…</small></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Configuración inicial -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Configuración inicial</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-clave">git</span> config<span class="tok-atributo"> --global</span> user.name <span class="tok-texto">"Ana Pérez"</span>
+git config<span class="tok-atributo"> --global</span> user.email ana@correo.com
+git config<span class="tok-atributo"> --global</span> init.defaultBranch main
+git config<span class="tok-atributo"> --global</span> core.editor <span class="tok-texto">"code --wait"</span>
+git config<span class="tok-atributo"> --global</span> pull.rebase false
+git config<span class="tok-atributo"> --list</span><span class="tok-atributo"> --show-origin</span>      <span class="tok-coment"># ver toda la configuración</span>
+git config user.name                 <span class="tok-coment"># ver un valor concreto</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--system</code></th><td>todos los usuarios del equipo</td></tr>
+                  <tr><th scope="row"><code>--global</code></th><td>tu usuario (<code>~/.gitconfig</code>)</td></tr>
+                  <tr><th scope="row"><code>--local</code></th><td>solo este repositorio (<code>.git/config</code>). Es la opción por defecto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Prioridad: local &gt; global &gt; system. Saltos de línea: <code>core.autocrlf true</code> en Windows, <code>input</code> en Linux y macOS.</p>
+          </div>
+        </section>
+        <!-- 2. Crear u obtener un repositorio -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Crear u obtener un repositorio</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git init</code></th><td>convierte la carpeta actual en repositorio</td></tr>
+                  <tr><th scope="row"><code>git clone &lt;url&gt;</code></th><td>descarga un repositorio remoto</td></tr>
+                  <tr><th scope="row" class="larga"><code>git clone &lt;url&gt; &lt;carpeta&gt;</code></th><td>lo descarga en otra carpeta</td></tr>
+                  <tr><th scope="row" class="larga"><code>git remote add origin &lt;url&gt;</code></th><td>enlaza tu repositorio con un remoto</td></tr>
+                  <tr><th scope="row"><code>git remote -v</code></th><td>muestra los remotos configurados</td></tr>
+                  <tr><th scope="row" class="larga"><code>git remote set-url origin &lt;url&gt;</code></th><td>cambia la URL del remoto</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3. El día a día -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>El día a día</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git status</code></th><td>qué ha cambiado y en qué estado está</td></tr>
+                  <tr><th scope="row"><code>git add &lt;fichero&gt;</code></th><td>pasa un fichero a staging</td></tr>
+                  <tr><th scope="row"><code>git add .</code></th><td>pasa todo lo de la carpeta actual</td></tr>
+                  <tr><th scope="row"><code>git commit -m "mensaje"</code></th><td>guarda una instantánea</td></tr>
+                  <tr><th scope="row"><code>git commit -am "mensaje"</code></th><td>add + commit, solo ficheros ya seguidos</td></tr>
+                  <tr><th scope="row"><code>git diff</code></th><td>cambios que aún no están en staging</td></tr>
+                  <tr><th scope="row"><code>git diff --staged</code></th><td>cambios que ya están en staging</td></tr>
+                  <tr><th scope="row"><code>git pull</code></th><td>trae y fusiona los cambios del remoto</td></tr>
+                  <tr><th scope="row"><code>git push</code></th><td>sube tus commits</td></tr>
+                  <tr><th scope="row"><code>git push -u origin main</code></th><td>primer push: fija la rama de seguimiento</td></tr>
+                  <tr><th scope="row"><code>git fetch</code></th><td>descarga cambios del remoto sin fusionar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-coment"># rutina típica</span>
+git pull
+<span class="tok-coment"># ...programar...</span>
+git status
+git add .
+git commit<span class="tok-atributo"> -m</span> <span class="tok-texto">"Añade pantalla de login"</span>
+git push</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Historial -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Historial</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git log</code></th><td>historial completo</td></tr>
+                  <tr><th scope="row"><code>git log --oneline</code></th><td>un commit por línea</td></tr>
+                  <tr><th scope="row" class="larga"><code>git log --oneline --graph --all</code></th><td>árbol con todas las ramas</td></tr>
+                  <tr><th scope="row"><code>git log -p &lt;fichero&gt;</code></th><td>cambios de un fichero en cada commit</td></tr>
+                  <tr><th scope="row"><code>git show &lt;hash&gt;</code></th><td>detalle de un commit</td></tr>
+                  <tr><th scope="row"><code>git blame &lt;fichero&gt;</code></th><td>quién cambió cada línea y cuándo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Ramas -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Ramas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git branch</code></th><td>lista las ramas locales (* es la actual)</td></tr>
+                  <tr><th scope="row"><code>git branch -a</code></th><td>ramas locales y remotas</td></tr>
+                  <tr><th scope="row"><code>git branch &lt;rama&gt;</code></th><td>crea una rama sin cambiarte a ella</td></tr>
+                  <tr><th scope="row"><code>git switch &lt;rama&gt;</code></th><td>cambia de rama</td></tr>
+                  <tr><th scope="row"><code>git switch -c &lt;rama&gt;</code></th><td>crea la rama y se cambia a ella</td></tr>
+                  <tr><th scope="row"><code>git checkout -b &lt;rama&gt;</code></th><td>lo mismo, forma clásica</td></tr>
+                  <tr><th scope="row"><code>git branch -m &lt;nuevo&gt;</code></th><td>renombra la rama actual</td></tr>
+                  <tr><th scope="row"><code>git branch -d &lt;rama&gt;</code></th><td>borra una rama ya fusionada</td></tr>
+                  <tr><th scope="row"><code>git branch -D &lt;rama&gt;</code></th><td>borra una rama aunque no esté fusionada</td></tr>
+                  <tr><th scope="row" class="larga"><code>git push -u origin &lt;rama&gt;</code></th><td>sube una rama nueva</td></tr>
+                  <tr><th scope="row" class="larga"><code>git push origin --delete &lt;rama&gt;</code></th><td>borra la rama en el remoto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Nombres habituales: <code>feature/login</code>, <code>fix/crash-inicio</code>, <code>develop</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Merge: fusionar ramas -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Merge: fusionar ramas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-coment"># llevar feature/login a main</span>
+git switch main
+git pull
+git merge feature/login
+git push
+git branch<span class="tok-atributo"> -d</span> feature/login</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git merge --no-ff &lt;rama&gt;</code></th><td>fuerza un commit de merge</td></tr>
+                  <tr><th scope="row"><code>git merge --abort</code></th><td>cancela un merge a medias</td></tr>
+                  <tr><th scope="row"><code>git rebase main</code></th><td>reaplica los commits de tu rama sobre main</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><strong>Fast-forward:</strong> si main no ha avanzado, Git solo mueve el puntero. Si las dos ramas han avanzado, se crea un commit de merge.</p>
+          </div>
+        </section>
+        <!-- 7. Resolver conflictos -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Resolver conflictos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="text"><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+lo que hay en tu rama actual
+=======
+lo que viene de la otra rama
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/login</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git status</code></th><td>1. ver qué ficheros tienen conflicto</td></tr>
+                  <tr><th scope="row"><code>(editar)</code></th><td>2. deja el código correcto y borra los marcadores</td></tr>
+                  <tr><th scope="row"><code>git add &lt;fichero&gt;</code></th><td>3. marca el conflicto como resuelto</td></tr>
+                  <tr><th scope="row"><code>git commit</code></th><td>4. cierra el merge con el mensaje por defecto</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8. Deshacer cambios -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Deshacer cambios</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git restore &lt;fichero&gt;</code></th><td>descarta cambios que no están en staging</td></tr>
+                  <tr><th scope="row" class="larga"><code>git restore --staged &lt;fichero&gt;</code></th><td>saca un fichero de staging</td></tr>
+                  <tr><th scope="row"><code>git commit --amend</code></th><td>corrige el mensaje o contenido del último commit</td></tr>
+                  <tr><th scope="row"><code>git revert &lt;hash&gt;</code></th><td>crea un commit que anula otro (seguro)</td></tr>
+                  <tr><th scope="row"><code>git reset --soft HEAD~1</code></th><td>deshace el último commit y conserva los cambios</td></tr>
+                  <tr><th scope="row"><code>git reset --hard HEAD~1</code></th><td>deshace el último commit y <strong>borra</strong> los cambios</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> no uses <code>reset</code> ni <code>--amend</code> sobre commits que ya has subido. En ramas compartidas usa <code>revert</code>.</p>
+          </div>
+        </section>
+        <!-- 9. Stash: guardar trabajo a medias -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Stash: guardar trabajo a medias</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git stash</code></th><td>aparca los cambios sin hacer commit</td></tr>
+                  <tr><th scope="row"><code>git stash -m "mensaje"</code></th><td>aparca con una descripción</td></tr>
+                  <tr><th scope="row"><code>git stash list</code></th><td>lista lo aparcado</td></tr>
+                  <tr><th scope="row"><code>git stash pop</code></th><td>recupera lo último y lo quita de la lista</td></tr>
+                  <tr><th scope="row"><code>git stash drop</code></th><td>descarta lo último aparcado</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 10. Etiquetas: versiones y entregas -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Etiquetas: versiones y entregas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>git tag</code></th><td>lista las etiquetas</td></tr>
+                  <tr><th scope="row" class="larga"><code>git tag -a v1.0 -m "Entrega 1"</code></th><td>crea una etiqueta anotada</td></tr>
+                  <tr><th scope="row"><code>git show v1.0</code></th><td>muestra qué incluye</td></tr>
+                  <tr><th scope="row"><code>git push origin v1.0</code></th><td>sube una etiqueta</td></tr>
+                  <tr><th scope="row"><code>git push origin --tags</code></th><td>sube todas las etiquetas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las etiquetas no se suben con un <code>git push</code> normal.</p>
+          </div>
+        </section>
+        <!-- 11. .gitignore -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>.gitignore</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-coment"># compilados y builds</span>
+*.class
+bin/
+build/
+out/
+target/
+
+<span class="tok-coment"># IDE</span>
+.idea/
+.vscode/
+.settings/
+.project
+.classpath
+
+<span class="tok-coment"># Android / Gradle</span>
+.gradle/
+local.properties
+
+<span class="tok-coment"># secretos y dependencias</span>
+.env
+node_modules/</code></pre></figure>
+            <p class="nota">Un patrón por línea. Si el fichero ya estaba en el repositorio: <code>git rm --cached &lt;fichero&gt;</code> y haz commit.</p>
+          </div>
+        </section>
+      </div>
+      <footer class="pie"><code>HEAD</code> es el commit o rama actual. <code>origin</code> es el nombre por defecto del remoto. <code>HEAD~1</code> es el commit anterior. Ayuda de cualquier comando: <code>git &lt;comando&gt; --help</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

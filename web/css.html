@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CSS · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="web">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Desarrollo web</a><span aria-hidden="true">›</span><span>CSS</span></nav>
+          <h1>CSS</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Selectores, cascada, modelo de caja, Flexbox, Grid y diseño responsive.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Desarrollo web">
+      <div class="wrap"><a href="html.html">HTML</a><a href="css.html" aria-current="page">CSS</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Selectores</a><a href="#s2"><b>2</b>Pseudoclases y pseudoelementos</a><a href="#s3"><b>3</b>Unidades, colores y funciones</a><a href="#s4"><b>4</b>Texto y fuentes</a><a href="#s5"><b>5</b>Modelo de caja</a><a href="#s6"><b>6</b>Display y posicionamiento</a><a href="#s7"><b>7</b>Flexbox: una dimensión</a><a href="#s8"><b>8</b>Grid: dos dimensiones</a><a href="#s9"><b>9</b>Diseño responsive</a><a href="#s10"><b>10</b>Variables y anidamiento</a><a href="#s11"><b>11</b>Fondos y efectos</a><a href="#s12"><b>12</b>Transiciones y animaciones</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Anatomía de una regla</p>
+            <figure class="codigo"><pre data-lang="css"><code>selector {
+  <span class="tok-atributo">propiedad</span>: valor;
+  <span class="tok-atributo">color</span>: <span class="tok-numero">#336699</span>;
+  <span class="tok-atributo">margin</span>: <span class="tok-numero">0</span> auto;
+}</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Tres formas de aplicar CSS</p>
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-coment">&lt;!-- 1. fichero externo (recomendado) --&gt;</span>
+<span class="tok-etiqueta">&lt;link</span> <span class="tok-atributo">rel</span>=<span class="tok-texto">"stylesheet"</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"estilos.css"</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-coment">&lt;!-- 2. en el head --&gt;</span>
+<span class="tok-etiqueta">&lt;style</span><span class="tok-etiqueta">&gt;</span> p { color: gray; } <span class="tok-etiqueta">&lt;/style</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-coment">&lt;!-- 3. en línea (evitar) --&gt;</span>
+<span class="tok-etiqueta">&lt;p</span> <span class="tok-atributo">style</span>=<span class="tok-texto">"color: gray"</span><span class="tok-etiqueta">&gt;</span>…<span class="tok-etiqueta">&lt;/p</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Especificidad: quién gana si hay conflicto</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>style="…"</code></th><td>en línea: gana a todo lo demás</td></tr>
+                  <tr><th scope="row"><code>#id</code></th><td>(1, 0, 0)</td></tr>
+                  <tr><th scope="row"><code>.clase  :hover  [attr]</code></th><td>(0, 1, 0)</td></tr>
+                  <tr><th scope="row"><code>p  ::before</code></th><td>(0, 0, 1)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">A igual especificidad, gana la última regla escrita. <code>!important</code> se salta el orden: úsalo solo como último recurso.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Selectores -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Selectores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>*</code></th><td>todos los elementos</td></tr>
+                  <tr><th scope="row"><code>p</code></th><td>por etiqueta</td></tr>
+                  <tr><th scope="row"><code>.aviso</code></th><td>por clase</td></tr>
+                  <tr><th scope="row"><code>#menu</code></th><td>por id</td></tr>
+                  <tr><th scope="row"><code>h1, h2</code></th><td>varios selectores a la vez</td></tr>
+                  <tr><th scope="row"><code>nav a</code></th><td>descendiente: <code>a</code> dentro de <code>nav</code> a cualquier nivel</td></tr>
+                  <tr><th scope="row"><code>ul &gt; li</code></th><td>hijo directo</td></tr>
+                  <tr><th scope="row"><code>h2 + p</code></th><td>hermano inmediatamente siguiente</td></tr>
+                  <tr><th scope="row"><code>h2 ~ p</code></th><td>todos los hermanos siguientes</td></tr>
+                  <tr><th scope="row"><code>p.aviso</code></th><td>párrafos con la clase aviso</td></tr>
+                  <tr><th scope="row"><code>[disabled]</code></th><td>con el atributo</td></tr>
+                  <tr><th scope="row"><code>[type="email"]</code></th><td>atributo con valor exacto</td></tr>
+                  <tr><th scope="row"><code>[href^="https"]</code></th><td>empieza por</td></tr>
+                  <tr><th scope="row"><code>[href$=".pdf"]</code></th><td>termina en</td></tr>
+                  <tr><th scope="row"><code>[class*="btn"]</code></th><td>contiene</td></tr>
+                  <tr><th scope="row"><code>:is(h1, h2) span</code></th><td>agrupa selectores dentro de otro</td></tr>
+                  <tr><th scope="row"><code>:not(.activo)</code></th><td>que no cumpla el selector</td></tr>
+                  <tr><th scope="row"><code>article:has(img)</code></th><td>que contenga un elemento</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Pseudoclases y pseudoelementos -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Pseudoclases y pseudoelementos</h2>
+          <div class="cuerpo">
+            <h3>Pseudoclases: estado o posición</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>:hover</code></th><td>ratón encima</td></tr>
+                  <tr><th scope="row"><code>:focus  :focus-visible</code></th><td>con el foco / foco con teclado</td></tr>
+                  <tr><th scope="row"><code>:active</code></th><td>mientras se pulsa</td></tr>
+                  <tr><th scope="row"><code>:visited</code></th><td>enlace visitado</td></tr>
+                  <tr><th scope="row"><code>:checked  :disabled</code></th><td>casilla marcada / campo desactivado</td></tr>
+                  <tr><th scope="row"><code>:valid  :invalid</code></th><td>estado de validación de un campo</td></tr>
+                  <tr><th scope="row" class="larga"><code>:first-child  :last-child</code></th><td>primer / último hijo</td></tr>
+                  <tr><th scope="row"><code>:nth-child(2n)</code></th><td>pares; <code>odd</code> impares, <code>3</code> el tercero</td></tr>
+                  <tr><th scope="row"><code>:nth-of-type(2)</code></th><td>el segundo de su tipo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Pseudoelementos: partes de un elemento</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>::before  ::after</code></th><td>contenido generado; necesitan <code>content</code></td></tr>
+                  <tr><th scope="row"><code>::first-letter</code></th><td>primera letra</td></tr>
+                  <tr><th scope="row"><code>::placeholder</code></th><td>texto de ejemplo de un input</td></tr>
+                  <tr><th scope="row"><code>::selection</code></th><td>texto seleccionado</td></tr>
+                  <tr><th scope="row"><code>::marker</code></th><td>viñeta o número de un <code>li</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="css"><code>a[href^=<span class="tok-texto">"http"</span>]::after {
+  <span class="tok-atributo">content</span>: <span class="tok-texto">" ↗"</span>;
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 3. Unidades, colores y funciones -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Unidades, colores y funciones</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>px</code></th><td>píxeles, tamaño fijo</td></tr>
+                  <tr><th scope="row"><code>%</code></th><td>relativo al elemento padre</td></tr>
+                  <tr><th scope="row"><code>em</code></th><td>relativo a la fuente del propio elemento</td></tr>
+                  <tr><th scope="row"><code>rem</code></th><td>relativo a la fuente del <code>html</code> (normalmente 16px)</td></tr>
+                  <tr><th scope="row"><code>vw  vh</code></th><td>1 % del ancho / alto de la ventana</td></tr>
+                  <tr><th scope="row"><code>fr</code></th><td>fracción del espacio libre en Grid</td></tr>
+                  <tr><th scope="row"><code>ch</code></th><td>ancho del carácter «0»</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Colores</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>red  transparent</code></th><td>por nombre</td></tr>
+                  <tr><th scope="row"><code>#ff6600  #f60</code></th><td>hexadecimal</td></tr>
+                  <tr><th scope="row"><code>#ff660080</code></th><td>hexadecimal con transparencia</td></tr>
+                  <tr><th scope="row"><code>rgb(255 102 0 / 50%)</code></th><td>rojo, verde, azul y opacidad</td></tr>
+                  <tr><th scope="row"><code>hsl(24 100% 50%)</code></th><td>tono, saturación, luminosidad</td></tr>
+                  <tr><th scope="row"><code>currentColor</code></th><td>el valor actual de <code>color</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Funciones</h3>
+            <figure class="codigo"><pre data-lang="css"><code>width: <span class="tok-funcion">calc</span>(<span class="tok-numero">100</span>% - <span class="tok-numero">2rem</span>);
+<span class="tok-atributo">font-size</span>: <span class="tok-funcion">clamp</span>(<span class="tok-numero">1rem</span>, <span class="tok-numero">2.5vw</span>, <span class="tok-numero">2rem</span>);  <span class="tok-coment">/* mínimo, ideal, máximo */</span>
+<span class="tok-atributo">width</span>: <span class="tok-funcion">min</span>(<span class="tok-numero">90</span>%, <span class="tok-numero">800px</span>);
+<span class="tok-atributo">padding</span>: <span class="tok-funcion">max</span>(<span class="tok-numero">1rem</span>, <span class="tok-numero">3vw</span>);</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Texto y fuentes -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Texto y fuentes</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="css"><code>body {
+  <span class="tok-atributo">font-family</span>: <span class="tok-texto">"Inter"</span>, Arial, sans-serif;  <span class="tok-coment">/* con alternativas */</span>
+  <span class="tok-atributo">font-size</span>: <span class="tok-numero">1rem</span>;
+  <span class="tok-atributo">font-weight</span>: <span class="tok-numero">400</span>;          <span class="tok-coment">/* 700 = negrita */</span>
+  <span class="tok-atributo">font-style</span>: italic;
+  <span class="tok-atributo">line-height</span>: <span class="tok-numero">1.5</span>;
+  <span class="tok-atributo">color</span>: <span class="tok-numero">#222</span>;
+}
+
+h1 {
+  <span class="tok-atributo">text-align</span>: center;        <span class="tok-coment">/* left, right, justify */</span>
+  <span class="tok-atributo">text-transform</span>: uppercase; <span class="tok-coment">/* lowercase, capitalize */</span>
+  <span class="tok-atributo">letter-spacing</span>: <span class="tok-numero">0.05em</span>;
+  <span class="tok-atributo">text-decoration</span>: underline;
+  <span class="tok-atributo">text-shadow</span>: <span class="tok-numero">1px</span> <span class="tok-numero">1px</span> <span class="tok-numero">2px</span> <span class="tok-funcion">rgb</span>(<span class="tok-numero">0</span> <span class="tok-numero">0</span> <span class="tok-numero">0</span> / <span class="tok-numero">30</span>%);
+}
+
+p {
+  <span class="tok-atributo">text-indent</span>: <span class="tok-numero">2em</span>;
+  <span class="tok-atributo">white-space</span>: nowrap;       <span class="tok-coment">/* no partir líneas */</span>
+  <span class="tok-atributo">overflow-wrap</span>: break-word;
+}
+
+.recorte {
+  <span class="tok-atributo">overflow</span>: hidden;
+  <span class="tok-atributo">text-overflow</span>: ellipsis;   <span class="tok-coment">/* añade … */</span>
+  <span class="tok-atributo">white-space</span>: nowrap;
+}</code></pre></figure>
+            <figure class="codigo"><pre data-lang="css"><code><span class="tok-clave">@font-face</span> {
+  <span class="tok-atributo">font-family</span>: <span class="tok-texto">"MiFuente"</span>;
+  <span class="tok-atributo">src</span>: <span class="tok-funcion">url</span>(<span class="tok-texto">"fuentes/mifuente.woff2"</span>) <span class="tok-funcion">format</span>(<span class="tok-texto">"woff2"</span>);
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 5. Modelo de caja -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Modelo de caja</h2>
+          <div class="cuerpo">
+            <div class="modelo-caja">
+              <div class="mc-margin">
+                margin
+                <div class="mc-borde">
+                  border
+                  <div class="mc-padding">
+                    padding
+                    <div class="mc-contenido">contenido<br>width × height</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="css"><code>*, *::before, *::after {
+  <span class="tok-atributo">box-sizing</span>: border-box;  <span class="tok-coment">/* width incluye padding y borde */</span>
+}
+
+.caja {
+  <span class="tok-atributo">width</span>: <span class="tok-numero">300px</span>;
+  <span class="tok-atributo">max-width</span>: <span class="tok-numero">100</span>%;
+  <span class="tok-atributo">padding</span>: <span class="tok-numero">1rem</span>;
+  <span class="tok-atributo">border</span>: <span class="tok-numero">2px</span> solid <span class="tok-numero">#ccc</span>;
+  <span class="tok-atributo">border-radius</span>: <span class="tok-numero">8px</span>;
+  <span class="tok-atributo">margin</span>: <span class="tok-numero">0</span> auto;          <span class="tok-coment">/* centra horizontalmente */</span>
+  <span class="tok-atributo">box-shadow</span>: <span class="tok-numero">0</span> <span class="tok-numero">2px</span> <span class="tok-numero">6px</span> <span class="tok-funcion">rgb</span>(<span class="tok-numero">0</span> <span class="tok-numero">0</span> <span class="tok-numero">0</span> / <span class="tok-numero">15</span>%);
+}</code></pre></figure>
+            <h3>Valores abreviados de margin y padding</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>10px</code></th><td>los cuatro lados</td></tr>
+                  <tr><th scope="row"><code>10px 20px</code></th><td>arriba y abajo · izquierda y derecha</td></tr>
+                  <tr><th scope="row"><code>10px 20px 5px</code></th><td>arriba · lados · abajo</td></tr>
+                  <tr><th scope="row"><code>10px 20px 5px 0</code></th><td>arriba · derecha · abajo · izquierda (sentido horario)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los márgenes verticales entre bloques se fusionan: entre un <code>margin-bottom: 20px</code> y un <code>margin-top: 30px</code> queda 30px, no 50px.</p>
+          </div>
+        </section>
+        <!-- 6. Display y posicionamiento -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Display y posicionamiento</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>display: block</code></th><td>ocupa todo el ancho, empieza en línea nueva</td></tr>
+                  <tr><th scope="row"><code>display: inline</code></th><td>fluye con el texto; ignora width y height</td></tr>
+                  <tr><th scope="row"><code>display: inline-block</code></th><td>fluye con el texto pero admite tamaño</td></tr>
+                  <tr><th scope="row"><code>display: none</code></th><td>desaparece y no ocupa espacio</td></tr>
+                  <tr><th scope="row"><code>visibility: hidden</code></th><td>invisible pero sigue ocupando espacio</td></tr>
+                  <tr><th scope="row"><code>display: flex | grid</code></th><td>activa Flexbox o Grid en los hijos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>position</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>static</code></th><td>normal (por defecto)</td></tr>
+                  <tr><th scope="row"><code>relative</code></th><td>se desplaza respecto a su sitio y sirve de referencia a hijos absolute</td></tr>
+                  <tr><th scope="row"><code>absolute</code></th><td>respecto al ancestro posicionado más cercano; sale del flujo</td></tr>
+                  <tr><th scope="row"><code>fixed</code></th><td>respecto a la ventana; no se mueve al hacer scroll</td></tr>
+                  <tr><th scope="row"><code>sticky</code></th><td>normal hasta llegar a <code>top</code>, luego se queda fijo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="css"><code>.tarjeta { <span class="tok-atributo">position</span>: relative; }
+.etiqueta {
+  <span class="tok-atributo">position</span>: absolute;
+  <span class="tok-atributo">top</span>: <span class="tok-numero">8px</span>;
+  <span class="tok-atributo">right</span>: <span class="tok-numero">8px</span>;
+  <span class="tok-atributo">z-index</span>: <span class="tok-numero">10</span>;     <span class="tok-coment">/* más alto = más delante */</span>
+}
+
+.cabecera { <span class="tok-atributo">position</span>: sticky; <span class="tok-atributo">top</span>: <span class="tok-numero">0</span>; }
+.scroll { <span class="tok-atributo">overflow</span>: auto; }  <span class="tok-coment">/* hidden, scroll, visible */</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 7. Flexbox: una dimensión -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Flexbox: una dimensión</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="css"><code>.contenedor {
+  <span class="tok-atributo">display</span>: flex;
+  <span class="tok-atributo">flex-direction</span>: row;        <span class="tok-coment">/* column, row-reverse */</span>
+  <span class="tok-atributo">flex-wrap</span>: wrap;            <span class="tok-coment">/* permite varias líneas */</span>
+  <span class="tok-atributo">justify-content</span>: space-between; <span class="tok-coment">/* eje principal */</span>
+  <span class="tok-atributo">align-items</span>: center;        <span class="tok-coment">/* eje secundario */</span>
+  <span class="tok-atributo">gap</span>: <span class="tok-numero">1rem</span>;
+}
+
+.hijo {
+  <span class="tok-atributo">flex</span>: <span class="tok-numero">1</span>;                    <span class="tok-coment">/* reparte el espacio libre */</span>
+  <span class="tok-atributo">flex</span>: <span class="tok-numero">0</span> <span class="tok-numero">0</span> <span class="tok-numero">200px</span>;            <span class="tok-coment">/* grow, shrink, basis */</span>
+  <span class="tok-atributo">align-self</span>: flex-end;
+  <span class="tok-atributo">order</span>: <span class="tok-numero">-1</span>;                  <span class="tok-coment">/* cambia el orden visual */</span>
+}
+
+<span class="tok-coment">/* centrar algo en ambos ejes */</span>
+.centro { <span class="tok-atributo">display</span>: flex; <span class="tok-atributo">justify-content</span>: center; <span class="tok-atributo">align-items</span>: center; }</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>justify-content</code></th><td><code>flex-start</code> <code>center</code> <code>flex-end</code> <code>space-between</code> <code>space-around</code> <code>space-evenly</code></td></tr>
+                  <tr><th scope="row"><code>align-items</code></th><td><code>stretch</code> <code>center</code> <code>flex-start</code> <code>flex-end</code> <code>baseline</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Con <code>flex-direction: column</code> los ejes se intercambian: <code>justify-content</code> pasa a ser vertical.</p>
+          </div>
+        </section>
+        <!-- 8. Grid: dos dimensiones -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Grid: dos dimensiones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="css"><code>.galeria {
+  <span class="tok-atributo">display</span>: grid;
+  <span class="tok-atributo">grid-template-columns</span>: <span class="tok-funcion">repeat</span>(<span class="tok-numero">3</span>, <span class="tok-numero">1fr</span>);
+  <span class="tok-atributo">grid-template-columns</span>: <span class="tok-numero">200px</span> <span class="tok-numero">1fr</span>;           <span class="tok-coment">/* fija + flexible */</span>
+  <span class="tok-atributo">grid-template-columns</span>: <span class="tok-funcion">repeat</span>(auto-fit, <span class="tok-funcion">minmax</span>(<span class="tok-numero">220px</span>, <span class="tok-numero">1fr</span>)); <span class="tok-coment">/* responsive */</span>
+  <span class="tok-atributo">gap</span>: <span class="tok-numero">1rem</span>;
+}
+
+.destacado {
+  <span class="tok-atributo">grid-column</span>: <span class="tok-numero">1</span> / <span class="tok-numero">3</span>;     <span class="tok-coment">/* de la línea 1 a la 3 */</span>
+  <span class="tok-atributo">grid-column</span>: span <span class="tok-numero">2</span>;    <span class="tok-coment">/* ocupa 2 columnas */</span>
+  <span class="tok-atributo">grid-row</span>: span <span class="tok-numero">2</span>;
+}</code></pre></figure>
+            <figure class="codigo"><pre data-lang="css"><code>.pagina {
+  <span class="tok-atributo">display</span>: grid;
+  <span class="tok-atributo">grid-template-columns</span>: <span class="tok-numero">220px</span> <span class="tok-numero">1fr</span>;
+  <span class="tok-atributo">grid-template-rows</span>: auto <span class="tok-numero">1fr</span> auto;
+  <span class="tok-atributo">grid-template-areas</span>:
+    <span class="tok-texto">"cabecera cabecera"</span>
+    <span class="tok-texto">"menu     contenido"</span>
+    <span class="tok-texto">"pie      pie"</span>;
+  <span class="tok-atributo">min-height</span>: <span class="tok-numero">100vh</span>;
+}
+header { <span class="tok-atributo">grid-area</span>: cabecera; }
+nav    { <span class="tok-atributo">grid-area</span>: menu; }
+main   { <span class="tok-atributo">grid-area</span>: contenido; }
+footer { <span class="tok-atributo">grid-area</span>: pie; }</code></pre></figure>
+            <p class="nota"><code>justify-items</code> y <code>align-items</code> alinean dentro de cada celda; <code>place-items: center</code> hace las dos cosas.</p>
+          </div>
+        </section>
+        <!-- 9. Diseño responsive -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Diseño responsive</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="css"><code><span class="tok-coment">/* mobile first: estilos base para móvil */</span>
+.menu { <span class="tok-atributo">flex-direction</span>: column; }
+
+<span class="tok-clave">@media</span> (min-width: <span class="tok-numero">768px</span>) {       <span class="tok-coment">/* tablet en adelante */</span>
+  .menu { <span class="tok-atributo">flex-direction</span>: row; }
+}
+
+<span class="tok-clave">@media</span> (min-width: <span class="tok-numero">1200px</span>) { … }  <span class="tok-coment">/* escritorio */</span>
+
+<span class="tok-clave">@media</span> (prefers-color-scheme: dark) { … }
+<span class="tok-clave">@media</span> (prefers-reduced-motion: reduce) { … }
+<span class="tok-clave">@media</span> print { nav { <span class="tok-atributo">display</span>: none; } }
+
+img { <span class="tok-atributo">max-width</span>: <span class="tok-numero">100</span>%; <span class="tok-atributo">height</span>: auto; }</code></pre></figure>
+            <figure class="codigo"><pre data-lang="css"><code>.tarjetas { <span class="tok-atributo">container-type</span>: inline-size; }
+
+<span class="tok-clave">@container</span> (min-width: <span class="tok-numero">400px</span>) {   <span class="tok-coment">/* según el contenedor */</span>
+  .tarjeta { <span class="tok-atributo">display</span>: flex; }
+}</code></pre></figure>
+            <p class="nota">Sin <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code> las media queries no funcionan bien en móvil.</p>
+          </div>
+        </section>
+        <!-- 10. Variables y anidamiento -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Variables y anidamiento</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="css"><code>:root {
+  <span class="tok-variable">--color-principal</span>: <span class="tok-numero">#2965f1</span>;
+  <span class="tok-variable">--espacio</span>: <span class="tok-numero">1rem</span>;
+}
+
+.boton {
+  <span class="tok-atributo">background</span>: <span class="tok-funcion">var</span>(<span class="tok-variable">--color-principal</span>);
+  <span class="tok-atributo">padding</span>: <span class="tok-funcion">var</span>(<span class="tok-variable">--espacio</span>) <span class="tok-funcion">calc</span>(<span class="tok-funcion">var</span>(<span class="tok-variable">--espacio</span>) * <span class="tok-numero">2</span>);
+  <span class="tok-atributo">color</span>: <span class="tok-funcion">var</span>(<span class="tok-variable">--color-texto</span>, white);   <span class="tok-coment">/* valor por defecto */</span>
+
+  &amp;:hover { <span class="tok-atributo">filter</span>: <span class="tok-funcion">brightness</span>(<span class="tok-numero">1.1</span>); } <span class="tok-coment">/* anidamiento nativo */</span>
+  &amp; .icono { <span class="tok-atributo">margin-right</span>: .<span class="tok-numero">5rem</span>; }
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 11. Fondos y efectos -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Fondos y efectos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="css"><code>.portada {
+  <span class="tok-atributo">background-color</span>: <span class="tok-numero">#1d2126</span>;
+  <span class="tok-atributo">background-image</span>: <span class="tok-funcion">url</span>(<span class="tok-texto">"img/fondo.jpg"</span>);
+  <span class="tok-atributo">background-size</span>: cover;          <span class="tok-coment">/* contain */</span>
+  <span class="tok-atributo">background-position</span>: center;
+  <span class="tok-atributo">background-repeat</span>: no-repeat;
+}
+
+.degradado {
+  <span class="tok-atributo">background</span>: <span class="tok-funcion">linear-gradient</span>(to right, <span class="tok-numero">#2965f1</span>, <span class="tok-numero">#7b4fa3</span>);
+}
+
+.foto   { <span class="tok-atributo">object-fit</span>: cover; <span class="tok-atributo">aspect-ratio</span>: <span class="tok-numero">16</span> / <span class="tok-numero">9</span>; }
+.suave  { <span class="tok-atributo">opacity</span>: <span class="tok-numero">0.8</span>; }
+.cursor { <span class="tok-atributo">cursor</span>: pointer; }
+.borde  { <span class="tok-atributo">outline</span>: <span class="tok-numero">2px</span> solid orange; <span class="tok-atributo">outline-offset</span>: <span class="tok-numero">2px</span>; }</code></pre></figure>
+          </div>
+        </section>
+        <!-- 12. Transiciones y animaciones -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Transiciones y animaciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="css"><code>.boton {
+  <span class="tok-atributo">transition</span>: background-color <span class="tok-numero">0.3s</span> ease, transform <span class="tok-numero">0.2s</span>;
+}
+.boton:hover {
+  <span class="tok-atributo">background-color</span>: <span class="tok-numero">#1e4fc2</span>;
+  <span class="tok-atributo">transform</span>: <span class="tok-funcion">translateY</span>(<span class="tok-numero">-2px</span>) <span class="tok-funcion">scale</span>(<span class="tok-numero">1.02</span>);
+}
+
+<span class="tok-clave">@keyframes</span> aparecer {
+  from { <span class="tok-atributo">opacity</span>: <span class="tok-numero">0</span>; <span class="tok-atributo">transform</span>: <span class="tok-funcion">translateY</span>(<span class="tok-numero">10px</span>); }
+  to   { <span class="tok-atributo">opacity</span>: <span class="tok-numero">1</span>; <span class="tok-atributo">transform</span>: none; }
+}
+.aviso {
+  <span class="tok-atributo">animation</span>: aparecer <span class="tok-numero">0.5s</span> ease-out forwards;
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>transform</code></th><td><code>translate()</code> <code>rotate(45deg)</code> <code>scale()</code> <code>skew()</code></td></tr>
+                  <tr><th scope="row"><code>timing</code></th><td><code>ease</code> <code>linear</code> <code>ease-in</code> <code>ease-out</code> <code>ease-in-out</code></td></tr>
+                  <tr><th scope="row"><code>animation</code></th><td>nombre, duración, curva, retardo, repeticiones (<code>infinite</code>), dirección</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="html.html">← HTML</a><span></span></nav>
+      <footer class="pie">Referencia completa en <a href="https://developer.mozilla.org/es/docs/Web/CSS">MDN Web Docs</a>. Práctica de Flexbox: <a href="https://flexboxfroggy.com/#es">Flexbox Froggy</a>. Práctica de Grid: <a href="https://cssgridgarden.com/#es">Grid Garden</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

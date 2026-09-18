@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HTML · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="web">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Desarrollo web</a><span aria-hidden="true">›</span><span>HTML</span></nav>
+          <h1>HTML</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Estructura de un documento, etiquetas semánticas, tablas y formularios.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Desarrollo web">
+      <div class="wrap"><a href="html.html" aria-current="page">HTML</a><a href="css.html">CSS</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Texto</a><a href="#s2"><b>2</b>Enlaces</a><a href="#s3"><b>3</b>Imágenes y multimedia</a><a href="#s4"><b>4</b>Listas</a><a href="#s5"><b>5</b>Estructura semántica</a><a href="#s6"><b>6</b>Tablas</a><a href="#s7"><b>7</b>Formularios</a><a href="#s8"><b>8</b>Tipos de input</a><a href="#s9"><b>9</b>Elementos interactivos</a><a href="#s10"><b>10</b>Atributos globales</a><a href="#s11"><b>11</b>Contenido del head</a><a href="#s12"><b>12</b>Bloque, línea y buenas prácticas</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Esqueleto de un documento HTML5</p>
+        <figure class="codigo"><pre data-lang="html"><code><span class="tok-clave">&lt;!DOCTYPE</span> html<span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;html</span> <span class="tok-atributo">lang</span>=<span class="tok-texto">"es"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;head</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;meta</span> <span class="tok-atributo">charset</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;meta</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"viewport"</span> <span class="tok-atributo">content</span>=<span class="tok-texto">"width=device-width, initial-scale=1.0"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;title</span><span class="tok-etiqueta">&gt;</span>Título que sale en la pestaña<span class="tok-etiqueta">&lt;/title</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;link</span> <span class="tok-atributo">rel</span>=<span class="tok-texto">"stylesheet"</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"css/estilos.css"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;script</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"js/app.js"</span> defer<span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/script</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/head</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;body</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-coment">&lt;!-- contenido visible --&gt;</span>
+<span class="tok-etiqueta">&lt;/body</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/html</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Texto -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Texto</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>&lt;h1&gt; … &lt;h6&gt;</code></th><td>encabezados. Un solo h1 por página y sin saltar niveles</td></tr>
+                  <tr><th scope="row"><code>&lt;p&gt;</code></th><td>párrafo</td></tr>
+                  <tr><th scope="row"><code>&lt;br&gt;</code></th><td>salto de línea (sin cierre)</td></tr>
+                  <tr><th scope="row"><code>&lt;hr&gt;</code></th><td>separación temática</td></tr>
+                  <tr><th scope="row"><code>&lt;strong&gt;</code></th><td>importancia (se ve en negrita)</td></tr>
+                  <tr><th scope="row"><code>&lt;em&gt;</code></th><td>énfasis (se ve en cursiva)</td></tr>
+                  <tr><th scope="row"><code>&lt;mark&gt;</code></th><td>texto resaltado</td></tr>
+                  <tr><th scope="row"><code>&lt;small&gt;</code></th><td>letra pequeña, notas legales</td></tr>
+                  <tr><th scope="row"><code>&lt;sub&gt;  &lt;sup&gt;</code></th><td>subíndice y superíndice: H<sub>2</sub>O, m<sup>2</sup></td></tr>
+                  <tr><th scope="row"><code>&lt;code&gt;</code></th><td>código en línea</td></tr>
+                  <tr><th scope="row"><code>&lt;pre&gt;</code></th><td>texto preformateado: respeta espacios y saltos</td></tr>
+                  <tr><th scope="row"><code>&lt;blockquote cite="url"&gt;</code></th><td>cita larga</td></tr>
+                  <tr><th scope="row"><code>&lt;abbr title="…"&gt;</code></th><td>abreviatura</td></tr>
+                  <tr><th scope="row" class="larga"><code>&lt;time datetime="2026-09-16"&gt;</code></th><td>fecha legible por máquinas</td></tr>
+                  <tr><th scope="row"><code>&lt;span&gt;</code></th><td>contenedor en línea sin significado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Entidades</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>&lt;  &gt;</code></th><td>&lt; y &gt;</td></tr>
+                  <tr><th scope="row"><code>&amp;</code></th><td>&amp;</td></tr>
+                  <tr><th scope="row"><code>&amp;quot;  &amp;apos;</code></th><td>comillas dobles y simples</td></tr>
+                  <tr><th scope="row"><code>&amp;nbsp;</code></th><td>espacio que no se parte</td></tr>
+                  <tr><th scope="row"><code>&amp;copy;  &amp;euro;</code></th><td>© y €</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Enlaces -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Enlaces</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"contacto.html"</span><span class="tok-etiqueta">&gt;</span>Contacto<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"../index.html"</span><span class="tok-etiqueta">&gt;</span>Volver<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"https://ejemplo.com"</span> <span class="tok-atributo">target</span>=<span class="tok-texto">"_blank"</span> <span class="tok-atributo">rel</span>=<span class="tok-texto">"noopener"</span><span class="tok-etiqueta">&gt;</span>Externo<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"#precios"</span><span class="tok-etiqueta">&gt;</span>Ir a la sección de precios<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"mailto:info@ejemplo.com"</span><span class="tok-etiqueta">&gt;</span>Escríbenos<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"tel:+34600000000"</span><span class="tok-etiqueta">&gt;</span>Llámanos<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"docs/temario.pdf"</span> download<span class="tok-etiqueta">&gt;</span>Descargar PDF<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;section</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"precios"</span><span class="tok-etiqueta">&gt;</span>…<span class="tok-etiqueta">&lt;/section</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">Rutas relativas: <code>carpeta/fichero</code>, <code>../</code> sube un nivel. Rutas absolutas: empiezan por <code>https://</code> o por <code>/</code> (raíz del sitio).</p>
+          </div>
+        </section>
+        <!-- 3. Imágenes y multimedia -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Imágenes y multimedia</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-etiqueta">&lt;img</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"img/logo.png"</span> <span class="tok-atributo">alt</span>=<span class="tok-texto">"Logo del instituto"</span>
+     <span class="tok-atributo">width</span>=<span class="tok-texto">"200"</span> <span class="tok-atributo">height</span>=<span class="tok-texto">"80"</span> <span class="tok-atributo">loading</span>=<span class="tok-texto">"lazy"</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;figure</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;img</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"img/grafico.png"</span> <span class="tok-atributo">alt</span>=<span class="tok-texto">"Matrícula por curso"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;figcaption</span><span class="tok-etiqueta">&gt;</span>Figura 1. Matrícula 2025-2026<span class="tok-etiqueta">&lt;/figcaption</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/figure</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;picture</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;source</span> <span class="tok-atributo">srcset</span>=<span class="tok-texto">"img/foto.webp"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"image/webp"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;img</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"img/foto.jpg"</span> <span class="tok-atributo">alt</span>=<span class="tok-texto">"Aula de informática"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/picture</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;video</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"video/demo.mp4"</span> controls <span class="tok-atributo">width</span>=<span class="tok-texto">"640"</span> <span class="tok-atributo">poster</span>=<span class="tok-texto">"img/portada.jpg"</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/video</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;audio</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"audio/aviso.mp3"</span> controls<span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/audio</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;iframe</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"https://www.youtube.com/embed/ID"</span> <span class="tok-atributo">title</span>=<span class="tok-texto">"Vídeo"</span> <span class="tok-atributo">width</span>=<span class="tok-texto">"560"</span> <span class="tok-atributo">height</span>=<span class="tok-texto">"315"</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/iframe</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota"><code>alt</code> es obligatorio. Si la imagen es decorativa, déjalo vacío: <code>alt=""</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Listas -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Listas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-etiqueta">&lt;ul</span><span class="tok-etiqueta">&gt;</span>                      <span class="tok-coment">&lt;!-- sin orden --&gt;</span>
+  <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>Java<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>Kotlin<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/ul</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;ol</span> <span class="tok-atributo">start</span>=<span class="tok-texto">"3"</span> reversed<span class="tok-etiqueta">&gt;</span>   <span class="tok-coment">&lt;!-- numerada --&gt;</span>
+  <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>Tercero<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span>Segundo<span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/ol</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;dl</span><span class="tok-etiqueta">&gt;</span>                      <span class="tok-coment">&lt;!-- de definiciones --&gt;</span>
+  <span class="tok-etiqueta">&lt;dt</span><span class="tok-etiqueta">&gt;</span>HTML<span class="tok-etiqueta">&lt;/dt</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;dd</span><span class="tok-etiqueta">&gt;</span>Lenguaje de marcado<span class="tok-etiqueta">&lt;/dd</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/dl</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota"><code>type</code> en <code>&lt;ol&gt;</code>: <code>1</code>, <code>a</code>, <code>A</code>, <code>i</code>, <code>I</code>. Se pueden anidar listas dentro de un <code>&lt;li&gt;</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Estructura semántica -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Estructura semántica</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-etiqueta">&lt;body</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;header</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;nav</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;ul</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;li</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"/"</span><span class="tok-etiqueta">&gt;</span>Inicio<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/li</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/ul</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/nav</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/header</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;main</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;article</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;h1</span><span class="tok-etiqueta">&gt;</span>Título del artículo<span class="tok-etiqueta">&lt;/h1</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;section</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;h2</span><span class="tok-etiqueta">&gt;</span>Apartado<span class="tok-etiqueta">&lt;/h2</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;p</span><span class="tok-etiqueta">&gt;</span>…<span class="tok-etiqueta">&lt;/p</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;/section</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/article</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;aside</span><span class="tok-etiqueta">&gt;</span>Contenido relacionado<span class="tok-etiqueta">&lt;/aside</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/main</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;footer</span><span class="tok-etiqueta">&gt;</span>© 2026 IES Ejemplo<span class="tok-etiqueta">&lt;/footer</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/body</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>&lt;header&gt;</code></th><td>cabecera de la página o de una sección</td></tr>
+                  <tr><th scope="row"><code>&lt;nav&gt;</code></th><td>bloque de navegación principal</td></tr>
+                  <tr><th scope="row"><code>&lt;main&gt;</code></th><td>contenido principal, uno por página</td></tr>
+                  <tr><th scope="row"><code>&lt;article&gt;</code></th><td>contenido independiente: noticia, entrada, producto</td></tr>
+                  <tr><th scope="row"><code>&lt;section&gt;</code></th><td>agrupación temática, normalmente con encabezado</td></tr>
+                  <tr><th scope="row"><code>&lt;aside&gt;</code></th><td>contenido secundario o relacionado</td></tr>
+                  <tr><th scope="row"><code>&lt;footer&gt;</code></th><td>pie de la página o de una sección</td></tr>
+                  <tr><th scope="row"><code>&lt;div&gt;</code></th><td>contenedor sin significado, solo para maquetar</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6. Tablas -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Tablas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-etiqueta">&lt;table</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;caption</span><span class="tok-etiqueta">&gt;</span>Notas del primer trimestre<span class="tok-etiqueta">&lt;/caption</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;thead</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;tr</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;th</span> <span class="tok-atributo">scope</span>=<span class="tok-texto">"col"</span><span class="tok-etiqueta">&gt;</span>Alumno<span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;th</span> <span class="tok-atributo">scope</span>=<span class="tok-texto">"col"</span><span class="tok-etiqueta">&gt;</span>PSP<span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;th</span> <span class="tok-atributo">scope</span>=<span class="tok-texto">"col"</span><span class="tok-etiqueta">&gt;</span>AD<span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/tr</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/thead</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;tbody</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;tr</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;th</span> <span class="tok-atributo">scope</span>=<span class="tok-texto">"row"</span><span class="tok-etiqueta">&gt;</span>Ana<span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;td</span><span class="tok-etiqueta">&gt;</span>8<span class="tok-etiqueta">&lt;/td</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;td</span><span class="tok-etiqueta">&gt;</span>9<span class="tok-etiqueta">&lt;/td</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/tr</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;tr</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;th</span> <span class="tok-atributo">scope</span>=<span class="tok-texto">"row"</span><span class="tok-etiqueta">&gt;</span>Luis<span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;td</span> <span class="tok-atributo">colspan</span>=<span class="tok-texto">"2"</span><span class="tok-etiqueta">&gt;</span>Convalidado<span class="tok-etiqueta">&lt;/td</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/tr</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/tbody</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;tfoot</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;tr</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;td</span> <span class="tok-atributo">colspan</span>=<span class="tok-texto">"3"</span><span class="tok-etiqueta">&gt;</span>Actualizado el 16/09<span class="tok-etiqueta">&lt;/td</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/tr</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/tfoot</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/table</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota"><code>colspan</code> une columnas y <code>rowspan</code> une filas. Las tablas son para datos, no para maquetar.</p>
+          </div>
+        </section>
+        <!-- 7. Formularios -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Formularios</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-etiqueta">&lt;form</span> <span class="tok-atributo">action</span>=<span class="tok-texto">"/registro"</span> <span class="tok-atributo">method</span>=<span class="tok-texto">"post"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;fieldset</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;legend</span><span class="tok-etiqueta">&gt;</span>Datos personales<span class="tok-etiqueta">&lt;/legend</span><span class="tok-etiqueta">&gt;</span>
+
+    <span class="tok-etiqueta">&lt;label</span> <span class="tok-atributo">for</span>=<span class="tok-texto">"nombre"</span><span class="tok-etiqueta">&gt;</span>Nombre<span class="tok-etiqueta">&lt;/label</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"nombre"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"nombre"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"text"</span> required <span class="tok-atributo">maxlength</span>=<span class="tok-texto">"50"</span><span class="tok-etiqueta">&gt;</span>
+
+    <span class="tok-etiqueta">&lt;label</span> <span class="tok-atributo">for</span>=<span class="tok-texto">"email"</span><span class="tok-etiqueta">&gt;</span>Correo<span class="tok-etiqueta">&lt;/label</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"email"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"email"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"email"</span> <span class="tok-atributo">placeholder</span>=<span class="tok-texto">"tu@correo.com"</span><span class="tok-etiqueta">&gt;</span>
+
+    <span class="tok-etiqueta">&lt;label</span> <span class="tok-atributo">for</span>=<span class="tok-texto">"curso"</span><span class="tok-etiqueta">&gt;</span>Curso<span class="tok-etiqueta">&lt;/label</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;select</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"curso"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"curso"</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;optgroup</span> <span class="tok-atributo">label</span>=<span class="tok-texto">"Grado superior"</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;option</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"dam"</span> selected<span class="tok-etiqueta">&gt;</span>DAM<span class="tok-etiqueta">&lt;/option</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;option</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"daw"</span><span class="tok-etiqueta">&gt;</span>DAW<span class="tok-etiqueta">&lt;/option</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;/optgroup</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/select</span><span class="tok-etiqueta">&gt;</span>
+
+    <span class="tok-etiqueta">&lt;p</span><span class="tok-etiqueta">&gt;</span>Turno:<span class="tok-etiqueta">&lt;/p</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;label</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"radio"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"turno"</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"m"</span> checked<span class="tok-etiqueta">&gt;</span> Mañana<span class="tok-etiqueta">&lt;/label</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;label</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"radio"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"turno"</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"t"</span><span class="tok-etiqueta">&gt;</span> Tarde<span class="tok-etiqueta">&lt;/label</span><span class="tok-etiqueta">&gt;</span>
+
+    <span class="tok-etiqueta">&lt;label</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"checkbox"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"acepto"</span> required<span class="tok-etiqueta">&gt;</span> Acepto las condiciones<span class="tok-etiqueta">&lt;/label</span><span class="tok-etiqueta">&gt;</span>
+
+    <span class="tok-etiqueta">&lt;label</span> <span class="tok-atributo">for</span>=<span class="tok-texto">"obs"</span><span class="tok-etiqueta">&gt;</span>Observaciones<span class="tok-etiqueta">&lt;/label</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;textarea</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"obs"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"obs"</span> <span class="tok-atributo">rows</span>=<span class="tok-texto">"4"</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/textarea</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/fieldset</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;button</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"submit"</span><span class="tok-etiqueta">&gt;</span>Enviar<span class="tok-etiqueta">&lt;/button</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;button</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"reset"</span><span class="tok-etiqueta">&gt;</span>Borrar<span class="tok-etiqueta">&lt;/button</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/form</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">El <code>name</code> es lo que llega al servidor. <code>GET</code> manda los datos en la URL; <code>POST</code> en el cuerpo de la petición. Los <code>radio</code> de un mismo grupo comparten <code>name</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Tipos de input -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Tipos de input</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>text  password</code></th><td>texto normal / oculto</td></tr>
+                  <tr><th scope="row"><code>email  url  tel</code></th><td>con validación y teclado adecuado en móvil</td></tr>
+                  <tr><th scope="row"><code>number</code></th><td>con <code>min</code>, <code>max</code>, <code>step</code></td></tr>
+                  <tr><th scope="row"><code>range</code></th><td>deslizador</td></tr>
+                  <tr><th scope="row" class="larga"><code>date  time  datetime-local</code></th><td>selectores de fecha y hora</td></tr>
+                  <tr><th scope="row"><code>checkbox  radio</code></th><td>casillas / opción única del grupo</td></tr>
+                  <tr><th scope="row"><code>file</code></th><td>subir ficheros (<code>accept</code>, <code>multiple</code>)</td></tr>
+                  <tr><th scope="row"><code>color</code></th><td>selector de color</td></tr>
+                  <tr><th scope="row"><code>search</code></th><td>campo de búsqueda</td></tr>
+                  <tr><th scope="row"><code>hidden</code></th><td>dato oculto que se envía</td></tr>
+                  <tr><th scope="row"><code>submit  reset  button</code></th><td>botones (mejor usar <code>&lt;button&gt;</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Atributos de validación y ayuda</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>required</code></th><td>campo obligatorio</td></tr>
+                  <tr><th scope="row"><code>minlength  maxlength</code></th><td>longitud del texto</td></tr>
+                  <tr><th scope="row"><code>min  max  step</code></th><td>rango numérico o de fechas</td></tr>
+                  <tr><th scope="row"><code>pattern="[0-9]{5}"</code></th><td>expresión regular (aquí, un código postal)</td></tr>
+                  <tr><th scope="row"><code>placeholder</code></th><td>texto de ejemplo; no sustituye a label</td></tr>
+                  <tr><th scope="row"><code>value</code></th><td>valor inicial</td></tr>
+                  <tr><th scope="row"><code>disabled  readonly</code></th><td>desactivado (no se envía) / solo lectura (sí se envía)</td></tr>
+                  <tr><th scope="row"><code>autocomplete="email"</code></th><td>ayuda al autocompletado</td></tr>
+                  <tr><th scope="row"><code>autofocus</code></th><td>recibe el foco al cargar</td></tr>
+                  <tr><th scope="row"><code>&lt;datalist&gt;</code></th><td>sugerencias para un input con <code>list="id"</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 9. Elementos interactivos -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Elementos interactivos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-etiqueta">&lt;details</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;summary</span><span class="tok-etiqueta">&gt;</span>Ver solución<span class="tok-etiqueta">&lt;/summary</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;p</span><span class="tok-etiqueta">&gt;</span>El resultado es 42.<span class="tok-etiqueta">&lt;/p</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/details</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;dialog</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"aviso"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;p</span><span class="tok-etiqueta">&gt;</span>Cambios guardados<span class="tok-etiqueta">&lt;/p</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;form</span> <span class="tok-atributo">method</span>=<span class="tok-texto">"dialog"</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;button</span><span class="tok-etiqueta">&gt;</span>Cerrar<span class="tok-etiqueta">&lt;/button</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/form</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/dialog</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;progress</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"70"</span> <span class="tok-atributo">max</span>=<span class="tok-texto">"100"</span><span class="tok-etiqueta">&gt;</span>70 %<span class="tok-etiqueta">&lt;/progress</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;meter</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"0.6"</span> <span class="tok-atributo">min</span>=<span class="tok-texto">"0"</span> <span class="tok-atributo">max</span>=<span class="tok-texto">"1"</span><span class="tok-etiqueta">&gt;</span>60 %<span class="tok-etiqueta">&lt;/meter</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">Un <code>&lt;dialog&gt;</code> se abre desde JavaScript con <code>aviso.showModal()</code>.</p>
+          </div>
+        </section>
+        <!-- 10. Atributos globales -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Atributos globales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>id</code></th><td>identificador único en la página</td></tr>
+                  <tr><th scope="row"><code>class</code></th><td>una o varias clases separadas por espacios</td></tr>
+                  <tr><th scope="row"><code>style</code></th><td>CSS en línea (mejor evitarlo)</td></tr>
+                  <tr><th scope="row"><code>title</code></th><td>texto de ayuda al pasar el ratón</td></tr>
+                  <tr><th scope="row"><code>lang</code></th><td>idioma del contenido</td></tr>
+                  <tr><th scope="row"><code>hidden</code></th><td>oculta el elemento</td></tr>
+                  <tr><th scope="row"><code>data-*</code></th><td>datos propios: <code>data-id="7"</code> → <code>el.dataset.id</code></td></tr>
+                  <tr><th scope="row"><code>tabindex</code></th><td>orden de foco con el teclado</td></tr>
+                  <tr><th scope="row"><code>aria-label</code></th><td>nombre accesible cuando no hay texto visible</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 11. Contenido del head -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Contenido del head</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="html"><code><span class="tok-etiqueta">&lt;meta</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"description"</span> <span class="tok-atributo">content</span>=<span class="tok-texto">"Resumen para buscadores"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;meta</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"author"</span> <span class="tok-atributo">content</span>=<span class="tok-texto">"IES Ejemplo"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;link</span> <span class="tok-atributo">rel</span>=<span class="tok-texto">"icon"</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"favicon.ico"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;link</span> <span class="tok-atributo">rel</span>=<span class="tok-texto">"stylesheet"</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"estilos.css"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;style</span><span class="tok-etiqueta">&gt;</span> body { margin: 0; } <span class="tok-etiqueta">&lt;/style</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;script</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"app.js"</span> defer<span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/script</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;script</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"module"</span> <span class="tok-atributo">src</span>=<span class="tok-texto">"main.js"</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/script</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;base</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"https://ejemplo.com/"</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota"><code>defer</code> descarga el script sin bloquear y lo ejecuta cuando el HTML ya está cargado.</p>
+          </div>
+        </section>
+        <!-- 12. Bloque, línea y buenas prácticas -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Bloque, línea y buenas prácticas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>bloque</code></th><td>ocupan todo el ancho: <code>div</code>, <code>p</code>, <code>h1</code>, <code>ul</code>, <code>section</code></td></tr>
+                  <tr><th scope="row"><code>en línea</code></th><td>ocupan solo su contenido: <code>span</code>, <code>a</code>, <code>strong</code>, <code>img</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Usa <code>&lt;button&gt;</code> para acciones y <code>&lt;a&gt;</code> para navegar. Asocia cada campo a su <code>&lt;label&gt;</code>. Respeta la jerarquía de encabezados. Valida tus páginas en <a href="https://validator.w3.org/">validator.w3.org</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="css.html">CSS →</a></nav>
+      <footer class="pie">Referencia de etiquetas y atributos en <a href="https://developer.mozilla.org/es/docs/Web/HTML">MDN Web Docs</a>. Para darles estilo, consulta la <a href="css.html">chuleta de CSS</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

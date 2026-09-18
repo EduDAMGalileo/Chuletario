@@ -1,0 +1,589 @@
+/* =========================================================================
+   Chuletario · hoja de estilos común a todas las páginas
+   -------------------------------------------------------------------------
+   Organización:
+     1. Variables de color y tipografía
+     2. Color de acento por tema
+     3. Estilos generales
+     4. Cabecera, migas de pan y navegación
+     5. Índice de secciones
+     6. Banda destacada y sus componentes
+     7. Rejilla de tarjetas
+     8. Contenido: tablas, notas, avisos
+     9. Bloques de código y resaltado de sintaxis
+    10. Comparativas a dos columnas
+    11. Portadas e índices de tema
+    12. Paginación y pie
+    13. Impresión
+   ========================================================================= */
+
+/* ---------- 1. Variables ------------------------------------------------ */
+
+:root {
+  /* Colores del tema claro */
+  --acento: #1d2126;
+  --fondo: #fbfbfa;
+  --texto: #1d2126;
+  --apagado: #5f6670;
+  --linea: #dde1e6;
+  --tarjeta: #ffffff;
+  --cabecera: #1d2126;
+  --cabecera-texto: #ffffff;
+  --fondo-codigo: #f4f5f7;
+  --texto-codigo: #1d2126;
+  --nota: #fff7df;
+  --nota-linea: #e9cf7a;
+  --aviso: #fdeceb;
+  --aviso-linea: #eeb0aa;
+  --chip: #eef0f3;
+
+  /* Colores del resaltado de sintaxis */
+  --tok-clave: #a0269c;      /* palabras reservadas */
+  --tok-texto: #0f7a3d;      /* cadenas de texto */
+  --tok-coment: #8a919a;     /* comentarios */
+  --tok-numero: #b35900;
+  --tok-tipo: #0b5cad;
+  --tok-funcion: #6a3fb5;
+  --tok-etiqueta: #0b5cad;   /* etiquetas XML/HTML */
+  --tok-atributo: #9a4b00;
+  --tok-variable: #b0305a;
+  --tok-operador: #6b7280;
+
+  /* Tipografías */
+  --mono: ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Tema oscuro: automático según el sistema... */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-modo="claro"]) {
+    --fondo: #15181c;
+    --texto: #e6e8eb;
+    --apagado: #9aa2ab;
+    --linea: #2c3239;
+    --tarjeta: #1b1f24;
+    --cabecera: #262c33;
+    --fondo-codigo: #11151a;
+    --texto-codigo: #dfe3e8;
+    --nota: #2b2716;
+    --nota-linea: #6b5a22;
+    --aviso: #2d1b1b;
+    --aviso-linea: #6d3431;
+    --chip: #242a31;
+    --tok-clave: #e28ae0;
+    --tok-texto: #7fd39b;
+    --tok-coment: #7d858f;
+    --tok-numero: #f0a868;
+    --tok-tipo: #79b8ff;
+    --tok-funcion: #c3a6ff;
+    --tok-etiqueta: #79b8ff;
+    --tok-atributo: #f2b36d;
+    --tok-variable: #ff8fb1;
+    --tok-operador: #9aa2ab;
+  }
+}
+
+/* ...o forzado con el botón (el JS pone data-modo en <html>) */
+:root[data-modo="oscuro"] {
+  --fondo: #15181c;
+  --texto: #e6e8eb;
+  --apagado: #9aa2ab;
+  --linea: #2c3239;
+  --tarjeta: #1b1f24;
+  --cabecera: #262c33;
+  --fondo-codigo: #11151a;
+  --texto-codigo: #dfe3e8;
+  --nota: #2b2716;
+  --nota-linea: #6b5a22;
+  --aviso: #2d1b1b;
+  --aviso-linea: #6d3431;
+  --chip: #242a31;
+  --tok-clave: #e28ae0;
+  --tok-texto: #7fd39b;
+  --tok-coment: #7d858f;
+  --tok-numero: #f0a868;
+  --tok-tipo: #79b8ff;
+  --tok-funcion: #c3a6ff;
+  --tok-etiqueta: #79b8ff;
+  --tok-atributo: #f2b36d;
+  --tok-variable: #ff8fb1;
+  --tok-operador: #9aa2ab;
+}
+
+/* ---------- 2. Color de acento por tema --------------------------------- */
+/* Cada página declara su tema en <body data-tema="java">.                  */
+
+body[data-tema="sistemas"]    { --acento: #A80030; }
+body[data-tema="git"]         { --acento: #F05032; }
+body[data-tema="java"]        { --acento: #E76F00; }
+body[data-tema="bases-datos"] { --acento: #00758F; }
+body[data-tema="web"]         { --acento: #E34C26; }
+body[data-tema="xml"]         { --acento: #5E6AD2; }
+
+/* ---------- 3. Estilos generales ---------------------------------------- */
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font: 15px/1.5 var(--sans);
+}
+
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+
+.wrap {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+code { font-family: var(--mono); font-size: .88em; }
+
+/* Código suelto dentro de un texto */
+p code, td code, li code, .nota code, .aviso code {
+  background: var(--fondo-codigo);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* ---------- 4. Cabecera y navegación ------------------------------------ */
+
+.top {
+  border-bottom: 4px solid var(--acento);
+  padding: 20px 0 14px;
+  margin-bottom: 16px;
+}
+
+.top .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.titulo { flex: 1 1 320px; }
+.apoyo { flex: 0 1 460px; }
+
+h1 {
+  margin: 0;
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+.sub { color: var(--apagado); font-size: 14px; margin: 0; max-width: 60ch; }
+
+/* Migas de pan: Chuletario › Java › Strings */
+.miga { font-size: 13px; color: var(--apagado); margin-bottom: 6px; }
+.miga a { text-decoration: none; }
+.miga a:hover { text-decoration: underline; color: var(--texto); }
+.miga span { margin: 0 6px; }
+.miga span:last-child { margin: 0; color: var(--apagado); }
+
+.herramientas { display: flex; gap: 8px; margin-top: 8px; }
+
+.herramientas button {
+  font: inherit;
+  font-size: 13px;
+  background: var(--tarjeta);
+  color: var(--texto);
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.herramientas button:hover { border-color: var(--acento); }
+
+/* Barra con las chuletas hermanas del mismo tema */
+.nav-tema {
+  border-bottom: 1px solid var(--linea);
+  margin: -16px 0 16px;
+  background: var(--fondo);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-tema .wrap { display: flex; gap: 6px; overflow-x: auto; padding: 8px 20px; }
+
+.nav-tema a {
+  flex: none;
+  font-size: 13.5px;
+  text-decoration: none;
+  color: var(--apagado);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 4px 12px;
+  white-space: nowrap;
+}
+
+.nav-tema a:hover { color: var(--texto); border-color: var(--linea); }
+
+.nav-tema a[aria-current="page"] {
+  background: var(--acento);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ---------- 5. Índice de secciones -------------------------------------- */
+
+.toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+
+.toc a {
+  font-size: 13px;
+  text-decoration: none;
+  background: var(--chip);
+  border: 1px solid var(--linea);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.toc a:hover { border-color: var(--acento); }
+.toc b { color: var(--acento); margin-right: 4px; }
+
+/* ---------- 6. Banda destacada ------------------------------------------ */
+
+.banda {
+  background: var(--tarjeta);
+  border: 1px solid var(--linea);
+  border-left: 5px solid var(--acento);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.banda-titulo { font-weight: 700; margin: 0 0 8px; }
+
+/* Columnas dentro de una banda */
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.cols figure.codigo { border: 1px solid var(--linea); border-radius: 6px; overflow: hidden; }
+
+/* Pasos numerados (orden de ejecución de un SELECT, FLWOR...) */
+.pasos { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+
+.paso {
+  flex: 1 1 110px;
+  background: var(--fondo);
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  padding: 7px 8px;
+  text-align: center;
+}
+
+.paso b { display: block; font-family: var(--mono); font-size: 14px; color: var(--acento); }
+.paso small { color: var(--apagado); font-size: 12px; }
+
+.paso .n {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+  background: var(--acento);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.separador { align-self: center; color: var(--apagado); }
+
+/* Flujo de cajas con flechas (Git) */
+.flujo { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+
+.caja {
+  border-radius: 6px;
+  padding: 8px 10px;
+  text-align: center;
+  font-weight: 700;
+  flex: 1 1 120px;
+  color: #1d2126;
+}
+
+.caja small { display: block; font-weight: 400; font-size: 12px; color: #444; }
+.caja-1 { background: #fde2dc; }
+.caja-2 { background: #fff1c2; }
+.caja-3 { background: #d8f0dc; }
+.caja-4 { background: #dbe8fb; }
+
+.flecha { text-align: center; font-size: 12px; flex: 1 1 100px; line-height: 1.3; }
+.flecha .ida { color: var(--acento); font-family: var(--mono); font-weight: 700; }
+.flecha .vuelta { color: var(--tok-tipo); font-family: var(--mono); }
+.flecha .linea { color: var(--apagado); letter-spacing: -1px; }
+
+/* Modelo de caja de CSS */
+.modelo-caja { font-family: var(--mono); font-size: 12px; text-align: center; padding: 10px 12px; background: var(--fondo-codigo); }
+.modelo-caja div { border: 1.5px dashed currentColor; padding: 8px 14px; border-radius: 4px; }
+.mc-margin { background: #f9cc9d33; }
+.mc-borde { background: #fddd9b55; border-style: solid !important; }
+.mc-padding { background: #c3d08b55; }
+.mc-contenido { background: #8cb6c055; }
+
+/* Diagramas de conjuntos para los JOIN */
+.venn { width: 48px; height: 30px; flex: none; }
+
+.join-fila {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 5px 12px;
+  border-top: 1px solid var(--linea);
+  font-size: 14px;
+}
+
+.join-fila:first-child { border-top: 0; }
+
+/* ---------- 7. Rejilla de tarjetas -------------------------------------- */
+
+.rejilla { columns: 400px; column-gap: 18px; }
+
+.tarjeta {
+  break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  background: var(--tarjeta);
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  margin: 0 0 18px;
+  overflow: hidden;
+}
+
+.tarjeta h2 {
+  margin: 0;
+  font-size: 16px;
+  padding: 8px 12px;
+  background: var(--cabecera);
+  color: var(--cabecera-texto);
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.tarjeta h2 .num { color: var(--acento); font-variant-numeric: tabular-nums; min-width: 1.2em; }
+
+h3 {
+  margin: 0;
+  font-size: 13px;
+  padding: 5px 12px;
+  background: var(--chip);
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
+  font-weight: 650;
+}
+
+.cuerpo > h3:first-child { border-top: 0; }
+.txt { margin: 0; padding: 8px 12px; font-size: 14px; }
+
+/* ---------- 8. Tablas, notas y avisos ----------------------------------- */
+
+.tabla-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+
+table.ref th,
+table.ref td {
+  padding: 5px 12px;
+  border-top: 1px solid var(--linea);
+  vertical-align: top;
+  text-align: left;
+}
+
+table.ref tr:first-child th,
+table.ref tr:first-child td { border-top: 0; }
+
+table.ref th { font-weight: 400; white-space: nowrap; width: 1%; }
+table.ref th code { color: var(--tok-tipo); background: none; padding: 0; font-size: 13px; }
+table.ref th.larga { white-space: normal; width: 50%; }
+
+.nota, .aviso {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 13.5px;
+  border-top: 1px solid var(--nota-linea);
+  background: var(--nota);
+}
+
+.aviso { border-top-color: var(--aviso-linea); background: var(--aviso); }
+
+/* ---------- 9. Código y resaltado --------------------------------------- */
+
+figure.codigo { margin: 0; border-top: 1px solid var(--linea); position: relative; }
+.cuerpo > figure.codigo:first-child { border-top: 0; }
+
+figure.codigo figcaption {
+  font-size: 12px;
+  color: var(--apagado);
+  padding: 5px 12px 0;
+  background: var(--fondo-codigo);
+}
+
+pre {
+  margin: 0;
+  padding: 9px 12px;
+  background: var(--fondo-codigo);
+  color: var(--texto-codigo);
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.45;
+  tab-size: 4;
+}
+
+pre code { font-size: inherit; }
+
+/* Botón "Copiar", lo añade el JS a cada bloque de código */
+.copiar {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  font: 12px var(--sans);
+  background: var(--tarjeta);
+  color: var(--apagado);
+  border: 1px solid var(--linea);
+  border-radius: 5px;
+  padding: 2px 7px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .15s;
+}
+
+figure.codigo:hover .copiar,
+.copiar:focus-visible { opacity: 1; }
+
+@media (hover: none) { .copiar { opacity: 1; } }
+
+/* Colores de cada tipo de token */
+.tok-clave    { color: var(--tok-clave); font-weight: 600; }
+.tok-texto    { color: var(--tok-texto); }
+.tok-coment   { color: var(--tok-coment); font-style: italic; }
+.tok-numero   { color: var(--tok-numero); }
+.tok-tipo     { color: var(--tok-tipo); }
+.tok-funcion  { color: var(--tok-funcion); }
+.tok-etiqueta { color: var(--tok-etiqueta); }
+.tok-atributo { color: var(--tok-atributo); }
+.tok-variable { color: var(--tok-variable); }
+.tok-operador { color: var(--tok-operador); }
+
+/* ---------- 10. Comparativas a dos columnas ----------------------------- */
+
+.cmp-leyenda {
+  display: flex;
+  gap: 14px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--chip);
+  border-bottom: 1px solid var(--linea);
+}
+
+.cmp-leyenda span::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 5px;
+  vertical-align: -1px;
+}
+
+.cmp-leyenda .a::before { background: var(--linea); border: 1px solid var(--apagado); }
+.cmp-leyenda .b::before { background: var(--acento); }
+
+.cmp-fila { padding: 6px 12px 7px; border-top: 1px solid var(--linea); }
+.cmp-leyenda + .cmp-fila { border-top: 0; }
+.cmp-fila code { font-size: 12.5px; white-space: pre-wrap; word-break: break-word; background: none; padding: 0; }
+
+.cmp-a, .cmp-b { padding-left: 8px; border-left: 3px solid var(--linea); line-height: 1.45; }
+.cmp-a code { color: var(--apagado); }
+.cmp-b { border-left-color: var(--acento); margin-top: 2px; }
+.cmp-b code { color: var(--texto); font-weight: 600; }
+.cmp-nota { font-size: 13px; color: var(--apagado); margin-top: 3px; padding-left: 11px; }
+.ninguno { font-size: 12.5px; color: var(--apagado); font-style: italic; }
+
+/* ---------- 11. Portada e índices de tema ------------------------------- */
+
+.intro { max-width: 70ch; color: var(--apagado); margin: 0 0 22px; }
+.grupo { margin: 0 0 26px; }
+.grupo h2 { font-size: 15px; color: var(--apagado); font-weight: 600; margin: 0 0 10px; }
+.grupo .desc-tema { color: var(--apagado); font-size: 14px; margin: -6px 0 10px; }
+.fichas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+
+.ficha {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+  background: var(--tarjeta);
+  border: 1px solid var(--linea);
+  border-top: 6px solid var(--color-tema, var(--acento));
+  border-radius: 8px;
+  padding: 14px 16px 16px;
+  min-height: 110px;
+}
+
+.ficha:hover { border-color: var(--color-tema, var(--acento)); }
+.ficha .nombre { font-size: 21px; font-weight: 800; letter-spacing: -.01em; color: var(--texto); }
+.ficha .desc { color: var(--apagado); font-size: 14px; }
+
+/* ---------- 12. Paginación y pie ---------------------------------------- */
+
+.paginacion {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 0 18px;
+}
+
+.paginacion a {
+  text-decoration: none;
+  font-size: 14px;
+  background: var(--tarjeta);
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.paginacion a:hover { border-color: var(--acento); }
+
+.pie {
+  color: var(--apagado);
+  font-size: 13px;
+  border-top: 1px solid var(--linea);
+  padding: 14px 0 30px;
+}
+
+/* ---------- 13. Pantallas pequeñas e impresión -------------------------- */
+
+@media (max-width: 520px) {
+  body { font-size: 14px; }
+  .wrap { padding: 0 12px; }
+  .rejilla { columns: 1; }
+}
+
+@media print {
+  @page { size: A4; margin: 10mm; }
+
+  :root { --fondo: #fff; --tarjeta: #fff; --fondo-codigo: #f5f6f8; }
+  body { font-size: 10px; }
+
+  .herramientas, .copiar, .toc, .miga, .nav-tema, .paginacion { display: none; }
+
+  .rejilla { columns: 3; column-gap: 10px; }
+  .tarjeta { margin-bottom: 8px; }
+  .tarjeta h2 { font-size: 12px; padding: 4px 8px; }
+  pre { font-size: 9px; white-space: pre-wrap; }
+  table { font-size: 10px; }
+  table.ref th code, .cmp-fila code { font-size: 9.5px; }
+  .top { padding: 0 0 6px; margin-bottom: 8px; }
+  h1 { font-size: 26px; }
+  .banda { padding: 6px 8px; margin-bottom: 8px; }
+
+  /* Que los colores del resaltado se impriman */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

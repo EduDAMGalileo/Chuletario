@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><span>SQL</span></nav>
+          <h1>SQL</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">DDL, DML, consultas, JOIN, agrupación y transacciones, con sintaxis MySQL. <code>[ ]</code> indica una parte opcional.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Bases de datos">
+      <div class="wrap"><a href="sql.html" aria-current="page">SQL</a><a href="postgresql.html">PostgreSQL</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Crear tablas (DDL)</a><a href="#s2"><b>2</b>Insertar, modificar, borrar (DML)</a><a href="#s3"><b>3</b>Usuarios y permisos (DCL)</a><a href="#s4"><b>4</b>Consultar (SELECT)</a><a href="#s5"><b>5</b>Funciones</a><a href="#s6"><b>6</b>Agrupar (GROUP BY / HAVING)</a><a href="#s7"><b>7</b>Explorar (MySQL)</a><a href="#s8"><b>8</b>Combinar tablas (JOIN)</a><a href="#s9"><b>9</b>Subconsultas y UNION</a><a href="#s10"><b>10</b>Vistas, índices y transacciones</a><a href="#s11"><b>11</b>Desde Java (JDBC)</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Orden lógico en que se ejecuta un SELECT (no es el orden en que se escribe)</p>
+        <div class="pasos">
+          <div class="paso"><span class="n">1</span><b>FROM / JOIN</b><small>tablas de origen</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">2</span><b>WHERE</b><small>filtra filas</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">3</span><b>GROUP BY</b><small>agrupa</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">4</span><b>HAVING</b><small>filtra grupos</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">5</span><b>SELECT</b><small>columnas y alias</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">6</span><b>ORDER BY</b><small>ordena</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">7</span><b>LIMIT</b><small>recorta</small></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Crear tablas (DDL) -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Crear tablas (DDL)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">DATABASE</span> <span class="tok-clave">IF</span> <span class="tok-clave">NOT</span> <span class="tok-clave">EXISTS</span> instituto;
+<span class="tok-clave">USE</span> instituto;
+
+<span class="tok-clave">CREATE</span> <span class="tok-clave">TABLE</span> curso (
+  id     <span class="tok-tipo">INT</span> <span class="tok-clave">AUTO_INCREMENT</span> <span class="tok-clave">PRIMARY</span> <span class="tok-clave">KEY</span>,
+  nombre <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">100</span>) <span class="tok-clave">NOT</span> <span class="tok-clave">NULL</span> <span class="tok-clave">UNIQUE</span>,
+  horas  <span class="tok-tipo">INT</span> <span class="tok-clave">CHECK</span> (horas &gt; <span class="tok-numero">0</span>)
+);
+
+<span class="tok-clave">CREATE</span> <span class="tok-clave">TABLE</span> alumno (
+  id        <span class="tok-tipo">INT</span> <span class="tok-clave">AUTO_INCREMENT</span> <span class="tok-clave">PRIMARY</span> <span class="tok-clave">KEY</span>,
+  nombre    <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">80</span>) <span class="tok-clave">NOT</span> <span class="tok-clave">NULL</span>,
+  email     <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">120</span>) <span class="tok-clave">UNIQUE</span>,
+  nota      <span class="tok-tipo">DECIMAL</span>(<span class="tok-numero">4</span>,<span class="tok-numero">2</span>) <span class="tok-clave">DEFAULT</span> <span class="tok-numero">0</span>,
+  fecha_nac <span class="tok-tipo">DATE</span>,
+  curso_id  <span class="tok-tipo">INT</span>,
+  <span class="tok-clave">FOREIGN</span> <span class="tok-clave">KEY</span> (curso_id) <span class="tok-clave">REFERENCES</span> curso(id)
+    <span class="tok-clave">ON</span> <span class="tok-clave">DELETE</span> <span class="tok-clave">SET</span> <span class="tok-clave">NULL</span>
+);</code></pre></figure>
+            <h3>Tipos habituales</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>INT / BIGINT</code></th><td>enteros</td></tr>
+                  <tr><th scope="row"><code>DECIMAL(p,s)</code></th><td>exacto: dinero, notas</td></tr>
+                  <tr><th scope="row"><code>VARCHAR(n) / TEXT</code></th><td>texto corto / largo</td></tr>
+                  <tr><th scope="row"><code>DATE / DATETIME</code></th><td><code>'2026-09-16'</code></td></tr>
+                  <tr><th scope="row"><code>BOOLEAN</code></th><td>en MySQL es TINYINT(1)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Restricciones</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>PRIMARY KEY</code></th><td>identifica la fila</td></tr>
+                  <tr><th scope="row"><code>FOREIGN KEY … REFERENCES</code></th><td>enlaza tablas</td></tr>
+                  <tr><th scope="row"><code>NOT NULL / UNIQUE</code></th><td>obligatorio / sin repetidos</td></tr>
+                  <tr><th scope="row"><code>DEFAULT valor</code></th><td>valor si no se indica</td></tr>
+                  <tr><th scope="row"><code>CHECK (condición)</code></th><td>valida el dato</td></tr>
+                  <tr><th scope="row"><code>ON DELETE CASCADE</code></th><td>borra también las hijas</td></tr>
+                  <tr><th scope="row"><code>ON DELETE SET NULL</code></th><td>pone la FK a NULL</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Modificar y borrar</h3>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno <span class="tok-clave">ADD</span> telefono <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">15</span>);
+<span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno <span class="tok-clave">MODIFY</span> nombre <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">100</span>);
+<span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno <span class="tok-clave">RENAME</span> <span class="tok-clave">COLUMN</span> nota <span class="tok-clave">TO</span> media;
+<span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno <span class="tok-clave">DROP</span> <span class="tok-clave">COLUMN</span> telefono;
+<span class="tok-clave">TRUNCATE</span> <span class="tok-clave">TABLE</span> alumno;          <span class="tok-coment">-- vacía la tabla</span>
+<span class="tok-clave">DROP</span> <span class="tok-clave">TABLE</span> <span class="tok-clave">IF</span> <span class="tok-clave">EXISTS</span> alumno;    <span class="tok-coment">-- elimina la tabla</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 2. Insertar, modificar, borrar (DML) -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Insertar, modificar, borrar (DML)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> curso (nombre, horas)
+<span class="tok-clave">VALUES</span> (<span class="tok-texto">'DAM'</span>, <span class="tok-numero">2000</span>), (<span class="tok-texto">'DAW'</span>, <span class="tok-numero">2000</span>);
+
+<span class="tok-clave">UPDATE</span> alumno <span class="tok-clave">SET</span> nota = nota + <span class="tok-numero">1</span>
+<span class="tok-clave">WHERE</span> id = <span class="tok-numero">3</span>;
+
+<span class="tok-clave">DELETE</span> <span class="tok-clave">FROM</span> alumno <span class="tok-clave">WHERE</span> curso_id <span class="tok-clave">IS</span> <span class="tok-clave">NULL</span>;</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>UPDATE</code> o <code>DELETE</code> sin <code>WHERE</code> afecta a <b>toda</b> la tabla.</p>
+          </div>
+        </section>
+        <!-- 3. Usuarios y permisos (DCL) -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Usuarios y permisos (DCL)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">USER</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span> <span class="tok-clave">IDENTIFIED</span> <span class="tok-clave">BY</span> <span class="tok-texto">'secreto'</span>;
+<span class="tok-clave">GRANT</span> <span class="tok-clave">SELECT</span>, <span class="tok-clave">INSERT</span> <span class="tok-clave">ON</span> instituto.* <span class="tok-clave">TO</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span>;
+<span class="tok-clave">REVOKE</span> <span class="tok-clave">INSERT</span> <span class="tok-clave">ON</span> instituto.* <span class="tok-clave">FROM</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span>;
+<span class="tok-clave">FLUSH</span> <span class="tok-clave">PRIVILEGES</span>;</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Consultar (SELECT) -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Consultar (SELECT)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> [<span class="tok-clave">DISTINCT</span>] columnas
+<span class="tok-clave">FROM</span> tabla
+[<span class="tok-clave">JOIN</span> otra <span class="tok-clave">ON</span> condición]
+[<span class="tok-clave">WHERE</span> condición]
+[<span class="tok-clave">GROUP</span> <span class="tok-clave">BY</span> columnas]
+[<span class="tok-clave">HAVING</span> condición]
+[<span class="tok-clave">ORDER</span> <span class="tok-clave">BY</span> col [<span class="tok-clave">ASC</span>|<span class="tok-clave">DESC</span>]]
+[<span class="tok-clave">LIMIT</span> n [<span class="tok-clave">OFFSET</span> m]];</code></pre></figure>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> nombre, nota <span class="tok-clave">AS</span> calificacion
+<span class="tok-clave">FROM</span> alumno
+<span class="tok-clave">WHERE</span> nota &gt;= <span class="tok-numero">5</span> <span class="tok-clave">AND</span> curso_id = <span class="tok-numero">1</span>
+<span class="tok-clave">ORDER</span> <span class="tok-clave">BY</span> nota <span class="tok-clave">DESC</span>, nombre
+<span class="tok-clave">LIMIT</span> <span class="tok-numero">10</span>;</code></pre></figure>
+            <h3>Filtros en WHERE</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>= &lt;&gt; &lt; &gt; &lt;= &gt;=</code></th><td>comparación</td></tr>
+                  <tr><th scope="row"><code>BETWEEN 5 AND 7</code></th><td>rango (incluye extremos)</td></tr>
+                  <tr><th scope="row"><code>IN ('DAM', 'DAW')</code></th><td>está en la lista</td></tr>
+                  <tr><th scope="row"><code>LIKE 'A%'</code></th><td><code>%</code> cualquier texto, <code>_</code> un carácter</td></tr>
+                  <tr><th scope="row"><code>IS NULL / IS NOT NULL</code></th><td>nunca <code>= NULL</code></td></tr>
+                  <tr><th scope="row"><code>AND  OR  NOT</code></th><td>usa paréntesis al mezclar</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Funciones -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Funciones</h2>
+          <div class="cuerpo">
+            <h3>Agregadas</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>COUNT(*)</code></th><td>nº de filas</td></tr>
+                  <tr><th scope="row"><code>COUNT(col)</code></th><td>nº de valores no NULL</td></tr>
+                  <tr><th scope="row"><code>SUM  AVG  MIN  MAX</code></th><td>suma, media, mínimo, máximo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Texto, números y fechas</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>CONCAT(a, ' ', b)</code></th><td>une textos</td></tr>
+                  <tr><th scope="row" class="larga"><code>UPPER  LOWER  LENGTH  TRIM</code></th><td>mayúsc., minúsc., longitud…</td></tr>
+                  <tr><th scope="row"><code>SUBSTRING(s, 1, 3)</code></th><td>subcadena (empieza en 1)</td></tr>
+                  <tr><th scope="row"><code>ROUND(x, 2)</code></th><td>redondea</td></tr>
+                  <tr><th scope="row"><code>NOW()  CURDATE()</code></th><td>fecha y hora / fecha</td></tr>
+                  <tr><th scope="row"><code>YEAR(f)  MONTH(f)</code></th><td>partes de una fecha</td></tr>
+                  <tr><th scope="row"><code>DATEDIFF(f1, f2)</code></th><td>días entre fechas</td></tr>
+                  <tr><th scope="row"><code>COALESCE(a, b)</code></th><td>primer valor no NULL</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> nombre,
+  <span class="tok-clave">CASE</span> <span class="tok-clave">WHEN</span> nota &gt;= <span class="tok-numero">5</span> <span class="tok-clave">THEN</span> <span class="tok-texto">'Aprobado'</span>
+       <span class="tok-clave">ELSE</span> <span class="tok-texto">'Suspenso'</span> <span class="tok-clave">END</span> <span class="tok-clave">AS</span> estado
+<span class="tok-clave">FROM</span> alumno;</code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Agrupar (GROUP BY / HAVING) -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Agrupar (GROUP BY / HAVING)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> curso_id,
+       <span class="tok-funcion">COUNT</span>(*)  <span class="tok-clave">AS</span> total,
+       <span class="tok-funcion">ROUND</span>(<span class="tok-funcion">AVG</span>(nota), <span class="tok-numero">2</span>) <span class="tok-clave">AS</span> media
+<span class="tok-clave">FROM</span> alumno
+<span class="tok-clave">WHERE</span> nota <span class="tok-clave">IS</span> <span class="tok-clave">NOT</span> <span class="tok-clave">NULL</span>
+<span class="tok-clave">GROUP</span> <span class="tok-clave">BY</span> curso_id
+<span class="tok-clave">HAVING</span> <span class="tok-funcion">COUNT</span>(*) &gt; <span class="tok-numero">10</span>
+<span class="tok-clave">ORDER</span> <span class="tok-clave">BY</span> media <span class="tok-clave">DESC</span>;</code></pre></figure>
+            <p class="nota"><b>WHERE</b> filtra filas antes de agrupar, <b>HAVING</b> filtra grupos. Toda columna del SELECT debe estar en el GROUP BY o dentro de una función agregada.</p>
+          </div>
+        </section>
+        <!-- 7. Explorar (MySQL) -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Explorar (MySQL)</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>SHOW DATABASES;</code></th><td>lista las BD</td></tr>
+                  <tr><th scope="row"><code>SHOW TABLES;</code></th><td>tablas de la BD</td></tr>
+                  <tr><th scope="row"><code>DESCRIBE alumno;</code></th><td>columnas y tipos</td></tr>
+                  <tr><th scope="row" class="larga"><code>SHOW CREATE TABLE alumno;</code></th><td>DDL completo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8. Combinar tablas (JOIN) -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Combinar tablas (JOIN)</h2>
+          <div class="cuerpo">
+            <div>
+              <div class="join-fila">
+                <svg width="42" height="26" viewbox="0 0 42 26" class="venn"><path d="M21,5 A10,10 0 0,1 21,21 A10,10 0 0,1 21,5 Z" fill="#7cc4d4"></path><circle cx="15" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><circle cx="27" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><text x="10" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">A</text><text x="29" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">B</text></svg>
+                <div><strong>INNER JOIN</strong><br><code>A JOIN B ON A.x = B.x</code><br><small>solo filas con pareja en ambas</small></div>
+              </div>
+              <div class="join-fila">
+                <svg width="42" height="26" viewbox="0 0 42 26" class="venn"><circle cx="15" cy="13" r="10" fill="#7cc4d4"></circle><circle cx="15" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><circle cx="27" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><text x="10" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">A</text><text x="29" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">B</text></svg>
+                <div><strong>LEFT JOIN</strong><br><code>A LEFT JOIN B ON …</code><br><small>todo A; lo de B o NULL si no hay pareja</small></div>
+              </div>
+              <div class="join-fila">
+                <svg width="42" height="26" viewbox="0 0 42 26" class="venn"><circle cx="27" cy="13" r="10" fill="#7cc4d4"></circle><circle cx="15" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><circle cx="27" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><text x="10" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">A</text><text x="29" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">B</text></svg>
+                <div><strong>RIGHT JOIN</strong><br><code>A RIGHT JOIN B ON …</code><br><small>todo B; lo de A o NULL</small></div>
+              </div>
+              <div class="join-fila">
+                <svg width="42" height="26" viewbox="0 0 42 26" class="venn"><path d="M21,5 A10,10 0 1,0 21,21 A10,10 0 0,1 21,5 Z" fill="#7cc4d4"></path><circle cx="15" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><circle cx="27" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><text x="10" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">A</text><text x="29" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">B</text></svg>
+                <div><strong>A sin pareja en B</strong><br><code>… LEFT JOIN … WHERE B.x IS NULL</code><br><small>p. ej. cursos sin alumnos</small></div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> a.nombre, c.nombre <span class="tok-clave">AS</span> curso
+<span class="tok-clave">FROM</span> alumno a
+<span class="tok-clave">INNER</span> <span class="tok-clave">JOIN</span> curso c <span class="tok-clave">ON</span> a.curso_id = c.id;
+
+<span class="tok-coment">-- cursos sin ningún alumno</span>
+<span class="tok-clave">SELECT</span> c.nombre
+<span class="tok-clave">FROM</span> curso c
+<span class="tok-clave">LEFT</span> <span class="tok-clave">JOIN</span> alumno a <span class="tok-clave">ON</span> a.curso_id = c.id
+<span class="tok-clave">WHERE</span> a.id <span class="tok-clave">IS</span> <span class="tok-clave">NULL</span>;</code></pre></figure>
+            <p class="nota">MySQL no tiene <code>FULL OUTER JOIN</code>: se simula con <code>LEFT JOIN … UNION … RIGHT JOIN</code>.</p>
+          </div>
+        </section>
+        <!-- 9. Subconsultas y UNION -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Subconsultas y UNION</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-coment">-- alumnos por encima de la media</span>
+<span class="tok-clave">SELECT</span> nombre <span class="tok-clave">FROM</span> alumno
+<span class="tok-clave">WHERE</span> nota &gt; (<span class="tok-clave">SELECT</span> <span class="tok-funcion">AVG</span>(nota) <span class="tok-clave">FROM</span> alumno);
+
+<span class="tok-coment">-- cursos con algún alumno</span>
+<span class="tok-clave">SELECT</span> nombre <span class="tok-clave">FROM</span> curso c
+<span class="tok-clave">WHERE</span> <span class="tok-clave">EXISTS</span> (<span class="tok-clave">SELECT</span> <span class="tok-numero">1</span> <span class="tok-clave">FROM</span> alumno a
+              <span class="tok-clave">WHERE</span> a.curso_id = c.id);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>UNION</code></th><td>une resultados, quita duplicados</td></tr>
+                  <tr><th scope="row"><code>UNION ALL</code></th><td>une sin quitar duplicados (más rápido)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 10. Vistas, índices y transacciones -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Vistas, índices y transacciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">VIEW</span> v_aprobados <span class="tok-clave">AS</span>
+  <span class="tok-clave">SELECT</span> nombre, nota <span class="tok-clave">FROM</span> alumno
+  <span class="tok-clave">WHERE</span> nota &gt;= <span class="tok-numero">5</span>;
+
+<span class="tok-clave">CREATE</span> <span class="tok-clave">INDEX</span> idx_alumno_nombre <span class="tok-clave">ON</span> alumno(nombre);
+
+<span class="tok-clave">START</span> <span class="tok-clave">TRANSACTION</span>;
+<span class="tok-clave">UPDATE</span> cuenta <span class="tok-clave">SET</span> saldo = saldo - <span class="tok-numero">100</span> <span class="tok-clave">WHERE</span> id = <span class="tok-numero">1</span>;
+<span class="tok-clave">UPDATE</span> cuenta <span class="tok-clave">SET</span> saldo = saldo + <span class="tok-numero">100</span> <span class="tok-clave">WHERE</span> id = <span class="tok-numero">2</span>;
+<span class="tok-clave">COMMIT</span>;  <span class="tok-coment">-- o ROLLBACK; para deshacer</span></code></pre></figure>
+            <p class="nota"><b>ACID</b>: Atomicidad, Consistencia, aIslamiento, Durabilidad. Las claves primarias y UNIQUE ya crean índice.</p>
+          </div>
+        </section>
+        <!-- 11. Desde Java (JDBC) -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Desde Java (JDBC)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> sql = <span class="tok-texto">"SELECT nombre FROM alumno WHERE curso_id = ?"</span>;
+<span class="tok-clave">try</span> (<span class="tok-tipo">Connection</span> con = <span class="tok-tipo">DriverManager</span>.getConnection(url, user, pass);
+     <span class="tok-tipo">PreparedStatement</span> ps = con.prepareStatement(sql)) {
+    ps.setInt(<span class="tok-numero">1</span>, cursoId);
+    <span class="tok-clave">try</span> (<span class="tok-tipo">ResultSet</span> rs = ps.executeQuery()) {
+        <span class="tok-clave">while</span> (rs.next()) {
+            <span class="tok-tipo">System</span>.out.println(rs.getString(<span class="tok-texto">"nombre"</span>));
+        }
+    }
+}</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> Nunca concatenes datos del usuario en la consulta: usa <code>?</code> y <code>PreparedStatement</code> (evita inyección SQL).</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="postgresql.html">PostgreSQL →</a></nav>
+      <footer class="pie">Los ejemplos usan las tablas <code>curso(id, nombre, horas)</code> y <code>alumno(id, nombre, email, nota, fecha_nac, curso_id)</code>. Los textos van entre comillas simples.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

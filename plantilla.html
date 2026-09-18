@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--
+  ===========================================================================
+  PLANTILLA PARA UNA CHULETA NUEVA
+  ---------------------------------------------------------------------------
+  Cómo usarla:
+    1. Copia este fichero dentro de la carpeta del tema (java/, web/, xml/...).
+       Si creas un tema nuevo, crea también su carpeta y su index.html.
+    2. Cambia el <title>, el data-tema del <body>, las migas de pan y el <h1>.
+    3. Escribe las secciones. Cada una es un <section class="tarjeta">.
+    4. Añade la chuleta al index.html del tema y al index.html de la portada.
+
+  Los temas disponibles (dan el color de acento) están en assets/chuletas.css:
+    sistemas · git · java · bases-datos · web · xml
+  ===========================================================================
+-->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Título de la chuleta · Chuletario</title>
+    <!-- Si la chuleta está dos niveles por debajo de la raíz, ajusta las rutas -->
+    <link rel="stylesheet" href="assets/chuletas.css">
+    <link rel="icon" href="assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera: migas de pan, título, subtítulo y botones -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta">
+            <a href="index.html">Chuletario</a><span aria-hidden="true">›</span>
+            <a href="index.html">Nombre del tema</a><span aria-hidden="true">›</span>
+            <span>Título de la chuleta</span>
+          </nav>
+          <h1>Título de la chuleta</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Una frase explicando qué cubre.</p>
+          <div class="herramientas">
+            <button type="button" data-accion="tema">Tema oscuro</button>
+            <button type="button" data-accion="imprimir">Imprimir</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Barra con las demás chuletas del mismo tema (opcional) -->
+    <nav class="nav-tema" aria-label="Chuletas del tema">
+      <div class="wrap">
+        <a href="otra.html">Otra chuleta</a>
+        <a href="esta.html" aria-current="page">Esta chuleta</a>
+      </div>
+    </nav>
+
+    <main class="wrap">
+      <!-- Índice: un enlace por sección, apuntando a su id -->
+      <nav class="toc" aria-label="Secciones">
+        <a href="#s1"><b>1</b>Primera sección</a>
+        <a href="#s2"><b>2</b>Segunda sección</a>
+      </nav>
+
+      <!-- Banda destacada: lo más importante, antes de las secciones -->
+      <div class="banda">
+        <p class="banda-titulo">Lo que hay que tener claro</p>
+        <div class="cols">
+          <div>
+            <figure class="codigo">
+              <pre data-lang="java"><code>// El código va escapado: &lt; es &amp;lt; y &amp; es &amp;amp;
+int x = 1;</code></pre>
+            </figure>
+          </div>
+          <div>
+            <p class="nota">Una nota aclaratoria.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secciones: se colocan solas en columnas según el ancho de pantalla -->
+      <div class="rejilla">
+
+        <!-- 1. Primera sección -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Primera sección</h2>
+          <div class="cuerpo">
+
+            <!-- Tabla de referencia: término + explicación -->
+            <div class="tabla-scroll">
+              <table class="ref">
+                <tbody>
+                  <tr>
+                    <th scope="row"><code>algo()</code></th>
+                    <td>Qué hace.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><code>otraCosa()</code></th>
+                    <td>Qué hace, con <code>código suelto</code> dentro del texto.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Subapartado dentro de la sección -->
+            <h3>Subapartado</h3>
+
+            <figure class="codigo">
+              <figcaption>Título opcional del ejemplo</figcaption>
+              <pre data-lang="java"><code>List&lt;String&gt; nombres = new ArrayList&lt;&gt;();</code></pre>
+            </figure>
+
+            <p class="nota">Aclaración útil, sobre fondo amarillo.</p>
+            <p class="aviso"><strong>Cuidado:</strong> error típico, sobre fondo rojo.</p>
+          </div>
+        </section>
+
+        <!-- 2. Segunda sección -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Segunda sección</h2>
+          <div class="cuerpo">
+            <p class="txt">Un párrafo normal dentro de una tarjeta.</p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Chuleta anterior y siguiente del mismo tema (opcional) -->
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente">
+        <a class="anterior" href="anterior.html">← Chuleta anterior</a>
+        <a class="siguiente" href="siguiente.html">Chuleta siguiente →</a>
+      </nav>
+
+      <footer class="pie">Enlaces a documentación oficial o notas finales.</footer>
+    </main>
+
+    <script src="assets/chuletas.js" defer></script>
+  </body>
+</html>

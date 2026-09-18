@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>XPath · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="xml">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">XML</a><span aria-hidden="true">›</span><span>XPath</span></nav>
+          <h1>XPath</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Cómo seleccionar nodos de un documento XML. Las funciones marcadas como 2.0 no están en XPath 1.0.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de XML">
+      <div class="wrap"><a href="dtd.html">DTD</a><a href="xsd.html">XML Schema</a><a href="xpath.html" aria-current="page">XPath</a><a href="xquery.html">XQuery</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Rutas</a><a href="#s2"><b>2</b>Predicados: filtrar con [ ]</a><a href="#s3"><b>3</b>Ejes</a><a href="#s4"><b>4</b>Operadores</a><a href="#s5"><b>5</b>Funciones</a><a href="#s6"><b>6</b>Ejemplos resueltos</a><a href="#s7"><b>7</b>Dónde probarlo</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Documento de ejemplo: biblioteca.xml (todos los resultados de esta página salen de aquí)</p>
+        <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-clave">?&gt;</span>
+<span class="tok-etiqueta">&lt;biblioteca</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L1"</span> <span class="tok-atributo">categoria</span>=<span class="tok-texto">"novela"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;titulo</span> <span class="tok-atributo">idioma</span>=<span class="tok-texto">"es"</span><span class="tok-etiqueta">&gt;</span>Nada<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;autor</span><span class="tok-etiqueta">&gt;</span>Carmen Laforet<span class="tok-etiqueta">&lt;/autor</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;anio</span><span class="tok-etiqueta">&gt;</span>1945<span class="tok-etiqueta">&lt;/anio</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;precio</span><span class="tok-etiqueta">&gt;</span>12.50<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L2"</span> <span class="tok-atributo">categoria</span>=<span class="tok-texto">"informatica"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;titulo</span> <span class="tok-atributo">idioma</span>=<span class="tok-texto">"en"</span><span class="tok-etiqueta">&gt;</span>Clean Code<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;autor</span><span class="tok-etiqueta">&gt;</span>Robert C. Martin<span class="tok-etiqueta">&lt;/autor</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;anio</span><span class="tok-etiqueta">&gt;</span>2008<span class="tok-etiqueta">&lt;/anio</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;precio</span><span class="tok-etiqueta">&gt;</span>35.90<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L3"</span> <span class="tok-atributo">categoria</span>=<span class="tok-texto">"novela"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;titulo</span> <span class="tok-atributo">idioma</span>=<span class="tok-texto">"es"</span><span class="tok-etiqueta">&gt;</span>Cien años de soledad<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;autor</span><span class="tok-etiqueta">&gt;</span>Gabriel García Márquez<span class="tok-etiqueta">&lt;/autor</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;anio</span><span class="tok-etiqueta">&gt;</span>1967<span class="tok-etiqueta">&lt;/anio</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;precio</span><span class="tok-etiqueta">&gt;</span>15.00<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L4"</span> <span class="tok-atributo">categoria</span>=<span class="tok-texto">"informatica"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;titulo</span> <span class="tok-atributo">idioma</span>=<span class="tok-texto">"en"</span><span class="tok-etiqueta">&gt;</span>Design Patterns<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;autor</span><span class="tok-etiqueta">&gt;</span>Erich Gamma<span class="tok-etiqueta">&lt;/autor</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;autor</span><span class="tok-etiqueta">&gt;</span>Richard Helm<span class="tok-etiqueta">&lt;/autor</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;anio</span><span class="tok-etiqueta">&gt;</span>1994<span class="tok-etiqueta">&lt;/anio</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;precio</span><span class="tok-etiqueta">&gt;</span>48.00<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/biblioteca</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Rutas -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Rutas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/</code></th><td>nodo raíz del documento</td></tr>
+                  <tr><th scope="row"><code>/biblioteca/libro</code></th><td>ruta absoluta: libros hijos de biblioteca</td></tr>
+                  <tr><th scope="row"><code>libro/titulo</code></th><td>ruta relativa al nodo actual</td></tr>
+                  <tr><th scope="row"><code>//titulo</code></th><td>titulo en cualquier nivel</td></tr>
+                  <tr><th scope="row"><code>//libro//text()</code></th><td>todos los textos dentro de libros</td></tr>
+                  <tr><th scope="row"><code>.</code></th><td>nodo actual</td></tr>
+                  <tr><th scope="row"><code>..</code></th><td>nodo padre</td></tr>
+                  <tr><th scope="row"><code>*</code></th><td>cualquier elemento</td></tr>
+                  <tr><th scope="row"><code>@id</code></th><td>atributo id</td></tr>
+                  <tr><th scope="row"><code>@*</code></th><td>cualquier atributo</td></tr>
+                  <tr><th scope="row"><code>text()</code></th><td>nodos de texto</td></tr>
+                  <tr><th scope="row"><code>node()</code></th><td>cualquier nodo (elemento, texto, comentario…)</td></tr>
+                  <tr><th scope="row"><code>//titulo | //autor</code></th><td>unión de dos resultados</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Una ruta que empieza por <code>/</code> es absoluta. <code>//</code> recorre todo el árbol: es cómodo pero lento en documentos grandes.</p>
+          </div>
+        </section>
+        <!-- 2. Predicados: filtrar con [ ] -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Predicados: filtrar con [ ]</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>libro[1]</code></th><td>el primero (se cuenta desde 1)</td></tr>
+                  <tr><th scope="row"><code>libro[last()]</code></th><td>el último</td></tr>
+                  <tr><th scope="row"><code>libro[last() - 1]</code></th><td>el penúltimo</td></tr>
+                  <tr><th scope="row"><code>libro[position() &lt;= 2]</code></th><td>los dos primeros</td></tr>
+                  <tr><th scope="row" class="larga"><code>libro[@categoria = 'novela']</code></th><td>por valor de atributo</td></tr>
+                  <tr><th scope="row"><code>libro[@id]</code></th><td>que tengan el atributo</td></tr>
+                  <tr><th scope="row"><code>libro[not(@id)]</code></th><td>que no lo tengan</td></tr>
+                  <tr><th scope="row"><code>libro[precio &gt; 20]</code></th><td>por valor de un hijo</td></tr>
+                  <tr><th scope="row"><code>libro[autor]</code></th><td>que tengan al menos un autor</td></tr>
+                  <tr><th scope="row"><code>libro[autor[2]]</code></th><td>que tengan un segundo autor</td></tr>
+                  <tr><th scope="row" class="larga"><code>libro[titulo/@idioma = 'en']</code></th><td>condición sobre un nieto</td></tr>
+                  <tr><th scope="row" class="larga"><code>libro[@categoria = 'novela'][anio &gt; 1950]</code></th><td>varios predicados: se aplican en orden</td></tr>
+                  <tr><th scope="row" class="larga"><code>libro[anio &lt; 1950 or precio &gt; 40]</code></th><td>con and / or</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>//autor[1]</code> devuelve el primer autor <em>de cada libro</em> (4 resultados). <code>(//autor)[1]</code> devuelve el primer autor del documento (1 resultado).</p>
+          </div>
+        </section>
+        <!-- 3. Ejes -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Ejes</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>child::</code></th><td>hijos (eje por defecto): <code>libro</code> = <code>child::libro</code></td></tr>
+                  <tr><th scope="row"><code>attribute::</code></th><td>atributos: <code>@id</code> = <code>attribute::id</code></td></tr>
+                  <tr><th scope="row"><code>self::</code></th><td>el propio nodo: <code>.</code> = <code>self::node()</code></td></tr>
+                  <tr><th scope="row"><code>parent::</code></th><td>padre: <code>..</code> = <code>parent::node()</code></td></tr>
+                  <tr><th scope="row"><code>descendant::</code></th><td>hijos, nietos, bisnietos…</td></tr>
+                  <tr><th scope="row"><code>descendant-or-self::</code></th><td>lo anterior más el propio nodo (base de <code>//</code>)</td></tr>
+                  <tr><th scope="row"><code>ancestor::</code></th><td>padre, abuelo… hasta la raíz</td></tr>
+                  <tr><th scope="row"><code>ancestor-or-self::</code></th><td>lo anterior más el propio nodo</td></tr>
+                  <tr><th scope="row"><code>following-sibling::</code></th><td>hermanos que vienen después</td></tr>
+                  <tr><th scope="row"><code>preceding-sibling::</code></th><td>hermanos que vienen antes</td></tr>
+                  <tr><th scope="row"><code>following::</code></th><td>todo lo que empieza después (salvo descendientes)</td></tr>
+                  <tr><th scope="row"><code>preceding::</code></th><td>todo lo que acaba antes (salvo ancestros)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="xpath"><code>//titulo[. = <span class="tok-texto">'Nada'</span>]/<span class="tok-clave">ancestor::</span>libro/<span class="tok-atributo">@id</span>
+//libro[<span class="tok-atributo">@id</span> = <span class="tok-texto">'L2'</span>]/<span class="tok-clave">following-sibling::</span>libro/titulo
+//autor[. = <span class="tok-texto">'Richard Helm'</span>]/<span class="tok-clave">preceding-sibling::</span>autor</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Operadores -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Operadores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>=  !=</code></th><td>igual / distinto</td></tr>
+                  <tr><th scope="row"><code>&lt;  &lt;=  &gt;  &gt;=</code></th><td>comparación (dentro de un XML escribe <code>&amp;lt;</code>)</td></tr>
+                  <tr><th scope="row"><code>and  or  not()</code></th><td>lógicos; <code>not</code> es una función</td></tr>
+                  <tr><th scope="row"><code>+  -  *</code></th><td>suma, resta, multiplicación</td></tr>
+                  <tr><th scope="row"><code>div  mod</code></th><td>división y resto (<code>/</code> se reserva para rutas)</td></tr>
+                  <tr><th scope="row"><code>|</code></th><td>unión de conjuntos de nodos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si un lado es un conjunto de nodos, <code>=</code> es cierto cuando <strong>alguno</strong> cumple: <code>//libro/autor = 'Erich Gamma'</code> es <code>true</code>. Por eso <code>!=</code> no es lo contrario de <code>=</code>: usa <code>not(… = …)</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Funciones -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Funciones</h2>
+          <div class="cuerpo">
+            <h3>Texto</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>contains(titulo, 'Code')</code></th><td>contiene</td></tr>
+                  <tr><th scope="row"><code>starts-with(autor, 'R')</code></th><td>empieza por</td></tr>
+                  <tr><th scope="row"><code>ends-with(titulo, 'ad')</code></th><td>termina en (XPath 2.0 o superior)</td></tr>
+                  <tr><th scope="row"><code>string-length(titulo)</code></th><td>número de caracteres</td></tr>
+                  <tr><th scope="row"><code>substring(titulo, 1, 4)</code></th><td>desde la posición 1, 4 caracteres</td></tr>
+                  <tr><th scope="row" class="larga"><code>substring-before(autor, ' ')</code></th><td>texto antes de un separador</td></tr>
+                  <tr><th scope="row" class="larga"><code>substring-after(autor, ' ')</code></th><td>texto después de un separador</td></tr>
+                  <tr><th scope="row" class="larga"><code>concat(autor, ' (', anio, ')')</code></th><td>une textos</td></tr>
+                  <tr><th scope="row"><code>normalize-space(texto)</code></th><td>quita espacios sobrantes</td></tr>
+                  <tr><th scope="row" class="larga"><code>translate(titulo, 'áé', 'ae')</code></th><td>sustituye carácter a carácter</td></tr>
+                  <tr><th scope="row"><code>upper-case(titulo)</code></th><td>mayúsculas (2.0); también <code>lower-case</code></td></tr>
+                  <tr><th scope="row"><code>string(nodo)</code></th><td>valor de texto de un nodo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Números</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>count(//libro)</code></th><td>cuántos nodos</td></tr>
+                  <tr><th scope="row"><code>sum(//precio)</code></th><td>suma</td></tr>
+                  <tr><th scope="row"><code>avg(//precio)</code></th><td>media (2.0; en 1.0 usa <code>sum() div count()</code>)</td></tr>
+                  <tr><th scope="row" class="larga"><code>min(//precio)  max(//precio)</code></th><td>mínimo y máximo (2.0)</td></tr>
+                  <tr><th scope="row" class="larga"><code>round(2.5)  floor()  ceiling()</code></th><td>redondeos</td></tr>
+                  <tr><th scope="row"><code>number('12.50')</code></th><td>convierte a número</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Nodos y contexto</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>position()  last()</code></th><td>posición actual / tamaño del conjunto</td></tr>
+                  <tr><th scope="row"><code>name(.)  local-name(.)</code></th><td>nombre del nodo, con o sin prefijo</td></tr>
+                  <tr><th scope="row" class="larga"><code>distinct-values(//@categoria)</code></th><td>valores sin repetir (2.0)</td></tr>
+                  <tr><th scope="row"><code>boolean(autor[2])</code></th><td>convierte a verdadero o falso</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6. Ejemplos resueltos -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Ejemplos resueltos</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//titulo/text()</code></div>
+                <div class="cmp-nota">→ Nada, Clean Code, Cien años de soledad, Design Patterns</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//libro[last()]/titulo</code></div>
+                <div class="cmp-nota">→ &lt;titulo idioma="en"&gt;Design Patterns&lt;/titulo&gt;</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//libro[@categoria = 'novela']/titulo/text()</code></div>
+                <div class="cmp-nota">→ Nada, Cien años de soledad</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//libro[precio &gt; 20]/@id</code></div>
+                <div class="cmp-nota">→ L2, L4</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//libro[count(autor) &gt; 1]/titulo/text()</code></div>
+                <div class="cmp-nota">→ Design Patterns</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//titulo[@idioma = 'en']/../precio/text()</code></div>
+                <div class="cmp-nota">→ 35.90, 48.00</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//libro[contains(titulo, 'Code')]/autor/text()</code></div>
+                <div class="cmp-nota">→ Robert C. Martin</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//autor[starts-with(., 'R')]/text()</code></div>
+                <div class="cmp-nota">→ Robert C. Martin, Richard Helm</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//libro[anio &lt; 1950 or anio &gt; 2000]/@id</code></div>
+                <div class="cmp-nota">→ L1, L2</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//libro[not(precio &lt; //precio)]/titulo/text()</code></div>
+                <div class="cmp-nota">→ Design Patterns (el más caro, válido en XPath 1.0)</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>//libro[precio = max(//precio)]/titulo/text()</code></div>
+                <div class="cmp-nota">→ Design Patterns (XPath 2.0)</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>count(//libro)</code></div>
+                <div class="cmp-nota">→ 4</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>sum(//precio)</code></div>
+                <div class="cmp-nota">→ 111.4</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>sum(//libro[@categoria = 'informatica']/precio)</code></div>
+                <div class="cmp-nota">→ 83.9</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>string-length(//libro[@id = 'L3']/titulo)</code></div>
+                <div class="cmp-nota">→ 20</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>name(/*)</code></div>
+                <div class="cmp-nota">→ biblioteca</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-b"><code>(//autor)[last()]/text()</code></div>
+                <div class="cmp-nota">→ Richard Helm</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Dónde probarlo -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Dónde probarlo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-coment"># terminal (libxml2)</span>
+xmllint<span class="tok-atributo"> --xpath</span> <span class="tok-texto">"//libro[precio &gt; 20]/titulo/text()"</span> biblioteca.xml
+
+<span class="tok-coment"># BaseX, desde terminal</span>
+basex<span class="tok-atributo"> -i</span> biblioteca.xml <span class="tok-texto">"count(//libro)"</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// consola del navegador, con el XML abierto</span>
+$x(<span class="tok-texto">"//titulo"</span>)</code></pre></figure>
+            <p class="nota"><code>xmllint</code> solo admite XPath 1.0. BaseX admite XPath 3.1 y XQuery. Desde Java se usa <code>javax.xml.xpath.XPath</code>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="xsd.html">← XML Schema</a><a class="siguiente" href="xquery.html">XQuery →</a></nav>
+      <footer class="pie">Especificación: <a href="https://www.w3.org/TR/xpath-31/">W3C XPath 3.1</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

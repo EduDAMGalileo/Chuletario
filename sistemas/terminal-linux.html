@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Terminal Linux · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas y redes</a><span aria-hidden="true">›</span><span>Terminal Linux</span></nav>
+          <h1>Terminal Linux</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Comandos de terminal más usados en sistemas basados en Debian, como Ubuntu y Kali. Las órdenes con <code>sudo</code> necesitan permisos de administrador.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas y redes">
+      <div class="wrap"><a href="terminal-linux.html" aria-current="page">Terminal Linux</a><a href="nmap.html">Nmap</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Moverse por el sistema</a><a href="#s2"><b>2</b>Ficheros y carpetas</a><a href="#s3"><b>3</b>Ver y editar ficheros</a><a href="#s4"><b>4</b>Buscar</a><a href="#s5"><b>5</b>Redirecciones y tuberías</a><a href="#s6"><b>6</b>Procesar texto</a><a href="#s7"><b>7</b>Permisos</a><a href="#s8"><b>8</b>Usuarios, grupos y sudo</a><a href="#s9"><b>9</b>Instalar software con APT</a><a href="#s10"><b>10</b>Procesos</a><a href="#s11"><b>11</b>Servicios (systemd)</a><a href="#s12"><b>12</b>Información del sistema</a><a href="#s13"><b>13</b>Red</a><a href="#s14"><b>14</b>SSH y copia remota</a><a href="#s15"><b>15</b>Cortafuegos en Ubuntu (ufw)</a><a href="#s16"><b>16</b>Comprimir y empaquetar</a><a href="#s17"><b>17</b>Variables, alias y scripts</a><a href="#s18"><b>18</b>Tareas programadas (cron)</a><a href="#s19"><b>19</b>Carpetas del sistema</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Cómo se lee una orden</p>
+            <figure class="codigo"><pre data-lang="text"><code>ana@portatil:~/proyectos$ ls -l -a /etc
+│   │        │            │  │     │
+│   │        │            │  │     └ argumento
+│   │        │            │  └ opciones (-l -a equivale a -la)
+│   │        │            └ comando
+│   │        └ carpeta actual (~ es tu home)
+│   └ nombre del equipo
+└ usuario
+
+$  usuario normal      #  root (administrador)</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Atajos de teclado</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Tab</code></th><td>autocompleta; dos veces muestra opciones</td></tr>
+                  <tr><th scope="row"><code>↑  ↓</code></th><td>órdenes anteriores</td></tr>
+                  <tr><th scope="row"><code>Ctrl+R</code></th><td>buscar en el historial</td></tr>
+                  <tr><th scope="row"><code>Ctrl+C</code></th><td>cancelar la orden en curso</td></tr>
+                  <tr><th scope="row"><code>Ctrl+Z</code></th><td>pausar y mandar a segundo plano</td></tr>
+                  <tr><th scope="row"><code>Ctrl+D</code></th><td>cerrar la sesión o fin de entrada</td></tr>
+                  <tr><th scope="row"><code>Ctrl+L</code></th><td>limpiar la pantalla</td></tr>
+                  <tr><th scope="row"><code>Ctrl+A  Ctrl+E</code></th><td>ir al principio / final de la línea</td></tr>
+                  <tr><th scope="row"><code>Ctrl+U  Ctrl+K</code></th><td>borrar hasta el principio / final</td></tr>
+                  <tr><th scope="row" class="larga"><code>Ctrl+Shift+C  Ctrl+Shift+V</code></th><td>copiar y pegar en la terminal</td></tr>
+                  <tr><th scope="row"><code>sudo !!</code></th><td>repetir la última orden con sudo</td></tr>
+                  <tr><th scope="row"><code>!$  Alt+.</code></th><td>último argumento de la orden anterior</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <p class="banda-titulo">Pedir ayuda</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>man ls</code></th><td>manual completo (q para salir, / para buscar)</td></tr>
+                  <tr><th scope="row"><code>ls --help</code></th><td>resumen de opciones</td></tr>
+                  <tr><th scope="row"><code>whatis ls</code></th><td>descripción de una línea</td></tr>
+                  <tr><th scope="row"><code>apropos comprimir</code></th><td>buscar comandos por palabra (en inglés funciona mejor)</td></tr>
+                  <tr><th scope="row"><code>type cd</code></th><td>si es comando, alias o función interna</td></tr>
+                  <tr><th scope="row"><code>which python3</code></th><td>ruta del ejecutable</td></tr>
+                  <tr><th scope="row"><code>history</code></th><td>órdenes anteriores; <code>!42</code> repite la 42</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En Ubuntu la shell por defecto es <strong>bash</strong> (<code>~/.bashrc</code>). En Kali es <strong>zsh</strong> (<code>~/.zshrc</code>). Los comandos de esta página funcionan igual en las dos.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Moverse por el sistema -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Moverse por el sistema</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>pwd</code></th><td>carpeta actual</td></tr>
+                  <tr><th scope="row"><code>ls</code></th><td>lista el contenido</td></tr>
+                  <tr><th scope="row"><code>ls -la</code></th><td>en detalle e incluyendo ocultos (empiezan por <code>.</code>)</td></tr>
+                  <tr><th scope="row"><code>ls -lh</code></th><td>tamaños legibles: K, M, G</td></tr>
+                  <tr><th scope="row"><code>ls -lt</code></th><td>ordenado por fecha, lo más reciente primero</td></tr>
+                  <tr><th scope="row"><code>cd carpeta</code></th><td>entrar en una carpeta</td></tr>
+                  <tr><th scope="row"><code>cd ..</code></th><td>subir un nivel</td></tr>
+                  <tr><th scope="row"><code>cd  (o cd ~)</code></th><td>ir a tu carpeta personal</td></tr>
+                  <tr><th scope="row"><code>cd -</code></th><td>volver a la carpeta anterior</td></tr>
+                  <tr><th scope="row"><code>cd /</code></th><td>ir a la raíz del sistema</td></tr>
+                  <tr><th scope="row"><code>tree -L 2</code></th><td>árbol de carpetas (<code>sudo apt install tree</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Ruta <strong>absoluta</strong>: empieza por <code>/</code> (<code>/home/ana/docs</code>). Ruta <strong>relativa</strong>: parte de donde estás (<code>docs/notas.txt</code>, <code>../img</code>). <code>~</code> es tu home.</p>
+          </div>
+        </section>
+        <!-- 2. Ficheros y carpetas -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Ficheros y carpetas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>touch notas.txt</code></th><td>crea un fichero vacío (o actualiza su fecha)</td></tr>
+                  <tr><th scope="row"><code>mkdir fotos</code></th><td>crea una carpeta</td></tr>
+                  <tr><th scope="row"><code>mkdir -p a/b/c</code></th><td>crea también las carpetas intermedias</td></tr>
+                  <tr><th scope="row"><code>cp origen destino</code></th><td>copia un fichero</td></tr>
+                  <tr><th scope="row"><code>cp -r carpeta copia</code></th><td>copia una carpeta entera</td></tr>
+                  <tr><th scope="row"><code>cp -i  -v</code></th><td>pide confirmación / muestra lo que hace</td></tr>
+                  <tr><th scope="row"><code>mv viejo.txt nuevo.txt</code></th><td>renombra</td></tr>
+                  <tr><th scope="row"><code>mv fichero carpeta/</code></th><td>mueve</td></tr>
+                  <tr><th scope="row"><code>rm fichero</code></th><td>borra un fichero (no hay papelera)</td></tr>
+                  <tr><th scope="row"><code>rm -r carpeta</code></th><td>borra una carpeta y su contenido</td></tr>
+                  <tr><th scope="row"><code>rmdir carpeta</code></th><td>borra una carpeta vacía</td></tr>
+                  <tr><th scope="row"><code>ln -s /ruta/real enlace</code></th><td>crea un enlace simbólico (acceso directo)</td></tr>
+                  <tr><th scope="row"><code>file foto.png</code></th><td>qué tipo de fichero es realmente</td></tr>
+                  <tr><th scope="row"><code>stat fichero</code></th><td>tamaño, permisos y fechas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">cp</span> *.java copia/          <span class="tok-coment"># * cualquier texto</span>
+<span class="tok-clave">ls</span> informe_202?.pdf       <span class="tok-coment"># ? un carácter</span>
+<span class="tok-clave">mkdir</span> tema{1..5}          <span class="tok-coment"># tema1 tema2 … tema5</span>
+<span class="tok-clave">cp</span> config.yml{,.bak}      <span class="tok-coment"># copia config.yml a config.yml.bak</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>rm -rf</code> borra sin preguntar y sin vuelta atrás. Nunca lo ejecutes con <code>sudo</code> sobre una ruta que no hayas revisado dos veces.</p>
+          </div>
+        </section>
+        <!-- 3. Ver y editar ficheros -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Ver y editar ficheros</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>cat fichero</code></th><td>muestra todo el contenido</td></tr>
+                  <tr><th scope="row"><code>less fichero</code></th><td>paginado: espacio avanza, <code>/</code> busca, <code>q</code> sale</td></tr>
+                  <tr><th scope="row"><code>head -n 20 fichero</code></th><td>primeras 20 líneas</td></tr>
+                  <tr><th scope="row"><code>tail -n 20 fichero</code></th><td>últimas 20 líneas</td></tr>
+                  <tr><th scope="row"><code>tail -f /var/log/syslog</code></th><td>sigue el fichero en tiempo real</td></tr>
+                  <tr><th scope="row"><code>wc -l fichero</code></th><td>cuenta líneas (<code>-w</code> palabras, <code>-c</code> bytes)</td></tr>
+                  <tr><th scope="row"><code>diff a.txt b.txt</code></th><td>diferencias entre ficheros</td></tr>
+                  <tr><th scope="row"><code>nano fichero</code></th><td>editor sencillo</td></tr>
+                  <tr><th scope="row"><code>vim fichero</code></th><td>editor avanzado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>nano</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Ctrl+O</code></th><td>guardar</td></tr>
+                  <tr><th scope="row"><code>Ctrl+X</code></th><td>salir</td></tr>
+                  <tr><th scope="row"><code>Ctrl+W</code></th><td>buscar</td></tr>
+                  <tr><th scope="row"><code>Ctrl+K  Ctrl+U</code></th><td>cortar línea / pegar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>vim</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>i</code></th><td>modo inserción (para escribir)</td></tr>
+                  <tr><th scope="row"><code>Esc</code></th><td>volver al modo normal</td></tr>
+                  <tr><th scope="row"><code>:w  :q  :wq</code></th><td>guardar / salir / guardar y salir</td></tr>
+                  <tr><th scope="row"><code>:q!</code></th><td>salir sin guardar</td></tr>
+                  <tr><th scope="row"><code>/texto</code></th><td>buscar; <code>n</code> siguiente</td></tr>
+                  <tr><th scope="row"><code>dd  u</code></th><td>borrar línea / deshacer</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 4. Buscar -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Buscar</h2>
+          <div class="cuerpo">
+            <h3>Ficheros</h3>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">find</span> . <span class="tok-atributo">-name</span> <span class="tok-texto">"*.java"</span>                 <span class="tok-coment"># por nombre, desde aquí</span>
+<span class="tok-clave">find</span> /home <span class="tok-atributo">-iname</span> <span class="tok-texto">"informe*"</span>          <span class="tok-coment"># sin distinguir mayúsculas</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-type</span> d <span class="tok-atributo">-name</span> <span class="tok-texto">"build"</span>          <span class="tok-coment"># solo carpetas (f = ficheros)</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-size</span> +100M                    <span class="tok-coment"># más de 100 MB</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-mtime</span> <span class="tok-atributo">-7</span>                      <span class="tok-coment"># modificados en los últimos 7 días</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-name</span> <span class="tok-texto">"*.log"</span> <span class="tok-atributo">-mtime</span> +30 <span class="tok-atributo">-delete</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-name</span> <span class="tok-texto">"*.sh"</span> <span class="tok-atributo">-exec</span> chmod +x {} \;
+
+<span class="tok-clave">locate</span> hosts        <span class="tok-coment"># muy rápido; usa un índice (sudo updatedb)</span></code></pre></figure>
+            <h3>Texto dentro de ficheros</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>grep "error" app.log</code></th><td>líneas que contienen «error»</td></tr>
+                  <tr><th scope="row"><code>grep -i</code></th><td>sin distinguir mayúsculas</td></tr>
+                  <tr><th scope="row"><code>grep -n</code></th><td>muestra el número de línea</td></tr>
+                  <tr><th scope="row"><code>grep -r "TODO" src/</code></th><td>busca en todos los ficheros de una carpeta</td></tr>
+                  <tr><th scope="row"><code>grep -v</code></th><td>líneas que <strong>no</strong> contienen el texto</td></tr>
+                  <tr><th scope="row"><code>grep -c</code></th><td>solo cuenta las coincidencias</td></tr>
+                  <tr><th scope="row"><code>grep -l</code></th><td>solo muestra los nombres de fichero</td></tr>
+                  <tr><th scope="row"><code>grep -E "404|500"</code></th><td>expresión regular extendida</td></tr>
+                  <tr><th scope="row"><code>grep -w "id"</code></th><td>palabra completa</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Redirecciones y tuberías -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Redirecciones y tuberías</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>orden &gt; fichero</code></th><td>guarda la salida (sobrescribe)</td></tr>
+                  <tr><th scope="row"><code>orden &gt;&gt; fichero</code></th><td>añade al final</td></tr>
+                  <tr><th scope="row"><code>orden 2&gt; errores.txt</code></th><td>guarda solo los errores</td></tr>
+                  <tr><th scope="row"><code>orden &gt; todo.txt 2&gt;&amp;1</code></th><td>salida y errores al mismo fichero</td></tr>
+                  <tr><th scope="row"><code>orden 2&gt; /dev/null</code></th><td>descarta los errores</td></tr>
+                  <tr><th scope="row"><code>orden &lt; fichero</code></th><td>usa el fichero como entrada</td></tr>
+                  <tr><th scope="row"><code>orden1 | orden2</code></th><td>la salida de una es la entrada de la otra</td></tr>
+                  <tr><th scope="row"><code>orden | tee fichero</code></th><td>muestra en pantalla y guarda a la vez</td></tr>
+                  <tr><th scope="row"><code>orden1 &amp;&amp; orden2</code></th><td>la segunda solo si la primera va bien</td></tr>
+                  <tr><th scope="row"><code>orden1 || orden2</code></th><td>la segunda solo si la primera falla</td></tr>
+                  <tr><th scope="row"><code>orden1 ; orden2</code></th><td>una detrás de otra, pase lo que pase</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ls</span> <span class="tok-atributo">-l</span> <span class="tok-operador">|</span> <span class="tok-clave">grep</span> <span class="tok-texto">".pdf"</span>
+<span class="tok-clave">history</span> <span class="tok-operador">|</span> <span class="tok-clave">grep</span> apt
+<span class="tok-clave">ps</span> aux <span class="tok-operador">|</span> <span class="tok-clave">grep</span> java
+<span class="tok-clave">find</span> / <span class="tok-atributo">-name</span> <span class="tok-texto">"*.conf"</span> <span class="tok-operador">2&gt;</span> /dev/null <span class="tok-operador">|</span> <span class="tok-clave">wc</span> <span class="tok-atributo">-l</span>
+<span class="tok-clave">sudo apt</span> update <span class="tok-operador">&amp;&amp;</span> <span class="tok-clave">sudo apt</span> upgrade <span class="tok-atributo">-y</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Procesar texto -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Procesar texto</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sort</code></th><td>ordena líneas (<code>-n</code> numérico, <code>-r</code> inverso, <code>-h</code> tamaños)</td></tr>
+                  <tr><th scope="row"><code>uniq -c</code></th><td>quita repetidas consecutivas y las cuenta</td></tr>
+                  <tr><th scope="row"><code>cut -d ':' -f 1</code></th><td>extrae la columna 1 usando <code>:</code> como separador</td></tr>
+                  <tr><th scope="row"><code>tr 'a-z' 'A-Z'</code></th><td>cambia caracteres</td></tr>
+                  <tr><th scope="row"><code>sed 's/viejo/nuevo/g' f</code></th><td>sustituye texto (con <code>-i</code> modifica el fichero)</td></tr>
+                  <tr><th scope="row"><code>awk '{print $1, $3}' f</code></th><td>imprime columnas separadas por espacios</td></tr>
+                  <tr><th scope="row"><code>xargs</code></th><td>convierte líneas en argumentos de otra orden</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># usuarios del sistema</span>
+<span class="tok-clave">cut</span> <span class="tok-atributo">-d</span> <span class="tok-texto">':'</span> <span class="tok-atributo">-f</span> 1 /etc/passwd
+
+<span class="tok-coment"># las 10 IP que más peticiones hacen a un servidor web</span>
+<span class="tok-clave">cut</span> <span class="tok-atributo">-d</span> <span class="tok-texto">' '</span> <span class="tok-atributo">-f</span> 1 access.log <span class="tok-operador">|</span> <span class="tok-clave">sort</span> <span class="tok-operador">|</span> <span class="tok-clave">uniq</span> <span class="tok-atributo">-c</span> <span class="tok-operador">|</span> <span class="tok-clave">sort</span> <span class="tok-atributo">-rn</span> <span class="tok-operador">|</span> <span class="tok-clave">head</span>
+
+<span class="tok-coment"># qué ocupa más en la carpeta actual</span>
+<span class="tok-clave">du</span> <span class="tok-atributo">-sh</span> * <span class="tok-operador">|</span> <span class="tok-clave">sort</span> <span class="tok-atributo">-h</span>
+
+<span class="tok-coment"># borrar todos los .tmp encontrados</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-name</span> <span class="tok-texto">"*.tmp"</span> <span class="tok-operador">|</span> <span class="tok-clave">xargs</span> rm</code></pre></figure>
+          </div>
+        </section>
+        <!-- 7. Permisos -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Permisos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="text"><code>$ ls -l script.sh
+-rwxr-x--- 1 ana dam 512 sep 16 10:00 script.sh
+│└┬┘└┬┘└┬┘   └┬┘ └┬┘
+│ │  │  │     │   └ grupo
+│ │  │  │     └ propietario
+│ │  │  └ otros:       ---  nada
+│ │  └ grupo:          r-x  leer y ejecutar
+│ └ propietario:       rwx  leer, escribir, ejecutar
+└ tipo: - fichero, d carpeta, l enlace</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>r = 4</code></th><td>leer; en carpetas, listar su contenido</td></tr>
+                  <tr><th scope="row"><code>w = 2</code></th><td>escribir; en carpetas, crear y borrar dentro</td></tr>
+                  <tr><th scope="row"><code>x = 1</code></th><td>ejecutar; en carpetas, poder entrar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>chmod 755 script.sh</code></th><td><code>rwxr-xr-x</code>: programas y carpetas</td></tr>
+                  <tr><th scope="row"><code>chmod 644 fichero</code></th><td><code>rw-r--r--</code>: ficheros normales</td></tr>
+                  <tr><th scope="row"><code>chmod 600 clave</code></th><td><code>rw-------</code>: solo tú (claves SSH)</td></tr>
+                  <tr><th scope="row"><code>chmod u+x script.sh</code></th><td>añade ejecución al propietario</td></tr>
+                  <tr><th scope="row"><code>chmod go-w fichero</code></th><td>quita escritura a grupo y otros</td></tr>
+                  <tr><th scope="row"><code>chmod -R 755 carpeta</code></th><td>recursivo</td></tr>
+                  <tr><th scope="row"><code>chown ana fichero</code></th><td>cambia el propietario</td></tr>
+                  <tr><th scope="row"><code>chown -R ana:dam carpeta</code></th><td>propietario y grupo, recursivo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>u</code> propietario, <code>g</code> grupo, <code>o</code> otros, <code>a</code> todos. Evita <code>chmod 777</code>: da permiso total a cualquiera.</p>
+          </div>
+        </section>
+        <!-- 8. Usuarios, grupos y sudo -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Usuarios, grupos y sudo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>whoami</code></th><td>qué usuario eres</td></tr>
+                  <tr><th scope="row"><code>id</code></th><td>tu UID y tus grupos</td></tr>
+                  <tr><th scope="row"><code>sudo orden</code></th><td>ejecuta una orden como administrador</td></tr>
+                  <tr><th scope="row"><code>sudo -i</code></th><td>abre una shell de root (<code>exit</code> para salir)</td></tr>
+                  <tr><th scope="row"><code>su - ana</code></th><td>cambia al usuario ana</td></tr>
+                  <tr><th scope="row"><code>passwd</code></th><td>cambia tu contraseña</td></tr>
+                  <tr><th scope="row"><code>sudo adduser ana</code></th><td>crea un usuario de forma guiada (Debian)</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo usermod -aG sudo ana</code></th><td>añade a ana al grupo sudo</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo usermod -aG docker ana</code></th><td>añade a otro grupo (hay que volver a entrar)</td></tr>
+                  <tr><th scope="row"><code>groups ana</code></th><td>grupos de un usuario</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo deluser --remove-home ana</code></th><td>borra el usuario y su carpeta</td></tr>
+                  <tr><th scope="row"><code>who  w  last</code></th><td>quién está conectado / últimos accesos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> en <code>usermod -aG</code> no olvides la <code>a</code>: sin ella el usuario sale de todos sus otros grupos, incluido sudo.</p>
+            <p class="nota">Usuarios en <code>/etc/passwd</code>, grupos en <code>/etc/group</code> y contraseñas cifradas en <code>/etc/shadow</code>. En las imágenes de Kali para máquina virtual el usuario por defecto es <code>kali</code> con contraseña <code>kali</code>: cámbiala con <code>passwd</code>.</p>
+          </div>
+        </section>
+        <!-- 9. Instalar software con APT -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Instalar software con APT</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sudo apt update</code></th><td>actualiza la lista de paquetes disponibles</td></tr>
+                  <tr><th scope="row"><code>sudo apt upgrade</code></th><td>actualiza los paquetes instalados</td></tr>
+                  <tr><th scope="row"><code>sudo apt full-upgrade</code></th><td>actualiza aunque haya que añadir o quitar paquetes</td></tr>
+                  <tr><th scope="row"><code>sudo apt install git</code></th><td>instala (varios separados por espacios)</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo apt install ./app.deb</code></th><td>instala un .deb descargado con sus dependencias</td></tr>
+                  <tr><th scope="row"><code>sudo apt remove git</code></th><td>desinstala y conserva la configuración</td></tr>
+                  <tr><th scope="row"><code>sudo apt purge git</code></th><td>desinstala y borra la configuración</td></tr>
+                  <tr><th scope="row"><code>sudo apt autoremove</code></th><td>quita dependencias que ya nadie usa</td></tr>
+                  <tr><th scope="row"><code>apt search editor</code></th><td>busca paquetes</td></tr>
+                  <tr><th scope="row"><code>apt show git</code></th><td>información de un paquete</td></tr>
+                  <tr><th scope="row"><code>apt list --installed</code></th><td>paquetes instalados</td></tr>
+                  <tr><th scope="row"><code>apt list --upgradable</code></th><td>paquetes con actualización pendiente</td></tr>
+                  <tr><th scope="row"><code>dpkg -l | grep java</code></th><td>buscar entre lo instalado</td></tr>
+                  <tr><th scope="row"><code>dpkg -L git</code></th><td>ficheros que instaló un paquete</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># Ubuntu: rutina habitual</span>
+<span class="tok-clave">sudo apt</span> update <span class="tok-operador">&amp;&amp;</span> <span class="tok-clave">sudo apt</span> upgrade <span class="tok-atributo">-y</span>
+
+<span class="tok-coment"># Kali: se recomienda full-upgrade</span>
+<span class="tok-clave">sudo apt</span> update <span class="tok-operador">&amp;&amp;</span> <span class="tok-clave">sudo apt</span> full-upgrade <span class="tok-atributo">-y</span>
+
+<span class="tok-coment"># Ubuntu también usa snap</span>
+<span class="tok-clave">sudo snap</span> install code <span class="tok-atributo">--classic</span></code></pre></figure>
+            <p class="nota">Siempre <code>apt update</code> antes de instalar. Los repositorios se configuran en <code>/etc/apt/sources.list</code> y <code>/etc/apt/sources.list.d/</code>. Mezclar repositorios de Ubuntu en Kali (o al revés) suele romper el sistema.</p>
+          </div>
+        </section>
+        <!-- 10. Procesos -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Procesos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ps aux</code></th><td>todos los procesos</td></tr>
+                  <tr><th scope="row"><code>ps aux | grep firefox</code></th><td>buscar un proceso</td></tr>
+                  <tr><th scope="row"><code>pgrep -a java</code></th><td>PID y orden de los procesos que coinciden</td></tr>
+                  <tr><th scope="row"><code>top</code></th><td>monitor en tiempo real (<code>q</code> salir)</td></tr>
+                  <tr><th scope="row"><code>htop</code></th><td>monitor más cómodo (<code>sudo apt install htop</code>)</td></tr>
+                  <tr><th scope="row"><code>kill 1234</code></th><td>pide al proceso 1234 que termine</td></tr>
+                  <tr><th scope="row"><code>kill -9 1234</code></th><td>lo termina a la fuerza</td></tr>
+                  <tr><th scope="row"><code>pkill firefox</code></th><td>termina procesos por nombre</td></tr>
+                  <tr><th scope="row"><code>orden &amp;</code></th><td>ejecuta en segundo plano</td></tr>
+                  <tr><th scope="row"><code>jobs</code></th><td>tareas de esta terminal</td></tr>
+                  <tr><th scope="row"><code>fg  bg</code></th><td>traer al primer plano / continuar en segundo plano</td></tr>
+                  <tr><th scope="row"><code>nohup orden &amp;</code></th><td>sigue ejecutándose al cerrar la terminal</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 11. Servicios (systemd) -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Servicios (systemd)</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>systemctl status ssh</code></th><td>estado del servicio</td></tr>
+                  <tr><th scope="row"><code>sudo systemctl start ssh</code></th><td>arrancar</td></tr>
+                  <tr><th scope="row"><code>sudo systemctl stop ssh</code></th><td>parar</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo systemctl restart ssh</code></th><td>reiniciar</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo systemctl reload nginx</code></th><td>recargar la configuración sin cortar</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo systemctl enable ssh</code></th><td>arrancar al iniciar el sistema</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo systemctl enable --now ssh</code></th><td>habilitar y arrancar a la vez</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo systemctl disable ssh</code></th><td>no arrancar al iniciar</td></tr>
+                  <tr><th scope="row" class="larga"><code>systemctl list-units --type=service</code></th><td>servicios cargados</td></tr>
+                  <tr><th scope="row"><code>journalctl -u ssh</code></th><td>registro de un servicio</td></tr>
+                  <tr><th scope="row"><code>journalctl -u ssh -f</code></th><td>seguirlo en tiempo real</td></tr>
+                  <tr><th scope="row"><code>journalctl -b -p err</code></th><td>errores desde el último arranque</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En Kali la mayoría de servicios de red (como SSH) vienen instalados pero deshabilitados: hay que arrancarlos a mano.</p>
+          </div>
+        </section>
+        <!-- 12. Información del sistema -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Información del sistema</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>cat /etc/os-release</code></th><td>distribución y versión</td></tr>
+                  <tr><th scope="row"><code>uname -a</code></th><td>versión del kernel</td></tr>
+                  <tr><th scope="row"><code>hostnamectl</code></th><td>nombre del equipo, SO y kernel</td></tr>
+                  <tr><th scope="row"><code>uptime</code></th><td>tiempo encendido y carga</td></tr>
+                  <tr><th scope="row"><code>free -h</code></th><td>memoria RAM y swap</td></tr>
+                  <tr><th scope="row"><code>df -h</code></th><td>espacio libre en los discos</td></tr>
+                  <tr><th scope="row"><code>du -sh carpeta</code></th><td>lo que ocupa una carpeta</td></tr>
+                  <tr><th scope="row"><code>lsblk</code></th><td>discos y particiones</td></tr>
+                  <tr><th scope="row"><code>lscpu</code></th><td>procesador</td></tr>
+                  <tr><th scope="row"><code>lsusb  lspci</code></th><td>dispositivos USB y PCI</td></tr>
+                  <tr><th scope="row"><code>sudo dmesg | tail</code></th><td>mensajes recientes del kernel</td></tr>
+                  <tr><th scope="row"><code>date</code></th><td>fecha y hora</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo mount /dev/sdb1 /mnt</code></th><td>montar una partición</td></tr>
+                  <tr><th scope="row"><code>sudo umount /mnt</code></th><td>desmontar</td></tr>
+                  <tr><th scope="row"><code>sudo reboot</code></th><td>reiniciar</td></tr>
+                  <tr><th scope="row"><code>sudo shutdown -h now</code></th><td>apagar ahora (<code>+10</code> en 10 minutos)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 13. Red -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Red</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ip a</code></th><td>interfaces y direcciones IP</td></tr>
+                  <tr><th scope="row"><code>ip r</code></th><td>tabla de rutas y puerta de enlace</td></tr>
+                  <tr><th scope="row"><code>hostname -I</code></th><td>solo las IP del equipo</td></tr>
+                  <tr><th scope="row"><code>ping -c 4 google.com</code></th><td>comprobar conectividad (4 paquetes)</td></tr>
+                  <tr><th scope="row"><code>ss -tulpn</code></th><td>puertos a la escucha y qué proceso los usa</td></tr>
+                  <tr><th scope="row"><code>curl https://ejemplo.com</code></th><td>descarga y muestra una página</td></tr>
+                  <tr><th scope="row" class="larga"><code>curl -I https://ejemplo.com</code></th><td>solo las cabeceras HTTP</td></tr>
+                  <tr><th scope="row" class="larga"><code>wget https://ejemplo.com/f.zip</code></th><td>descarga un fichero</td></tr>
+                  <tr><th scope="row"><code>dig ejemplo.com</code></th><td>consulta DNS (<code>nslookup</code> también vale)</td></tr>
+                  <tr><th scope="row"><code>traceroute ejemplo.com</code></th><td>saltos hasta un destino</td></tr>
+                  <tr><th scope="row"><code>nmcli device status</code></th><td>estado de la red (NetworkManager)</td></tr>
+                  <tr><th scope="row"><code>cat /etc/hosts</code></th><td>nombres resueltos localmente</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>ifconfig</code> y <code>netstat</code> son las herramientas antiguas (paquete <code>net-tools</code>). Siguen en Kali, pero lo actual es <code>ip</code> y <code>ss</code>.</p>
+          </div>
+        </section>
+        <!-- 14. SSH y copia remota -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>SSH y copia remota</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ssh</span> ana@192.168.1.20                 <span class="tok-coment"># conectarse</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-p</span> 2222 ana@servidor             <span class="tok-coment"># otro puerto</span>
+
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-t</span> ed25519                <span class="tok-coment"># crear un par de claves</span>
+<span class="tok-clave">ssh-copy-id</span> ana@192.168.1.20         <span class="tok-coment"># entrar sin contraseña a partir de ahora</span>
+
+<span class="tok-clave">scp</span> informe.pdf ana@servidor:/home/ana/          <span class="tok-coment"># subir</span>
+<span class="tok-clave">scp</span> ana@servidor:/var/log/syslog .               <span class="tok-coment"># bajar</span>
+<span class="tok-clave">scp</span> <span class="tok-atributo">-r</span> proyecto/ ana@servidor:~/                 <span class="tok-coment"># carpeta entera</span>
+
+<span class="tok-clave">rsync</span> <span class="tok-atributo">-avz</span> <span class="tok-atributo">--progress</span> proyecto/ ana@servidor:~/proyecto/   <span class="tok-coment"># sincroniza solo cambios</span></code></pre></figure>
+            <p class="nota">Para aceptar conexiones hay que instalar el servidor: <code>sudo apt install openssh-server</code>.</p>
+          </div>
+        </section>
+        <!-- 15. Cortafuegos en Ubuntu (ufw) -->
+        <section id="s15" class="tarjeta">
+          <h2><span class="num">15</span>Cortafuegos en Ubuntu (ufw)</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sudo ufw status verbose</code></th><td>estado y reglas</td></tr>
+                  <tr><th scope="row"><code>sudo ufw allow ssh</code></th><td>permite SSH (hazlo antes de activarlo en remoto)</td></tr>
+                  <tr><th scope="row"><code>sudo ufw allow 8080/tcp</code></th><td>permite un puerto</td></tr>
+                  <tr><th scope="row"><code>sudo ufw deny 3306</code></th><td>bloquea un puerto</td></tr>
+                  <tr><th scope="row"><code>sudo ufw enable</code></th><td>activa el cortafuegos</td></tr>
+                  <tr><th scope="row"><code>sudo ufw status numbered</code></th><td>reglas numeradas</td></tr>
+                  <tr><th scope="row"><code>sudo ufw delete 2</code></th><td>borra la regla 2</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En Kali no viene instalado: <code>sudo apt install ufw</code>.</p>
+          </div>
+        </section>
+        <!-- 16. Comprimir y empaquetar -->
+        <section id="s16" class="tarjeta">
+          <h2><span class="num">16</span>Comprimir y empaquetar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>tar -czvf copia.tar.gz carpeta/</code></th><td>crear un .tar.gz</td></tr>
+                  <tr><th scope="row"><code>tar -xzvf copia.tar.gz</code></th><td>extraer aquí</td></tr>
+                  <tr><th scope="row" class="larga"><code>tar -xzvf copia.tar.gz -C destino/</code></th><td>extraer en otra carpeta</td></tr>
+                  <tr><th scope="row"><code>tar -tzf copia.tar.gz</code></th><td>ver el contenido sin extraer</td></tr>
+                  <tr><th scope="row" class="larga"><code>tar -cJvf copia.tar.xz carpeta/</code></th><td>crear un .tar.xz (comprime más)</td></tr>
+                  <tr><th scope="row" class="larga"><code>zip -r proyecto.zip proyecto/</code></th><td>crear un .zip</td></tr>
+                  <tr><th scope="row" class="larga"><code>unzip proyecto.zip -d destino/</code></th><td>extraer un .zip</td></tr>
+                  <tr><th scope="row" class="larga"><code>gzip fichero  gunzip fichero.gz</code></th><td>comprimir o descomprimir un solo fichero</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Opciones de <code>tar</code>: <code>c</code> crear, <code>x</code> extraer, <code>t</code> listar, <code>z</code> gzip, <code>J</code> xz, <code>v</code> detallado, <code>f</code> fichero (siempre la última).</p>
+          </div>
+        </section>
+        <!-- 17. Variables, alias y scripts -->
+        <section id="s17" class="tarjeta">
+          <h2><span class="num">17</span>Variables, alias y scripts</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">echo</span> <span class="tok-variable">$HOME</span> <span class="tok-variable">$USER</span> <span class="tok-variable">$PATH</span>
+<span class="tok-clave">export</span> EDITOR=nano                     <span class="tok-coment"># variable para esta sesión</span>
+<span class="tok-clave">export</span> PATH=<span class="tok-texto">"$PATH:$HOME/bin"</span>          <span class="tok-coment"># añadir una ruta al PATH</span>
+<span class="tok-clave">alias</span> ll=<span class="tok-texto">'ls -lah'</span>                     <span class="tok-coment"># atajo propio</span>
+
+<span class="tok-coment"># para que sea permanente, añádelo a ~/.bashrc (Kali: ~/.zshrc)</span>
+<span class="tok-clave">source</span> ~/.bashrc                       <span class="tok-coment"># recargar sin cerrar la terminal</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment">#!/bin/bash</span>
+<span class="tok-coment"># copia.sh: uso ./copia.sh carpeta</span>
+<span class="tok-clave">origen</span>=<span class="tok-variable">$1</span>
+
+<span class="tok-clave">if</span> [ <span class="tok-atributo">-z</span> <span class="tok-texto">"$origen"</span> ]; <span class="tok-clave">then</span>
+<span class="tok-clave">    echo</span> <span class="tok-texto">"Uso: $0 carpeta"</span>
+<span class="tok-clave">    exit</span> 1
+<span class="tok-clave">fi</span>
+
+<span class="tok-clave">fecha</span>=$(date +%Y-%m-%d)
+<span class="tok-clave">tar</span> <span class="tok-atributo">-czf</span> <span class="tok-texto">"copia_${fecha}.tar.gz"</span> <span class="tok-texto">"$origen"</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"Copia creada: copia_${fecha}.tar.gz"</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>chmod +x copia.sh</code></th><td>darle permiso de ejecución</td></tr>
+                  <tr><th scope="row"><code>./copia.sh docs</code></th><td>ejecutarlo desde su carpeta</td></tr>
+                  <tr><th scope="row"><code>$1  $2  $#  $@</code></th><td>argumentos, cuántos hay, todos</td></tr>
+                  <tr><th scope="row"><code>$?</code></th><td>código de salida de la última orden (0 = bien)</td></tr>
+                  <tr><th scope="row"><code>$(orden)</code></th><td>usar la salida de una orden como valor</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 18. Tareas programadas (cron) -->
+        <section id="s18" class="tarjeta">
+          <h2><span class="num">18</span>Tareas programadas (cron)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">crontab</span> <span class="tok-atributo">-e</span>        <span class="tok-coment"># editar tus tareas</span>
+<span class="tok-clave">crontab</span> <span class="tok-atributo">-l</span>        <span class="tok-coment"># ver tus tareas</span>
+
+<span class="tok-coment"># ┌ minuto (0-59)</span>
+<span class="tok-coment"># │ ┌ hora (0-23)</span>
+<span class="tok-coment"># │ │ ┌ día del mes (1-31)</span>
+<span class="tok-coment"># │ │ │ ┌ mes (1-12)</span>
+<span class="tok-coment"># │ │ │ │ ┌ día de la semana (0-7, 0 y 7 = domingo)</span>
+<span class="tok-coment"># * * * * * orden</span>
+0 3 * * *   /home/ana/copia.sh docs     <span class="tok-coment"># cada día a las 3:00</span>
+*/15 * * * * /home/ana/comprobar.sh     <span class="tok-coment"># cada 15 minutos</span>
+0 8 * * 1-5 /home/ana/aviso.sh          <span class="tok-coment"># de lunes a viernes a las 8:00</span></code></pre></figure>
+            <p class="nota">Usa rutas absolutas dentro de cron: no carga tu <code>PATH</code> ni tu carpeta de trabajo.</p>
+          </div>
+        </section>
+        <!-- 19. Carpetas del sistema -->
+        <section id="s19" class="tarjeta">
+          <h2><span class="num">19</span>Carpetas del sistema</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/</code></th><td>raíz de todo el sistema</td></tr>
+                  <tr><th scope="row"><code>/home</code></th><td>carpetas personales de los usuarios</td></tr>
+                  <tr><th scope="row"><code>/root</code></th><td>carpeta personal de root</td></tr>
+                  <tr><th scope="row"><code>/etc</code></th><td>ficheros de configuración</td></tr>
+                  <tr><th scope="row"><code>/var/log</code></th><td>registros del sistema y servicios</td></tr>
+                  <tr><th scope="row"><code>/var/www</code></th><td>webs servidas por Apache o Nginx</td></tr>
+                  <tr><th scope="row"><code>/tmp</code></th><td>temporales; se vacía al reiniciar</td></tr>
+                  <tr><th scope="row"><code>/usr/bin</code></th><td>programas instalados</td></tr>
+                  <tr><th scope="row"><code>/usr/share</code></th><td>datos compartidos (en Kali, <code>/usr/share/wordlists</code>)</td></tr>
+                  <tr><th scope="row"><code>/opt</code></th><td>software instalado a mano</td></tr>
+                  <tr><th scope="row"><code>/dev</code></th><td>dispositivos (<code>/dev/sda</code>, <code>/dev/null</code>)</td></tr>
+                  <tr><th scope="row"><code>/proc</code></th><td>información del kernel y procesos en tiempo real</td></tr>
+                  <tr><th scope="row"><code>/mnt  /media</code></th><td>puntos de montaje; USB en <code>/media/usuario</code></td></tr>
+                  <tr><th scope="row"><code>/boot</code></th><td>kernel y arranque</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="nmap.html">Nmap →</a></nav>
+      <footer class="pie">Para cualquier comando: <code>man comando</code>. Documentación de <a href="https://help.ubuntu.com/">Ubuntu</a> y de <a href="https://www.kali.org/docs/">Kali</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

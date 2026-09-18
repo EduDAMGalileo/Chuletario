@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PostgreSQL · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><span>PostgreSQL</span></nav>
+          <h1>PostgreSQL</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Comandos de <code>psql</code> y diferencias de sintaxis con MySQL que más problemas dan. A la izquierda MySQL, a la derecha PostgreSQL.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Bases de datos">
+      <div class="wrap"><a href="sql.html">SQL</a><a href="postgresql.html" aria-current="page">PostgreSQL</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Conectarse</a><a href="#s2"><b>2</b>Metacomandos de psql</a><a href="#s3"><b>3</b>Bases de datos y esquemas</a><a href="#s4"><b>4</b>Identificadores y comillas</a><a href="#s5"><b>5</b>Autoincremento y último id</a><a href="#s6"><b>6</b>Tipos de datos</a><a href="#s7"><b>7</b>Funciones distintas</a><a href="#s8"><b>8</b>Comportamientos que cambian</a><a href="#s9"><b>9</b>Modificar tablas</a><a href="#s10"><b>10</b>Insertar o actualizar (upsert)</a><a href="#s11"><b>11</b>Transacciones</a><a href="#s12"><b>12</b>Usuarios y permisos</a><a href="#s13"><b>13</b>Funciones y procedimientos</a><a href="#s14"><b>14</b>Copias de seguridad e importación</a><a href="#s15"><b>15</b>Desde Java (JDBC)</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Lo primero que choca al pasar de MySQL a PostgreSQL</p>
+        <div class="pasos">
+          <div class="paso"><b>"columna"</b><small>las comillas dobles son para identificadores, los textos siempre con comillas simples</small></div>
+          <div class="paso"><b>ILIKE</b><small><code>LIKE</code> distingue mayúsculas; para no distinguirlas usa <code>ILIKE</code></small></div>
+          <div class="paso"><b>5 / 2 = 2</b><small>la división entre enteros es entera; usa <code>5 / 2.0</code></small></div>
+          <div class="paso"><b>a || b</b><small>concatena textos (en MySQL es un OR lógico)</small></div>
+          <div class="paso"><b>esquemas</b><small>cada base de datos tiene esquemas; por defecto <code>public</code></small></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Conectarse -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Conectarse</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>mysql -u root -p</code></div>
+                <div class="cmp-b"><code>psql -U postgres</code></div>
+                <div class="cmp-nota">conectar como administrador</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>mysql -u usu -p -h host bd</code></div>
+                <div class="cmp-b"><code>psql -U usu -h host -d bd</code></div>
+                <div class="cmp-nota">conectar a una base de datos</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>puerto 3306</code></div>
+                <div class="cmp-b"><code>puerto 5432</code></div>
+                <div class="cmp-nota">puerto por defecto</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>root</code></div>
+                <div class="cmp-b"><code>postgres</code></div>
+                <div class="cmp-nota">superusuario por defecto</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>mysql ... &lt; script.sql</code></div>
+                <div class="cmp-b"><code>psql -U usu -d bd -f script.sql</code></div>
+                <div class="cmp-nota">ejecutar un script</div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-coment"># Linux: entrar como el usuario del sistema postgres</span>
+sudo<span class="tok-atributo"> -u</span> postgres psql
+
+<span class="tok-coment"># URL de conexión</span>
+psql postgresql://usuario:clave@localhost:5432/instituto</code></pre></figure>
+          </div>
+        </section>
+        <!-- 2. Metacomandos de psql -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Metacomandos de psql</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SHOW DATABASES;</code></div>
+                <div class="cmp-b"><code>\l</code></div>
+                <div class="cmp-nota">listar bases de datos</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>USE instituto;</code></div>
+                <div class="cmp-b"><code>\c instituto</code></div>
+                <div class="cmp-nota">cambiar de base de datos</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SHOW TABLES;</code></div>
+                <div class="cmp-b"><code>\dt</code></div>
+                <div class="cmp-nota">listar tablas</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>DESCRIBE alumno;</code></div>
+                <div class="cmp-b"><code>\d alumno</code></div>
+                <div class="cmp-nota">estructura de una tabla</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-b"><code>\d+ alumno</code></div>
+                <div class="cmp-nota">estructura con más detalle</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-b"><code>\dn</code></div>
+                <div class="cmp-nota">listar esquemas</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SELECT user FROM mysql.user;</code></div>
+                <div class="cmp-b"><code>\du</code></div>
+                <div class="cmp-nota">listar usuarios y roles</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SHOW FULL TABLES WHERE Table_type = 'VIEW';</code></div>
+                <div class="cmp-b"><code>\dv</code></div>
+                <div class="cmp-nota">listar vistas</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SHOW INDEX FROM alumno;</code></div>
+                <div class="cmp-b"><code>\di</code></div>
+                <div class="cmp-nota">listar índices</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SHOW FUNCTION STATUS;</code></div>
+                <div class="cmp-b"><code>\df</code></div>
+                <div class="cmp-nota">listar funciones</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SOURCE script.sql;</code></div>
+                <div class="cmp-b"><code>\i script.sql</code></div>
+                <div class="cmp-nota">ejecutar un fichero</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SELECT ... \G</code></div>
+                <div class="cmp-b"><code>\x</code></div>
+                <div class="cmp-nota">salida vertical (activar/desactivar)</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-b"><code>\timing</code></div>
+                <div class="cmp-nota">mostrar lo que tarda cada consulta</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-b"><code>\conninfo</code></div>
+                <div class="cmp-nota">datos de la conexión actual</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>HELP</code></div>
+                <div class="cmp-b"><code>\?   \h SELECT</code></div>
+                <div class="cmp-nota">ayuda de psql / ayuda de una orden SQL</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>exit</code></div>
+                <div class="cmp-b"><code>\q</code></div>
+                <div class="cmp-nota">salir</div>
+              </div>
+            </div>
+            <p class="nota">Los metacomandos empiezan por <code>\</code> y no llevan punto y coma. Las órdenes SQL sí lo necesitan: si psql muestra <code>instituto-#</code> es que está esperando el <code>;</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Bases de datos y esquemas -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Bases de datos y esquemas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">DATABASE</span> instituto;
+<span class="tok-clave">\c</span> instituto
+
+<span class="tok-clave">CREATE</span> <span class="tok-clave">SCHEMA</span> secretaria;
+<span class="tok-clave">CREATE</span> <span class="tok-clave">TABLE</span> secretaria.expediente (id <span class="tok-tipo">INT</span>);
+
+<span class="tok-clave">SHOW</span> search_path;                      <span class="tok-coment">-- "$user", public</span>
+<span class="tok-clave">SET</span> search_path <span class="tok-clave">TO</span> secretaria, public; <span class="tok-coment">-- dónde busca las tablas</span></code></pre></figure>
+            <p class="nota">Jerarquía: servidor → base de datos → <strong>esquema</strong> → tabla. En MySQL «esquema» y «base de datos» son lo mismo. En PostgreSQL no se puede consultar otra base de datos desde la conexión actual, pero sí otro esquema: <code>esquema.tabla</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Identificadores y comillas -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Identificadores y comillas</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SELECT `order` FROM t;</code></div>
+                <div class="cmp-b"><code>SELECT "order" FROM t;</code></div>
+                <div class="cmp-nota">nombre reservado o con espacios</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SELECT "texto";</code></div>
+                <div class="cmp-b"><code>SELECT 'texto';</code></div>
+                <div class="cmp-nota">los textos solo con comillas simples</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>'It\'s'</code></div>
+                <div class="cmp-b"><code>'It''s'</code></div>
+                <div class="cmp-nota">comilla dentro de un texto</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>'línea\n'</code></div>
+                <div class="cmp-b"><code>E'línea\n'</code></div>
+                <div class="cmp-nota">secuencias de escape</div>
+              </div>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> PostgreSQL pasa a minúsculas los nombres sin comillas. Si creas <code>CREATE TABLE "Alumno"</code>, tendrás que escribir siempre <code>"Alumno"</code> con comillas. Lo más cómodo es usar siempre <code>snake_case</code> en minúsculas.</p>
+          </div>
+        </section>
+        <!-- 5. Autoincremento y último id -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Autoincremento y último id</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>id INT AUTO_INCREMENT PRIMARY KEY</code></div>
+                <div class="cmp-b"><code>id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code></div>
+                <div class="cmp-nota">forma estándar recomendada</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>id INT AUTO_INCREMENT PRIMARY KEY</code></div>
+                <div class="cmp-b"><code>id SERIAL PRIMARY KEY</code></div>
+                <div class="cmp-nota">forma clásica, muy habitual</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SELECT LAST_INSERT_ID();</code></div>
+                <div class="cmp-b"><code>INSERT ... RETURNING id;</code></div>
+                <div class="cmp-nota">obtener el id generado</div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> alumno (nombre, email)
+<span class="tok-clave">VALUES</span> (<span class="tok-texto">'Ana'</span>, <span class="tok-texto">'ana@correo.com'</span>)
+<span class="tok-clave">RETURNING</span> id, nombre;</code></pre></figure>
+            <p class="nota">Con <code>GENERATED ALWAYS</code> no puedes dar tú el valor del id. Si lo necesitas (por ejemplo, al importar datos), usa <code>GENERATED BY DEFAULT AS IDENTITY</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Tipos de datos -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Tipos de datos</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>TINYINT(1) / BOOLEAN</code></div>
+                <div class="cmp-b"><code>BOOLEAN</code></div>
+                <div class="cmp-nota">booleano real: <code>true</code>, <code>false</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>DATETIME</code></div>
+                <div class="cmp-b"><code>TIMESTAMP</code></div>
+                <div class="cmp-nota"><code>TIMESTAMPTZ</code> si guarda zona horaria</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>DOUBLE</code></div>
+                <div class="cmp-b"><code>DOUBLE PRECISION</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>LONGTEXT / MEDIUMTEXT</code></div>
+                <div class="cmp-b"><code>TEXT</code></div>
+                <div class="cmp-nota">sin límite práctico</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>BLOB</code></div>
+                <div class="cmp-b"><code>BYTEA</code></div>
+                <div class="cmp-nota">datos binarios</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>ENUM('a', 'b')</code></div>
+                <div class="cmp-b"><code>CREATE TYPE estado AS ENUM ('a', 'b');</code></div>
+                <div class="cmp-nota">el enum es un tipo con nombre</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>INT UNSIGNED</code></div>
+                <div class="cmp-b"><code>INT CHECK (x &gt;= 0)</code></div>
+                <div class="cmp-nota">no existe UNSIGNED</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>JSON</code></div>
+                <div class="cmp-b"><code>JSON / JSONB</code></div>
+                <div class="cmp-nota"><code>JSONB</code> es binario e indexable</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-b"><code>INTEGER[]  UUID  INTERVAL</code></div>
+                <div class="cmp-nota">arrays, identificadores únicos, intervalos</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Funciones distintas -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Funciones distintas</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>IFNULL(a, b)</code></div>
+                <div class="cmp-b"><code>COALESCE(a, b)</code></div>
+                <div class="cmp-nota">COALESCE funciona en los dos</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>IF(cond, a, b)</code></div>
+                <div class="cmp-b"><code>CASE WHEN cond THEN a ELSE b END</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>CONCAT(a, b)</code></div>
+                <div class="cmp-b"><code>a || b</code></div>
+                <div class="cmp-nota">CONCAT también existe en PostgreSQL</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>GROUP_CONCAT(x SEPARATOR ', ')</code></div>
+                <div class="cmp-b"><code>STRING_AGG(x, ', ')</code></div>
+                <div class="cmp-nota">unir valores de un grupo</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>CURDATE()</code></div>
+                <div class="cmp-b"><code>CURRENT_DATE</code></div>
+                <div class="cmp-nota">sin paréntesis</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>YEAR(f)</code></div>
+                <div class="cmp-b"><code>EXTRACT(YEAR FROM f)</code></div>
+                <div class="cmp-nota">también <code>DATE_PART('year', f)</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>DATE_FORMAT(f, '%d/%m/%Y')</code></div>
+                <div class="cmp-b"><code>TO_CHAR(f, 'DD/MM/YYYY')</code></div>
+                <div class="cmp-nota">fecha a texto</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>STR_TO_DATE(s, '%d/%m/%Y')</code></div>
+                <div class="cmp-b"><code>TO_DATE(s, 'DD/MM/YYYY')</code></div>
+                <div class="cmp-nota">texto a fecha</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>DATEDIFF(f1, f2)</code></div>
+                <div class="cmp-b"><code>f1 - f2</code></div>
+                <div class="cmp-nota">con DATE devuelve días enteros</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>DATE_ADD(f, INTERVAL 1 DAY)</code></div>
+                <div class="cmp-b"><code>f + INTERVAL '1 day'</code></div>
+                <div class="cmp-nota">sumar tiempo</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>RAND()</code></div>
+                <div class="cmp-b"><code>RANDOM()</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>LOCATE('a', s)</code></div>
+                <div class="cmp-b"><code>POSITION('a' IN s)</code></div>
+                <div class="cmp-nota">posición de un texto</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>TRUNCATE(x, 2)</code></div>
+                <div class="cmp-b"><code>TRUNC(x, 2)</code></div>
+                <div class="cmp-nota">truncar decimales</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>LIMIT 10, 5</code></div>
+                <div class="cmp-b"><code>LIMIT 5 OFFSET 10</code></div>
+                <div class="cmp-nota">MySQL también admite la segunda forma</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 8. Comportamientos que cambian -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Comportamientos que cambian</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>WHERE nombre LIKE 'ana%'</code></div>
+                <div class="cmp-b"><code>WHERE nombre ILIKE 'ana%'</code></div>
+                <div class="cmp-nota">buscar sin distinguir mayúsculas</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>WHERE nombre = 'ana'</code></div>
+                <div class="cmp-b"><code>WHERE LOWER(nombre) = 'ana'</code></div>
+                <div class="cmp-nota">la igualdad también distingue mayúsculas</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SELECT 5 / 2;   -- 2.5000</code></div>
+                <div class="cmp-b"><code>SELECT 5 / 2;   -- 2</code></div>
+                <div class="cmp-nota">división entera; usa <code>5 / 2.0</code> o <code>CAST</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SELECT 'a' || 'b';  -- 0</code></div>
+                <div class="cmp-b"><code>SELECT 'a' || 'b';  -- ab</code></div>
+                <div class="cmp-nota"><code>||</code> concatena</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-b"><code>FULL OUTER JOIN</code></div>
+                <div class="cmp-nota">PostgreSQL sí lo tiene</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>CAST('42' AS SIGNED)</code></div>
+                <div class="cmp-b"><code>'42'::INT</code></div>
+                <div class="cmp-nota">conversión de tipo; <code>CAST(... AS INT)</code> también vale</div>
+              </div>
+            </div>
+            <p class="nota">En <code>GROUP BY</code> PostgreSQL es estricto: toda columna del SELECT tiene que estar agrupada o dentro de una función agregada (salvo que agrupes por la clave primaria).</p>
+          </div>
+        </section>
+        <!-- 9. Modificar tablas -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Modificar tablas</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>ALTER TABLE t MODIFY col VARCHAR(100);</code></div>
+                <div class="cmp-b"><code>ALTER TABLE t ALTER COLUMN col TYPE VARCHAR(100);</code></div>
+                <div class="cmp-nota">cambiar tipo</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>ALTER TABLE t MODIFY col INT NOT NULL;</code></div>
+                <div class="cmp-b"><code>ALTER TABLE t ALTER COLUMN col SET NOT NULL;</code></div>
+                <div class="cmp-nota">también <code>DROP NOT NULL</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>ALTER TABLE t ALTER col SET DEFAULT 0;</code></div>
+                <div class="cmp-b"><code>ALTER TABLE t ALTER COLUMN col SET DEFAULT 0;</code></div>
+                <div class="cmp-nota">igual en los dos</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>ALTER TABLE t CHANGE viejo nuevo INT;</code></div>
+                <div class="cmp-b"><code>ALTER TABLE t RENAME COLUMN viejo TO nuevo;</code></div>
+                <div class="cmp-nota">renombrar columna</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>RENAME TABLE t TO t2;</code></div>
+                <div class="cmp-b"><code>ALTER TABLE t RENAME TO t2;</code></div>
+                <div class="cmp-nota">renombrar tabla</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SHOW CREATE TABLE t;</code></div>
+                <div class="cmp-b"><code>pg_dump -s -t t instituto</code></div>
+                <div class="cmp-nota">ver el DDL (desde terminal)</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>... COMMENT 'texto'</code></div>
+                <div class="cmp-b"><code>COMMENT ON COLUMN t.col IS 'texto';</code></div>
+                <div class="cmp-nota">comentarios</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>ENGINE=InnoDB</code></div>
+                <div class="cmp-b"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-nota">no hay motores de almacenamiento</div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-coment">-- cambiar tipo convirtiendo los datos existentes</span>
+<span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno
+  <span class="tok-clave">ALTER</span> <span class="tok-clave">COLUMN</span> nota <span class="tok-clave">TYPE</span> <span class="tok-tipo">NUMERIC</span>(<span class="tok-numero">4</span>,<span class="tok-numero">2</span>) <span class="tok-clave">USING</span> nota::<span class="tok-tipo">NUMERIC</span>(<span class="tok-numero">4</span>,<span class="tok-numero">2</span>);</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Insertar o actualizar (upsert) -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Insertar o actualizar (upsert)</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>INSERT ... ON DUPLICATE KEY UPDATE</code></div>
+                <div class="cmp-b"><code>INSERT ... ON CONFLICT (col) DO UPDATE</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>INSERT IGNORE INTO ...</code></div>
+                <div class="cmp-b"><code>INSERT ... ON CONFLICT DO NOTHING</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>REPLACE INTO ...</code></div>
+                <div class="cmp-b"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-nota">usa ON CONFLICT</div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> alumno (email, nombre)
+<span class="tok-clave">VALUES</span> (<span class="tok-texto">'ana@correo.com'</span>, <span class="tok-texto">'Ana Pérez'</span>)
+<span class="tok-clave">ON</span> <span class="tok-clave">CONFLICT</span> (email)
+<span class="tok-clave">DO</span> <span class="tok-clave">UPDATE</span> <span class="tok-clave">SET</span> nombre = <span class="tok-clave">EXCLUDED</span>.nombre;</code></pre></figure>
+            <p class="nota"><code>EXCLUDED</code> es la fila que se intentaba insertar. La columna de <code>ON CONFLICT</code> debe tener una restricción UNIQUE o ser clave primaria.</p>
+          </div>
+        </section>
+        <!-- 11. Transacciones -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Transacciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">BEGIN</span>;
+<span class="tok-clave">CREATE</span> <span class="tok-clave">TABLE</span> prueba (id <span class="tok-tipo">INT</span>);
+<span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> prueba <span class="tok-clave">VALUES</span> (<span class="tok-numero">1</span>);
+<span class="tok-clave">ROLLBACK</span>;   <span class="tok-coment">-- deshace también el CREATE TABLE</span></code></pre></figure>
+            <p class="nota">En PostgreSQL el DDL es transaccional: un <code>CREATE</code>, <code>ALTER</code> o <code>DROP</code> dentro de una transacción se puede deshacer. En MySQL provocan un <code>COMMIT</code> implícito.</p>
+            <p class="aviso"><strong>Cuidado:</strong> si una sentencia falla dentro de un <code>BEGIN</code>, la transacción queda abortada y hay que hacer <code>ROLLBACK</code> antes de seguir.</p>
+          </div>
+        </section>
+        <!-- 12. Usuarios y permisos -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Usuarios y permisos</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>CREATE USER 'dam'@'localhost' IDENTIFIED BY 'x';</code></div>
+                <div class="cmp-b"><code>CREATE USER dam WITH PASSWORD 'x';</code></div>
+                <div class="cmp-nota">sin @host: el acceso se controla en <code>pg_hba.conf</code></div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>GRANT ALL ON instituto.* TO 'dam'@'localhost';</code></div>
+                <div class="cmp-b"><code>GRANT ALL PRIVILEGES ON DATABASE instituto TO dam;</code></div>
+                <div class="cmp-nota">permiso sobre la base de datos (conectar, crear esquemas)</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>GRANT SELECT ON instituto.* TO ...</code></div>
+                <div class="cmp-b"><code>GRANT SELECT ON ALL TABLES IN SCHEMA public TO dam;</code></div>
+                <div class="cmp-nota">permiso sobre las tablas</div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">ROLE</span> profesorado;                <span class="tok-coment">-- un rol es un grupo</span>
+<span class="tok-clave">GRANT</span> profesorado <span class="tok-clave">TO</span> dam;               <span class="tok-coment">-- dam hereda sus permisos</span>
+<span class="tok-clave">GRANT</span> <span class="tok-clave">USAGE</span>, <span class="tok-clave">CREATE</span> <span class="tok-clave">ON</span> <span class="tok-clave">SCHEMA</span> public <span class="tok-clave">TO</span> dam;
+<span class="tok-clave">ALTER</span> <span class="tok-clave">DEFAULT</span> <span class="tok-clave">PRIVILEGES</span> <span class="tok-clave">IN</span> <span class="tok-clave">SCHEMA</span> public
+  <span class="tok-clave">GRANT</span> <span class="tok-clave">SELECT</span> <span class="tok-clave">ON</span> <span class="tok-clave">TABLES</span> <span class="tok-clave">TO</span> profesorado; <span class="tok-coment">-- tablas futuras</span>
+<span class="tok-clave">ALTER</span> <span class="tok-clave">DATABASE</span> instituto <span class="tok-clave">OWNER</span> <span class="tok-clave">TO</span> dam;</code></pre></figure>
+            <p class="nota">Desde PostgreSQL 15 los usuarios normales no pueden crear tablas en <code>public</code> si no se les da <code>CREATE</code> sobre el esquema o son dueños de la base de datos.</p>
+          </div>
+        </section>
+        <!-- 13. Funciones y procedimientos -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Funciones y procedimientos</h2>
+          <div class="cuerpo">
+            <h3>MySQL</h3>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">DELIMITER</span> //
+<span class="tok-clave">CREATE</span> <span class="tok-clave">FUNCTION</span> con_iva(precio <span class="tok-tipo">DECIMAL</span>(<span class="tok-numero">10</span>,<span class="tok-numero">2</span>))
+<span class="tok-clave">RETURNS</span> <span class="tok-tipo">DECIMAL</span>(<span class="tok-numero">10</span>,<span class="tok-numero">2</span>) <span class="tok-clave">DETERMINISTIC</span>
+<span class="tok-clave">BEGIN</span>
+  <span class="tok-clave">RETURN</span> precio * <span class="tok-numero">1.21</span>;
+<span class="tok-clave">END</span> //
+<span class="tok-clave">DELIMITER</span> ;</code></pre></figure>
+            <h3>PostgreSQL (PL/pgSQL)</h3>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">OR</span> <span class="tok-clave">REPLACE</span> <span class="tok-clave">FUNCTION</span> con_iva(precio <span class="tok-tipo">NUMERIC</span>)
+<span class="tok-clave">RETURNS</span> <span class="tok-tipo">NUMERIC</span>
+<span class="tok-clave">LANGUAGE</span> plpgsql <span class="tok-clave">AS</span> <span class="tok-clave">$$</span>
+<span class="tok-clave">BEGIN</span>
+  <span class="tok-clave">RETURN</span> precio * <span class="tok-numero">1.21</span>;
+<span class="tok-clave">END</span>;
+<span class="tok-clave">$$</span>;
+
+<span class="tok-clave">SELECT</span> con_iva(<span class="tok-numero">100</span>);   <span class="tok-coment">-- las funciones se usan en un SELECT</span>
+<span class="tok-clave">CALL</span> mi_procedimiento(); <span class="tok-coment">-- los procedimientos con CALL</span></code></pre></figure>
+            <p class="nota">No existe <code>DELIMITER</code>: el cuerpo va entre <code>$$</code>. Los triggers en PostgreSQL llaman a una función que devuelve <code>TRIGGER</code>.</p>
+          </div>
+        </section>
+        <!-- 14. Copias de seguridad e importación -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Copias de seguridad e importación</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>mysqldump -u usu -p bd &gt; copia.sql</code></div>
+                <div class="cmp-b"><code>pg_dump -U usu bd &gt; copia.sql</code></div>
+                <div class="cmp-nota">exportar</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>mysql -u usu -p bd &lt; copia.sql</code></div>
+                <div class="cmp-b"><code>psql -U usu -d bd -f copia.sql</code></div>
+                <div class="cmp-nota">restaurar</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>LOAD DATA INFILE 'datos.csv' ...</code></div>
+                <div class="cmp-b"><code>\copy alumno FROM 'datos.csv' CSV HEADER</code></div>
+                <div class="cmp-nota">importar CSV desde tu equipo</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SELECT ... INTO OUTFILE ...</code></div>
+                <div class="cmp-b"><code>\copy alumno TO 'datos.csv' CSV HEADER</code></div>
+                <div class="cmp-nota">exportar CSV</div>
+              </div>
+            </div>
+            <p class="nota"><code>COPY</code> (sin barra) lee el fichero en el servidor y requiere permisos especiales. <code>\copy</code> lo lee desde tu equipo.</p>
+          </div>
+        </section>
+        <!-- 15. Desde Java (JDBC) -->
+        <section id="s15" class="tarjeta">
+          <h2><span class="num">15</span>Desde Java (JDBC)</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">MySQL</span><span class="b">PostgreSQL</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>jdbc:mysql://localhost:3306/bd</code></div>
+                <div class="cmp-b"><code>jdbc:postgresql://localhost:5432/bd</code></div>
+                <div class="cmp-nota">URL de conexión</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>com.mysql:mysql-connector-j</code></div>
+                <div class="cmp-b"><code>org.postgresql:postgresql</code></div>
+                <div class="cmp-nota">dependencia Maven</div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> sql = <span class="tok-texto">"INSERT INTO alumno (nombre) VALUES (?) RETURNING id"</span>;
+<span class="tok-clave">try</span> (<span class="tok-tipo">PreparedStatement</span> ps = con.prepareStatement(sql)) {
+    ps.setString(<span class="tok-numero">1</span>, <span class="tok-texto">"Ana"</span>);
+    <span class="tok-clave">try</span> (<span class="tok-tipo">ResultSet</span> rs = ps.executeQuery()) {   <span class="tok-coment">// executeQuery por el RETURNING</span>
+        <span class="tok-clave">if</span> (rs.next()) {
+            <span class="tok-tipo">int</span> id = rs.getInt(<span class="tok-texto">"id"</span>);
+        }
+    }
+}</code></pre></figure>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sql.html">← SQL</a><span></span></nav>
+      <footer class="pie">Referencia completa en <a href="https://www.postgresql.org/docs/current/">postgresql.org/docs</a>. La sintaxis común está en la <a href="sql.html">chuleta de SQL</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

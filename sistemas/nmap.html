@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nmap · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas y redes</a><span aria-hidden="true">›</span><span>Nmap</span></nav>
+          <h1>Nmap</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Descubrimiento de equipos, escaneo de puertos y detección de servicios, para prácticas en entornos autorizados.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas y redes">
+      <div class="wrap"><a href="terminal-linux.html">Terminal Linux</a><a href="nmap.html" aria-current="page">Nmap</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Instalación y primeros pasos</a><a href="#s2"><b>2</b>Indicar los objetivos</a><a href="#s3"><b>3</b>Descubrir equipos</a><a href="#s4"><b>4</b>Tipos de escaneo</a><a href="#s5"><b>5</b>Elegir los puertos</a><a href="#s6"><b>6</b>Estados de un puerto</a><a href="#s7"><b>7</b>Servicios, versiones y sistema operativo</a><a href="#s8"><b>8</b>Scripts NSE</a><a href="#s9"><b>9</b>Velocidad y precisión</a><a href="#s10"><b>10</b>Guardar y comparar resultados</a><a href="#s11"><b>11</b>Ejemplos típicos de laboratorio</a><a href="#s12"><b>12</b>Leer la salida</a><a href="#s13"><b>13</b>Cortafuegos y detección</a><a href="#s14"><b>14</b>Normas de uso</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="aviso" style="border:1px solid var(--warnl);border-radius:6px;margin-bottom:12px"><strong>Solo con autorización.</strong> Escanea únicamente equipos y redes de tu propiedad, del laboratorio del aula o de servicios creados para practicar. En una red ajena, un escaneo deja rastro en los registros y en los sistemas de detección, y puede acarrear consecuencias legales y disciplinarias. En España, el acceso no autorizado a sistemas informáticos está tipificado en el artículo 197 bis del Código Penal.</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Sintaxis</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">nmap</span> [tipo de escaneo] [opciones] [objetivo]
+
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sS</span> <span class="tok-atributo">-sV</span> <span class="tok-atributo">-p</span> 1-1000 192.168.56.101</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Dónde practicar</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>localhost</code></th><td>tu propio equipo</td></tr>
+                  <tr><th scope="row"><code>192.168.56.0/24</code></th><td>tu red interna de VirtualBox</td></tr>
+                  <tr><th scope="row"><code>scanme.nmap.org</code></th><td>servidor que el proyecto Nmap autoriza a escanear con moderación</td></tr>
+                  <tr><th scope="row"><code>Metasploitable, DVWA</code></th><td>máquinas vulnerables para montar en local</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div><p class="banda-titulo">Permisos</p><p class="txt">Muchos escaneos necesitan crear paquetes a bajo nivel y requieren <code>sudo</code>: <code>-sS</code>, <code>-sU</code>, <code>-O</code> y las opciones de descubrimiento con TCP o ARP. Sin privilegios, Nmap recurre a <code>-sT</code>, que usa la conexión normal del sistema.</p></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Instalación y primeros pasos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Instalación y primeros pasos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo apt</span> install nmap     <span class="tok-coment"># en Kali ya viene instalado</span>
+<span class="tok-clave">nmap</span> <span class="tok-atributo">--version</span>
+<span class="tok-clave">man</span> nmap
+
+<span class="tok-clave">nmap</span> 192.168.1.10         <span class="tok-coment"># escaneo por defecto: 1000 puertos TCP más comunes</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sn</span> 192.168.1.0/24   <span class="tok-coment"># solo descubrir equipos</span></code></pre></figure>
+            <p class="nota">Nmap trae también <code>ncat</code>, <code>ndiff</code> y la interfaz gráfica <code>zenmap</code> (esta última hay que instalarla aparte).</p>
+          </div>
+        </section>
+        <!-- 2. Indicar los objetivos -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Indicar los objetivos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>192.168.1.10</code></th><td>una IP</td></tr>
+                  <tr><th scope="row"><code>servidor.local</code></th><td>un nombre de equipo</td></tr>
+                  <tr><th scope="row"><code>192.168.1.0/24</code></th><td>toda una red (256 direcciones)</td></tr>
+                  <tr><th scope="row"><code>192.168.1.1-50</code></th><td>un rango</td></tr>
+                  <tr><th scope="row"><code>192.168.1.*</code></th><td>comodín</td></tr>
+                  <tr><th scope="row"><code>10.0.0.1 10.0.0.5</code></th><td>varios objetivos separados por espacios</td></tr>
+                  <tr><th scope="row"><code>-iL objetivos.txt</code></th><td>lista de objetivos desde un fichero</td></tr>
+                  <tr><th scope="row"><code>--exclude 192.168.1.1</code></th><td>excluir equipos (por ejemplo, el router)</td></tr>
+                  <tr><th scope="row"><code>--excludefile fuera.txt</code></th><td>excluir los de un fichero</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Empieza siempre por el rango más pequeño que te sirva: escanear una /16 entera tarda horas y genera muchísimo tráfico.</p>
+          </div>
+        </section>
+        <!-- 3. Descubrir equipos -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Descubrir equipos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-sn</code></th><td>solo descubrimiento, sin escanear puertos</td></tr>
+                  <tr><th scope="row"><code>-Pn</code></th><td>da por vivo el objetivo y escanea igualmente</td></tr>
+                  <tr><th scope="row"><code>-PR</code></th><td>descubrimiento por ARP (el más fiable en tu propia LAN)</td></tr>
+                  <tr><th scope="row"><code>-PE</code></th><td>ping ICMP de toda la vida</td></tr>
+                  <tr><th scope="row"><code>-PS22,80,443</code></th><td>SYN a esos puertos para ver si responde</td></tr>
+                  <tr><th scope="row"><code>-PA80</code></th><td>ACK a ese puerto</td></tr>
+                  <tr><th scope="row"><code>-PU53</code></th><td>paquete UDP</td></tr>
+                  <tr><th scope="row"><code>-n</code></th><td>no resolver nombres DNS (más rápido)</td></tr>
+                  <tr><th scope="row"><code>-R</code></th><td>resolver siempre los nombres</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># inventario rápido de la red del laboratorio</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sn</span> 192.168.56.0/24
+
+<span class="tok-coment"># el equipo no responde a ping pero sabemos que está encendido</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-Pn</span> <span class="tok-atributo">-p</span> 80,443 192.168.56.101</code></pre></figure>
+            <p class="nota">Muchos cortafuegos descartan el ping, así que un equipo puede aparecer como caído aunque esté funcionando: para eso está <code>-Pn</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Tipos de escaneo -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Tipos de escaneo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-sS</code></th><td>SYN («medio abierto»): rápido y el más usado. Necesita sudo</td></tr>
+                  <tr><th scope="row"><code>-sT</code></th><td>conexión TCP completa: no necesita privilegios, pero deja más rastro</td></tr>
+                  <tr><th scope="row"><code>-sU</code></th><td>UDP: mucho más lento; combínalo con pocos puertos</td></tr>
+                  <tr><th scope="row"><code>-sA</code></th><td>ACK: no dice si el puerto está abierto, sino si hay un filtrado delante</td></tr>
+                  <tr><th scope="row"><code>-sN  -sF  -sX</code></th><td>Null, FIN y Xmas: paquetes sin las banderas habituales</td></tr>
+                  <tr><th scope="row"><code>-sV</code></th><td>detección de servicio y versión</td></tr>
+                  <tr><th scope="row"><code>-O</code></th><td>detección del sistema operativo</td></tr>
+                  <tr><th scope="row"><code>-A</code></th><td>agresivo: equivale a <code>-sV -O -sC --traceroute</code></td></tr>
+                  <tr><th scope="row"><code>-6</code></th><td>objetivos IPv6</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sS</span> <span class="tok-atributo">-p-</span> 192.168.56.101          <span class="tok-coment"># todos los puertos TCP</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sU</span> <span class="tok-atributo">--top-ports</span> 20 192.168.56.101   <span class="tok-coment"># los 20 puertos UDP más comunes</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 5. Elegir los puertos -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Elegir los puertos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>(nada)</code></th><td>los 1000 puertos TCP más comunes</td></tr>
+                  <tr><th scope="row"><code>-p 22</code></th><td>un puerto</td></tr>
+                  <tr><th scope="row"><code>-p 22,80,443</code></th><td>varios</td></tr>
+                  <tr><th scope="row"><code>-p 1-1024</code></th><td>un rango</td></tr>
+                  <tr><th scope="row"><code>-p-</code></th><td>los 65535 puertos</td></tr>
+                  <tr><th scope="row"><code>-F</code></th><td>modo rápido: los 100 más comunes</td></tr>
+                  <tr><th scope="row"><code>--top-ports 50</code></th><td>los 50 más frecuentes</td></tr>
+                  <tr><th scope="row"><code>-p U:53,T:80,443</code></th><td>mezcla de UDP y TCP (requiere <code>-sU -sS</code>)</td></tr>
+                  <tr><th scope="row"><code>-p http,https</code></th><td>por nombre de servicio</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6. Estados de un puerto -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Estados de un puerto</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>open</code></th><td>hay un servicio aceptando conexiones</td></tr>
+                  <tr><th scope="row"><code>closed</code></th><td>el equipo responde, pero no hay nada escuchando</td></tr>
+                  <tr><th scope="row"><code>filtered</code></th><td>algo (cortafuegos) descarta los paquetes: no hay respuesta</td></tr>
+                  <tr><th scope="row"><code>unfiltered</code></th><td>se llega al puerto, pero no se sabe si está abierto (típico de <code>-sA</code>)</td></tr>
+                  <tr><th scope="row"><code>open|filtered</code></th><td>no hay respuesta y puede ser cualquiera de las dos (habitual en UDP)</td></tr>
+                  <tr><th scope="row"><code>closed|filtered</code></th><td>no se puede distinguir (escaneos tipo Idle)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">«Cerrado» y «filtrado» no son lo mismo: un puerto cerrado responde, uno filtrado calla. Con <code>--reason</code> ves qué respuesta ha llevado a Nmap a esa conclusión.</p>
+          </div>
+        </section>
+        <!-- 7. Servicios, versiones y sistema operativo -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Servicios, versiones y sistema operativo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sV</span> 192.168.56.101
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sV</span> <span class="tok-atributo">--version-intensity</span> 9 192.168.56.101   <span class="tok-coment"># 0 = ligero, 9 = a fondo</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-O</span> <span class="tok-atributo">--osscan-guess</span> 192.168.56.101
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-A</span> 192.168.56.101                          <span class="tok-coment"># todo junto</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-sV</code></th><td>interroga cada puerto abierto para averiguar el servicio y su versión</td></tr>
+                  <tr><th scope="row"><code>--version-light</code></th><td>equivale a intensidad 2: más rápido</td></tr>
+                  <tr><th scope="row"><code>--version-all</code></th><td>intensidad 9</td></tr>
+                  <tr><th scope="row"><code>-O</code></th><td>deduce el sistema operativo por cómo responde la pila TCP/IP</td></tr>
+                  <tr><th scope="row"><code>--osscan-guess</code></th><td>muestra la conjetura aunque no esté seguro</td></tr>
+                  <tr><th scope="row"><code>--traceroute</code></th><td>ruta hasta el objetivo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La detección de versiones es una pista, no una certeza: un servicio puede estar parcheado y seguir anunciando una versión antigua.</p>
+          </div>
+        </section>
+        <!-- 8. Scripts NSE -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Scripts NSE</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-sC</code></th><td>scripts de la categoría <code>default</code></td></tr>
+                  <tr><th scope="row"><code>--script safe</code></th><td>scripts que no alteran el objetivo</td></tr>
+                  <tr><th scope="row"><code>--script discovery</code></th><td>recogen información adicional</td></tr>
+                  <tr><th scope="row"><code>--script vuln</code></th><td>comprueban problemas conocidos</td></tr>
+                  <tr><th scope="row"><code>--script http-title</code></th><td>un script concreto</td></tr>
+                  <tr><th scope="row"><code>--script "http-*"</code></th><td>todos los de una familia</td></tr>
+                  <tr><th scope="row"><code>--script-args user=ana</code></th><td>argumentos del script</td></tr>
+                  <tr><th scope="row"><code>--script-help ssl-cert</code></th><td>qué hace un script</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ls</span> /usr/share/nmap/scripts/ <span class="tok-operador">|</span> <span class="tok-clave">wc</span> <span class="tok-atributo">-l</span>        <span class="tok-coment"># cuántos hay instalados</span>
+<span class="tok-clave">ls</span> /usr/share/nmap/scripts/ <span class="tok-operador">|</span> <span class="tok-clave">grep</span> ssl
+
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sV</span> <span class="tok-atributo">--script</span> http-title,ssl-cert <span class="tok-atributo">-p</span> 443 miservidor.local
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">--script</span> smb-os-discovery <span class="tok-atributo">-p</span> 445 192.168.56.101</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> las categorías <code>intrusive</code>, <code>dos</code>, <code>exploit</code> y <code>brute</code> pueden tumbar un servicio o bloquear cuentas. En el aula, quédate en <code>safe</code>, <code>default</code> y <code>discovery</code>.</p>
+          </div>
+        </section>
+        <!-- 9. Velocidad y precisión -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Velocidad y precisión</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-T0 … -T5</code></th><td>de paranoico a insensato; <code>-T3</code> es el valor por defecto</td></tr>
+                  <tr><th scope="row"><code>-T4</code></th><td>lo habitual en una red local rápida</td></tr>
+                  <tr><th scope="row"><code>--min-rate 1000</code></th><td>mínimo de paquetes por segundo</td></tr>
+                  <tr><th scope="row"><code>--max-retries 2</code></th><td>menos reintentos, escaneo más rápido y menos fiable</td></tr>
+                  <tr><th scope="row"><code>--host-timeout 5m</code></th><td>abandona un equipo que tarda demasiado</td></tr>
+                  <tr><th scope="row"><code>-v  -vv</code></th><td>más detalle mientras escanea</td></tr>
+                  <tr><th scope="row"><code>--reason</code></th><td>por qué Nmap ha decidido cada estado</td></tr>
+                  <tr><th scope="row"><code>--open</code></th><td>muestra solo los puertos abiertos</td></tr>
+                  <tr><th scope="row"><code>--packet-trace</code></th><td>cada paquete enviado y recibido (para entender qué pasa)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cuanto más rápido vayas, más resultados dudosos: en redes con pérdidas, <code>-T5</code> hace que aparezcan puertos como filtrados cuando en realidad se perdió la respuesta.</p>
+          </div>
+        </section>
+        <!-- 10. Guardar y comparar resultados -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Guardar y comparar resultados</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-oN salida.nmap</code></th><td>texto normal</td></tr>
+                  <tr><th scope="row"><code>-oX salida.xml</code></th><td>XML (para procesarlo con XSLT o un script)</td></tr>
+                  <tr><th scope="row"><code>-oG salida.gnmap</code></th><td>formato para <code>grep</code></td></tr>
+                  <tr><th scope="row"><code>-oA base</code></th><td>los tres a la vez: <code>base.nmap</code>, <code>base.xml</code>, <code>base.gnmap</code></td></tr>
+                  <tr><th scope="row"><code>--append-output</code></th><td>añade en lugar de sobrescribir</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sV</span> <span class="tok-atributo">-oA</span> inventario_lunes 192.168.56.0/24
+
+<span class="tok-coment"># convertir el XML en una página web legible</span>
+<span class="tok-clave">xsltproc</span> inventario_lunes.xml <span class="tok-atributo">-o</span> inventario.html
+
+<span class="tok-coment"># ver qué ha cambiado respecto a otro día</span>
+<span class="tok-clave">ndiff</span> inventario_lunes.xml inventario_viernes.xml</code></pre></figure>
+            <p class="nota">El XML de Nmap encaja muy bien con lo que veis en Lenguajes de Marcas: se puede consultar con <a href="../xml/xpath.html">XPath</a> o transformar con XSLT.</p>
+          </div>
+        </section>
+        <!-- 11. Ejemplos típicos de laboratorio -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Ejemplos típicos de laboratorio</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># 1. ¿qué equipos hay en mi red de prácticas?</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sn</span> 192.168.56.0/24
+
+<span class="tok-coment"># 2. puertos abiertos de una máquina, sin perder tiempo</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sS</span> <span class="tok-atributo">-T4</span> <span class="tok-atributo">--open</span> 192.168.56.101
+
+<span class="tok-coment"># 3. todos los puertos TCP, por si hay servicios en puertos raros</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sS</span> <span class="tok-atributo">-p-</span> <span class="tok-atributo">-T4</span> 192.168.56.101
+
+<span class="tok-coment"># 4. qué servicios y versiones corren en los puertos encontrados</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-sV</span> <span class="tok-atributo">-p</span> 22,80,3306 192.168.56.101
+
+<span class="tok-coment"># 5. ficha completa de un equipo, guardando el resultado</span>
+<span class="tok-clave">sudo nmap</span> <span class="tok-atributo">-A</span> <span class="tok-atributo">-oA</span> ficha_101 192.168.56.101
+
+<span class="tok-coment"># 6. comprobar si mi servidor web y mi base de datos están accesibles</span>
+<span class="tok-clave">nmap</span> <span class="tok-atributo">-p</span> 80,443,3306 miservidor.local
+
+<span class="tok-coment"># 7. ver qué expone mi propio equipo</span>
+<span class="tok-clave">nmap</span> localhost</code></pre></figure>
+          </div>
+        </section>
+        <!-- 12. Leer la salida -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Leer la salida</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="text"><code>Starting Nmap 7.94 ( https://nmap.org ) at 2026-09-17 10:12 CEST
+Nmap scan report for 192.168.56.101
+Host is up (0.00042s latency).
+Not shown: 997 closed tcp ports (reset)
+
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 9.6p1 Debian 3 (protocol 2.0)
+80/tcp   open  http    Apache httpd 2.4.58 ((Debian))
+3306/tcp open  mysql   MySQL 8.0.36
+MAC Address: 08:00:27:AB:CD:EF (Oracle VirtualBox virtual NIC)
+
+Nmap done: 1 IP address (1 host up) scanned in 8.21 seconds</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Host is up</code></th><td>el equipo responde; entre paréntesis, la latencia</td></tr>
+                  <tr><th scope="row"><code>Not shown</code></th><td>puertos que no se listan porque están todos en el mismo estado</td></tr>
+                  <tr><th scope="row"><code>PORT</code></th><td>número y protocolo</td></tr>
+                  <tr><th scope="row"><code>SERVICE</code></th><td>servicio habitual de ese puerto, según la lista <code>/usr/share/nmap/nmap-services</code></td></tr>
+                  <tr><th scope="row"><code>VERSION</code></th><td>lo averiguado con <code>-sV</code>; sin esa opción, esta columna no aparece</td></tr>
+                  <tr><th scope="row"><code>MAC Address</code></th><td>solo aparece si el objetivo está en tu misma red local</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 13. Cortafuegos y detección -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Cortafuegos y detección</h2>
+          <div class="cuerpo"><p class="txt">Nmap incluye opciones pensadas para comprobar cómo reacciona un cortafuegos o un IDS ante tráfico poco habitual: <code>-f</code> fragmenta los paquetes, <code>--mtu</code> fija el tamaño, <code>-D</code> añade señuelos, <code>-S</code> falsea la IP de origen, <code>--source-port 53</code> sale desde un puerto que suele estar permitido y <code>--spoof-mac</code> cambia la MAC.</p><p class="aviso"><strong>Cuidado:</strong> estas opciones sirven para auditar tus propias defensas y comprobar que el cortafuegos y el IDS hacen su trabajo. Usarlas para ocultarte en una red ajena es otra cosa muy distinta, y además rara vez funciona: el tráfico sigue quedando registrado.</p><p class="nota">El lado defensivo es igual de importante: revisa qué expone tu equipo con <code>ss -tulpn</code>, cierra lo que no uses, filtra con <code>ufw</code> y comprueba en los registros (<code>journalctl</code>, <code>/var/log/auth.log</code>) cómo se ve un escaneo desde el otro lado.</p></div>
+        </section>
+        <!-- 14. Normas de uso -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Normas de uso</h2>
+          <div class="cuerpo"><p class="txt">Pide autorización por escrito y deja claro el alcance: qué direcciones, qué puertos y en qué horario. Empieza por lo menos intrusivo. Avisa a quien administre la red, porque un escaneo puede disparar alertas o saturar equipos antiguos. Guarda los resultados y trátalos como información sensible: un inventario de servicios y versiones es justo lo que buscaría un atacante. Y no escanees desde la red del centro hacia fuera.</p></div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="terminal-linux.html">← Terminal Linux</a><span></span></nav>
+      <footer class="pie">Documentación oficial y guía de referencia en <a href="https://nmap.org/book/man.html">nmap.org/book/man.html</a> (hay traducción al español).</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

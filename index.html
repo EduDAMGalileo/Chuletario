@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chuletario</title>
+    <link rel="stylesheet" href="assets/chuletas.css">
+    <link rel="icon" href="assets/favicon.svg">
+  </head>
+  <body>
+    <!-- Cabecera -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo"><h1>Chuletario</h1></div>
+        <div class="apoyo">
+          <p class="sub">Resúmenes de sintaxis para tener a mano mientras programas.</p>
+          <div class="herramientas">
+      <button type="button" data-accion="tema">Tema oscuro</button>
+      <button type="button" data-accion="imprimir">Imprimir</button>
+    </div>
+        </div>
+      </div>
+    </header>
+    <main class="wrap">
+      <p class="intro">Cada chuleta tiene su índice de secciones, ejemplos que se pueden copiar con un clic y una versión pensada para imprimir. Funcionan sin conexión: basta con abrir los ficheros.</p>
+      <!-- Tema: Sistemas y redes -->
+      <section class="grupo">
+        <h2><a href="sistemas/index.html">Sistemas y redes</a></h2>
+        <p class="desc-tema">La terminal de Linux y el análisis de una red.</p>
+        <div class="fichas"><a class="ficha" href="sistemas/terminal-linux.html" style="--color-tema: #A80030"><span class="nombre">Terminal Linux</span><span class="desc">Comandos más usados en sistemas basados en Debian, como Ubuntu y Kali.</span></a><a class="ficha" href="sistemas/nmap.html" style="--color-tema: #A80030"><span class="nombre">Nmap</span><span class="desc">Descubrimiento de equipos, escaneo de puertos y detección de servicios.</span></a></div>
+      </section>
+      <!-- Tema: Control de versiones -->
+      <section class="grupo">
+        <h2><a href="git/git.html">Control de versiones</a></h2>
+        <p class="desc-tema">Git en el día a día.</p>
+        <div class="fichas"><a class="ficha" href="git/git.html" style="--color-tema: #F05032"><span class="nombre">Git</span><span class="desc">Configuración, flujo diario, ramas, merge y cómo deshacer cambios.</span></a></div>
+      </section>
+      <!-- Tema: Java -->
+      <section class="grupo">
+        <h2><a href="java/index.html">Java</a></h2>
+        <p class="desc-tema">Sintaxis, orientación a objetos, colecciones y entrada/salida.</p>
+        <div class="fichas"><a class="ficha" href="java/sintaxis.html" style="--color-tema: #E76F00"><span class="nombre">Sintaxis básica</span><span class="desc">Tipos, variables, operadores, control de flujo y arrays.</span></a><a class="ficha" href="java/strings.html" style="--color-tema: #E76F00"><span class="nombre">Strings</span><span class="desc">Métodos de String, formato de texto, bloques de texto y StringBuilder.</span></a><a class="ficha" href="java/poo.html" style="--color-tema: #E76F00"><span class="nombre">Orientación a objetos</span><span class="desc">Clases, herencia, interfaces, records, enums y pattern matching.</span></a><a class="ficha" href="java/colecciones.html" style="--color-tema: #E76F00"><span class="nombre">Colecciones</span><span class="desc">List, Set, Map, recorridos, ordenación y utilidades.</span></a><a class="ficha" href="java/streams.html" style="--color-tema: #E76F00"><span class="nombre">Lambdas y streams</span><span class="desc">Expresiones lambda, interfaces funcionales, streams y Optional.</span></a><a class="ficha" href="java/excepciones.html" style="--color-tema: #E76F00"><span class="nombre">Excepciones</span><span class="desc">try-catch, excepciones comprobadas, recursos y errores propios.</span></a><a class="ficha" href="java/ficheros.html" style="--color-tema: #E76F00"><span class="nombre">Ficheros y entrada/salida</span><span class="desc">Leer y escribir ficheros, rutas y entrada por teclado.</span></a><a class="ficha" href="java/entrada-salida.html" style="--color-tema: #E76F00"><span class="nombre">Clases de entrada/salida</span><span class="desc">Jerarquía de flujos de bytes y caracteres, y los métodos de cada clase.</span></a><a class="ficha" href="java/fechas.html" style="--color-tema: #E76F00"><span class="nombre">Fechas y horas</span><span class="desc">LocalDate, LocalDateTime, Duration, Period, formato y cálculos con fechas.</span></a></div>
+      </section>
+      <!-- Tema: Bases de datos -->
+      <section class="grupo">
+        <h2><a href="bases-datos/index.html">Bases de datos</a></h2>
+        <p class="desc-tema">SQL y las particularidades de cada gestor.</p>
+        <div class="fichas"><a class="ficha" href="bases-datos/sql.html" style="--color-tema: #00758F"><span class="nombre">SQL</span><span class="desc">DDL, DML, consultas, JOIN, agrupación y transacciones.</span></a><a class="ficha" href="bases-datos/postgresql.html" style="--color-tema: #00758F"><span class="nombre">PostgreSQL</span><span class="desc">Comandos de psql y diferencias de sintaxis con MySQL.</span></a></div>
+      </section>
+      <!-- Tema: Desarrollo web -->
+      <section class="grupo">
+        <h2><a href="web/index.html">Desarrollo web</a></h2>
+        <p class="desc-tema">Estructura y estilo de una página.</p>
+        <div class="fichas"><a class="ficha" href="web/html.html" style="--color-tema: #E34C26"><span class="nombre">HTML</span><span class="desc">Estructura, etiquetas semánticas, tablas y formularios.</span></a><a class="ficha" href="web/css.html" style="--color-tema: #E34C26"><span class="nombre">CSS</span><span class="desc">Selectores, modelo de caja, Flexbox, Grid y responsive.</span></a></div>
+      </section>
+      <!-- Tema: XML -->
+      <section class="grupo">
+        <h2><a href="xml/index.html">XML</a></h2>
+        <p class="desc-tema">Definir, validar y consultar documentos XML.</p>
+        <div class="fichas"><a class="ficha" href="xml/dtd.html" style="--color-tema: #5E6AD2"><span class="nombre">DTD</span><span class="desc">Elementos, atributos, entidades y validación.</span></a><a class="ficha" href="xml/xsd.html" style="--color-tema: #5E6AD2"><span class="nombre">XML Schema</span><span class="desc">Tipos simples y complejos, restricciones y claves.</span></a><a class="ficha" href="xml/xpath.html" style="--color-tema: #5E6AD2"><span class="nombre">XPath</span><span class="desc">Rutas, ejes, predicados y funciones para consultar XML.</span></a><a class="ficha" href="xml/xquery.html" style="--color-tema: #5E6AD2"><span class="nombre">XQuery</span><span class="desc">Consultas FLWOR, construcción de XML, agrupación y actualización.</span></a></div>
+      </section>
+      <footer class="pie">Proyecto abierto: se pueden añadir chuletas nuevas creando un fichero HTML dentro de la carpeta de su tema.</footer>
+    </main>
+    <script src="assets/chuletas.js" defer></script>
+  </body>
+</html>

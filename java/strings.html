@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Strings · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Strings</span></nav>
+          <h1>Strings</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Métodos de <code>String</code>, comparación de textos, formato, bloques de texto y <code>StringBuilder</code>.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="strings.html" aria-current="page">Strings</a><a href="poo.html">Orientación a objetos</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="excepciones.html">Excepciones</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="fechas.html">Fechas y horas</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Consultar el contenido</a><a href="#s2"><b>2</b>Comparar</a><a href="#s3"><b>3</b>Transformar</a><a href="#s4"><b>4</b>Dividir y unir</a><a href="#s5"><b>5</b>Dar formato</a><a href="#s6"><b>6</b>Bloques de texto</a><a href="#s7"><b>7</b>Conversiones</a><a href="#s8"><b>8</b>StringBuilder</a><a href="#s9"><b>9</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Lo esencial de String</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Un String no se modifica nunca</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> saludo = <span class="tok-texto">"Hola"</span>;
+saludo.toUpperCase();          <span class="tok-coment">// no cambia saludo</span>
+saludo = saludo.toUpperCase(); <span class="tok-coment">// así sí: se crea otro String</span>
+
+<span class="tok-coment">// por eso, para construir texto en un bucle, se usa StringBuilder</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Comparar textos</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> a = <span class="tok-texto">"hola"</span>;
+<span class="tok-tipo">String</span> b = sc.nextLine();      <span class="tok-coment">// el usuario escribe hola</span>
+
+a == b          <span class="tok-coment">// false: son dos objetos distintos</span>
+a.equals(b)     <span class="tok-coment">// true: mismo contenido</span>
+a.equalsIgnoreCase(<span class="tok-texto">"HOLA"</span>)  <span class="tok-coment">// true</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Las posiciones empiezan en 0</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> s = <span class="tok-texto">"Chuletario"</span>;
+<span class="tok-coment">//          0123456789</span>
+s.charAt(<span class="tok-numero">0</span>)        <span class="tok-coment">// 'C'</span>
+s.substring(<span class="tok-numero">0</span>, <span class="tok-numero">3</span>)  <span class="tok-coment">// "Chu"  (el final no se incluye)</span>
+s.length()         <span class="tok-coment">// 10</span></code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Consultar el contenido -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Consultar el contenido</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>s.length()</code></th><td>número de caracteres</td></tr>
+                  <tr><th scope="row"><code>s.charAt(i)</code></th><td>carácter de la posición <code>i</code></td></tr>
+                  <tr><th scope="row"><code>s.indexOf("a")</code></th><td>primera posición del texto, o -1 si no está</td></tr>
+                  <tr><th scope="row"><code>s.lastIndexOf("a")</code></th><td>última posición</td></tr>
+                  <tr><th scope="row"><code>s.contains("ab")</code></th><td>¿aparece ese texto?</td></tr>
+                  <tr><th scope="row"><code>s.startsWith("ht")</code></th><td>¿empieza así?</td></tr>
+                  <tr><th scope="row"><code>s.endsWith(".pdf")</code></th><td>¿termina así?</td></tr>
+                  <tr><th scope="row"><code>s.isEmpty()</code></th><td>¿tiene longitud 0?</td></tr>
+                  <tr><th scope="row"><code>s.isBlank()</code></th><td>¿está vacío o solo tiene espacios?</td></tr>
+                  <tr><th scope="row"><code>s.matches("[0-9]+")</code></th><td>¿encaja entera con la expresión regular?</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Comparar -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Comparar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>a.equals(b)</code></th><td>mismo contenido</td></tr>
+                  <tr><th scope="row"><code>a.equalsIgnoreCase(b)</code></th><td>igual sin distinguir mayúsculas</td></tr>
+                  <tr><th scope="row"><code>a.compareTo(b)</code></th><td>orden alfabético: negativo, 0 o positivo</td></tr>
+                  <tr><th scope="row"><code>a.compareToIgnoreCase(b)</code></th><td>lo mismo sin distinguir mayúsculas</td></tr>
+                  <tr><th scope="row"><code>a == b</code></th><td>compara si son el <strong>mismo objeto</strong>: casi nunca es lo que quieres</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// truco para evitar NullPointerException si la variable puede ser null</span>
+<span class="tok-clave">if</span> (<span class="tok-texto">"salir"</span>.equals(opcion)) { ... }
+
+<span class="tok-coment">// ordenar alfabéticamente</span>
+nombres.sort(<span class="tok-tipo">String</span>::compareToIgnoreCase);</code></pre></figure>
+            <p class="nota">Los literales iguales (<code>"hola"</code> escrito dos veces) comparten objeto, así que <code>==</code> a veces devuelve <code>true</code> y da una falsa sensación de que funciona. En cuanto el texto llega de un <code>Scanner</code> o de un fichero, deja de funcionar.</p>
+          </div>
+        </section>
+        <!-- 3. Transformar -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Transformar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>s.substring(3)</code></th><td>desde la posición 3 hasta el final</td></tr>
+                  <tr><th scope="row"><code>s.substring(2, 5)</code></th><td>de la 2 a la 4; el final no entra</td></tr>
+                  <tr><th scope="row"><code>s.toUpperCase()</code></th><td>a mayúsculas</td></tr>
+                  <tr><th scope="row"><code>s.toLowerCase()</code></th><td>a minúsculas</td></tr>
+                  <tr><th scope="row"><code>s.strip()</code></th><td>quita espacios de los extremos (mejor que <code>trim()</code>)</td></tr>
+                  <tr><th scope="row"><code>s.replace("a", "b")</code></th><td>sustituye todas las apariciones</td></tr>
+                  <tr><th scope="row" class="larga"><code>s.replaceAll("\\s+", " ")</code></th><td>sustituye con expresión regular</td></tr>
+                  <tr><th scope="row"><code>s.repeat(3)</code></th><td>repite el texto</td></tr>
+                  <tr><th scope="row"><code>s.concat(t)</code></th><td>concatena; normalmente se usa <code>+</code></td></tr>
+                  <tr><th scope="row"><code>s.indent(4)</code></th><td>añade sangría a cada línea</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> texto = <span class="tok-texto">"  Hola Mundo  "</span>;
+<span class="tok-tipo">IO</span>.println(texto.strip().toUpperCase());  <span class="tok-coment">// "HOLA MUNDO"</span>
+<span class="tok-tipo">IO</span>.println(<span class="tok-texto">"-"</span>.repeat(<span class="tok-numero">30</span>));               <span class="tok-coment">// línea separadora</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> estos métodos devuelven un texto nuevo: si no guardas el resultado, no pasa nada.</p>
+          </div>
+        </section>
+        <!-- 4. Dividir y unir -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Dividir y unir</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> csv = <span class="tok-texto">"Ana;8.5;DAM"</span>;
+<span class="tok-tipo">String</span>[] campos = csv.split(<span class="tok-texto">";"</span>);
+<span class="tok-tipo">IO</span>.println(campos[<span class="tok-numero">0</span>]);              <span class="tok-coment">// Ana</span>
+
+<span class="tok-tipo">String</span>[] palabras = <span class="tok-texto">"uno dos  tres"</span>.split(<span class="tok-texto">"\\s+"</span>);  <span class="tok-coment">// por espacios</span>
+
+<span class="tok-tipo">String</span> unido = <span class="tok-tipo">String</span>.join(<span class="tok-texto">", "</span>, <span class="tok-texto">"rojo"</span>, <span class="tok-texto">"verde"</span>, <span class="tok-texto">"azul"</span>);
+<span class="tok-tipo">String</span> desdeLista = <span class="tok-tipo">String</span>.join(<span class="tok-texto">"\n"</span>, lineas);      <span class="tok-coment">// lista → texto</span>
+
+texto.lines().forEach(<span class="tok-tipo">IO</span>::println);  <span class="tok-coment">// recorre línea a línea</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>s.split(",")</code></th><td>devuelve un <code>String[]</code></td></tr>
+                  <tr><th scope="row"><code>s.split(",", 2)</code></th><td>como mucho 2 trozos</td></tr>
+                  <tr><th scope="row"><code>String.join(sep, partes)</code></th><td>une con un separador</td></tr>
+                  <tr><th scope="row"><code>s.lines()</code></th><td>stream con cada línea</td></tr>
+                  <tr><th scope="row"><code>s.toCharArray()</code></th><td>array de caracteres</td></tr>
+                  <tr><th scope="row"><code>s.chars()</code></th><td>stream de códigos de carácter</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>split</code> recibe una expresión regular, así que los caracteres especiales hay que escaparlos: para separar por puntos, <code>split("\\.")</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Dar formato -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Dar formato</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> nombre = <span class="tok-texto">"Ana"</span>;
+<span class="tok-tipo">double</span> nota = <span class="tok-numero">8.456</span>;
+
+<span class="tok-tipo">String</span> msg = <span class="tok-texto">"%s ha sacado un %.2f"</span>.formatted(nombre, nota);
+<span class="tok-tipo">String</span> otro = <span class="tok-tipo">String</span>.format(<span class="tok-texto">"%s ha sacado un %.2f"</span>, nombre, nota);
+<span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%-10s|%5.2f|%n"</span>, nombre, nota);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>%s</code></th><td>texto</td></tr>
+                  <tr><th scope="row"><code>%d</code></th><td>entero</td></tr>
+                  <tr><th scope="row"><code>%.2f</code></th><td>decimal con 2 decimales</td></tr>
+                  <tr><th scope="row"><code>%,d</code></th><td>entero con separador de miles</td></tr>
+                  <tr><th scope="row"><code>%5d</code></th><td>ancho mínimo 5, alineado a la derecha</td></tr>
+                  <tr><th scope="row"><code>%-10s</code></th><td>ancho mínimo 10, alineado a la izquierda</td></tr>
+                  <tr><th scope="row"><code>%%</code></th><td>el símbolo de porcentaje</td></tr>
+                  <tr><th scope="row"><code>%n</code></th><td>salto de línea del sistema</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Formatear números con separadores según el país: <code>NumberFormat.getInstance(Locale.of("es", "ES")).format(1234.5)</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Bloques de texto -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Bloques de texto</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> json = <span class="tok-texto">"""
+    {
+      "nombre": "Ana",
+      "nota": 8.5
+    }
+    """</span>;
+
+<span class="tok-tipo">String</span> consulta = <span class="tok-texto">"""
+    SELECT nombre, nota
+    FROM alumno
+    WHERE nota &gt;= 5
+    """</span>;</code></pre></figure>
+            <p class="nota">Las comillas de apertura van solas en su línea. La sangría común a todas las líneas se elimina, así que el texto queda alineado con el código sin que sobren espacios.</p>
+          </div>
+        </section>
+        <!-- 7. Conversiones -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Conversiones</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Integer.parseInt(s)</code></th><td>texto a <code>int</code></td></tr>
+                  <tr><th scope="row"><code>Double.parseDouble(s)</code></th><td>texto a <code>double</code></td></tr>
+                  <tr><th scope="row"><code>Boolean.parseBoolean(s)</code></th><td>texto a <code>boolean</code></td></tr>
+                  <tr><th scope="row"><code>String.valueOf(x)</code></th><td>cualquier cosa a texto</td></tr>
+                  <tr><th scope="row"><code>Integer.toString(n)</code></th><td>entero a texto</td></tr>
+                  <tr><th scope="row" class="larga"><code>Integer.toBinaryString(n)</code></th><td>entero a binario</td></tr>
+                  <tr><th scope="row"><code>(int) c</code></th><td>carácter a su código: <code>(int) 'A'</code> es 65</td></tr>
+                  <tr><th scope="row"><code>(char) n</code></th><td>código a carácter</td></tr>
+                  <tr><th scope="row"><code>Character.isDigit(c)</code></th><td>también <code>isLetter</code>, <code>isUpperCase</code>, <code>isWhitespace</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> {
+    <span class="tok-tipo">int</span> edad = <span class="tok-tipo">Integer</span>.parseInt(entrada);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">NumberFormatException</span> e) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Eso no es un número"</span>);
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 8. StringBuilder -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>StringBuilder</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">StringBuilder</span> sb = <span class="tok-clave">new</span> <span class="tok-tipo">StringBuilder</span>();
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">Alumno</span> a : alumnos) {
+    sb.append(a.getNombre()).append(<span class="tok-texto">" - "</span>).append(a.getNota()).append(<span class="tok-texto">"\n"</span>);
+}
+
+<span class="tok-tipo">String</span> resultado = sb.toString();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>append(x)</code></th><td>añade al final (devuelve el propio StringBuilder, se pueden encadenar)</td></tr>
+                  <tr><th scope="row"><code>insert(0, x)</code></th><td>inserta en una posición</td></tr>
+                  <tr><th scope="row"><code>delete(0, 3)</code></th><td>borra un tramo</td></tr>
+                  <tr><th scope="row"><code>deleteCharAt(i)</code></th><td>borra un carácter</td></tr>
+                  <tr><th scope="row"><code>replace(0, 3, "abc")</code></th><td>sustituye un tramo</td></tr>
+                  <tr><th scope="row"><code>reverse()</code></th><td>le da la vuelta</td></tr>
+                  <tr><th scope="row"><code>setLength(0)</code></th><td>lo vacía para reutilizarlo</td></tr>
+                  <tr><th scope="row"><code>length()  toString()</code></th><td>longitud y texto final</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Concatenar con <code>+</code> dentro de un bucle crea un texto nuevo en cada vuelta. Con pocas vueltas da igual; con muchas, la diferencia es enorme. Fuera de bucles, usa <code>+</code>: se lee mejor.</p>
+          </div>
+        </section>
+        <!-- 9. Despistes habituales -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>s.substring(0, 5)</code></th><td>lanza excepción si el texto es más corto: comprueba antes con <code>length()</code></td></tr>
+                  <tr><th scope="row"><code>s.charAt(s.length())</code></th><td>fuera de rango: la última posición es <code>length() - 1</code></td></tr>
+                  <tr><th scope="row"><code>if (s == "hola")</code></th><td>usa <code>equals</code></td></tr>
+                  <tr><th scope="row"><code>if (s.equals(null))</code></th><td>no detecta null; usa <code>if (s == null)</code></td></tr>
+                  <tr><th scope="row"><code>s.split(".")</code></th><td>no divide por puntos; hay que escapar: <code>split("\\.")</code></td></tr>
+                  <tr><th scope="row"><code>texto += x en bucle</code></th><td>usa <code>StringBuilder</code></td></tr>
+                  <tr><th scope="row"><code>s.replace no cambia s</code></th><td>guarda el resultado: <code>s = s.replace(...)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sintaxis.html">← Sintaxis básica</a><a class="siguiente" href="poo.html">Orientación a objetos →</a></nav>
+      <footer class="pie">Referencia completa de la clase: <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html">java.lang.String</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

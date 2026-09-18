@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fechas y horas · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Fechas y horas</span></nav>
+          <h1>Fechas y horas</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El paquete <code>java.time</code>: fechas, horas, duraciones, formato y cálculos. Todas sus clases son inmutables.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="strings.html">Strings</a><a href="poo.html">Orientación a objetos</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="excepciones.html">Excepciones</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="fechas.html" aria-current="page">Fechas y horas</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Crear fechas y horas</a><a href="#s2"><b>2</b>Consultar partes de una fecha</a><a href="#s3"><b>3</b>Sumar, restar y ajustar</a><a href="#s4"><b>4</b>Comparar fechas</a><a href="#s5"><b>5</b>Cuánto tiempo hay entre dos fechas</a><a href="#s6"><b>6</b>Dar formato y leer fechas de texto</a><a href="#s7"><b>7</b>Zonas horarias e instantes</a><a href="#s8"><b>8</b>Otras clases útiles</a><a href="#s9"><b>9</b>Convivir con las clases antiguas</a><a href="#s10"><b>10</b>Fechas y bases de datos (JDBC)</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Las cuatro clases que vas a usar el 90 % de las veces</p>
+        <div class="cols">
+          <div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>LocalDate</code></th><td>solo fecha: <code>2026-09-18</code></td></tr>
+                  <tr><th scope="row"><code>LocalTime</code></th><td>solo hora: <code>09:30:00</code></td></tr>
+                  <tr><th scope="row"><code>LocalDateTime</code></th><td>fecha y hora, sin zona horaria</td></tr>
+                  <tr><th scope="row"><code>ZonedDateTime</code></th><td>fecha y hora con zona horaria</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">LocalDate</span> hoy = <span class="tok-tipo">LocalDate</span>.now();
+<span class="tok-tipo">LocalDate</span> nacimiento = <span class="tok-tipo">LocalDate</span>.of(<span class="tok-numero">2006</span>, <span class="tok-numero">3</span>, <span class="tok-numero">14</span>);
+<span class="tok-tipo">LocalDateTime</span> ahora = <span class="tok-tipo">LocalDateTime</span>.now();
+
+<span class="tok-tipo">int</span> edad = <span class="tok-tipo">Period</span>.between(nacimiento, hoy).getYears();</code></pre></figure>
+            <p class="nota">Todas están en <code>java.time</code> y son <strong>inmutables</strong>: <code>fecha.plusDays(1)</code> no cambia <code>fecha</code>, devuelve otra. Guarda siempre el resultado.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Crear fechas y horas -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Crear fechas y horas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>LocalDate.now()</code></th><td>la fecha de hoy</td></tr>
+                  <tr><th scope="row" class="larga"><code>LocalDate.of(2026, 9, 18)</code></th><td>año, mes, día</td></tr>
+                  <tr><th scope="row" class="larga"><code>LocalDate.of(2026, Month.SEPTEMBER, 18)</code></th><td>con la constante del mes</td></tr>
+                  <tr><th scope="row" class="larga"><code>LocalDate.parse("2026-09-18")</code></th><td>desde texto en formato ISO</td></tr>
+                  <tr><th scope="row"><code>LocalTime.of(9, 30)</code></th><td>hora y minutos (también segundos)</td></tr>
+                  <tr><th scope="row" class="larga"><code>LocalDateTime.of(2026, 9, 18, 9, 30)</code></th><td>fecha y hora</td></tr>
+                  <tr><th scope="row" class="larga"><code>LocalDateTime.of(fecha, hora)</code></th><td>combinando las dos</td></tr>
+                  <tr><th scope="row"><code>fecha.atStartOfDay()</code></th><td>de LocalDate a LocalDateTime a las 00:00</td></tr>
+                  <tr><th scope="row"><code>fechaHora.toLocalDate()</code></th><td>quedarse solo con la fecha</td></tr>
+                  <tr><th scope="row" class="larga"><code>ZonedDateTime.now(ZoneId.of("Europe/Madrid"))</code></th><td>con zona horaria</td></tr>
+                  <tr><th scope="row"><code>Instant.now()</code></th><td>un instante exacto en la línea del tiempo (UTC)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">LocalDate</span> matricula = <span class="tok-tipo">LocalDate</span>.of(<span class="tok-numero">2026</span>, <span class="tok-numero">9</span>, <span class="tok-numero">14</span>);
+<span class="tok-tipo">LocalTime</span> entrada = <span class="tok-tipo">LocalTime</span>.of(<span class="tok-numero">8</span>, <span class="tok-numero">30</span>);
+<span class="tok-tipo">LocalDateTime</span> clase = <span class="tok-tipo">LocalDateTime</span>.of(matricula, entrada);
+
+<span class="tok-tipo">IO</span>.println(clase);          <span class="tok-coment">// 2026-09-14T08:30</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> los meses van del 1 al 12, como en la vida real. Esto cambió respecto a la antigua clase <code>Calendar</code>, donde enero era el 0.</p>
+          </div>
+        </section>
+        <!-- 2. Consultar partes de una fecha -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Consultar partes de una fecha</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>getYear()</code></th><td>el año</td></tr>
+                  <tr><th scope="row"><code>getMonthValue()</code></th><td>el mes como número, 1 a 12</td></tr>
+                  <tr><th scope="row"><code>getMonth()</code></th><td>el mes como <code>Month.SEPTEMBER</code></td></tr>
+                  <tr><th scope="row"><code>getDayOfMonth()</code></th><td>el día del mes</td></tr>
+                  <tr><th scope="row"><code>getDayOfWeek()</code></th><td>el día de la semana como <code>DayOfWeek.FRIDAY</code></td></tr>
+                  <tr><th scope="row"><code>getDayOfYear()</code></th><td>qué día del año es, 1 a 366</td></tr>
+                  <tr><th scope="row" class="larga"><code>getHour()  getMinute()  getSecond()</code></th><td>partes de la hora</td></tr>
+                  <tr><th scope="row"><code>lengthOfMonth()</code></th><td>cuántos días tiene ese mes</td></tr>
+                  <tr><th scope="row"><code>isLeapYear()</code></th><td>¿es bisiesto?</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">LocalDate</span> d = <span class="tok-tipo">LocalDate</span>.of(<span class="tok-numero">2026</span>, <span class="tok-numero">9</span>, <span class="tok-numero">18</span>);
+
+<span class="tok-tipo">IO</span>.println(d.getDayOfWeek());          <span class="tok-coment">// FRIDAY</span>
+<span class="tok-tipo">IO</span>.println(d.lengthOfMonth());         <span class="tok-coment">// 30</span>
+<span class="tok-tipo">IO</span>.println(d.isLeapYear());            <span class="tok-coment">// false</span>
+
+<span class="tok-coment">// el nombre en español</span>
+<span class="tok-tipo">Locale</span> es = <span class="tok-tipo">Locale</span>.of(<span class="tok-texto">"es"</span>, <span class="tok-texto">"ES"</span>);
+<span class="tok-tipo">IO</span>.println(d.getDayOfWeek().getDisplayName(<span class="tok-tipo">TextStyle</span>.<span class="tok-tipo">FULL</span>, es));  <span class="tok-coment">// viernes</span>
+<span class="tok-tipo">IO</span>.println(d.getMonth().getDisplayName(<span class="tok-tipo">TextStyle</span>.<span class="tok-tipo">FULL</span>, es));      <span class="tok-coment">// septiembre</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 3. Sumar, restar y ajustar -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Sumar, restar y ajustar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>plusDays(7)</code></th><td>también <code>plusWeeks</code>, <code>plusMonths</code>, <code>plusYears</code></td></tr>
+                  <tr><th scope="row"><code>minusDays(30)</code></th><td>y los <code>minus…</code> equivalentes</td></tr>
+                  <tr><th scope="row" class="larga"><code>plusHours(2)  plusMinutes(15)</code></th><td>en LocalTime y LocalDateTime</td></tr>
+                  <tr><th scope="row"><code>withDayOfMonth(1)</code></th><td>cambia una parte concreta</td></tr>
+                  <tr><th scope="row" class="larga"><code>withMonth(12)  withYear(2027)</code></th><td>lo mismo con mes y año</td></tr>
+                  <tr><th scope="row" class="larga"><code>plus(3, ChronoUnit.WEEKS)</code></th><td>indicando la unidad</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">LocalDate</span> hoy = <span class="tok-tipo">LocalDate</span>.now();
+
+<span class="tok-tipo">LocalDate</span> entrega = hoy.plusWeeks(<span class="tok-numero">2</span>);
+<span class="tok-tipo">LocalDate</span> finDeMes = hoy.withDayOfMonth(hoy.lengthOfMonth());
+
+<span class="tok-coment">// ajustes con nombre propio</span>
+<span class="tok-tipo">LocalDate</span> primero = hoy.with(<span class="tok-tipo">TemporalAdjusters</span>.firstDayOfMonth());
+<span class="tok-tipo">LocalDate</span> ultimo = hoy.with(<span class="tok-tipo">TemporalAdjusters</span>.lastDayOfMonth());
+<span class="tok-tipo">LocalDate</span> proximoLunes = hoy.with(<span class="tok-tipo">TemporalAdjusters</span>.next(<span class="tok-tipo">DayOfWeek</span>.<span class="tok-tipo">MONDAY</span>));</code></pre></figure>
+            <p class="nota">Si el día no existe en el mes destino, Java ajusta al último válido: <code>LocalDate.of(2026, 1, 31).plusMonths(1)</code> da el 28 de febrero.</p>
+          </div>
+        </section>
+        <!-- 4. Comparar fechas -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Comparar fechas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>a.isBefore(b)</code></th><td>¿va antes?</td></tr>
+                  <tr><th scope="row"><code>a.isAfter(b)</code></th><td>¿va después?</td></tr>
+                  <tr><th scope="row"><code>a.isEqual(b)</code></th><td>¿es la misma fecha?</td></tr>
+                  <tr><th scope="row"><code>a.equals(b)</code></th><td>igualdad de objetos; en LocalDate equivale a isEqual</td></tr>
+                  <tr><th scope="row"><code>a.compareTo(b)</code></th><td>negativo, cero o positivo: sirve para ordenar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">if</span> (fechaEntrega.isBefore(<span class="tok-tipo">LocalDate</span>.now())) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Fuera de plazo"</span>);
+}
+
+<span class="tok-coment">// ordenar una lista de objetos por fecha</span>
+tareas.sort(<span class="tok-tipo">Comparator</span>.comparing(<span class="tok-tipo">Tarea</span>::fechaLimite));
+
+<span class="tok-coment">// la más próxima</span>
+<span class="tok-tipo">Optional</span>&lt;<span class="tok-tipo">Tarea</span>&gt; siguiente = tareas.stream()
+    .filter(t -&gt; !t.fechaLimite().isBefore(<span class="tok-tipo">LocalDate</span>.now()))
+    .min(<span class="tok-tipo">Comparator</span>.comparing(<span class="tok-tipo">Tarea</span>::fechaLimite));</code></pre></figure>
+          </div>
+        </section>
+        <!-- 5. Cuánto tiempo hay entre dos fechas -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Cuánto tiempo hay entre dos fechas</h2>
+          <div class="cuerpo">
+            <h3>Period: en años, meses y días</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Period</span> p = <span class="tok-tipo">Period</span>.between(nacimiento, <span class="tok-tipo">LocalDate</span>.now());
+
+<span class="tok-tipo">IO</span>.println(p.getYears() + <span class="tok-texto">" años, "</span> + p.getMonths() + <span class="tok-texto">" meses y "</span>
+         + p.getDays() + <span class="tok-texto">" días"</span>);
+
+<span class="tok-tipo">Period</span> tresMeses = <span class="tok-tipo">Period</span>.ofMonths(<span class="tok-numero">3</span>);
+<span class="tok-tipo">LocalDate</span> fin = inicio.plus(tresMeses);</code></pre></figure>
+            <h3>Duration: en horas, minutos y segundos</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Duration</span> d = <span class="tok-tipo">Duration</span>.between(entrada, salida);
+
+<span class="tok-tipo">IO</span>.println(d.toHours() + <span class="tok-texto">" h "</span> + d.toMinutesPart() + <span class="tok-texto">" min"</span>);
+<span class="tok-tipo">IO</span>.println(d.toMinutes());       <span class="tok-coment">// el total en minutos</span>
+
+<span class="tok-tipo">Duration</span> clase = <span class="tok-tipo">Duration</span>.ofMinutes(<span class="tok-numero">55</span>);</code></pre></figure>
+            <h3>ChronoUnit: la diferencia en una sola unidad</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">long</span> dias = <span class="tok-tipo">ChronoUnit</span>.<span class="tok-tipo">DAYS</span>.between(inicio, fin);
+<span class="tok-tipo">long</span> meses = <span class="tok-tipo">ChronoUnit</span>.<span class="tok-tipo">MONTHS</span>.between(inicio, fin);
+<span class="tok-tipo">long</span> horas = <span class="tok-tipo">ChronoUnit</span>.<span class="tok-tipo">HOURS</span>.between(desde, hasta);</code></pre></figure>
+            <p class="nota"><code>Period</code> para fechas, <code>Duration</code> para horas y <code>ChronoUnit</code> cuando solo quieres un número. Cuidado con <code>getDays()</code> de un Period: son los días <em>sobrantes</em> tras los años y meses, no el total. El total se saca con <code>ChronoUnit.DAYS.between</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Dar formato y leer fechas de texto -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Dar formato y leer fechas de texto</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">DateTimeFormatter</span> fmt = <span class="tok-tipo">DateTimeFormatter</span>.ofPattern(<span class="tok-texto">"dd/MM/yyyy"</span>);
+
+<span class="tok-tipo">String</span> texto = <span class="tok-tipo">LocalDate</span>.now().format(fmt);            <span class="tok-coment">// 18/09/2026</span>
+<span class="tok-tipo">LocalDate</span> fecha = <span class="tok-tipo">LocalDate</span>.parse(<span class="tok-texto">"18/09/2026"</span>, fmt);  <span class="tok-coment">// de vuelta</span>
+
+<span class="tok-coment">// formato largo, en español</span>
+<span class="tok-tipo">DateTimeFormatter</span> largo = <span class="tok-tipo">DateTimeFormatter</span>
+    .ofLocalizedDate(<span class="tok-tipo">FormatStyle</span>.<span class="tok-tipo">FULL</span>)
+    .withLocale(<span class="tok-tipo">Locale</span>.of(<span class="tok-texto">"es"</span>, <span class="tok-texto">"ES"</span>));
+<span class="tok-tipo">IO</span>.println(<span class="tok-tipo">LocalDate</span>.now().format(largo));  <span class="tok-coment">// viernes, 18 de septiembre de 2026</span>
+
+<span class="tok-coment">// hora incluida</span>
+<span class="tok-tipo">DateTimeFormatter</span> completo = <span class="tok-tipo">DateTimeFormatter</span>.ofPattern(<span class="tok-texto">"dd/MM/yyyy HH:mm"</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>yyyy</code></th><td>año de cuatro cifras</td></tr>
+                  <tr><th scope="row"><code>MM  MMM  MMMM</code></th><td>mes: 09, sept, septiembre</td></tr>
+                  <tr><th scope="row"><code>dd</code></th><td>día del mes</td></tr>
+                  <tr><th scope="row"><code>EEEE</code></th><td>día de la semana completo</td></tr>
+                  <tr><th scope="row"><code>HH  mm  ss</code></th><td>hora de 0 a 23, minutos, segundos</td></tr>
+                  <tr><th scope="row"><code>hh  a</code></th><td>hora de 1 a 12 y AM/PM</td></tr>
+                  <tr><th scope="row"><code>'a las'</code></th><td>texto literal, entre comillas simples</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> {
+    <span class="tok-tipo">LocalDate</span> f = <span class="tok-tipo">LocalDate</span>.parse(entrada, fmt);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">DateTimeParseException</span> e) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Formato de fecha no válido: usa dd/MM/aaaa"</span>);
+}</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> sin <code>DateTimeFormatter</code>, <code>LocalDate.parse</code> solo entiende el formato ISO <code>aaaa-mm-dd</code>. Y las mayúsculas importan: <code>MM</code> son meses y <code>mm</code> son minutos.</p>
+          </div>
+        </section>
+        <!-- 7. Zonas horarias e instantes -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Zonas horarias e instantes</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">ZoneId</span> madrid = <span class="tok-tipo">ZoneId</span>.of(<span class="tok-texto">"Europe/Madrid"</span>);
+<span class="tok-tipo">ZonedDateTime</span> aqui = <span class="tok-tipo">ZonedDateTime</span>.now(madrid);
+<span class="tok-tipo">ZonedDateTime</span> alli = aqui.withZoneSameInstant(<span class="tok-tipo">ZoneId</span>.of(<span class="tok-texto">"America/Bogota"</span>));
+
+<span class="tok-tipo">Instant</span> instante = <span class="tok-tipo">Instant</span>.now();             <span class="tok-coment">// punto exacto, en UTC</span>
+<span class="tok-tipo">ZonedDateTime</span> local = instante.atZone(madrid);
+<span class="tok-tipo">Instant</span> otra = aqui.toInstant();
+
+<span class="tok-tipo">long</span> milis = <span class="tok-tipo">System</span>.currentTimeMillis();      <span class="tok-coment">// milisegundos desde 1970</span>
+<span class="tok-tipo">Instant</span> desdeMilis = <span class="tok-tipo">Instant</span>.ofEpochMilli(milis);</code></pre></figure>
+            <p class="nota">Regla práctica: <code>LocalDate</code> y <code>LocalDateTime</code> para cosas del calendario (una fecha de entrega, un horario de clase) y <code>Instant</code> para marcas de tiempo (cuándo ocurrió un registro). Guarda <code>Instant</code> o UTC en la base de datos y convierte a la zona del usuario al mostrarlo.</p>
+          </div>
+        </section>
+        <!-- 8. Otras clases útiles -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Otras clases útiles</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>DayOfWeek</code></th><td>enumerado: <code>MONDAY</code> … <code>SUNDAY</code></td></tr>
+                  <tr><th scope="row"><code>Month</code></th><td>enumerado: <code>JANUARY</code> … <code>DECEMBER</code></td></tr>
+                  <tr><th scope="row"><code>Year</code></th><td><code>Year.now().getValue()</code>, <code>Year.isLeap(2028)</code></td></tr>
+                  <tr><th scope="row"><code>YearMonth</code></th><td>un mes concreto: caducidades, informes mensuales</td></tr>
+                  <tr><th scope="row"><code>MonthDay</code></th><td>día y mes sin año: cumpleaños, festivos</td></tr>
+                  <tr><th scope="row"><code>OffsetDateTime</code></th><td>fecha y hora con desfase respecto a UTC</td></tr>
+                  <tr><th scope="row"><code>ChronoUnit</code></th><td>unidades: <code>DAYS</code>, <code>HOURS</code>, <code>MINUTES</code>…</td></tr>
+                  <tr><th scope="row"><code>TemporalAdjusters</code></th><td>ajustes con nombre: primer día, siguiente lunes…</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">YearMonth</span> curso = <span class="tok-tipo">YearMonth</span>.of(<span class="tok-numero">2026</span>, <span class="tok-numero">9</span>);
+<span class="tok-tipo">IO</span>.println(curso.lengthOfMonth());    <span class="tok-coment">// 30</span>
+<span class="tok-tipo">IO</span>.println(curso.atDay(<span class="tok-numero">14</span>));          <span class="tok-coment">// 2026-09-14</span>
+
+<span class="tok-tipo">MonthDay</span> santo = <span class="tok-tipo">MonthDay</span>.of(<span class="tok-numero">6</span>, <span class="tok-numero">24</span>);</code></pre></figure>
+          </div>
+        </section>
+        <!-- 9. Convivir con las clases antiguas -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Convivir con las clases antiguas</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">Antiguo (java.util)</span><span class="b">Actual (java.time)</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>new Date()</code></div>
+                <div class="cmp-b"><code>LocalDateTime.now()</code></div>
+                <div class="cmp-nota">la fecha y hora actual</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>Calendar.getInstance()</code></div>
+                <div class="cmp-b"><code>LocalDate.now()</code></div>
+                <div class="cmp-nota">la fecha actual</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>SimpleDateFormat</code></div>
+                <div class="cmp-b"><code>DateTimeFormatter</code></div>
+                <div class="cmp-nota">el nuevo es inmutable y seguro entre hilos</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>cal.add(Calendar.DAY_OF_MONTH, 7)</code></div>
+                <div class="cmp-b"><code>fecha.plusDays(7)</code></div>
+                <div class="cmp-nota">sumar días</div>
+              </div>
+            </div>
+            <h3>Conversiones cuando no queda más remedio</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Date</span> antigua = <span class="tok-clave">new</span> <span class="tok-tipo">Date</span>();
+<span class="tok-tipo">LocalDateTime</span> nueva = antigua.toInstant()
+        .atZone(<span class="tok-tipo">ZoneId</span>.systemDefault())
+        .toLocalDateTime();
+
+<span class="tok-tipo">Date</span> otraVez = <span class="tok-tipo">Date</span>.from(nueva.atZone(<span class="tok-tipo">ZoneId</span>.systemDefault()).toInstant());</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>SimpleDateFormat</code> no es seguro entre hilos y es una fuente clásica de errores raros. En código nuevo, usa siempre <code>java.time</code>.</p>
+          </div>
+        </section>
+        <!-- 10. Fechas y bases de datos (JDBC) -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Fechas y bases de datos (JDBC)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// leer</span>
+<span class="tok-tipo">LocalDate</span> alta = rs.getObject(<span class="tok-texto">"fecha_alta"</span>, <span class="tok-tipo">LocalDate</span>.<span class="tok-clave">class</span>);
+<span class="tok-tipo">LocalDateTime</span> creado = rs.getObject(<span class="tok-texto">"creado_en"</span>, <span class="tok-tipo">LocalDateTime</span>.<span class="tok-clave">class</span>);
+
+<span class="tok-coment">// escribir</span>
+ps.setObject(<span class="tok-numero">1</span>, <span class="tok-tipo">LocalDate</span>.now());
+ps.setObject(<span class="tok-numero">2</span>, <span class="tok-tipo">LocalDateTime</span>.now());</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>DATE</code></th><td>LocalDate</td></tr>
+                  <tr><th scope="row"><code>TIME</code></th><td>LocalTime</td></tr>
+                  <tr><th scope="row"><code>DATETIME / TIMESTAMP</code></th><td>LocalDateTime</td></tr>
+                  <tr><th scope="row"><code>TIMESTAMP WITH TIME ZONE</code></th><td>OffsetDateTime</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>getObject</code> con la clase como segundo parámetro evita pasar por <code>java.sql.Date</code>. Está disponible desde JDBC 4.2, así que funciona con cualquier driver actual.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="entrada-salida.html">← Clases de entrada/salida</a><span></span></nav>
+      <footer class="pie">Zonas horarias con su nombre oficial en <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">la lista de la base de datos tz</a>. Para guardar fechas en ficheros, mira <a href="ficheros.html">Ficheros y entrada/salida</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

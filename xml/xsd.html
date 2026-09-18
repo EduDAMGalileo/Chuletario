@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>XML Schema · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="xml">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">XML</a><span aria-hidden="true">›</span><span>XML Schema</span></nav>
+          <h1>XML Schema</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">XML Schema: tipos, elementos, atributos, restricciones y claves.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de XML">
+      <div class="wrap"><a href="dtd.html">DTD</a><a href="xsd.html" aria-current="page">XML Schema</a><a href="xpath.html">XPath</a><a href="xquery.html">XQuery</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Tipos simples predefinidos</a><a href="#s2"><b>2</b>Elementos</a><a href="#s3"><b>3</b>Tipos complejos: hijos</a><a href="#s4"><b>4</b>Atributos</a><a href="#s5"><b>5</b>Contenido vacío, texto con atributos y mixto</a><a href="#s6"><b>6</b>Restricciones (facetas)</a><a href="#s7"><b>7</b>Tipos con nombre y reutilización</a><a href="#s8"><b>8</b>Claves y referencias</a><a href="#s9"><b>9</b>Ejemplo completo</a><a href="#s10"><b>10</b>Espacios de nombres</a><a href="#s11"><b>11</b>DTD frente a XSD</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Esqueleto de un esquema</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-clave">?&gt;</span>
+<span class="tok-etiqueta">&lt;xs:schema</span> <span class="tok-atributo">xmlns:xs</span>=<span class="tok-texto">"http://www.w3.org/2001/XMLSchema"</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"saludo"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+
+<span class="tok-etiqueta">&lt;/xs:schema</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Vincularlo desde el XML</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-clave">?&gt;</span>
+<span class="tok-etiqueta">&lt;biblioteca</span>
+  <span class="tok-atributo">xmlns:xsi</span>=<span class="tok-texto">"http://www.w3.org/2001/XMLSchema-instance"</span>
+  <span class="tok-atributo">xsi:noNamespaceSchemaLocation</span>=<span class="tok-texto">"biblioteca.xsd"</span><span class="tok-etiqueta">&gt;</span>
+  …
+<span class="tok-etiqueta">&lt;/biblioteca</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Validar</p>
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-clave">xmllint</span><span class="tok-atributo"> --noout</span><span class="tok-atributo"> --schema</span> biblioteca.xsd biblioteca.xml</code></pre></figure>
+            <p class="nota">Un esquema es a su vez un documento XML: se puede validar, transformar y generar con las mismas herramientas.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Tipos simples predefinidos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Tipos simples predefinidos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>xs:string</code></th><td>texto</td></tr>
+                  <tr><th scope="row" class="larga"><code>xs:normalizedString  xs:token</code></th><td>texto sin saltos / sin espacios repetidos</td></tr>
+                  <tr><th scope="row" class="larga"><code>xs:integer  xs:int  xs:long</code></th><td>enteros (sin límite / 32 bits / 64 bits)</td></tr>
+                  <tr><th scope="row"><code>xs:positiveInteger</code></th><td>1, 2, 3…</td></tr>
+                  <tr><th scope="row"><code>xs:nonNegativeInteger</code></th><td>0, 1, 2…</td></tr>
+                  <tr><th scope="row"><code>xs:decimal</code></th><td>número exacto: <code>12.50</code></td></tr>
+                  <tr><th scope="row"><code>xs:double  xs:float</code></th><td>coma flotante</td></tr>
+                  <tr><th scope="row"><code>xs:boolean</code></th><td><code>true</code>, <code>false</code>, <code>1</code>, <code>0</code></td></tr>
+                  <tr><th scope="row"><code>xs:date</code></th><td><code>2026-09-16</code></td></tr>
+                  <tr><th scope="row"><code>xs:time</code></th><td><code>09:30:00</code></td></tr>
+                  <tr><th scope="row"><code>xs:dateTime</code></th><td><code>2026-09-16T09:30:00</code></td></tr>
+                  <tr><th scope="row"><code>xs:gYear</code></th><td><code>2026</code></td></tr>
+                  <tr><th scope="row"><code>xs:anyURI</code></th><td>URL o ruta</td></tr>
+                  <tr><th scope="row"><code>xs:ID  xs:IDREF</code></th><td>identificador y referencia, como en DTD</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Elementos -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Elementos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"titulo"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"anio"</span>   <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:gYear"</span> <span class="tok-atributo">minOccurs</span>=<span class="tok-texto">"0"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"autor"</span>  <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span> <span class="tok-atributo">maxOccurs</span>=<span class="tok-texto">"unbounded"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"pais"</span>   <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span> <span class="tok-atributo">default</span>=<span class="tok-texto">"España"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"version"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span> <span class="tok-atributo">fixed</span>=<span class="tok-texto">"1.0"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">ref</span>=<span class="tok-texto">"direccion"</span><span class="tok-etiqueta">/&gt;</span>   <span class="tok-coment">&lt;!-- reutiliza un elemento global --&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>minOccurs</code></th><td>mínimo de apariciones (por defecto 1)</td></tr>
+                  <tr><th scope="row"><code>maxOccurs</code></th><td>máximo de apariciones (por defecto 1; <code>unbounded</code> = sin límite)</td></tr>
+                  <tr><th scope="row"><code>default</code></th><td>valor si el elemento aparece vacío</td></tr>
+                  <tr><th scope="row"><code>fixed</code></th><td>el valor tiene que ser ese</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los elementos hijos directos de <code>xs:schema</code> son <strong>globales</strong> y cualquiera puede ser raíz. Los declarados dentro de un tipo son <strong>locales</strong>.</p>
+          </div>
+        </section>
+        <!-- 3. Tipos complejos: hijos -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Tipos complejos: hijos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"libro"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:sequence</span><span class="tok-etiqueta">&gt;</span>                         <span class="tok-coment">&lt;!-- en este orden --&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"titulo"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"autor"</span>  <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span> <span class="tok-atributo">maxOccurs</span>=<span class="tok-texto">"unbounded"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:choice</span><span class="tok-etiqueta">&gt;</span>                         <span class="tok-coment">&lt;!-- solo uno --&gt;</span>
+        <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"isbn"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+        <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"issn"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;/xs:choice</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:element</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>xs:sequence</code></th><td>los hijos en el orden indicado</td></tr>
+                  <tr><th scope="row"><code>xs:choice</code></th><td>uno de los hijos (con <code>maxOccurs</code> puede repetirse la elección)</td></tr>
+                  <tr><th scope="row"><code>xs:all</code></th><td>todos en cualquier orden, cada uno como máximo una vez</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>minOccurs</code> y <code>maxOccurs</code> también se ponen en <code>xs:sequence</code> y <code>xs:choice</code> para repetir el grupo entero.</p>
+          </div>
+        </section>
+        <!-- 4. Atributos -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Atributos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"libro"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"titulo"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-coment">&lt;!-- los atributos van DESPUÉS de la sequence --&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:attribute</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"id"</span>        <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:ID"</span>      <span class="tok-atributo">use</span>=<span class="tok-texto">"required"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:attribute</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"categoria"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span>  <span class="tok-atributo">default</span>=<span class="tok-texto">"novela"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:attribute</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"prestado"</span>  <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:boolean"</span> <span class="tok-atributo">use</span>=<span class="tok-texto">"optional"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:element</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>use="required"</code></th><td>obligatorio</td></tr>
+                  <tr><th scope="row"><code>use="optional"</code></th><td>opcional (valor por defecto)</td></tr>
+                  <tr><th scope="row"><code>use="prohibited"</code></th><td>no puede aparecer (útil al restringir tipos)</td></tr>
+                  <tr><th scope="row"><code>default  fixed</code></th><td>como en los elementos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Un atributo siempre es de tipo simple. Un elemento con atributos siempre es de tipo complejo.</p>
+          </div>
+        </section>
+        <!-- 5. Contenido vacío, texto con atributos y mixto -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Contenido vacío, texto con atributos y mixto</h2>
+          <div class="cuerpo">
+            <h3>Vacío con atributos</h3>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"foto"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:attribute</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"src"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:anyURI"</span> <span class="tok-atributo">use</span>=<span class="tok-texto">"required"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:element</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-coment">&lt;!-- &lt;foto src="portada.jpg"/&gt; --&gt;</span></code></pre></figure>
+            <h3>Texto y atributos</h3>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"precio"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:simpleContent</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:extension</span> <span class="tok-atributo">base</span>=<span class="tok-texto">"xs:decimal"</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;xs:attribute</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"moneda"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span> <span class="tok-atributo">default</span>=<span class="tok-texto">"EUR"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;/xs:extension</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:simpleContent</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:element</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-coment">&lt;!-- &lt;precio moneda="USD"&gt;35.90&lt;/precio&gt; --&gt;</span></code></pre></figure>
+            <h3>Mixto: texto con elementos</h3>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"resumen"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:complexType</span> <span class="tok-atributo">mixed</span>=<span class="tok-texto">"true"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:choice</span> <span class="tok-atributo">minOccurs</span>=<span class="tok-texto">"0"</span> <span class="tok-atributo">maxOccurs</span>=<span class="tok-texto">"unbounded"</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"b"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"i"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:choice</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:element</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-coment">&lt;!-- &lt;resumen&gt;Premio &lt;b&gt;Nadal&lt;/b&gt;&lt;/resumen&gt; --&gt;</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Restricciones (facetas) -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Restricciones (facetas)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"nota"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:simpleType</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:restriction</span> <span class="tok-atributo">base</span>=<span class="tok-texto">"xs:decimal"</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:minInclusive</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"0"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:maxInclusive</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"10"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:fractionDigits</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"2"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:restriction</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:simpleType</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:element</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;xs:simpleType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"tipoCategoria"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:restriction</span> <span class="tok-atributo">base</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:enumeration</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"novela"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:enumeration</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"ensayo"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:enumeration</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"informatica"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:restriction</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:simpleType</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;xs:simpleType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"tipoDNI"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:restriction</span> <span class="tok-atributo">base</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:pattern</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"[0-9]{8}[A-Z]"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:restriction</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:simpleType</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>minInclusive  maxInclusive</code></th><td>rango incluyendo los extremos</td></tr>
+                  <tr><th scope="row" class="larga"><code>minExclusive  maxExclusive</code></th><td>rango sin incluir los extremos</td></tr>
+                  <tr><th scope="row" class="larga"><code>length  minLength  maxLength</code></th><td>longitud del texto (o de la lista)</td></tr>
+                  <tr><th scope="row"><code>pattern</code></th><td>expresión regular; se ajusta al valor completo</td></tr>
+                  <tr><th scope="row"><code>enumeration</code></th><td>lista cerrada de valores</td></tr>
+                  <tr><th scope="row" class="larga"><code>totalDigits  fractionDigits</code></th><td>dígitos totales / decimales</td></tr>
+                  <tr><th scope="row"><code>whiteSpace</code></th><td><code>preserve</code>, <code>replace</code> o <code>collapse</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Tipos con nombre y reutilización -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Tipos con nombre y reutilización</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-coment">&lt;!-- tipo complejo con nombre --&gt;</span>
+<span class="tok-etiqueta">&lt;xs:complexType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"tipoPersona"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"nombre"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"dni"</span>    <span class="tok-atributo">type</span>=<span class="tok-texto">"tipoDNI"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-coment">&lt;!-- extensión: hereda y añade --&gt;</span>
+<span class="tok-etiqueta">&lt;xs:complexType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"tipoAlumno"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:complexContent</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:extension</span> <span class="tok-atributo">base</span>=<span class="tok-texto">"tipoPersona"</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"curso"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;/xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:extension</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:complexContent</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"alumno"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"tipoAlumno"</span><span class="tok-etiqueta">/&gt;</span>
+
+<span class="tok-coment">&lt;!-- lista de valores separados por espacios: "7.5 8 9.25" --&gt;</span>
+<span class="tok-etiqueta">&lt;xs:simpleType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"listaNotas"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:list</span> <span class="tok-atributo">itemType</span>=<span class="tok-texto">"xs:decimal"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:simpleType</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-coment">&lt;!-- unión: vale cualquiera de los tipos: "1945" o "desconocido" --&gt;</span>
+<span class="tok-etiqueta">&lt;xs:simpleType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"tipoDesconocido"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:restriction</span> <span class="tok-atributo">base</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:enumeration</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"desconocido"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:restriction</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:simpleType</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;xs:simpleType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"anioODesconocido"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:union</span> <span class="tok-atributo">memberTypes</span>=<span class="tok-texto">"xs:gYear tipoDesconocido"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:simpleType</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">Los tipos con nombre se declaran como hijos de <code>xs:schema</code> y se usan con <code>type="…"</code>. Sin prefijo <code>xs:</code> porque son tuyos.</p>
+          </div>
+        </section>
+        <!-- 8. Claves y referencias -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Claves y referencias</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"biblioteca"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"libro"</span>    <span class="tok-atributo">type</span>=<span class="tok-texto">"tipoLibro"</span> <span class="tok-atributo">maxOccurs</span>=<span class="tok-texto">"unbounded"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"prestamo"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"tipoPrestamo"</span>
+                  <span class="tok-atributo">minOccurs</span>=<span class="tok-texto">"0"</span> <span class="tok-atributo">maxOccurs</span>=<span class="tok-texto">"unbounded"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-coment">&lt;!-- van después del complexType --&gt;</span>
+  <span class="tok-etiqueta">&lt;xs:key</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"claveLibro"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:selector</span> <span class="tok-atributo">xpath</span>=<span class="tok-texto">"libro"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:field</span> <span class="tok-atributo">xpath</span>=<span class="tok-texto">"@id"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:key</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;xs:keyref</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"refLibro"</span> <span class="tok-atributo">refer</span>=<span class="tok-texto">"claveLibro"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:selector</span> <span class="tok-atributo">xpath</span>=<span class="tok-texto">"prestamo"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:field</span> <span class="tok-atributo">xpath</span>=<span class="tok-texto">"@libro"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:keyref</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;xs:unique</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"isbnUnico"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:selector</span> <span class="tok-atributo">xpath</span>=<span class="tok-texto">"libro"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:field</span> <span class="tok-atributo">xpath</span>=<span class="tok-texto">"isbn"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:unique</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/xs:element</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>xs:key</code></th><td>valor único y obligatorio</td></tr>
+                  <tr><th scope="row"><code>xs:unique</code></th><td>valor único si aparece</td></tr>
+                  <tr><th scope="row"><code>xs:keyref</code></th><td>debe coincidir con una key existente</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">A diferencia de <code>ID</code>/<code>IDREF</code>, aquí se indica exactamente a qué elementos se aplica y se admite cualquier tipo de dato.</p>
+          </div>
+        </section>
+        <!-- 9. Ejemplo completo -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Ejemplo completo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-clave">?&gt;</span>
+<span class="tok-etiqueta">&lt;xs:schema</span> <span class="tok-atributo">xmlns:xs</span>=<span class="tok-texto">"http://www.w3.org/2001/XMLSchema"</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"biblioteca"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"libro"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"tipoLibro"</span> <span class="tok-atributo">maxOccurs</span>=<span class="tok-texto">"unbounded"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;/xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:element</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;xs:complexType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"tipoLibro"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"titulo"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"autor"</span>  <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:string"</span> <span class="tok-atributo">maxOccurs</span>=<span class="tok-texto">"unbounded"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"anio"</span>   <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:gYear"</span> <span class="tok-atributo">minOccurs</span>=<span class="tok-texto">"0"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:element</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"precio"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"tipoPrecio"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:sequence</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:attribute</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"id"</span>        <span class="tok-atributo">type</span>=<span class="tok-texto">"xs:ID"</span> <span class="tok-atributo">use</span>=<span class="tok-texto">"required"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:attribute</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"categoria"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"tipoCategoria"</span> <span class="tok-atributo">default</span>=<span class="tok-texto">"novela"</span><span class="tok-etiqueta">/&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:complexType</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;xs:simpleType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"tipoPrecio"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:restriction</span> <span class="tok-atributo">base</span>=<span class="tok-texto">"xs:decimal"</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:minExclusive</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"0"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:fractionDigits</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"2"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:restriction</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:simpleType</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;xs:simpleType</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"tipoCategoria"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;xs:restriction</span> <span class="tok-atributo">base</span>=<span class="tok-texto">"xs:string"</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:enumeration</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"novela"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:enumeration</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"ensayo"</span><span class="tok-etiqueta">/&gt;</span>
+      <span class="tok-etiqueta">&lt;xs:enumeration</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"informatica"</span><span class="tok-etiqueta">/&gt;</span>
+    <span class="tok-etiqueta">&lt;/xs:restriction</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/xs:simpleType</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;/xs:schema</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Espacios de nombres -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Espacios de nombres</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-coment">&lt;!-- esquema --&gt;</span>
+<span class="tok-etiqueta">&lt;xs:schema</span> <span class="tok-atributo">xmlns:xs</span>=<span class="tok-texto">"http://www.w3.org/2001/XMLSchema"</span>
+           <span class="tok-atributo">targetNamespace</span>=<span class="tok-texto">"https://iesejemplo.es/biblioteca"</span>
+           <span class="tok-atributo">xmlns</span>=<span class="tok-texto">"https://iesejemplo.es/biblioteca"</span>
+           <span class="tok-atributo">elementFormDefault</span>=<span class="tok-texto">"qualified"</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-coment">&lt;!-- documento --&gt;</span>
+<span class="tok-etiqueta">&lt;biblioteca</span> <span class="tok-atributo">xmlns</span>=<span class="tok-texto">"https://iesejemplo.es/biblioteca"</span>
+  <span class="tok-atributo">xmlns:xsi</span>=<span class="tok-texto">"http://www.w3.org/2001/XMLSchema-instance"</span>
+  <span class="tok-atributo">xsi:schemaLocation</span>=<span class="tok-texto">"https://iesejemplo.es/biblioteca biblioteca.xsd"</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>targetNamespace</code></th><td>espacio de nombres que define el esquema</td></tr>
+                  <tr><th scope="row" class="larga"><code>elementFormDefault="qualified"</code></th><td>los elementos locales también pertenecen a ese espacio</td></tr>
+                  <tr><th scope="row"><code>xsi:schemaLocation</code></th><td>pares «espacio de nombres» y «ubicación del esquema»</td></tr>
+                  <tr><th scope="row" class="larga"><code>xsi:noNamespaceSchemaLocation</code></th><td>esquema sin espacio de nombres</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 11. DTD frente a XSD -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>DTD frente a XSD</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">DTD</span><span class="b">XSD</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>&lt;!ELEMENT …&gt;</code></div>
+                <div class="cmp-b"><code>&lt;xs:element …/&gt;</code></div>
+                <div class="cmp-nota">la DTD tiene sintaxis propia; XSD es XML</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>(#PCDATA)</code></div>
+                <div class="cmp-b"><code>xs:date  xs:decimal  xs:boolean …</code></div>
+                <div class="cmp-nota">XSD tiene más de 40 tipos de datos</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>?  *  +</code></div>
+                <div class="cmp-b"><code>minOccurs="2" maxOccurs="5"</code></div>
+                <div class="cmp-nota">XSD admite cardinalidades exactas</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><span class="ninguno">sin equivalente</span></div>
+                <div class="cmp-b"><code>targetNamespace</code></div>
+                <div class="cmp-nota">solo XSD entiende espacios de nombres</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>&lt;!ENTITY % …&gt;</code></div>
+                <div class="cmp-b"><code>tipos con nombre y extension</code></div>
+                <div class="cmp-nota">reutilización</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>ID / IDREF</code></div>
+                <div class="cmp-b"><code>xs:key / xs:keyref</code></div>
+                <div class="cmp-nota">claves con ámbito y cualquier tipo</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="dtd.html">← DTD</a><a class="siguiente" href="xpath.html">XPath →</a></nav>
+      <footer class="pie">Especificación: <a href="https://www.w3.org/TR/xmlschema-1/">W3C XML Schema</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

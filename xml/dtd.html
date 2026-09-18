@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DTD · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="xml">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">XML</a><span aria-hidden="true">›</span><span>DTD</span></nav>
+          <h1>DTD</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Cómo definir la estructura de un documento XML y validarlo.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de XML">
+      <div class="wrap"><a href="dtd.html" aria-current="page">DTD</a><a href="xsd.html">XML Schema</a><a href="xpath.html">XPath</a><a href="xquery.html">XQuery</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Declarar elementos</a><a href="#s2"><b>2</b>Cardinalidad</a><a href="#s3"><b>3</b>Declarar atributos</a><a href="#s4"><b>4</b>Referencias con ID e IDREF</a><a href="#s5"><b>5</b>Entidades</a><a href="#s6"><b>6</b>Ejemplo completo</a><a href="#s7"><b>7</b>Bien formado y válido</a><a href="#s8"><b>8</b>Validar</a><a href="#s9"><b>9</b>Limitaciones de la DTD</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">DTD externa (fichero aparte)</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-clave">?&gt;</span>
+<span class="tok-clave">&lt;!DOCTYPE</span> biblioteca <span class="tok-clave">SYSTEM</span> <span class="tok-texto">"biblioteca.dtd"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;biblioteca</span><span class="tok-etiqueta">&gt;</span>
+  …
+<span class="tok-etiqueta">&lt;/biblioteca</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">DTD interna (dentro del XML)</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-clave">?&gt;</span>
+<span class="tok-clave">&lt;!DOCTYPE</span> saludo [
+  <span class="tok-clave">&lt;!ELEMENT</span> saludo <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+]<span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;saludo</span><span class="tok-etiqueta">&gt;</span>Hola<span class="tok-etiqueta">&lt;/saludo</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Pública, o externa más interna</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;!DOCTYPE</span> html <span class="tok-clave">PUBLIC</span> <span class="tok-texto">"-//W3C//DTD XHTML 1.0 Strict//EN"</span>
+  <span class="tok-texto">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-clave">&lt;!DOCTYPE</span> biblioteca <span class="tok-clave">SYSTEM</span> <span class="tok-texto">"biblioteca.dtd"</span> [
+  <span class="tok-clave">&lt;!ENTITY</span> centro <span class="tok-texto">"IES Ejemplo"</span><span class="tok-etiqueta">&gt;</span>
+]<span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">El nombre que sigue a <code>DOCTYPE</code> tiene que coincidir con el elemento raíz.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Declarar elementos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Declarar elementos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-clave">&lt;!ELEMENT</span> nombre modelo-de-contenido<span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>(#PCDATA)</code></th><td>solo texto</td></tr>
+                  <tr><th scope="row"><code>EMPTY</code></th><td>vacío: <code>&lt;br/&gt;</code> (puede tener atributos)</td></tr>
+                  <tr><th scope="row"><code>ANY</code></th><td>cualquier contenido declarado (evitarlo)</td></tr>
+                  <tr><th scope="row"><code>(a, b, c)</code></th><td><strong>secuencia</strong>: a, b y c en ese orden</td></tr>
+                  <tr><th scope="row"><code>(a | b | c)</code></th><td><strong>elección</strong>: solo uno de ellos</td></tr>
+                  <tr><th scope="row"><code>(#PCDATA | b | i)*</code></th><td><strong>mixto</strong>: texto con elementos intercalados</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-clave">&lt;!ELEMENT</span> libro <span class="tok-operador">(</span>titulo<span class="tok-operador">,</span> autor<span class="tok-operador">+</span><span class="tok-operador">,</span> <span class="tok-operador">(</span>isbn <span class="tok-operador">|</span> issn<span class="tok-operador">)</span><span class="tok-operador">,</span> precio<span class="tok-operador">?</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> titulo <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> salto <span class="tok-clave">EMPTY</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> en el contenido mixto <code>#PCDATA</code> va siempre el primero, los elementos se separan con <code>|</code> y el grupo termina en <code>*</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Cardinalidad -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Cardinalidad</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>(sin símbolo)</code></th><td>exactamente una vez</td></tr>
+                  <tr><th scope="row"><code>?</code></th><td>cero o una vez (opcional)</td></tr>
+                  <tr><th scope="row"><code>*</code></th><td>cero o más veces</td></tr>
+                  <tr><th scope="row"><code>+</code></th><td>una o más veces</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-clave">&lt;!ELEMENT</span> agenda <span class="tok-operador">(</span>contacto<span class="tok-operador">*</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>            <span class="tok-coment">&lt;!-- puede estar vacía --&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> contacto <span class="tok-operador">(</span>nombre<span class="tok-operador">,</span> telefono<span class="tok-operador">+</span><span class="tok-operador">,</span> email<span class="tok-operador">?</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> menu <span class="tok-operador">(</span><span class="tok-operador">(</span>plato<span class="tok-operador">,</span> precio<span class="tok-operador">)</span><span class="tok-operador">+</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>      <span class="tok-coment">&lt;!-- pares plato-precio --&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> examen <span class="tok-operador">(</span>pregunta<span class="tok-operador">,</span> <span class="tok-operador">(</span>opcion<span class="tok-operador">,</span> opcion<span class="tok-operador">+</span><span class="tok-operador">)</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>  <span class="tok-coment">&lt;!-- 2 o más opciones --&gt;</span></code></pre></figure>
+            <p class="nota">La DTD no permite indicar un número exacto como «entre 3 y 5». Para eso hace falta XSD.</p>
+          </div>
+        </section>
+        <!-- 3. Declarar atributos -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Declarar atributos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-clave">&lt;!ATTLIST</span> elemento
+  atributo1  tipo  valor-por-defecto
+  atributo2  tipo  valor-por-defecto<span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <h3>Tipos</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>CDATA</code></th><td>cualquier texto</td></tr>
+                  <tr><th scope="row"><code>(si | no)</code></th><td>enumerado: uno de los valores de la lista</td></tr>
+                  <tr><th scope="row"><code>ID</code></th><td>identificador único en todo el documento</td></tr>
+                  <tr><th scope="row"><code>IDREF</code></th><td>referencia a un ID existente</td></tr>
+                  <tr><th scope="row"><code>IDREFS</code></th><td>varias referencias separadas por espacios</td></tr>
+                  <tr><th scope="row"><code>NMTOKEN</code></th><td>nombre sin espacios (letras, dígitos, <code>. - _ :</code>)</td></tr>
+                  <tr><th scope="row"><code>NMTOKENS</code></th><td>varios NMTOKEN separados por espacios</td></tr>
+                  <tr><th scope="row"><code>ENTITY  ENTITIES</code></th><td>nombre de una entidad no analizada</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Valor por defecto</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>#REQUIRED</code></th><td>obligatorio</td></tr>
+                  <tr><th scope="row"><code>#IMPLIED</code></th><td>opcional, sin valor por defecto</td></tr>
+                  <tr><th scope="row"><code>#FIXED "valor"</code></th><td>si aparece, tiene que tener ese valor</td></tr>
+                  <tr><th scope="row"><code>"valor"</code></th><td>opcional; si no aparece se toma este valor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-clave">&lt;!ATTLIST</span> libro
+  id        <span class="tok-clave">ID</span>                          <span class="tok-clave">#REQUIRED</span>
+  categoria <span class="tok-operador">(</span>novela <span class="tok-operador">|</span> ensayo <span class="tok-operador">|</span> tecnico<span class="tok-operador">)</span> <span class="tok-texto">"novela"</span>
+  paginas   <span class="tok-clave">CDATA</span>                       <span class="tok-clave">#IMPLIED</span>
+  moneda    <span class="tok-clave">CDATA</span>                       <span class="tok-clave">#FIXED</span> <span class="tok-texto">"EUR"</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">Un elemento solo puede tener un atributo de tipo <code>ID</code>. Sus valores deben empezar por letra o <code>_</code>: <code>L1</code> es válido, <code>1</code> no.</p>
+          </div>
+        </section>
+        <!-- 4. Referencias con ID e IDREF -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Referencias con ID e IDREF</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-clave">&lt;!ELEMENT</span> socio <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> socio num <span class="tok-clave">ID</span> <span class="tok-clave">#REQUIRED</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-clave">&lt;!ELEMENT</span> prestamo <span class="tok-clave">EMPTY</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> prestamo
+  libro  <span class="tok-clave">IDREF</span>  <span class="tok-clave">#REQUIRED</span>
+  socios <span class="tok-clave">IDREFS</span> <span class="tok-clave">#REQUIRED</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L1"</span><span class="tok-etiqueta">&gt;</span>…<span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;socio</span> <span class="tok-atributo">num</span>=<span class="tok-texto">"S7"</span><span class="tok-etiqueta">&gt;</span>Ana<span class="tok-etiqueta">&lt;/socio</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;socio</span> <span class="tok-atributo">num</span>=<span class="tok-texto">"S9"</span><span class="tok-etiqueta">&gt;</span>Luis<span class="tok-etiqueta">&lt;/socio</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;prestamo</span> <span class="tok-atributo">libro</span>=<span class="tok-texto">"L1"</span> <span class="tok-atributo">socios</span>=<span class="tok-texto">"S7 S9"</span><span class="tok-etiqueta">/&gt;</span></code></pre></figure>
+            <p class="nota">La DTD comprueba que cada IDREF apunte a <em>algún</em> ID del documento, pero no a qué tipo de elemento. Un <code>IDREF</code> que apunte a un socio también sería válido.</p>
+          </div>
+        </section>
+        <!-- 5. Entidades -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Entidades</h2>
+          <div class="cuerpo">
+            <h3>Generales: se usan en el XML</h3>
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-clave">&lt;!ENTITY</span> centro <span class="tok-texto">"IES Ejemplo"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ENTITY</span> aviso <span class="tok-clave">SYSTEM</span> <span class="tok-texto">"aviso.xml"</span><span class="tok-etiqueta">&gt;</span>   <span class="tok-coment">&lt;!-- texto de un fichero --&gt;</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;pie</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;pie</span><span class="tok-etiqueta">&gt;</span><span class="tok-numero">&amp;centro;</span> · 2º DAM<span class="tok-etiqueta">&lt;/pie</span><span class="tok-etiqueta">&gt;</span>centro; · Curso 2026<span class="tok-etiqueta">&lt;/pie</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;nota</span><span class="tok-etiqueta">&gt;</span><span class="tok-numero">&amp;aviso;</span><span class="tok-etiqueta">&lt;/nota</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <h3>De parámetro: se usan dentro de la DTD</h3>
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-clave">&lt;!ENTITY</span> % comunes <span class="tok-texto">"id ID #REQUIRED  alta CDATA #IMPLIED"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ENTITY</span> % texto <span class="tok-texto">"(#PCDATA)"</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-clave">&lt;!ELEMENT</span> nombre <span class="tok-numero">%texto;</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> alumno <span class="tok-numero">%comunes;</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> profesor <span class="tok-numero">%comunes;</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <h3>Predefinidas</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>&lt;</code></th><td>&lt;</td></tr>
+                  <tr><th scope="row"><code>&gt;</code></th><td>&gt;</td></tr>
+                  <tr><th scope="row"><code>&amp;</code></th><td>&amp;</td></tr>
+                  <tr><th scope="row"><code>&amp;quot;</code></th><td>"</td></tr>
+                  <tr><th scope="row"><code>&amp;apos;</code></th><td>'</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;codigo</span><span class="tok-etiqueta">&gt;</span>&lt;![CDATA[ if (a &lt; b &amp;&amp; c &gt; d) { … } ]]&gt;<span class="tok-etiqueta">&lt;/codigo</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">Dentro de una sección <code>CDATA</code> no hace falta escapar nada.</p>
+          </div>
+        </section>
+        <!-- 6. Ejemplo completo -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Ejemplo completo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="dtd"><code><span class="tok-coment">&lt;!-- biblioteca.dtd --&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> biblioteca <span class="tok-operador">(</span>libro<span class="tok-operador">+</span><span class="tok-operador">,</span> socio<span class="tok-operador">*</span><span class="tok-operador">,</span> prestamo<span class="tok-operador">*</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-clave">&lt;!ELEMENT</span> libro <span class="tok-operador">(</span>titulo<span class="tok-operador">,</span> autor<span class="tok-operador">+</span><span class="tok-operador">,</span> anio<span class="tok-operador">?</span><span class="tok-operador">,</span> precio<span class="tok-operador">,</span> resumen<span class="tok-operador">?</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> libro
+  id        <span class="tok-clave">ID</span>                               <span class="tok-clave">#REQUIRED</span>
+  categoria <span class="tok-operador">(</span>novela <span class="tok-operador">|</span> ensayo <span class="tok-operador">|</span> informatica<span class="tok-operador">)</span>  <span class="tok-texto">"novela"</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-clave">&lt;!ELEMENT</span> titulo  <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> titulo idioma <span class="tok-clave">CDATA</span> <span class="tok-clave">#IMPLIED</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> autor   <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> anio    <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> precio  <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> precio moneda <span class="tok-clave">CDATA</span> <span class="tok-clave">#FIXED</span> <span class="tok-texto">"EUR"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> resumen <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span> <span class="tok-operador">|</span> b <span class="tok-operador">|</span> i<span class="tok-operador">)</span><span class="tok-operador">*</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> b <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> i <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-clave">&lt;!ELEMENT</span> socio <span class="tok-operador">(</span><span class="tok-clave">#PCDATA</span><span class="tok-operador">)</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> socio num <span class="tok-clave">ID</span> <span class="tok-clave">#REQUIRED</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ELEMENT</span> prestamo <span class="tok-clave">EMPTY</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-clave">&lt;!ATTLIST</span> prestamo libro <span class="tok-clave">IDREF</span> <span class="tok-clave">#REQUIRED</span> socio <span class="tok-clave">IDREF</span> <span class="tok-clave">#REQUIRED</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-clave">?&gt;</span>
+<span class="tok-clave">&lt;!DOCTYPE</span> biblioteca <span class="tok-clave">SYSTEM</span> <span class="tok-texto">"biblioteca.dtd"</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;biblioteca</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L1"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;titulo</span> <span class="tok-atributo">idioma</span>=<span class="tok-texto">"es"</span><span class="tok-etiqueta">&gt;</span>Nada<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;autor</span><span class="tok-etiqueta">&gt;</span>Carmen Laforet<span class="tok-etiqueta">&lt;/autor</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;anio</span><span class="tok-etiqueta">&gt;</span>1945<span class="tok-etiqueta">&lt;/anio</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;precio</span><span class="tok-etiqueta">&gt;</span>12.50<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;resumen</span><span class="tok-etiqueta">&gt;</span>Ganadora del premio <span class="tok-etiqueta">&lt;b</span><span class="tok-etiqueta">&gt;</span>Nadal<span class="tok-etiqueta">&lt;/b</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/resumen</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;socio</span> <span class="tok-atributo">num</span>=<span class="tok-texto">"S1"</span><span class="tok-etiqueta">&gt;</span>Ana Pérez<span class="tok-etiqueta">&lt;/socio</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;prestamo</span> <span class="tok-atributo">libro</span>=<span class="tok-texto">"L1"</span> <span class="tok-atributo">socio</span>=<span class="tok-texto">"S1"</span><span class="tok-etiqueta">/&gt;</span>
+<span class="tok-etiqueta">&lt;/biblioteca</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 7. Bien formado y válido -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Bien formado y válido</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>bien formado</code></th><td>cumple las reglas de XML. Si no, no es XML</td></tr>
+                  <tr><th scope="row"><code>válido</code></th><td>bien formado <strong>y</strong> además cumple su DTD o XSD</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Reglas para que esté bien formado</h3>
+            <p class="txt">Un único elemento raíz. Toda etiqueta se cierra (<code>&lt;a&gt;&lt;/a&gt;</code> o <code>&lt;a/&gt;</code>). Las etiquetas se anidan sin cruzarse. Se distinguen mayúsculas y minúsculas. Los valores de atributo van entre comillas y no se repiten atributos en un elemento. Los nombres no empiezan por número ni por <code>xml</code>. Los caracteres <code>&lt;</code> y <code>&amp;</code> se escriben como entidad.</p>
+          </div>
+        </section>
+        <!-- 8. Validar -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Validar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sh"><code><span class="tok-coment"># comprobar solo que está bien formado</span>
+xmllint<span class="tok-atributo"> --noout</span> biblioteca.xml
+
+<span class="tok-coment"># validar con la DTD indicada en el DOCTYPE</span>
+xmllint<span class="tok-atributo"> --noout</span><span class="tok-atributo"> --valid</span> biblioteca.xml
+
+<span class="tok-coment"># validar con una DTD concreta</span>
+xmllint<span class="tok-atributo"> --noout</span><span class="tok-atributo"> --dtdvalid</span> biblioteca.dtd biblioteca.xml</code></pre></figure>
+            <p class="nota"><code>xmllint</code> viene con libxml2 (en Debian y Ubuntu, paquete <code>libxml2-utils</code>). En VS Code, la extensión XML de Red Hat valida mientras escribes.</p>
+          </div>
+        </section>
+        <!-- 9. Limitaciones de la DTD -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Limitaciones de la DTD</h2>
+          <div class="cuerpo"><p class="txt">No tiene tipos de datos: una fecha o un número son solo texto. No permite cardinalidades concretas, no entiende espacios de nombres y usa una sintaxis que no es XML. Todas estas carencias las resuelve XML Schema.</p><p class="nota">Sigue con la <a href="xsd.html">chuleta de XSD</a>.</p></div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="xsd.html">XML Schema →</a></nav>
+      <footer class="pie">Especificación: <a href="https://www.w3.org/TR/xml/">W3C Extensible Markup Language (XML) 1.0</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

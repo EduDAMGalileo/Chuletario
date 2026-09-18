@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Colecciones · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Colecciones</span></nav>
+          <h1>Colecciones</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">List, Set, Map y Deque: crear, recorrer, ordenar y elegir la colección adecuada.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="strings.html">Strings</a><a href="poo.html">Orientación a objetos</a><a href="colecciones.html" aria-current="page">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="excepciones.html">Excepciones</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="fechas.html">Fechas y horas</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>List</a><a href="#s2"><b>2</b>Set</a><a href="#s3"><b>3</b>Map</a><a href="#s4"><b>4</b>Ordenar</a><a href="#s5"><b>5</b>Colecciones inmutables</a><a href="#s6"><b>6</b>Arrays y colecciones</a><a href="#s7"><b>7</b>Utilidades de Collections</a><a href="#s8"><b>8</b>Cola y pila</a><a href="#s9"><b>9</b>Iterator y modificación</a><a href="#s10"><b>10</b>Genéricos</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Qué colección usar</p>
+        <div class="tabla-scroll">
+          <table class="ref ">
+            <tbody>
+              <tr><th scope="row"><code>List</code></th><td>elementos <strong>en orden</strong>, con posiciones y repetidos permitidos. La implementación habitual es <code>ArrayList</code></td></tr>
+              <tr><th scope="row"><code>Set</code></th><td>elementos <strong>sin repetir</strong>. <code>HashSet</code> si el orden da igual, <code>TreeSet</code> si los quieres ordenados</td></tr>
+              <tr><th scope="row"><code>Map</code></th><td>parejas <strong>clave → valor</strong>, con claves únicas. <code>HashMap</code> es el habitual</td></tr>
+              <tr><th scope="row"><code>Deque</code></th><td>cola o pila: se añade y se quita por los extremos. <code>ArrayDeque</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="nota">Todas viven en <code>java.util</code>. Se declaran por la interfaz y se crean con la clase: <code>List&lt;String&gt; nombres = new ArrayList&lt;&gt;();</code>. Así puedes cambiar de implementación tocando una sola línea.</p>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. List -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>List</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; nombres = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+
+nombres.add(<span class="tok-texto">"Ana"</span>);              <span class="tok-coment">// añade al final</span>
+nombres.add(<span class="tok-numero">0</span>, <span class="tok-texto">"Luis"</span>);          <span class="tok-coment">// inserta en una posición</span>
+nombres.set(<span class="tok-numero">1</span>, <span class="tok-texto">"Ana María"</span>);     <span class="tok-coment">// sustituye</span>
+<span class="tok-tipo">String</span> primero = nombres.get(<span class="tok-numero">0</span>);
+nombres.remove(<span class="tok-texto">"Ana María"</span>);     <span class="tok-coment">// por objeto</span>
+nombres.remove(<span class="tok-numero">0</span>);               <span class="tok-coment">// por posición</span>
+nombres.removeIf(n -&gt; n.isBlank());
+
+nombres.size();                  <span class="tok-coment">// cuántos hay</span>
+nombres.isEmpty();
+nombres.contains(<span class="tok-texto">"Ana"</span>);
+nombres.indexOf(<span class="tok-texto">"Ana"</span>);          <span class="tok-coment">// posición o -1</span>
+nombres.clear();</code></pre></figure>
+            <h3>Recorrer</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">for</span> (<span class="tok-tipo">String</span> n : nombres) { <span class="tok-tipo">IO</span>.println(n); }          <span class="tok-coment">// for-each</span>
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; nombres.size(); i++) {           <span class="tok-coment">// si necesitas el índice</span>
+    <span class="tok-tipo">IO</span>.println(i + <span class="tok-texto">": "</span> + nombres.get(i));
+}
+
+nombres.forEach(<span class="tok-tipo">IO</span>::println);                        <span class="tok-coment">// con lambda</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ArrayList</code></th><td>acceso rápido por posición; lo normal</td></tr>
+                  <tr><th scope="row"><code>LinkedList</code></th><td>inserciones y borrados rápidos en los extremos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>lista.remove(2)</code> borra la <strong>posición</strong> 2 y <code>lista.remove(Integer.valueOf(2))</code> borra el <strong>valor</strong> 2. Con listas de enteros es una fuente clásica de errores.</p>
+          </div>
+        </section>
+        <!-- 2. Set -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Set</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">String</span>&gt; etiquetas = <span class="tok-clave">new</span> <span class="tok-tipo">HashSet</span>&lt;&gt;();
+
+etiquetas.add(<span class="tok-texto">"java"</span>);
+etiquetas.add(<span class="tok-texto">"java"</span>);        <span class="tok-coment">// no hace nada: ya estaba</span>
+etiquetas.contains(<span class="tok-texto">"java"</span>);   <span class="tok-coment">// true</span>
+etiquetas.remove(<span class="tok-texto">"java"</span>);
+
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; ordenados = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(<span class="tok-tipo">List</span>.of(<span class="tok-numero">5</span>, <span class="tok-numero">1</span>, <span class="tok-numero">3</span>));  <span class="tok-coment">// [1, 3, 5]</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">String</span>&gt; orden = <span class="tok-clave">new</span> <span class="tok-tipo">LinkedHashSet</span>&lt;&gt;();                 <span class="tok-coment">// orden de inserción</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>HashSet</code></th><td>el más rápido; el orden es impredecible</td></tr>
+                  <tr><th scope="row"><code>LinkedHashSet</code></th><td>mantiene el orden en que los añadiste</td></tr>
+                  <tr><th scope="row"><code>TreeSet</code></th><td>siempre ordenado; permite <code>first()</code>, <code>last()</code>, <code>headSet()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para que un <code>HashSet</code> detecte duplicados de tus propias clases, estas deben implementar <code>equals</code> y <code>hashCode</code>. Los <code>record</code> ya lo hacen.</p>
+          </div>
+        </section>
+        <!-- 3. Map -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Map</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; notas = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+
+notas.put(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">8</span>);
+notas.put(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">9</span>);                  <span class="tok-coment">// sustituye el valor anterior</span>
+notas.putIfAbsent(<span class="tok-texto">"Luis"</span>, <span class="tok-numero">5</span>);         <span class="tok-coment">// solo si no existe la clave</span>
+
+notas.get(<span class="tok-texto">"Ana"</span>);                     <span class="tok-coment">// 9, o null si no está</span>
+notas.getOrDefault(<span class="tok-texto">"Pedro"</span>, <span class="tok-numero">0</span>);       <span class="tok-coment">// valor por defecto</span>
+notas.containsKey(<span class="tok-texto">"Ana"</span>);
+notas.containsValue(<span class="tok-numero">9</span>);
+notas.remove(<span class="tok-texto">"Luis"</span>);
+notas.size();</code></pre></figure>
+            <h3>Recorrer</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">for</span> (<span class="tok-tipo">Map</span>.<span class="tok-tipo">Entry</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; e : notas.entrySet()) {
+    <span class="tok-tipo">IO</span>.println(e.getKey() + <span class="tok-texto">": "</span> + e.getValue());
+}
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> clave : notas.keySet()) { ... }
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> valor : notas.values()) { ... }
+
+notas.forEach((clave, valor) -&gt; <span class="tok-tipo">IO</span>.println(clave + <span class="tok-texto">": "</span> + valor));</code></pre></figure>
+            <h3>Métodos que ahorran código</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>merge(k, 1, Integer::sum)</code></th><td>contar apariciones</td></tr>
+                  <tr><th scope="row" class="larga"><code>computeIfAbsent(k, x -&gt; new ArrayList&lt;&gt;())</code></th><td>crear la lista la primera vez</td></tr>
+                  <tr><th scope="row" class="larga"><code>compute(k, (k2, v) -&gt; v + 1)</code></th><td>calcular el nuevo valor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// contar cuántas veces aparece cada palabra</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; conteo = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> palabra : palabras) {
+    conteo.merge(palabra, <span class="tok-numero">1</span>, <span class="tok-tipo">Integer</span>::sum);
+}
+
+<span class="tok-coment">// agrupar alumnos por curso</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt;&gt; porCurso = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">Alumno</span> a : alumnos) {
+    porCurso.computeIfAbsent(a.curso(), c -&gt; <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;()).add(a);
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Ordenar -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Ordenar</h2>
+          <div class="cuerpo">
+            <h3>Comparable: el orden natural de la clase</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">record</span> <span class="tok-tipo">Alumno</span>(<span class="tok-tipo">String</span> nombre, <span class="tok-tipo">double</span> nota) <span class="tok-clave">implements</span> <span class="tok-tipo">Comparable</span>&lt;<span class="tok-tipo">Alumno</span>&gt; {
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">int</span> compareTo(<span class="tok-tipo">Alumno</span> otro) {
+        <span class="tok-clave">return</span> <span class="tok-tipo">Double</span>.compare(<span class="tok-clave">this</span>.nota, otro.nota);   <span class="tok-coment">// de menor a mayor</span>
+    }
+}
+
+<span class="tok-tipo">Collections</span>.sort(lista);   <span class="tok-coment">// o lista.sort(null)</span></code></pre></figure>
+            <h3>Comparator: otros criterios</h3>
+            <figure class="codigo"><pre data-lang="java"><code>lista.sort(<span class="tok-tipo">Comparator</span>.comparing(<span class="tok-tipo">Alumno</span>::nombre));
+lista.sort(<span class="tok-tipo">Comparator</span>.comparingDouble(<span class="tok-tipo">Alumno</span>::nota).reversed());
+
+lista.sort(<span class="tok-tipo">Comparator</span>.comparing(<span class="tok-tipo">Alumno</span>::curso)
+                     .thenComparing(<span class="tok-tipo">Alumno</span>::nombre));
+
+lista.sort(<span class="tok-tipo">Comparator</span>.comparing(<span class="tok-tipo">Alumno</span>::nombre, <span class="tok-tipo">String</span>.<span class="tok-tipo">CASE_INSENSITIVE_ORDER</span>));</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>compareTo devuelve &lt; 0</code></th><td>este va antes</td></tr>
+                  <tr><th scope="row"><code>devuelve 0</code></th><td>se consideran iguales</td></tr>
+                  <tr><th scope="row"><code>devuelve &gt; 0</code></th><td>este va después</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> no restes decimales para comparar (<code>(int)(a - b)</code> pierde la parte decimal). Usa <code>Double.compare</code> o <code>Integer.compare</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Colecciones inmutables -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Colecciones inmutables</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; colores = <span class="tok-tipo">List</span>.of(<span class="tok-texto">"rojo"</span>, <span class="tok-texto">"verde"</span>, <span class="tok-texto">"azul"</span>);
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; primos = <span class="tok-tipo">Set</span>.of(<span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">5</span>, <span class="tok-numero">7</span>);
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; tabla = <span class="tok-tipo">Map</span>.of(<span class="tok-texto">"uno"</span>, <span class="tok-numero">1</span>, <span class="tok-texto">"dos"</span>, <span class="tok-numero">2</span>);
+
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; copia = <span class="tok-tipo">List</span>.copyOf(otraLista);
+
+colores.add(<span class="tok-texto">"negro"</span>);   <span class="tok-coment">// UnsupportedOperationException</span></code></pre></figure>
+            <p class="nota">Son perfectas para constantes y para devolver datos que nadie debe modificar. Si necesitas una lista modificable a partir de una: <code>new ArrayList&lt;&gt;(List.of(...))</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Arrays y colecciones -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Arrays y colecciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span>[] array = {<span class="tok-texto">"a"</span>, <span class="tok-texto">"b"</span>, <span class="tok-texto">"c"</span>};
+
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; lista = <span class="tok-tipo">Arrays</span>.asList(array);      <span class="tok-coment">// tamaño fijo, refleja el array</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; modificable = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;(<span class="tok-tipo">Arrays</span>.asList(array));
+
+<span class="tok-tipo">String</span>[] otraVez = lista.toArray(<span class="tok-clave">new</span> <span class="tok-tipo">String</span>[<span class="tok-numero">0</span>]);
+
+<span class="tok-tipo">int</span>[] numeros = {<span class="tok-numero">3</span>, <span class="tok-numero">1</span>, <span class="tok-numero">2</span>};
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Integer</span>&gt; enteros = <span class="tok-tipo">Arrays</span>.stream(numeros).boxed().toList();</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>Arrays.asList</code> no admite <code>add</code> ni <code>remove</code>: está apoyada en el array original.</p>
+          </div>
+        </section>
+        <!-- 7. Utilidades de Collections -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Utilidades de Collections</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Collections.sort(lista)</code></th><td>ordena</td></tr>
+                  <tr><th scope="row" class="larga"><code>Collections.reverse(lista)</code></th><td>le da la vuelta</td></tr>
+                  <tr><th scope="row" class="larga"><code>Collections.shuffle(lista)</code></th><td>la desordena</td></tr>
+                  <tr><th scope="row"><code>Collections.max(lista)</code></th><td>máximo; también <code>min</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>Collections.frequency(lista, x)</code></th><td>cuántas veces aparece</td></tr>
+                  <tr><th scope="row" class="larga"><code>Collections.swap(lista, 0, 1)</code></th><td>intercambia dos posiciones</td></tr>
+                  <tr><th scope="row"><code>Collections.emptyList()</code></th><td>lista vacía inmutable</td></tr>
+                  <tr><th scope="row" class="larga"><code>Collections.unmodifiableList(l)</code></th><td>vista de solo lectura</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8. Cola y pila -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Cola y pila</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Deque</span>&lt;<span class="tok-tipo">String</span>&gt; pila = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+pila.push(<span class="tok-texto">"uno"</span>);        <span class="tok-coment">// añade arriba</span>
+pila.push(<span class="tok-texto">"dos"</span>);
+pila.pop();              <span class="tok-coment">// saca el último: "dos"</span>
+pila.peek();             <span class="tok-coment">// mira sin sacar</span>
+
+<span class="tok-tipo">Deque</span>&lt;<span class="tok-tipo">String</span>&gt; cola = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+cola.offer(<span class="tok-texto">"primero"</span>);   <span class="tok-coment">// añade al final</span>
+cola.offer(<span class="tok-texto">"segundo"</span>);
+cola.poll();             <span class="tok-coment">// saca el primero: "primero"</span>
+
+<span class="tok-tipo">Queue</span>&lt;<span class="tok-tipo">Tarea</span>&gt; prioridades = <span class="tok-clave">new</span> <span class="tok-tipo">PriorityQueue</span>&lt;&gt;(<span class="tok-tipo">Comparator</span>.comparingInt(<span class="tok-tipo">Tarea</span>::urgencia));</code></pre></figure>
+            <p class="nota"><code>ArrayDeque</code> sustituye a la antigua clase <code>Stack</code>, que ya no se recomienda.</p>
+          </div>
+        </section>
+        <!-- 9. Iterator y modificación -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Iterator y modificación</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// Error clásico: modificar mientras recorres</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> n : nombres) {
+    <span class="tok-clave">if</span> (n.isBlank()) {
+        nombres.remove(n);        <span class="tok-coment">// ConcurrentModificationException</span>
+    }
+}
+
+<span class="tok-coment">// Opción 1: removeIf</span>
+nombres.removeIf(<span class="tok-tipo">String</span>::isBlank);
+
+<span class="tok-coment">// Opción 2: iterador explícito</span>
+<span class="tok-tipo">Iterator</span>&lt;<span class="tok-tipo">String</span>&gt; it = nombres.iterator();
+<span class="tok-clave">while</span> (it.hasNext()) {
+    <span class="tok-clave">if</span> (it.next().isBlank()) {
+        it.remove();
+    }
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Genéricos -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Genéricos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; textos = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();    <span class="tok-coment">// solo admite String</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt;&gt; porCurso = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+
+<span class="tok-coment">// método genérico: vale para cualquier tipo</span>
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span>&gt; <span class="tok-tipo">T</span> primero(<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; lista) {
+    <span class="tok-clave">return</span> lista.isEmpty() ? <span class="tok-clave">null</span> : lista.get(<span class="tok-numero">0</span>);
+}
+
+<span class="tok-coment">// aceptar cualquier lista de números</span>
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">double</span> suma(<span class="tok-tipo">List</span>&lt;? <span class="tok-clave">extends</span> <span class="tok-tipo">Number</span>&gt; numeros) { ... }</code></pre></figure>
+            <p class="nota">Sin genéricos, la lista guardaría <code>Object</code> y habría que convertir a mano en cada lectura, con riesgo de <code>ClassCastException</code>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="poo.html">← Orientación a objetos</a><a class="siguiente" href="streams.html">Lambdas y streams →</a></nav>
+      <footer class="pie">Para filtrar, transformar y agrupar estas colecciones en una sola expresión, mira <a href="streams.html">Lambdas y streams</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

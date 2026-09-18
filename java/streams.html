@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lambdas y streams · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Lambdas y streams</span></nav>
+          <h1>Lambdas y streams</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Expresiones lambda, interfaces funcionales, streams, collectors y <code>Optional</code>.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="strings.html">Strings</a><a href="poo.html">Orientación a objetos</a><a href="colecciones.html">Colecciones</a><a href="streams.html" aria-current="page">Lambdas y streams</a><a href="excepciones.html">Excepciones</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="fechas.html">Fechas y horas</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Expresiones lambda</a><a href="#s2"><b>2</b>Interfaces funcionales</a><a href="#s3"><b>3</b>Referencias a métodos</a><a href="#s4"><b>4</b>Crear un stream</a><a href="#s5"><b>5</b>Operaciones intermedias</a><a href="#s6"><b>6</b>Operaciones finales</a><a href="#s7"><b>7</b>Collectors</a><a href="#s8"><b>8</b>Optional</a><a href="#s9"><b>9</b>Ejemplo completo</a><a href="#s10"><b>10</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Un stream en tres pasos</p>
+        <div class="pasos">
+          <div class="paso"><span class="n">1</span><b>origen</b><small>una colección, un array, un fichero…</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">2</span><b>intermedias</b><small>filter, map, sorted… devuelven otro stream</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">3</span><b>final</b><small>toList, count, forEach… produce el resultado</small></div>
+        </div>
+        <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; aprobados = alumnos.stream()          <span class="tok-coment">// 1. origen</span>
+    .filter(a -&gt; a.nota() &gt;= <span class="tok-numero">5</span>)                    <span class="tok-coment">// 2. intermedias</span>
+    .sorted(<span class="tok-tipo">Comparator</span>.comparing(<span class="tok-tipo">Alumno</span>::nombre))
+    .map(<span class="tok-tipo">Alumno</span>::nombre)
+    .toList();                                     <span class="tok-coment">// 3. final</span></code></pre></figure>
+        <p class="nota">Sin operación final no se ejecuta nada: las intermedias solo describen lo que hay que hacer.</p>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Expresiones lambda -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Expresiones lambda</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// una lambda es un método sin nombre que se puede guardar y pasar</span>
+() -&gt; <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Hola"</span>)            <span class="tok-coment">// sin parámetros</span>
+x -&gt; x * <span class="tok-numero">2</span>                          <span class="tok-coment">// uno (los paréntesis son opcionales)</span>
+(a, b) -&gt; a + b                     <span class="tok-coment">// varios</span>
+(<span class="tok-tipo">String</span> s) -&gt; s.length()            <span class="tok-coment">// con el tipo escrito</span>
+
+(a, b) -&gt; {                         <span class="tok-coment">// con varias líneas hace falta return</span>
+    <span class="tok-tipo">int</span> suma = a + b;
+    <span class="tok-clave">return</span> suma / <span class="tok-numero">2</span>;
+}</code></pre></figure>
+            <p class="nota">Una lambda solo se puede usar donde se espera una <strong>interfaz funcional</strong>, es decir, una interfaz con un único método abstracto.</p>
+          </div>
+        </section>
+        <!-- 2. Interfaces funcionales -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Interfaces funcionales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Predicate&lt;T&gt;</code></th><td>recibe T y devuelve boolean: <code>test(t)</code></td></tr>
+                  <tr><th scope="row"><code>Function&lt;T, R&gt;</code></th><td>recibe T y devuelve R: <code>apply(t)</code></td></tr>
+                  <tr><th scope="row"><code>Consumer&lt;T&gt;</code></th><td>recibe T y no devuelve nada: <code>accept(t)</code></td></tr>
+                  <tr><th scope="row"><code>Supplier&lt;T&gt;</code></th><td>no recibe nada y devuelve T: <code>get()</code></td></tr>
+                  <tr><th scope="row"><code>UnaryOperator&lt;T&gt;</code></th><td>recibe T y devuelve T</td></tr>
+                  <tr><th scope="row"><code>BiFunction&lt;T, U, R&gt;</code></th><td>recibe dos valores y devuelve otro</td></tr>
+                  <tr><th scope="row"><code>Comparator&lt;T&gt;</code></th><td>compara dos objetos: <code>compare(a, b)</code></td></tr>
+                  <tr><th scope="row"><code>Runnable</code></th><td>no recibe ni devuelve nada: <code>run()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Predicate</span>&lt;<span class="tok-tipo">Alumno</span>&gt; aprobado = a -&gt; a.nota() &gt;= <span class="tok-numero">5</span>;
+<span class="tok-tipo">Function</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; longitud = <span class="tok-tipo">String</span>::length;
+<span class="tok-tipo">Consumer</span>&lt;<span class="tok-tipo">String</span>&gt; mostrar = <span class="tok-tipo">IO</span>::println;
+<span class="tok-tipo">Supplier</span>&lt;<span class="tok-tipo">LocalDate</span>&gt; hoy = <span class="tok-tipo">LocalDate</span>::now;
+
+<span class="tok-tipo">IO</span>.println(aprobado.test(ana));
+lista.forEach(mostrar);
+
+<span class="tok-coment">// se pueden combinar</span>
+<span class="tok-tipo">Predicate</span>&lt;<span class="tok-tipo">Alumno</span>&gt; aprobadoDeDam = aprobado.and(a -&gt; a.curso().equals(<span class="tok-texto">"DAM"</span>));
+<span class="tok-tipo">Predicate</span>&lt;<span class="tok-tipo">Alumno</span>&gt; suspenso = aprobado.negate();</code></pre></figure>
+          </div>
+        </section>
+        <!-- 3. Referencias a métodos -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Referencias a métodos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>String::length</code></th><td>método de instancia: equivale a <code>s -&gt; s.length()</code></td></tr>
+                  <tr><th scope="row"><code>Integer::parseInt</code></th><td>método estático: <code>s -&gt; Integer.parseInt(s)</code></td></tr>
+                  <tr><th scope="row"><code>Alumno::nombre</code></th><td>getter de un record</td></tr>
+                  <tr><th scope="row"><code>IO::println</code></th><td>método de un objeto concreto</td></tr>
+                  <tr><th scope="row"><code>Alumno::new</code></th><td>constructor</td></tr>
+                  <tr><th scope="row" class="larga"><code>String::compareToIgnoreCase</code></th><td>método de instancia con otro objeto como parámetro</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 4. Crear un stream -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Crear un stream</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>lista.stream()</code></th><td>desde cualquier colección</td></tr>
+                  <tr><th scope="row"><code>Arrays.stream(array)</code></th><td>desde un array</td></tr>
+                  <tr><th scope="row"><code>Stream.of("a", "b")</code></th><td>a partir de valores sueltos</td></tr>
+                  <tr><th scope="row"><code>IntStream.range(0, 10)</code></th><td>0, 1, … 9</td></tr>
+                  <tr><th scope="row" class="larga"><code>IntStream.rangeClosed(1, 10)</code></th><td>1, 2, … 10</td></tr>
+                  <tr><th scope="row"><code>mapa.entrySet().stream()</code></th><td>desde un Map</td></tr>
+                  <tr><th scope="row"><code>Files.lines(ruta)</code></th><td>las líneas de un fichero</td></tr>
+                  <tr><th scope="row"><code>texto.lines()</code></th><td>las líneas de un texto</td></tr>
+                  <tr><th scope="row" class="larga"><code>Stream.iterate(1, x -&gt; x * 2)</code></th><td>infinito: úsalo con <code>limit</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Operaciones intermedias -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Operaciones intermedias</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>filter(p)</code></th><td>se queda con los que cumplen la condición</td></tr>
+                  <tr><th scope="row"><code>map(f)</code></th><td>transforma cada elemento</td></tr>
+                  <tr><th scope="row"><code>mapToInt(f)</code></th><td>a un stream de <code>int</code> (permite <code>sum()</code>, <code>average()</code>)</td></tr>
+                  <tr><th scope="row"><code>flatMap(f)</code></th><td>aplana: de un stream de listas a un stream de elementos</td></tr>
+                  <tr><th scope="row"><code>sorted()</code></th><td>ordena por el orden natural</td></tr>
+                  <tr><th scope="row"><code>sorted(cmp)</code></th><td>ordena con un comparador</td></tr>
+                  <tr><th scope="row"><code>distinct()</code></th><td>quita repetidos</td></tr>
+                  <tr><th scope="row"><code>limit(n)  skip(n)</code></th><td>los n primeros / se salta los n primeros</td></tr>
+                  <tr><th scope="row"><code>peek(c)</code></th><td>mira los elementos sin cambiarlos (para depurar)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; palabras = frases.stream()
+    .flatMap(f -&gt; <span class="tok-tipo">Arrays</span>.stream(f.split(<span class="tok-texto">" "</span>)))
+    .map(<span class="tok-tipo">String</span>::toLowerCase)
+    .distinct()
+    .sorted()
+    .toList();</code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Operaciones finales -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Operaciones finales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>toList()</code></th><td>lista inmutable con el resultado</td></tr>
+                  <tr><th scope="row"><code>collect(...)</code></th><td>recoge de otras formas (ver la sección siguiente)</td></tr>
+                  <tr><th scope="row"><code>forEach(c)</code></th><td>hace algo con cada elemento</td></tr>
+                  <tr><th scope="row"><code>count()</code></th><td>cuántos hay</td></tr>
+                  <tr><th scope="row"><code>anyMatch(p)</code></th><td>¿alguno cumple?</td></tr>
+                  <tr><th scope="row" class="larga"><code>allMatch(p)  noneMatch(p)</code></th><td>¿todos? ¿ninguno?</td></tr>
+                  <tr><th scope="row"><code>findFirst()  findAny()</code></th><td>devuelve un <code>Optional</code></td></tr>
+                  <tr><th scope="row"><code>min(cmp)  max(cmp)</code></th><td>mínimo y máximo, como <code>Optional</code></td></tr>
+                  <tr><th scope="row"><code>reduce(0, Integer::sum)</code></th><td>combina todos en un valor</td></tr>
+                  <tr><th scope="row" class="larga"><code>sum()  average()  summaryStatistics()</code></th><td>solo en streams numéricos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">long</span> aprobados = alumnos.stream().filter(a -&gt; a.nota() &gt;= <span class="tok-numero">5</span>).count();
+
+<span class="tok-tipo">double</span> media = alumnos.stream()
+    .mapToDouble(<span class="tok-tipo">Alumno</span>::nota)
+    .average()
+    .orElse(<span class="tok-numero">0</span>);
+
+<span class="tok-tipo">boolean</span> hayAlgunSobresaliente = alumnos.stream().anyMatch(a -&gt; a.nota() &gt;= <span class="tok-numero">9</span>);
+
+<span class="tok-tipo">IntSummaryStatistics</span> stats = notas.stream().mapToInt(<span class="tok-tipo">Integer</span>::intValue).summaryStatistics();
+<span class="tok-tipo">IO</span>.println(stats.getMax() + <span class="tok-texto">" "</span> + stats.getMin() + <span class="tok-texto">" "</span> + stats.getAverage());</code></pre></figure>
+          </div>
+        </section>
+        <!-- 7. Collectors -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Collectors</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Collectors.toList()</code></th><td>lista modificable</td></tr>
+                  <tr><th scope="row"><code>Collectors.toSet()</code></th><td>conjunto</td></tr>
+                  <tr><th scope="row"><code>Collectors.joining(", ")</code></th><td>une los textos</td></tr>
+                  <tr><th scope="row"><code>Collectors.counting()</code></th><td>cuenta</td></tr>
+                  <tr><th scope="row" class="larga"><code>Collectors.summingDouble(f)</code></th><td>suma</td></tr>
+                  <tr><th scope="row" class="larga"><code>Collectors.averagingDouble(f)</code></th><td>media</td></tr>
+                  <tr><th scope="row"><code>Collectors.groupingBy(f)</code></th><td>agrupa en un Map</td></tr>
+                  <tr><th scope="row" class="larga"><code>Collectors.partitioningBy(p)</code></th><td>parte en dos grupos: true y false</td></tr>
+                  <tr><th scope="row"><code>Collectors.toMap(k, v)</code></th><td>construye un Map</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> listado = alumnos.stream()
+    .map(<span class="tok-tipo">Alumno</span>::nombre)
+    .collect(<span class="tok-tipo">Collectors</span>.joining(<span class="tok-texto">", "</span>, <span class="tok-texto">"["</span>, <span class="tok-texto">"]"</span>));
+
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt;&gt; porCurso = alumnos.stream()
+    .collect(<span class="tok-tipo">Collectors</span>.groupingBy(<span class="tok-tipo">Alumno</span>::curso));
+
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Long</span>&gt; cuantosPorCurso = alumnos.stream()
+    .collect(<span class="tok-tipo">Collectors</span>.groupingBy(<span class="tok-tipo">Alumno</span>::curso, <span class="tok-tipo">Collectors</span>.counting()));
+
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Double</span>&gt; mediaPorCurso = alumnos.stream()
+    .collect(<span class="tok-tipo">Collectors</span>.groupingBy(<span class="tok-tipo">Alumno</span>::curso,
+             <span class="tok-tipo">Collectors</span>.averagingDouble(<span class="tok-tipo">Alumno</span>::nota)));
+
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">Boolean</span>, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt;&gt; aprobados = alumnos.stream()
+    .collect(<span class="tok-tipo">Collectors</span>.partitioningBy(a -&gt; a.nota() &gt;= <span class="tok-numero">5</span>));
+
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Double</span>&gt; notaPorNombre = alumnos.stream()
+    .collect(<span class="tok-tipo">Collectors</span>.toMap(<span class="tok-tipo">Alumno</span>::nombre, <span class="tok-tipo">Alumno</span>::nota));</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>toMap</code> lanza una excepción si se repite una clave. Si puede pasar, indica qué hacer: <code>toMap(k, v, (a, b) -&gt; a)</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Optional -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Optional</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Optional</span>&lt;<span class="tok-tipo">Alumno</span>&gt; mejor = alumnos.stream()
+    .max(<span class="tok-tipo">Comparator</span>.comparingDouble(<span class="tok-tipo">Alumno</span>::nota));
+
+<span class="tok-clave">if</span> (mejor.isPresent()) {
+    <span class="tok-tipo">IO</span>.println(mejor.get().nombre());
+}
+
+mejor.ifPresent(a -&gt; <span class="tok-tipo">IO</span>.println(a.nombre()));
+<span class="tok-tipo">String</span> nombre = mejor.map(<span class="tok-tipo">Alumno</span>::nombre).orElse(<span class="tok-texto">"no hay alumnos"</span>);
+<span class="tok-tipo">Alumno</span> a = mejor.orElseThrow();   <span class="tok-coment">// lanza excepción si está vacío</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>isPresent()  isEmpty()</code></th><td>¿tiene valor?</td></tr>
+                  <tr><th scope="row"><code>get()</code></th><td>el valor; falla si está vacío</td></tr>
+                  <tr><th scope="row"><code>orElse(x)</code></th><td>el valor o una alternativa</td></tr>
+                  <tr><th scope="row"><code>orElseGet(() -&gt; x)</code></th><td>igual, pero solo calcula la alternativa si hace falta</td></tr>
+                  <tr><th scope="row"><code>orElseThrow()</code></th><td>el valor o una excepción</td></tr>
+                  <tr><th scope="row"><code>ifPresent(c)</code></th><td>hace algo solo si hay valor</td></tr>
+                  <tr><th scope="row"><code>map(f)  filter(p)</code></th><td>transforma o filtra el contenido</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>Optional</code> es la forma de decir «esto puede no existir» sin devolver <code>null</code>. Úsalo como valor de retorno, no como campo de una clase ni como parámetro.</p>
+          </div>
+        </section>
+        <!-- 9. Ejemplo completo -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Ejemplo completo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">record</span> <span class="tok-tipo">Alumno</span>(<span class="tok-tipo">String</span> nombre, <span class="tok-tipo">String</span> curso, <span class="tok-tipo">double</span> nota) { }
+
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt; alumnos = <span class="tok-tipo">List</span>.of(
+    <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-texto">"DAM"</span>, <span class="tok-numero">8.5</span>),
+    <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Luis"</span>, <span class="tok-texto">"DAM"</span>, <span class="tok-numero">4.0</span>),
+    <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Marta"</span>, <span class="tok-texto">"DAW"</span>, <span class="tok-numero">9.1</span>),
+    <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Jon"</span>, <span class="tok-texto">"DAW"</span>, <span class="tok-numero">6.2</span>));
+
+<span class="tok-coment">// nombres de los aprobados, ordenados por nota descendente</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; aprobados = alumnos.stream()
+    .filter(a -&gt; a.nota() &gt;= <span class="tok-numero">5</span>)
+    .sorted(<span class="tok-tipo">Comparator</span>.comparingDouble(<span class="tok-tipo">Alumno</span>::nota).reversed())
+    .map(<span class="tok-tipo">Alumno</span>::nombre)
+    .toList();                       <span class="tok-coment">// [Marta, Ana, Jon]</span>
+
+<span class="tok-coment">// nota media por curso</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Double</span>&gt; medias = alumnos.stream()
+    .collect(<span class="tok-tipo">Collectors</span>.groupingBy(<span class="tok-tipo">Alumno</span>::curso,
+             <span class="tok-tipo">Collectors</span>.averagingDouble(<span class="tok-tipo">Alumno</span>::nota)));
+                                     <span class="tok-coment">// {DAM=6.25, DAW=7.65}</span>
+
+<span class="tok-coment">// el mejor de cada curso</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Optional</span>&lt;<span class="tok-tipo">Alumno</span>&gt;&gt; mejores = alumnos.stream()
+    .collect(<span class="tok-tipo">Collectors</span>.groupingBy(<span class="tok-tipo">Alumno</span>::curso,
+             <span class="tok-tipo">Collectors</span>.maxBy(<span class="tok-tipo">Comparator</span>.comparingDouble(<span class="tok-tipo">Alumno</span>::nota))));</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Despistes habituales -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Un stream se usa una vez</code></th><td>si lo recorres dos veces: <code>IllegalStateException</code></td></tr>
+                  <tr><th scope="row"><code>Sin operación final</code></th><td>no se ejecuta nada, ni siquiera los <code>filter</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>Modificar desde el stream</code></th><td>evita cambiar la colección de origen dentro de un <code>forEach</code></td></tr>
+                  <tr><th scope="row"><code>toList() es inmutable</code></th><td>si necesitas añadir después, usa <code>collect(Collectors.toList())</code></td></tr>
+                  <tr><th scope="row"><code>No lo uses para todo</code></th><td>un bucle sencillo a veces se lee mejor que un stream retorcido</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="colecciones.html">← Colecciones</a><a class="siguiente" href="excepciones.html">Excepciones →</a></nav>
+      <footer class="pie">Los streams trabajan sobre las estructuras de la chuleta de <a href="colecciones.html">Colecciones</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
