@@ -1,0 +1,36 @@
+# =============================================================
+#  Chuletario · ficheros que NO se suben al repositorio
+# =============================================================
+
+# --- Claude Code -------------------------------------------
+# Sí se suben (son del proyecto y los comparte todo el mundo):
+#   CLAUDE.md
+#   .claude/settings.json
+#   .claude/commands/  .claude/rules/  .claude/skills/
+#
+# No se suben (son tuyos y solo valen en este equipo):
+.claude/settings.local.json
+CLAUDE.local.md
+
+# --- Editores e IDE ----------------------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# --- Sistema operativo -------------------------------------
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+
+# --- Temporales y copias de seguridad ----------------------
+*.tmp
+*.bak
+*.log
+*~
+
+# --- Credenciales ------------------------------------------
+# Hoy el Chuletario no las necesita, pero más vale tenerlo puesto
+.env
+*.key
+*.pem
