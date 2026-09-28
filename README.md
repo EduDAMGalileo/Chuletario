@@ -14,10 +14,17 @@ chuletario/
 │   ├── chuletas.css        estilos comunes (colores, rejilla, impresión)
 │   ├── chuletas.js         tema claro/oscuro y botón de copiar
 │   └── favicon.svg
-├── sistemas/               terminal-linux, nmap
+├── sistemas/               linux, terminal-linux, bash-script,
+│                           servicios, tareas, red-linux, red-clasica
+├── hacking/                pentest, google-dorking, nmap, netcat, sqlmap
+├── seguridad/              iptables, nftables
 ├── git/                    git
+├── programacion/           índice de lenguajes (enlaza java/ y php/)
 ├── java/                   sintaxis, strings, poo, colecciones,
 │                           streams, excepciones, ficheros
+├── python/                 sintaxis
+├── kotlin/                 sintaxis
+├── php/                    sintaxis
 ├── bases-datos/            sql, postgresql
 ├── web/                    html, css
 └── xml/                    dtd, xsd, xpath, xquery

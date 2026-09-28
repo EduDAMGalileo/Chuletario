@@ -114,8 +114,14 @@
 /* Cada página declara su tema en <body data-tema="java">.                  */
 
 body[data-tema="sistemas"]    { --acento: #A80030; }
+body[data-tema="hacking"]     { --acento: #2E7D32; }
+body[data-tema="seguridad"]   { --acento: #0B6E99; }
 body[data-tema="git"]         { --acento: #F05032; }
+body[data-tema="programacion"] { --acento: #3D5A80; }
 body[data-tema="java"]        { --acento: #E76F00; }
+body[data-tema="php"]         { --acento: #4F5B93; }
+body[data-tema="python"]      { --acento: #3776AB; }
+body[data-tema="kotlin"]      { --acento: #7F52FF; }
 body[data-tema="bases-datos"] { --acento: #00758F; }
 body[data-tema="web"]         { --acento: #E34C26; }
 body[data-tema="xml"]         { --acento: #5E6AD2; }
@@ -509,6 +515,9 @@ figure.codigo:hover .copiar,
 .intro { max-width: 70ch; color: var(--apagado); margin: 0 0 22px; }
 .grupo { margin: 0 0 26px; }
 .grupo h2 { font-size: 15px; color: var(--apagado); font-weight: 600; margin: 0 0 10px; }
+.grupo .lenguaje { background: none; border: 0; padding: 0; margin: 16px 0 8px; font-size: 14px; }
+.grupo .lenguaje a { text-decoration: none; }
+.grupo .lenguaje a:hover { text-decoration: underline; }
 .grupo .desc-tema { color: var(--apagado); font-size: 14px; margin: -6px 0 10px; }
 .fichas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
 
