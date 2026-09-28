@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Seguridad · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="seguridad">
+    <!-- Cabecera del tema -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><span>Seguridad</span></nav>
+          <h1>Seguridad</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Proteger sistemas y comunicaciones: cortafuegos, cifrado y red privada.</p>
+          <div class="herramientas">
+      <button type="button" data-accion="tema">Tema oscuro</button>
+      <button type="button" data-accion="imprimir">Imprimir</button>
+    </div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Seguridad">
+      <div class="wrap"><a href="iptables.html">iptables</a><a href="nftables.html">nftables</a></div>
+    </nav>
+    <main class="wrap">
+      <p class="intro">El lado defensivo: cómo blindar un equipo y su tráfico. De momento, los dos cortafuegos de Linux. Irá creciendo con cifrado (GPG), VPN y proxys. Para la parte ofensiva, mira la sección de <a href="../hacking/index.html">Hacking</a>.</p>
+      <div class="fichas"><a class="ficha" href="iptables.html" style="--color-tema: #0B6E99"><span class="nombre">iptables</span><span class="desc">El cortafuegos clásico de Linux: tablas, cadenas y reglas.</span></a><a class="ficha" href="nftables.html" style="--color-tema: #0B6E99"><span class="nombre">nftables</span><span class="desc">El cortafuegos moderno de Linux, sucesor de iptables.</span></a></div>
+      <footer class="pie"><a href="../index.html">← Todos los temas</a></footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

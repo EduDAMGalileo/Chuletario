@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>nftables · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Seguridad</a><span aria-hidden="true">›</span><span>nftables</span></nav>
+          <h1>nftables</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El cortafuegos moderno de Linux, sucesor de iptables: una sola herramienta, sintaxis unificada, conjuntos y mapas.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Seguridad">
+      <div class="wrap"><a href="iptables.html">iptables</a><a href="nftables.html" aria-current="page">nftables</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué cambia respecto a iptables</a><a href="#s2"><b>2</b>Familias, tablas y cadenas</a><a href="#s3"><b>3</b>La orden nft</a><a href="#s4"><b>4</b>Ver el ruleset</a><a href="#s5"><b>5</b>Crear tablas y cadenas</a><a href="#s6"><b>6</b>Añadir y borrar reglas</a><a href="#s7"><b>7</b>Criterios y veredictos</a><a href="#s8"><b>8</b>Un cortafuegos básico</a><a href="#s9"><b>9</b>Conjuntos y mapas</a><a href="#s10"><b>10</b>NAT</a><a href="#s11"><b>11</b>Guardar y cargar</a><a href="#s12"><b>12</b>Equivalencias con iptables</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Anatomía de una regla</p>
+            <figure class="codigo"><pre data-lang="nft"><code>table inet filtro {
+    chain entrada {
+        type filter hook input priority 0; policy drop;
+        tcp dport 22 accept
+    }
+}
+       │      │       │      │       │        │
+    familia  tabla  cadena  hook  prioridad  regla</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">De un vistazo</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Una herramienta</th><td><code>nft</code> sustituye a iptables, ip6tables, arptables y ebtables</td></tr>
+                  <tr><th scope="row">Sin cadenas fijas</th><td>tú creas las tablas y cadenas que quieras</td></tr>
+                  <tr><th scope="row">IPv4 e IPv6</th><td>juntas, con la familia <code>inet</code></td></tr>
+                  <tr><th scope="row">Conjuntos</th><td>listas de IPs o puertos en una sola regla</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <p class="banda-titulo">Aviso</p>
+            <p class="aviso"><strong>No te encierres fuera.</strong> Igual que con iptables, una cadena de entrada con <code>policy drop</code> sin permitir antes el puerto de SSH corta tu sesión. Prueba en local o en la consola de la máquina virtual.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué cambia respecto a iptables -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué cambia respecto a iptables</h2>
+          <div class="cuerpo">
+            <p class="txt">nftables usa el mismo netfilter del núcleo, pero con una sintaxis unificada y más capacidades. Desde Debian 10 y Ubuntu 20.04 es el sistema por defecto; <code>iptables</code> suele ser ya una fachada que traduce a nftables por debajo.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">iptables</th><td>una orden por familia, cadenas predefinidas, una regla por línea</td></tr>
+                  <tr><th scope="row">nftables</th><td>una sola orden <code>nft</code>, tú defines tablas y cadenas, conjuntos y mapas nativos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">apt</span> install nftables
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> enable <span class="tok-atributo">--now</span> nftables
+<span class="tok-clave">nft</span> <span class="tok-atributo">--version</span></code></pre></figure>
+            <p class="nota">Igual que iptables, las reglas se recorren en orden dentro de cada cadena; pero aquí una regla puede aceptar de golpe una lista entera de puertos o direcciones.</p>
+          </div>
+        </section>
+        <!-- 2. Familias, tablas y cadenas -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Familias, tablas y cadenas</h2>
+          <div class="cuerpo">
+            <h3>Familias</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ip</code></th><td>solo IPv4</td></tr>
+                  <tr><th scope="row"><code>ip6</code></th><td>solo IPv6</td></tr>
+                  <tr><th scope="row"><code>inet</code></th><td>IPv4 e IPv6 juntas (la recomendada)</td></tr>
+                  <tr><th scope="row"><code>arp</code>, <code>bridge</code>, <code>netdev</code></th><td>casos especiales</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Cadena: tipo, hook y prioridad</h3>
+            <p class="txt">Una cadena «base» se engancha a un punto del recorrido del paquete (el <em>hook</em>). Los hooks son los mismos conceptos que las cadenas de iptables:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>hook input</code></th><td>paquetes hacia este equipo</td></tr>
+                  <tr><th scope="row"><code>hook output</code></th><td>paquetes que salen</td></tr>
+                  <tr><th scope="row"><code>hook forward</code></th><td>paquetes que lo atraviesan</td></tr>
+                  <tr><th scope="row"><code>hook prerouting</code></th><td>nada más entrar (para DNAT)</td></tr>
+                  <tr><th scope="row"><code>hook postrouting</code></th><td>justo antes de salir (para SNAT)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3. La orden nft -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>La orden nft</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># todo se maneja con el subcomando adecuado</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> list ruleset               <span class="tok-coment"># ver todo</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> add table inet filtro      <span class="tok-coment"># crear una tabla</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> flush ruleset              <span class="tok-coment"># borrar todo</span>
+
+<span class="tok-coment"># ejecutar un fichero de reglas</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> <span class="tok-atributo">-f</span> /etc/nftables.conf
+
+<span class="tok-coment"># modo interactivo</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> <span class="tok-atributo">-i</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>list</code></th><td>mostrar tablas, cadenas o el ruleset entero</td></tr>
+                  <tr><th scope="row"><code>add</code> · <code>insert</code></th><td>añadir al final / al principio</td></tr>
+                  <tr><th scope="row"><code>delete</code></th><td>borrar</td></tr>
+                  <tr><th scope="row"><code>flush</code></th><td>vaciar</td></tr>
+                  <tr><th scope="row"><code>-f fichero</code></th><td>cargar reglas desde un fichero</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 4. Ver el ruleset -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Ver el ruleset</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> list ruleset               <span class="tok-coment"># absolutamente todo</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> list tables                 <span class="tok-coment"># solo los nombres de las tablas</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> list table inet filtro      <span class="tok-coment"># una tabla concreta</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> <span class="tok-atributo">-a</span> list ruleset             <span class="tok-coment"># con los handle (para borrar reglas)</span></code></pre></figure>
+            <p class="nota">La salida de <code>list ruleset</code> es exactamente el formato de un fichero de configuración: puedes copiarla, guardarla y volver a cargarla con <code>-f</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Crear tablas y cadenas -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Crear tablas y cadenas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># tabla</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> add table inet filtro
+
+<span class="tok-coment"># cadena base enganchada a la entrada, que deniega por defecto</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> add chain inet filtro entrada \
+     <span class="tok-texto">'{ type filter hook input priority 0 ; policy drop ; }'</span></code></pre></figure>
+            <p class="txt">A diferencia de iptables, aquí no hay cadenas <code>INPUT</code>/<code>OUTPUT</code> ya hechas: las creas tú y les pones el nombre que quieras. La cadena solo actúa cuando declara un <code>hook</code>.</p>
+            <p class="aviso"><strong>Cuidado:</strong> en cuanto una cadena de <code>input</code> tiene <code>policy drop</code>, todo lo que no aceptes explícitamente queda bloqueado. Añade la regla de SSH antes o a la vez.</p>
+          </div>
+        </section>
+        <!-- 6. Añadir y borrar reglas -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Añadir y borrar reglas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># añadir al final de una cadena</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> add rule inet filtro entrada tcp dport <span class="tok-numero">80</span> accept
+
+<span class="tok-coment"># insertar al principio</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> insert rule inet filtro entrada ip saddr 10.0.0.5 drop
+
+<span class="tok-coment"># borrar: primero busca el handle</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> <span class="tok-atributo">-a</span> list chain inet filtro entrada
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> delete rule inet filtro entrada handle <span class="tok-numero">7</span></code></pre></figure>
+            <p class="nota">Las reglas se borran por su <strong>handle</strong> (un número que asigna nftables), no por su posición. Míralo con <code>nft -a list ...</code>.</p>
+          </div>
+        </section>
+        <!-- 7. Criterios y veredictos -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Criterios y veredictos</h2>
+          <div class="cuerpo">
+            <h3>Criterios de coincidencia</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>tcp dport 22</code></th><td>puerto TCP de destino</td></tr>
+                  <tr><th scope="row"><code>udp dport 53</code></th><td>puerto UDP de destino</td></tr>
+                  <tr><th scope="row"><code>ip saddr 192.168.1.0/24</code></th><td>dirección de origen</td></tr>
+                  <tr><th scope="row"><code>ip daddr 10.0.0.5</code></th><td>dirección de destino</td></tr>
+                  <tr><th scope="row"><code>iif "lo"</code></th><td>interfaz de entrada</td></tr>
+                  <tr><th scope="row"><code>ct state established,related</code></th><td>estado de la conexión</td></tr>
+                  <tr><th scope="row"><code>icmp type echo-request</code></th><td>tipo de ICMP (ping)</td></tr>
+                  <tr><th scope="row"><code>tcp dport { 80, 443 }</code></th><td>varios valores con un conjunto anónimo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Veredictos</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>accept</code></th><td>dejar pasar</td></tr>
+                  <tr><th scope="row"><code>drop</code></th><td>descartar en silencio</td></tr>
+                  <tr><th scope="row"><code>reject</code></th><td>rechazar avisando</td></tr>
+                  <tr><th scope="row"><code>log</code></th><td>registrar (se combina: <code>log accept</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los criterios y veredictos van en minúsculas, al revés que en iptables (<code>ACCEPT</code> → <code>accept</code>).</p>
+          </div>
+        </section>
+        <!-- 8. Un cortafuegos básico -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Un cortafuegos básico</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>/etc/nftables.conf: equivale al ejemplo de iptables</figcaption><pre data-lang="nft"><code>#!/usr/sbin/nft -f
+flush ruleset
+
+table inet filtro {
+    chain entrada {
+        type filter hook input priority 0; policy drop;
+
+        iif "lo" accept
+        ct state established,related accept
+        ct state invalid drop
+
+        tcp dport 22 accept
+        tcp dport { 80, 443 } accept
+        icmp type echo-request accept
+        ip6 nexthdr icmpv6 accept
+    }
+
+    chain reenvio {
+        type filter hook forward priority 0; policy drop;
+    }
+
+    chain salida {
+        type filter hook output priority 0; policy accept;
+    }
+}</code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> <span class="tok-atributo">-f</span> /etc/nftables.conf     <span class="tok-coment"># cargarlo</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> list ruleset              <span class="tok-coment"># comprobar</span></code></pre></figure>
+            <p class="nota">Todo el cortafuegos vive en un solo fichero legible. <code>{ 80, 443 }</code> es un conjunto anónimo: una regla cubre varios puertos.</p>
+          </div>
+        </section>
+        <!-- 9. Conjuntos y mapas -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Conjuntos y mapas</h2>
+          <div class="cuerpo">
+            <p class="txt">La gran ventaja de nftables: agrupar valores con nombre y reutilizarlos. Un <strong>conjunto</strong> es una lista; un <strong>mapa</strong> relaciona una clave con una acción.</p>
+            <figure class="codigo"><figcaption>Conjunto con nombre para una lista blanca</figcaption><pre data-lang="nft"><code>table inet filtro {
+    set permitidas {
+        type ipv4_addr
+        elements = { 192.168.1.10, 192.168.1.20 }
+    }
+    chain entrada {
+        type filter hook input priority 0; policy drop;
+        ip saddr @permitidas accept
+    }
+}</code></pre></figure>
+            <figure class="codigo"><figcaption>Añadir o quitar elementos sin reescribir la regla</figcaption><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> add element inet filtro permitidas <span class="tok-texto">'{ 192.168.1.30 }'</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">nft</span> delete element inet filtro permitidas <span class="tok-texto">'{ 192.168.1.10 }'</span></code></pre></figure>
+            <p class="nota">Los conjuntos evitan repetir reglas casi iguales y se actualizan al vuelo: ideal para listas negras dinámicas o para el <em>fail2ban</em> moderno.</p>
+          </div>
+        </section>
+        <!-- 10. NAT -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>NAT</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Compartir la conexión y redirigir un puerto</figcaption><pre data-lang="nft"><code>table inet nat {
+    chain prerouting {
+        type nat hook prerouting priority -100;
+        tcp dport 8080 dnat to 192.168.1.50:80
+    }
+    chain postrouting {
+        type nat hook postrouting priority 100;
+        oif "eth0" masquerade
+    }
+}</code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">sysctl</span> <span class="tok-atributo">-w</span> net.ipv4.ip_forward=<span class="tok-numero">1</span>   <span class="tok-coment"># activar el reenvío</span></code></pre></figure>
+            <p class="nota">Mismos conceptos que en iptables (<code>PREROUTING</code> para DNAT, <code>POSTROUTING</code> para MASQUERADE), pero en el formato unificado de nft.</p>
+          </div>
+        </section>
+        <!-- 11. Guardar y cargar -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Guardar y cargar</h2>
+          <div class="cuerpo">
+            <p class="txt">El servicio <code>nftables</code> carga <code>/etc/nftables.conf</code> en cada arranque. Guardar es, literalmente, volcar el ruleset a ese fichero.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># volcar las reglas actuales al fichero de arranque</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">sh</span> <span class="tok-atributo">-c</span> <span class="tok-texto">'nft list ruleset &gt; /etc/nftables.conf'</span>
+
+<span class="tok-coment"># activar la carga automática al arrancar</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> enable <span class="tok-atributo">--now</span> nftables
+
+<span class="tok-coment"># recargar tras editar el fichero</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> restart nftables</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> comprueba el fichero con <code>sudo nft -c -f /etc/nftables.conf</code> (modo comprobación) antes de reiniciar el servicio; un error de sintaxis puede dejarte sin reglas.</p>
+          </div>
+        </section>
+        <!-- 12. Equivalencias con iptables -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Equivalencias con iptables</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>iptables -A INPUT</code></th><td><code>nft add rule inet filtro entrada</code></td></tr>
+                  <tr><th scope="row"><code>-p tcp --dport 22</code></th><td><code>tcp dport 22</code></td></tr>
+                  <tr><th scope="row"><code>-s 10.0.0.0/8</code></th><td><code>ip saddr 10.0.0.0/8</code></td></tr>
+                  <tr><th scope="row"><code>-i eth0</code></th><td><code>iif "eth0"</code></td></tr>
+                  <tr><th scope="row"><code>-m conntrack --ctstate</code></th><td><code>ct state</code></td></tr>
+                  <tr><th scope="row"><code>-j ACCEPT</code></th><td><code>accept</code></td></tr>
+                  <tr><th scope="row"><code>iptables-save</code></th><td><code>nft list ruleset</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Traductores automáticos</figcaption><pre data-lang="bash"><code><span class="tok-clave">iptables-translate</span> <span class="tok-atributo">-A</span> INPUT <span class="tok-atributo">-p</span> tcp <span class="tok-atributo">--dport</span> <span class="tok-numero">22</span> <span class="tok-atributo">-j</span> ACCEPT
+<span class="tok-coment"># nft add rule ip filter INPUT tcp dport 22 counter accept</span></code></pre></figure>
+            <p class="nota">Las órdenes <code>iptables-translate</code> y <code>iptables-restore-translate</code> convierten reglas y ficheros de iptables a nftables: muy útil para migrar.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="iptables.html">← iptables</a><span></span></nav>
+      <footer class="pie">Página de manual: <code>man nft</code>. Wiki oficial en <a href="https://wiki.nftables.org/">wiki.nftables.org</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
