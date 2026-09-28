@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Configurar la red · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas y redes</a><span aria-hidden="true">›</span><span>Configurar la red</span></nav>
+          <h1>Configurar la red</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Direcciones IP, rutas y DNS en Linux actual: el comando <code>ip</code>, Netplan, NetworkManager y systemd-resolved.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas y redes">
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Terminal Linux</a><a href="bash-script.html">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a><a href="red-linux.html" aria-current="page">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Ver la configuración</a><a href="#s2"><b>2</b>Nombres de las interfaces</a><a href="#s3"><b>3</b>ip: interfaces y direcciones</a><a href="#s4"><b>4</b>ip: rutas y vecinos</a><a href="#s5"><b>5</b>Netplan: el fichero</a><a href="#s6"><b>6</b>Netplan: DHCP</a><a href="#s7"><b>7</b>Netplan: IP estática</a><a href="#s8"><b>8</b>Netplan: aplicar los cambios</a><a href="#s9"><b>9</b>Netplan: casos habituales</a><a href="#s10"><b>10</b>NetworkManager (nmcli)</a><a href="#s11"><b>11</b>DNS y nombre del equipo</a><a href="#s12"><b>12</b>El equipo como router</a><a href="#s13"><b>13</b>Diagnosticar paso a paso</a><a href="#s14"><b>14</b>Errores típicos</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">¿Quién gestiona la red en mi equipo?</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ubuntu Server</th><td>Netplan, que genera la configuración para <strong>systemd-networkd</strong></td></tr>
+                  <tr><th scope="row">Ubuntu Desktop</th><td>Netplan, que delega en <strong>NetworkManager</strong></td></tr>
+                  <tr><th scope="row">Debian</th><td><code>/etc/network/interfaces</code> (ver <a href="red-clasica.html">método clásico</a>) o NetworkManager si tiene escritorio</td></tr>
+                  <tr><th scope="row">Kali</th><td>NetworkManager</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ls</span> /etc/netplan/                  <span class="tok-coment"># si hay .yaml, usa Netplan</span>
+<span class="tok-clave">systemctl is-active</span> NetworkManager systemd-networkd networking</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">IP estática con Netplan</p>
+            <figure class="codigo"><figcaption>/etc/netplan/01-red.yaml</figcaption><pre data-lang="yaml"><code><span class="tok-atributo">network</span>:
+  <span class="tok-atributo">version</span>: <span class="tok-numero">2</span>
+  <span class="tok-atributo">ethernets</span>:
+    <span class="tok-atributo">enp0s3</span>:
+      <span class="tok-atributo">addresses</span>: [<span class="tok-numero">192.168.1.10/24</span>]
+      <span class="tok-atributo">routes</span>:
+        - <span class="tok-atributo">to</span>: default
+          <span class="tok-atributo">via</span>: <span class="tok-numero">192.168.1.1</span>
+      <span class="tok-atributo">nameservers</span>:
+        <span class="tok-atributo">addresses</span>: [<span class="tok-numero">8.8.8.8</span>, <span class="tok-numero">1.1.1.1</span>]</code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo netplan try</span>      <span class="tok-coment"># prueba y deshace si no confirmas</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Temporal o permanente</p>
+            <p class="txt" style="padding:0 0 8px">Lo que cambias con <code>ip</code> tiene efecto inmediato, pero <strong>se pierde al reiniciar</strong> o al reiniciar el servicio de red. Para que dure, hay que escribirlo en la configuración del gestor: Netplan, NetworkManager o <code>/etc/network/interfaces</code>.</p>
+            <p class="nota" style="border:1px solid var(--nota-linea);border-radius:6px">Usa <code>ip</code> para probar y diagnosticar; cuando funcione, pásalo al fichero.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Ver la configuración -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Ver la configuración</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ip a</code></th><td>interfaces con sus direcciones (<code>ip addr</code>)</td></tr>
+                  <tr><th scope="row"><code>ip -br a</code></th><td>lo mismo, una línea por interfaz</td></tr>
+                  <tr><th scope="row"><code>ip -c a</code></th><td>con colores</td></tr>
+                  <tr><th scope="row"><code>ip -4 a</code> / <code>ip -6 a</code></th><td>solo IPv4 o solo IPv6</td></tr>
+                  <tr><th scope="row"><code>ip a show enp0s3</code></th><td>una interfaz concreta</td></tr>
+                  <tr><th scope="row"><code>ip -br link</code></th><td>estado (UP/DOWN) y MAC de cada interfaz</td></tr>
+                  <tr><th scope="row"><code>ip -s link</code></th><td>estadísticas: paquetes, errores, descartes</td></tr>
+                  <tr><th scope="row"><code>ip r</code></th><td>tabla de rutas y puerta de enlace</td></tr>
+                  <tr><th scope="row"><code>ip neigh</code></th><td>tabla ARP: IP y MAC de los vecinos</td></tr>
+                  <tr><th scope="row"><code>resolvectl status</code></th><td>servidores DNS de cada interfaz</td></tr>
+                  <tr><th scope="row"><code>ss -tulpn</code></th><td>puertos a la escucha</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>$ ip -br a
+lo       UNKNOWN  127.0.0.1/8 ::1/128
+enp0s3   UP       10.0.2.15/24 fe80::a00:27ff:fe4e:66a1/64
+enp0s8   DOWN</code></pre></figure>
+            <p class="nota">Las órdenes de <code>ip</code> se pueden abreviar: <code>ip a</code> = <code>ip addr show</code>, <code>ip r</code> = <code>ip route show</code>, <code>ip l</code> = <code>ip link show</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Nombres de las interfaces -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Nombres de las interfaces</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>lo</code></th><td>loopback: el propio equipo (127.0.0.1)</td></tr>
+                  <tr><th scope="row"><code>enp0s3</code></th><td>Ethernet (<code>en</code>) en el bus PCI 0 (<code>p0</code>), ranura 3 (<code>s3</code>). Típico de VirtualBox</td></tr>
+                  <tr><th scope="row"><code>ens33</code></th><td>Ethernet en la ranura 33. Típico de VMware</td></tr>
+                  <tr><th scope="row"><code>eno1</code></th><td>Ethernet integrada en la placa</td></tr>
+                  <tr><th scope="row"><code>wlp2s0</code></th><td>wifi (<code>wl</code>)</td></tr>
+                  <tr><th scope="row"><code>enx0800…</code></th><td>nombre basado en la MAC (adaptadores USB)</td></tr>
+                  <tr><th scope="row"><code>eth0</code></th><td>nombre antiguo; hoy solo en contenedores, WSL o si se desactivan los nombres predecibles</td></tr>
+                  <tr><th scope="row"><code>docker0</code>, <code>virbr0</code>, <code>br0</code></th><td>puentes virtuales</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Antes de escribir una configuración, comprueba el nombre real con <code>ip -br link</code>. Copiar <code>eth0</code> de un tutorial es el error más habitual.</p>
+          </div>
+        </section>
+        <!-- 3. ip: interfaces y direcciones -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>ip: interfaces y direcciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># encender y apagar una interfaz</span>
+<span class="tok-clave">sudo ip link set</span> enp0s8 up
+<span class="tok-clave">sudo ip link set</span> enp0s8 down
+
+<span class="tok-coment"># añadir y quitar direcciones (siempre con la máscara)</span>
+<span class="tok-clave">sudo ip addr add</span> 192.168.56.10/24 <span class="tok-atributo">dev</span> enp0s8
+<span class="tok-clave">sudo ip addr add</span> 192.168.56.11/24 <span class="tok-atributo">dev</span> enp0s8   <span class="tok-coment"># una segunda IP</span>
+<span class="tok-clave">sudo ip addr del</span> 192.168.56.11/24 <span class="tok-atributo">dev</span> enp0s8
+<span class="tok-clave">sudo ip addr flush</span> <span class="tok-atributo">dev</span> enp0s8                  <span class="tok-coment"># quitar todas</span>
+
+<span class="tok-coment"># IPv6</span>
+<span class="tok-clave">sudo ip</span> <span class="tok-atributo">-6</span> <span class="tok-clave">addr add</span> 2001:db8::10/64 <span class="tok-atributo">dev</span> enp0s8
+
+<span class="tok-coment"># cambiar la MAC (con la interfaz apagada) y la MTU</span>
+<span class="tok-clave">sudo ip link set</span> enp0s8 down
+<span class="tok-clave">sudo ip link set</span> enp0s8 address 02:11:22:33:44:55
+<span class="tok-clave">sudo ip link set</span> enp0s8 up
+<span class="tok-clave">sudo ip link set</span> enp0s8 mtu 1400</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> sin máscara, <code>ip addr add 192.168.56.10</code> pone <code>/32</code>, y el equipo no sabrá que el resto de la red está en su mismo segmento.</p>
+          </div>
+        </section>
+        <!-- 4. ip: rutas y vecinos -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>ip: rutas y vecinos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ip r</span>                                          <span class="tok-coment"># ver rutas</span>
+<span class="tok-clave">sudo ip route add</span> default <span class="tok-atributo">via</span> 192.168.1.1        <span class="tok-coment"># puerta de enlace</span>
+<span class="tok-clave">sudo ip route replace</span> default <span class="tok-atributo">via</span> 192.168.1.254  <span class="tok-coment"># cambiarla</span>
+<span class="tok-clave">sudo ip route del</span> default
+
+<span class="tok-coment"># llegar a otra red a través de un router concreto</span>
+<span class="tok-clave">sudo ip route add</span> 10.10.0.0/16 <span class="tok-atributo">via</span> 192.168.1.254 <span class="tok-atributo">dev</span> enp0s3
+
+<span class="tok-clave">ip route get</span> 8.8.8.8     <span class="tok-coment"># qué ruta e interfaz usaría para ese destino</span>
+
+<span class="tok-clave">ip neigh</span>                         <span class="tok-coment"># tabla ARP</span>
+<span class="tok-clave">sudo ip neigh flush</span> <span class="tok-atributo">dev</span> enp0s3   <span class="tok-coment"># vaciarla</span></code></pre></figure>
+            <h3>Leer la tabla de rutas</h3>
+            <figure class="codigo"><pre data-lang="text"><code>default via 192.168.1.1 dev enp0s3 proto dhcp metric 100
+192.168.1.0/24 dev enp0s3 proto kernel scope link src 192.168.1.10</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>default via</code></th><td>la puerta de enlace: a dónde va todo lo que no encaja en otra ruta</td></tr>
+                  <tr><th scope="row"><code>scope link</code></th><td>red conectada directamente, sin router intermedio</td></tr>
+                  <tr><th scope="row"><code>proto dhcp</code></th><td>la ruta la ha puesto el DHCP (<code>static</code>, a mano)</td></tr>
+                  <tr><th scope="row"><code>metric</code></th><td>prioridad cuando hay varias rutas al mismo destino: gana la más baja</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Netplan: el fichero -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Netplan: el fichero</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/etc/netplan/*.yaml</code></th><td>la configuración; se leen en orden alfabético</td></tr>
+                  <tr><th scope="row"><code>50-cloud-init.yaml</code></th><td>el que crea el instalador de Ubuntu Server</td></tr>
+                  <tr><th scope="row"><code>01-network-manager-all.yaml</code></th><td>el de Ubuntu Desktop: lo delega todo a NetworkManager</td></tr>
+                  <tr><th scope="row"><code>renderer</code></th><td><code>networkd</code> (por defecto) o <code>NetworkManager</code></td></tr>
+                  <tr><th scope="row"><code>ethernets</code>, <code>wifis</code>, <code>bridges</code>, <code>bonds</code>, <code>vlans</code></th><td>tipos de interfaz</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Estructura</figcaption><pre data-lang="yaml"><code><span class="tok-atributo">network</span>:
+  <span class="tok-atributo">version</span>: <span class="tok-numero">2</span>
+  <span class="tok-atributo">renderer</span>: networkd
+  <span class="tok-atributo">ethernets</span>:
+    <span class="tok-atributo">enp0s3</span>:          <span class="tok-coment"># nombre real de la interfaz</span>
+      ...</code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo cp</span> /etc/netplan/50-cloud-init.yaml ~/netplan.bak   <span class="tok-coment"># copia antes de tocar</span>
+<span class="tok-clave">sudo nano</span> /etc/netplan/50-cloud-init.yaml
+<span class="tok-clave">sudo chmod</span> 600 /etc/netplan/*.yaml   <span class="tok-coment"># evita el aviso de permisos</span></code></pre></figure>
+            <p class="aviso"><strong>YAML no admite tabuladores:</strong> sangra siempre con espacios (lo habitual son 2) y mantén la misma sangría entre elementos hermanos. Un espacio de más o de menos cambia el significado o rompe el fichero.</p>
+          </div>
+        </section>
+        <!-- 6. Netplan: DHCP -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Netplan: DHCP</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="yaml"><code><span class="tok-atributo">network</span>:
+  <span class="tok-atributo">version</span>: <span class="tok-numero">2</span>
+  <span class="tok-atributo">ethernets</span>:
+    <span class="tok-atributo">enp0s3</span>:
+      <span class="tok-atributo">dhcp4</span>: <span class="tok-clave">true</span>
+      <span class="tok-atributo">dhcp6</span>: <span class="tok-clave">false</span></code></pre></figure>
+            <h3>DHCP, pero con DNS propios</h3>
+            <figure class="codigo"><pre data-lang="yaml"><code>    <span class="tok-atributo">enp0s3</span>:
+      <span class="tok-atributo">dhcp4</span>: <span class="tok-clave">true</span>
+      <span class="tok-atributo">dhcp4-overrides</span>:
+        <span class="tok-atributo">use-dns</span>: <span class="tok-clave">false</span>
+      <span class="tok-atributo">nameservers</span>:
+        <span class="tok-atributo">addresses</span>: [<span class="tok-numero">1.1.1.1</span>]</code></pre></figure>
+            <p class="nota">Las mismas claves sirven para DHCP con IPv6 (<code>dhcp6-overrides</code>). Con IPv6 sin DHCP, la dirección se autoconfigura por SLAAC si el router lo anuncia (<code>accept-ra: true</code>).</p>
+          </div>
+        </section>
+        <!-- 7. Netplan: IP estática -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Netplan: IP estática</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="yaml"><code><span class="tok-atributo">network</span>:
+  <span class="tok-atributo">version</span>: <span class="tok-numero">2</span>
+  <span class="tok-atributo">ethernets</span>:
+    <span class="tok-atributo">enp0s3</span>:
+      <span class="tok-atributo">dhcp4</span>: <span class="tok-clave">false</span>
+      <span class="tok-atributo">addresses</span>:
+        - <span class="tok-numero">192.168.1.10/24</span>
+        - <span class="tok-numero">192.168.1.11/24</span>       <span class="tok-coment"># opcional: otra IP</span>
+        - <span class="tok-texto">"2001:db8::10/64"</span>      <span class="tok-coment"># IPv6, entre comillas</span>
+      <span class="tok-atributo">routes</span>:
+        - <span class="tok-atributo">to</span>: default
+          <span class="tok-atributo">via</span>: <span class="tok-numero">192.168.1.1</span>
+      <span class="tok-atributo">nameservers</span>:
+        <span class="tok-atributo">addresses</span>: [<span class="tok-numero">192.168.1.1</span>, <span class="tok-numero">8.8.8.8</span>]
+        <span class="tok-atributo">search</span>: [aula.local]</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>addresses</code></th><td>lista de IP con su máscara en notación CIDR</td></tr>
+                  <tr><th scope="row"><code>routes</code></th><td>rutas; <code>to: default</code> es la puerta de enlace</td></tr>
+                  <tr><th scope="row"><code>nameservers.addresses</code></th><td>servidores DNS</td></tr>
+                  <tr><th scope="row"><code>nameservers.search</code></th><td>dominios que se añaden a los nombres cortos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Obsoleto:</strong> <code>gateway4: 192.168.1.1</code> aparece en muchos tutoriales. Todavía funciona, pero da un aviso; usa <code>routes</code> con <code>to: default</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Netplan: aplicar los cambios -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Netplan: aplicar los cambios</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sudo netplan generate</code></th><td>comprueba la sintaxis y genera la configuración sin aplicarla</td></tr>
+                  <tr><th scope="row"><code>sudo netplan try</code></th><td>aplica y, si no pulsas Intro en 120 s, vuelve a la configuración anterior</td></tr>
+                  <tr><th scope="row"><code>sudo netplan apply</code></th><td>aplica los cambios</td></tr>
+                  <tr><th scope="row"><code>sudo netplan --debug apply</code></th><td>aplica y explica lo que hace</td></tr>
+                  <tr><th scope="row"><code>sudo netplan get</code></th><td>muestra la configuración combinada de todos los ficheros</td></tr>
+                  <tr><th scope="row"><code>sudo netplan status</code></th><td>estado actual de las interfaces (Ubuntu 23.04 o posterior)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si trabajas por SSH, usa siempre <code>netplan try</code>: si te equivocas de IP, perderás la conexión, pero la configuración se deshará sola y podrás volver a entrar.</p>
+          </div>
+        </section>
+        <!-- 9. Netplan: casos habituales -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Netplan: casos habituales</h2>
+          <div class="cuerpo">
+            <h3>Máquina virtual con NAT y red interna</h3>
+            <figure class="codigo"><pre data-lang="yaml"><code><span class="tok-atributo">network</span>:
+  <span class="tok-atributo">version</span>: <span class="tok-numero">2</span>
+  <span class="tok-atributo">ethernets</span>:
+    <span class="tok-atributo">enp0s3</span>:                 <span class="tok-coment"># NAT: salida a Internet</span>
+      <span class="tok-atributo">dhcp4</span>: <span class="tok-clave">true</span>
+    <span class="tok-atributo">enp0s8</span>:                 <span class="tok-coment"># red interna o solo anfitrión</span>
+      <span class="tok-atributo">addresses</span>: [<span class="tok-numero">192.168.56.10/24</span>]
+      <span class="tok-coment"># sin puerta de enlace: ya la da enp0s3</span></code></pre></figure>
+            <p class="aviso"><strong>Una sola puerta de enlace:</strong> si pones <code>to: default</code> en las dos interfaces, el equipo tendrá dos rutas por defecto y el tráfico saldrá por donde no esperas.</p>
+            <h3>Elegir la interfaz por su MAC y renombrarla</h3>
+            <figure class="codigo"><pre data-lang="yaml"><code>  <span class="tok-atributo">ethernets</span>:
+    <span class="tok-atributo">lan</span>:
+      <span class="tok-atributo">match</span>:
+        <span class="tok-atributo">macaddress</span>: <span class="tok-texto">"08:00:27:4e:66:a1"</span>
+      <span class="tok-atributo">set-name</span>: lan
+      <span class="tok-atributo">dhcp4</span>: <span class="tok-clave">true</span></code></pre></figure>
+            <h3>Wifi</h3>
+            <figure class="codigo"><pre data-lang="yaml"><code>  <span class="tok-atributo">wifis</span>:
+    <span class="tok-atributo">wlp2s0</span>:
+      <span class="tok-atributo">dhcp4</span>: <span class="tok-clave">true</span>
+      <span class="tok-atributo">access-points</span>:
+        <span class="tok-texto">"Aula-3"</span>:
+          <span class="tok-atributo">password</span>: <span class="tok-texto">"clave-de-la-wifi"</span></code></pre></figure>
+            <h3>Que cloud-init no sobrescriba tus cambios</h3>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># en Ubuntu Server, cloud-init puede regenerar 50-cloud-init.yaml</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">'network: {config: disabled}'</span> <span class="tok-operador">|</span> \
+  <span class="tok-clave">sudo tee</span> /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. NetworkManager (nmcli) -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>NetworkManager (nmcli)</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>nmcli device status</code></th><td>interfaces y su conexión</td></tr>
+                  <tr><th scope="row"><code>nmcli con show</code></th><td>conexiones (perfiles) guardadas</td></tr>
+                  <tr><th scope="row"><code>nmcli con show "nombre"</code></th><td>todos los parámetros de una conexión</td></tr>
+                  <tr><th scope="row"><code>nmcli con up "nombre"</code></th><td>activarla (y aplicar cambios)</td></tr>
+                  <tr><th scope="row"><code>nmcli con down "nombre"</code></th><td>desactivarla</td></tr>
+                  <tr><th scope="row"><code>nmcli dev wifi list</code></th><td>redes wifi al alcance</td></tr>
+                  <tr><th scope="row"><code>nmtui</code></th><td>asistente con menús en la terminal</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Pasar una conexión a IP estática</figcaption><pre data-lang="bash"><code><span class="tok-clave">sudo nmcli con mod</span> <span class="tok-texto">"Conexión cableada 1"</span> \
+  ipv4.method manual \
+  ipv4.addresses 192.168.1.10/24 \
+  ipv4.gateway 192.168.1.1 \
+  ipv4.dns <span class="tok-texto">"8.8.8.8 1.1.1.1"</span>
+<span class="tok-clave">sudo nmcli con up</span> <span class="tok-texto">"Conexión cableada 1"</span>
+
+<span class="tok-coment"># volver a DHCP</span>
+<span class="tok-clave">sudo nmcli con mod</span> <span class="tok-texto">"Conexión cableada 1"</span> ipv4.method auto \
+  ipv4.addresses <span class="tok-texto">""</span> ipv4.gateway <span class="tok-texto">""</span> ipv4.dns <span class="tok-texto">""</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Crear una conexión nueva y conectarse a una wifi</figcaption><pre data-lang="bash"><code><span class="tok-clave">sudo nmcli con add</span> type ethernet ifname enp0s8 con-name interna \
+  ipv4.method manual ipv4.addresses 192.168.56.10/24
+
+<span class="tok-clave">nmcli dev wifi connect</span> <span class="tok-texto">"Aula-3"</span> password <span class="tok-texto">"clave-de-la-wifi"</span></code></pre></figure>
+            <p class="nota">El nombre de la conexión depende del idioma del sistema (<code>Wired connection 1</code> en inglés). Míralo con <code>nmcli con show</code> y ponlo entre comillas si tiene espacios. Las conexiones se guardan en <code>/etc/NetworkManager/system-connections/</code>.</p>
+          </div>
+        </section>
+        <!-- 11. DNS y nombre del equipo -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>DNS y nombre del equipo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>resolvectl status</code></th><td>DNS que usa cada interfaz</td></tr>
+                  <tr><th scope="row"><code>resolvectl query ejemplo.com</code></th><td>resolver un nombre con systemd-resolved</td></tr>
+                  <tr><th scope="row"><code>resolvectl flush-caches</code></th><td>vaciar la caché DNS</td></tr>
+                  <tr><th scope="row"><code>sudo resolvectl dns enp0s3 1.1.1.1</code></th><td>cambiar el DNS de forma temporal</td></tr>
+                  <tr><th scope="row"><code>dig ejemplo.com</code></th><td>consulta DNS detallada (paquete <code>dnsutils</code>)</td></tr>
+                  <tr><th scope="row"><code>dig @8.8.8.8 ejemplo.com</code></th><td>preguntar a un servidor concreto</td></tr>
+                  <tr><th scope="row"><code>hostnamectl</code></th><td>ver el nombre del equipo</td></tr>
+                  <tr><th scope="row"><code>sudo hostnamectl set-hostname srv01</code></th><td>cambiarlo de forma permanente</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>/etc/hosts: nombres que se resuelven sin preguntar al DNS</figcaption><pre data-lang="text"><code>127.0.0.1       localhost
+127.0.1.1       srv01
+192.168.56.20   bd.aula.local  bd</code></pre></figure>
+            <p class="nota">En Ubuntu, <code>/etc/resolv.conf</code> es un enlace a un fichero generado que apunta a <code>127.0.0.53</code> (la caché local de systemd-resolved). No lo edites a mano: los DNS se ponen en Netplan o en NetworkManager.</p>
+          </div>
+        </section>
+        <!-- 12. El equipo como router -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>El equipo como router</h2>
+          <div class="cuerpo">
+            <p class="txt">Para que una máquina con dos interfaces dé salida a Internet a una red interna hay que activar el reenvío de paquetes y, normalmente, hacer NAT.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># 1. reenvío de paquetes (temporal)</span>
+<span class="tok-clave">sudo sysctl</span> <span class="tok-atributo">-w</span> net.ipv4.ip_forward=1
+
+<span class="tok-coment"># ... y permanente</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">'net.ipv4.ip_forward=1'</span> <span class="tok-operador">|</span> <span class="tok-clave">sudo tee</span> /etc/sysctl.d/99-router.conf
+<span class="tok-clave">sudo sysctl</span> <span class="tok-atributo">--system</span>
+
+<span class="tok-coment"># 2. NAT: lo que sale por enp0s3 lleva la IP del router</span>
+<span class="tok-clave">sudo iptables</span> <span class="tok-atributo">-t</span> nat <span class="tok-atributo">-A</span> POSTROUTING <span class="tok-atributo">-o</span> enp0s3 <span class="tok-atributo">-j</span> MASQUERADE
+
+<span class="tok-coment"># 3. guardar las reglas para que sobrevivan al reinicio</span>
+<span class="tok-clave">sudo apt</span> install iptables-persistent
+<span class="tok-clave">sudo netfilter-persistent</span> save</code></pre></figure>
+            <p class="nota">En los clientes de la red interna, la puerta de enlace es la IP del router en esa red (por ejemplo, <code>192.168.56.10</code>). Si usas <code>ufw</code>, el reenvío también se controla en <code>/etc/default/ufw</code> (<code>DEFAULT_FORWARD_POLICY</code>).</p>
+          </div>
+        </section>
+        <!-- 13. Diagnosticar paso a paso -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Diagnosticar paso a paso</h2>
+          <div class="cuerpo">
+            <div class="pasos" style="padding:10px 12px">
+              <div class="paso"><span class="n">1</span><b>ip -br link</b><small>¿la interfaz está UP?</small></div>
+              <div class="paso"><span class="n">2</span><b>ip -br a</b><small>¿tiene IP y máscara correctas?</small></div>
+              <div class="paso"><span class="n">3</span><b>ip r</b><small>¿hay ruta por defecto?</small></div>
+              <div class="paso"><span class="n">4</span><b>ping 192.168.1.1</b><small>¿llego a la puerta de enlace?</small></div>
+              <div class="paso"><span class="n">5</span><b>ping 8.8.8.8</b><small>¿salgo a Internet?</small></div>
+              <div class="paso"><span class="n">6</span><b>ping ubuntu.com</b><small>¿funciona el DNS?</small></div>
+            </div>
+            <p class="nota">Si falla el paso 5 pero no el 4, el problema está en el router o en el NAT. Si funciona el 5 y falla el 6, es el DNS. Una IP <code>169.254.x.x</code> significa que el DHCP no ha respondido.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> systemd-networkd <span class="tok-atributo">-b</span>     <span class="tok-coment"># registros de la red (Netplan + networkd)</span>
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> NetworkManager <span class="tok-atributo">-b</span>
+<span class="tok-clave">networkctl</span>                          <span class="tok-coment"># estado según systemd-networkd</span>
+<span class="tok-clave">tracepath</span> 8.8.8.8                   <span class="tok-coment"># por dónde se pierden los paquetes</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 14. Errores típicos -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Errores típicos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>Invalid YAML</code>, <code>found character that cannot start any token</code></th><td>hay un tabulador o la sangría no cuadra</td></tr>
+                  <tr><th scope="row" class="larga"><code>Permissions for /etc/netplan/… are too open</code></th><td>aviso sin importancia: <code>sudo chmod 600 /etc/netplan/*.yaml</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>`gateway4` has been deprecated</code></th><td>cambia a <code>routes: - to: default</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>RTNETLINK answers: File exists</code></th><td>esa IP o esa ruta ya existe; bórrala antes o usa <code>ip route replace</code></td></tr>
+                  <tr><th scope="row" class="larga">La IP vuelve a la anterior al reiniciar</th><td>la pusiste con <code>ip</code>, o cloud-init o NetworkManager la están sobrescribiendo</td></tr>
+                  <tr><th scope="row" class="larga">Tengo IP pero no navego</th><td>falta la ruta por defecto o el DNS</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> no mezcles gestores. Si una interfaz aparece a la vez en Netplan, en <code>/etc/network/interfaces</code> y en NetworkManager, cada uno intentará configurarla a su manera.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="tareas.html">← Tareas programadas</a><a class="siguiente" href="red-clasica.html">Red: método clásico →</a></nav>
+      <footer class="pie">Referencia de Netplan en <a href="https://netplan.readthedocs.io/">netplan.readthedocs.io</a> · <code>man ip</code>, <code>man nmcli</code>, <code>man netplan</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

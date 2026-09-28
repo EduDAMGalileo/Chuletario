@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Red: método clásico · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas y redes</a><span aria-hidden="true">›</span><span>Red: método clásico</span></nav>
+          <h1>Red: método clásico</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub"><code>ifconfig</code>, <code>route</code>, <code>/etc/network/interfaces</code> e ifupdown: la configuración de red de Debian y de los sistemas anteriores a Netplan.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas y redes">
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Terminal Linux</a><a href="bash-script.html">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html" aria-current="page">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Equivalencias con ip</a><a href="#s2"><b>2</b>Paquetes necesarios</a><a href="#s3"><b>3</b>ifconfig</a><a href="#s4"><b>4</b>route</a><a href="#s5"><b>5</b>arp y netstat</a><a href="#s6"><b>6</b>/etc/network/interfaces</a><a href="#s7"><b>7</b>IP estática</a><a href="#s8"><b>8</b>DHCP e IPv6</a><a href="#s9"><b>9</b>Varias IP y órdenes extra</a><a href="#s10"><b>10</b>Aplicar los cambios</a><a href="#s11"><b>11</b>DNS y nombre del equipo</a><a href="#s12"><b>12</b>Cliente DHCP</a><a href="#s13"><b>13</b>Wifi</a><a href="#s14"><b>14</b>Errores típicos</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">¿Dónde se sigue usando?</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Debian</th><td>instalación sin escritorio: <code>/etc/network/interfaces</code> con ifupdown es lo predeterminado</td></tr>
+                  <tr><th scope="row">Ubuntu ≤ 16.04</th><td>antes de la llegada de Netplan (17.10)</td></tr>
+                  <tr><th scope="row">Kali, Ubuntu Desktop</th><td>el fichero existe, pero solo configura <code>lo</code>; la red la lleva NetworkManager</td></tr>
+                  <tr><th scope="row">Routers, contenedores, equipos antiguos</th><td>muchos tutoriales y exámenes siguen usando <code>ifconfig</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <p class="banda-titulo">IP estática en Debian</p>
+            <figure class="codigo"><figcaption>/etc/network/interfaces</figcaption><pre data-lang="text"><code><span class="tok-clave">auto</span> lo
+<span class="tok-clave">iface</span> lo <span class="tok-tipo">inet</span> loopback
+
+<span class="tok-clave">auto</span> enp0s3
+<span class="tok-clave">iface</span> enp0s3 <span class="tok-tipo">inet</span> static
+    <span class="tok-atributo">address</span> 192.168.1.10/24
+    <span class="tok-atributo">gateway</span> 192.168.1.1</code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo ifdown</span> enp0s3 <span class="tok-operador">&amp;&amp;</span> <span class="tok-clave">sudo ifup</span> enp0s3</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Temporal o permanente</p>
+            <p class="txt" style="padding:0 0 8px"><code>ifconfig</code> y <code>route</code> cambian la configuración al momento, pero <strong>se pierde al reiniciar</strong>. Lo que está en <code>/etc/network/interfaces</code> se aplica en cada arranque.</p>
+            <p class="nota" style="border:1px solid var(--nota-linea);border-radius:6px">net-tools lleva años sin desarrollo activo: aprende también las órdenes de <code>ip</code>, que están en todas las distribuciones. Mira la chuleta <a href="red-linux.html">Configurar la red</a>.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Equivalencias con ip -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Equivalencias con ip</h2>
+          <div class="cuerpo">
+            <div class="cmp-leyenda"><span class="a">net-tools (clásico)</span><span class="b">iproute2 (actual)</span></div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>ifconfig</code></div>
+              <div class="cmp-b"><code>ip a</code></div>
+              <div class="cmp-nota">ver interfaces y direcciones</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>ifconfig eth0 192.168.1.10 netmask 255.255.255.0</code></div>
+              <div class="cmp-b"><code>ip addr add 192.168.1.10/24 dev eth0</code></div>
+              <div class="cmp-nota">poner una IP (ifconfig la sustituye, ip la añade)</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>ifconfig eth0 up</code> / <code>down</code></div>
+              <div class="cmp-b"><code>ip link set eth0 up</code> / <code>down</code></div>
+              <div class="cmp-nota">encender o apagar la interfaz</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>ifconfig eth0 hw ether 02:11:22:33:44:55</code></div>
+              <div class="cmp-b"><code>ip link set eth0 address 02:11:22:33:44:55</code></div>
+              <div class="cmp-nota">cambiar la MAC</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>route -n</code></div>
+              <div class="cmp-b"><code>ip r</code></div>
+              <div class="cmp-nota">ver la tabla de rutas</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>route add default gw 192.168.1.1</code></div>
+              <div class="cmp-b"><code>ip route add default via 192.168.1.1</code></div>
+              <div class="cmp-nota">poner la puerta de enlace</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>arp -n</code></div>
+              <div class="cmp-b"><code>ip neigh</code></div>
+              <div class="cmp-nota">tabla ARP</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>netstat -tulpn</code></div>
+              <div class="cmp-b"><code>ss -tulpn</code></div>
+              <div class="cmp-nota">puertos a la escucha</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>netstat -i</code></div>
+              <div class="cmp-b"><code>ip -s link</code></div>
+              <div class="cmp-nota">estadísticas por interfaz</div>
+            </div>
+            <div class="cmp-fila">
+              <div class="cmp-a"><code>iwconfig</code></div>
+              <div class="cmp-b"><code>iw dev</code></div>
+              <div class="cmp-nota">interfaces wifi</div>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Paquetes necesarios -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Paquetes necesarios</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>net-tools</code></th><td><code>ifconfig</code>, <code>route</code>, <code>arp</code>, <code>netstat</code>, <code>mii-tool</code></td></tr>
+                  <tr><th scope="row"><code>ifupdown</code></th><td><code>ifup</code>, <code>ifdown</code>, <code>ifquery</code> y el servicio <code>networking</code></td></tr>
+                  <tr><th scope="row"><code>isc-dhcp-client</code></th><td><code>dhclient</code> (en Debian 13, ifupdown usa <code>dhcpcd</code>)</td></tr>
+                  <tr><th scope="row"><code>resolvconf</code></th><td>necesario para que funcionen las líneas <code>dns-*</code> del fichero</td></tr>
+                  <tr><th scope="row"><code>wireless-tools</code></th><td><code>iwconfig</code>, <code>iwlist</code></td></tr>
+                  <tr><th scope="row"><code>wpasupplicant</code></th><td>conectarse a redes wifi con WPA</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo apt</span> install net-tools     <span class="tok-coment"># en Ubuntu no viene instalado</span>
+<span class="tok-clave">ifconfig</span> <span class="tok-atributo">--version</span></code></pre></figure>
+            <p class="nota">En Debian, <code>ifconfig</code> está en <code>/sbin</code>: con un usuario normal puede dar <code>command not found</code>. Usa <code>sudo ifconfig</code> o <code>/sbin/ifconfig</code>.</p>
+          </div>
+        </section>
+        <!-- 3. ifconfig -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>ifconfig</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ifconfig</code></th><td>interfaces activas</td></tr>
+                  <tr><th scope="row"><code>ifconfig -a</code></th><td>todas, también las apagadas</td></tr>
+                  <tr><th scope="row"><code>ifconfig eth0</code></th><td>una interfaz concreta</td></tr>
+                  <tr><th scope="row"><code>ifconfig -s</code></th><td>resumen en forma de tabla</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># IP y máscara (las dos formas valen)</span>
+<span class="tok-clave">sudo ifconfig</span> eth0 192.168.1.10 <span class="tok-atributo">netmask</span> 255.255.255.0 up
+<span class="tok-clave">sudo ifconfig</span> eth0 192.168.1.10/24
+
+<span class="tok-coment"># con broadcast explícito</span>
+<span class="tok-clave">sudo ifconfig</span> eth0 192.168.1.10 <span class="tok-atributo">netmask</span> 255.255.255.0 <span class="tok-atributo">broadcast</span> 192.168.1.255
+
+<span class="tok-coment"># segunda IP mediante un alias</span>
+<span class="tok-clave">sudo ifconfig</span> eth0:0 192.168.1.11/24
+<span class="tok-clave">sudo ifconfig</span> eth0:0 down               <span class="tok-coment"># quitar el alias</span>
+
+<span class="tok-clave">sudo ifconfig</span> eth0 down
+<span class="tok-clave">sudo ifconfig</span> eth0 <span class="tok-atributo">hw ether</span> 02:11:22:33:44:55   <span class="tok-coment"># MAC, con la interfaz apagada</span>
+<span class="tok-clave">sudo ifconfig</span> eth0 up
+<span class="tok-clave">sudo ifconfig</span> eth0 <span class="tok-atributo">mtu</span> 1400
+<span class="tok-clave">sudo ifconfig</span> eth0 <span class="tok-atributo">promisc</span>             <span class="tok-coment"># modo promiscuo (-promisc para quitarlo)</span></code></pre></figure>
+            <h3>Leer la salida</h3>
+            <figure class="codigo"><pre data-lang="text"><code>eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 192.168.1.10  netmask 255.255.255.0  broadcast 192.168.1.255
+        inet6 fe80::a00:27ff:fe4e:66a1  prefixlen 64  scopeid 0x20&lt;link&gt;
+        ether 08:00:27:4e:66:a1  txqueuelen 1000  (Ethernet)
+        RX packets 1520  bytes 1432110 (1.3 MiB)
+        TX packets 810  bytes 76342 (74.5 KiB)</code></pre></figure>
+            <p class="nota"><code>UP</code> significa que está encendida; <code>RUNNING</code>, que además hay cable o enlace. Las versiones antiguas escribían <code>inet addr:192.168.1.10  Mask:255.255.255.0</code>.</p>
+            <p class="aviso"><strong>Cuidado:</strong> <code>ifconfig</code> no muestra las IP secundarias añadidas con <code>ip addr add</code> (salvo que lleven etiqueta, como <code>eth0:0</code>). Si algo no cuadra, compara con <code>ip a</code>.</p>
+          </div>
+        </section>
+        <!-- 4. route -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>route</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">route</span> <span class="tok-atributo">-n</span>                                     <span class="tok-coment"># tabla de rutas, sin resolver nombres</span>
+
+<span class="tok-clave">sudo route add</span> default <span class="tok-atributo">gw</span> 192.168.1.1          <span class="tok-coment"># puerta de enlace</span>
+<span class="tok-clave">sudo route del</span> default
+
+<span class="tok-coment"># ruta a otra red</span>
+<span class="tok-clave">sudo route add</span> <span class="tok-atributo">-net</span> 10.10.0.0 <span class="tok-atributo">netmask</span> 255.255.0.0 <span class="tok-atributo">gw</span> 192.168.1.254
+<span class="tok-clave">sudo route add</span> <span class="tok-atributo">-net</span> 10.10.0.0/16 <span class="tok-atributo">gw</span> 192.168.1.254 <span class="tok-atributo">dev</span> eth0
+<span class="tok-clave">sudo route del</span> <span class="tok-atributo">-net</span> 10.10.0.0/16
+
+<span class="tok-coment"># ruta a un único equipo</span>
+<span class="tok-clave">sudo route add</span> <span class="tok-atributo">-host</span> 172.16.0.5 <span class="tok-atributo">gw</span> 192.168.1.254</code></pre></figure>
+            <figure class="codigo"><pre data-lang="text"><code>Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.1.1     0.0.0.0         UG    100    0        0 eth0
+192.168.1.0     0.0.0.0         255.255.255.0   U     100    0        0 eth0</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>0.0.0.0</code> (Destination)</th><td>la ruta por defecto</td></tr>
+                  <tr><th scope="row"><code>0.0.0.0</code> (Gateway)</th><td>red conectada directamente, sin router</td></tr>
+                  <tr><th scope="row"><code>U</code></th><td>ruta activa (<em>up</em>)</td></tr>
+                  <tr><th scope="row"><code>G</code></th><td>pasa por un router (<em>gateway</em>)</td></tr>
+                  <tr><th scope="row"><code>H</code></th><td>el destino es un único equipo (<em>host</em>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>netstat -rn</code> muestra exactamente la misma tabla.</p>
+          </div>
+        </section>
+        <!-- 5. arp y netstat -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>arp y netstat</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>arp -n</code></th><td>tabla ARP: IP y MAC de los vecinos</td></tr>
+                  <tr><th scope="row"><code>arp -a</code></th><td>lo mismo, en formato BSD</td></tr>
+                  <tr><th scope="row"><code>sudo arp -d 192.168.1.1</code></th><td>borrar una entrada</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo arp -s 192.168.1.1 aa:bb:cc:dd:ee:ff</code></th><td>entrada estática (protege frente a suplantación ARP)</td></tr>
+                  <tr><th scope="row"><code>netstat -tulpn</code></th><td>puertos TCP y UDP a la escucha y el proceso (con sudo)</td></tr>
+                  <tr><th scope="row"><code>netstat -tan</code></th><td>todas las conexiones TCP</td></tr>
+                  <tr><th scope="row"><code>netstat -rn</code></th><td>tabla de rutas</td></tr>
+                  <tr><th scope="row"><code>netstat -i</code></th><td>paquetes y errores por interfaz</td></tr>
+                  <tr><th scope="row"><code>netstat -s</code></th><td>estadísticas por protocolo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las opciones de <code>netstat</code> son las mismas que las de <code>ss</code>: <code>t</code> TCP, <code>u</code> UDP, <code>l</code> a la escucha, <code>p</code> proceso, <code>n</code> números en lugar de nombres.</p>
+          </div>
+        </section>
+        <!-- 6. /etc/network/interfaces -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>/etc/network/interfaces</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>auto enp0s3</code></th><td>se levanta al arrancar el equipo (y con <code>ifup -a</code>)</td></tr>
+                  <tr><th scope="row"><code>allow-hotplug enp0s3</code></th><td>se levanta cuando el sistema detecta la interfaz (lo que pone el instalador de Debian)</td></tr>
+                  <tr><th scope="row"><code>iface enp0s3 inet …</code></th><td>cómo configurarla en IPv4; <code>inet6</code> para IPv6</td></tr>
+                  <tr><th scope="row"><code>loopback</code></th><td>solo para <code>lo</code></td></tr>
+                  <tr><th scope="row"><code>dhcp</code></th><td>pedir la IP por DHCP</td></tr>
+                  <tr><th scope="row"><code>static</code></th><td>IP fija escrita en el fichero</td></tr>
+                  <tr><th scope="row"><code>manual</code></th><td>levantar la interfaz sin IP (puentes, pruebas, órdenes propias)</td></tr>
+                  <tr><th scope="row"><code>source …/interfaces.d/*</code></th><td>incluye otros ficheros</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Fichero que deja el instalador de Debian</figcaption><pre data-lang="text"><code><span class="tok-coment"># This file describes the network interfaces available on your system</span>
+<span class="tok-clave">source</span> /etc/network/interfaces.d/*
+
+<span class="tok-coment"># The loopback network interface</span>
+<span class="tok-clave">auto</span> lo
+<span class="tok-clave">iface</span> lo <span class="tok-tipo">inet</span> loopback
+
+<span class="tok-coment"># The primary network interface</span>
+<span class="tok-clave">allow-hotplug</span> enp0s3
+<span class="tok-clave">iface</span> enp0s3 <span class="tok-tipo">inet</span> dhcp</code></pre></figure>
+            <p class="nota">Aquí la sangría no importa: puedes usar espacios o tabuladores. Las líneas que empiezan por <code>#</code> son comentarios. Detalles completos en <code>man interfaces</code>.</p>
+          </div>
+        </section>
+        <!-- 7. IP estática -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>IP estática</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Forma actual, con CIDR</figcaption><pre data-lang="text"><code><span class="tok-clave">auto</span> enp0s3
+<span class="tok-clave">iface</span> enp0s3 <span class="tok-tipo">inet</span> static
+    <span class="tok-atributo">address</span> 192.168.1.10/24
+    <span class="tok-atributo">gateway</span> 192.168.1.1
+    <span class="tok-atributo">dns-nameservers</span> 192.168.1.1 8.8.8.8
+    <span class="tok-atributo">dns-search</span> aula.local</code></pre></figure>
+            <figure class="codigo"><figcaption>Forma antigua, con máscara</figcaption><pre data-lang="text"><code><span class="tok-clave">auto</span> eth0
+<span class="tok-clave">iface</span> eth0 <span class="tok-tipo">inet</span> static
+    <span class="tok-atributo">address</span>   192.168.1.10
+    <span class="tok-atributo">netmask</span>   255.255.255.0
+    <span class="tok-atributo">network</span>   192.168.1.0
+    <span class="tok-atributo">broadcast</span> 192.168.1.255
+    <span class="tok-atributo">gateway</span>   192.168.1.1</code></pre></figure>
+            <p class="nota"><code>network</code> y <code>broadcast</code> se calculan solos a partir de la IP y la máscara: ponerlos es opcional.</p>
+            <p class="aviso"><strong>Cuidado:</strong> las líneas <code>dns-nameservers</code> y <code>dns-search</code> solo tienen efecto si está instalado el paquete <code>resolvconf</code>. Sin él, se ignoran y hay que escribir los DNS en <code>/etc/resolv.conf</code>.</p>
+          </div>
+        </section>
+        <!-- 8. DHCP e IPv6 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>DHCP e IPv6</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-coment"># IPv4 por DHCP</span>
+<span class="tok-clave">auto</span> enp0s3
+<span class="tok-clave">iface</span> enp0s3 <span class="tok-tipo">inet</span> dhcp
+
+<span class="tok-coment"># IPv6 estática en la misma interfaz</span>
+<span class="tok-clave">iface</span> enp0s3 <span class="tok-tipo">inet6</span> static
+    <span class="tok-atributo">address</span> 2001:db8::10/64
+    <span class="tok-atributo">gateway</span> 2001:db8::1
+
+<span class="tok-coment"># o IPv6 autoconfigurada (SLAAC)</span>
+<span class="tok-clave">iface</span> enp0s8 <span class="tok-tipo">inet6</span> auto</code></pre></figure>
+            <p class="nota">Una misma interfaz puede tener un bloque <code>inet</code> y otro <code>inet6</code>; la línea <code>auto</code> se escribe una sola vez.</p>
+          </div>
+        </section>
+        <!-- 9. Varias IP y órdenes extra -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Varias IP y órdenes extra</h2>
+          <div class="cuerpo">
+            <h3>Dos IP en la misma interfaz</h3>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">auto</span> enp0s3
+<span class="tok-clave">iface</span> enp0s3 <span class="tok-tipo">inet</span> static
+    <span class="tok-atributo">address</span> 192.168.1.10/24
+    <span class="tok-atributo">gateway</span> 192.168.1.1
+
+<span class="tok-coment"># un segundo bloque con el mismo nombre añade otra IP</span>
+<span class="tok-clave">iface</span> enp0s3 <span class="tok-tipo">inet</span> static
+    <span class="tok-atributo">address</span> 192.168.1.11/24
+
+<span class="tok-coment"># estilo antiguo: alias con etiqueta (visible en ifconfig)</span>
+<span class="tok-clave">auto</span> enp0s3:0
+<span class="tok-clave">iface</span> enp0s3:0 <span class="tok-tipo">inet</span> static
+    <span class="tok-atributo">address</span> 192.168.1.12/24</code></pre></figure>
+            <h3>Ejecutar órdenes al levantar o bajar la interfaz</h3>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">iface</span> enp0s8 <span class="tok-tipo">inet</span> static
+    <span class="tok-atributo">address</span> 192.168.56.10/24
+    <span class="tok-atributo">up</span> ip route add 10.10.0.0/16 via 192.168.56.254
+    <span class="tok-atributo">down</span> ip route del 10.10.0.0/16 via 192.168.56.254
+    <span class="tok-atributo">post-up</span> iptables-restore &lt; /etc/iptables.rules</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>pre-up</code></th><td>antes de levantarla; si falla, la interfaz no se levanta</td></tr>
+                  <tr><th scope="row"><code>up</code> / <code>post-up</code></th><td>después de levantarla (son sinónimos)</td></tr>
+                  <tr><th scope="row"><code>down</code> / <code>pre-down</code></th><td>antes de bajarla (son sinónimos)</td></tr>
+                  <tr><th scope="row"><code>post-down</code></th><td>después de bajarla</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 10. Aplicar los cambios -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Aplicar los cambios</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sudo ifup enp0s3</code></th><td>levantar la interfaz según el fichero</td></tr>
+                  <tr><th scope="row"><code>sudo ifdown enp0s3</code></th><td>bajarla</td></tr>
+                  <tr><th scope="row"><code>sudo ifup -a</code></th><td>levantar todas las marcadas con <code>auto</code></td></tr>
+                  <tr><th scope="row"><code>sudo systemctl restart networking</code></th><td>reiniciar toda la red</td></tr>
+                  <tr><th scope="row"><code>ifquery enp0s3</code></th><td>cómo ha entendido ifupdown la configuración de esa interfaz</td></tr>
+                  <tr><th scope="row"><code>ifquery --state</code></th><td>qué interfaces ha levantado ifupdown</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Orden recomendado para cambiar la IP</figcaption><pre data-lang="bash"><code><span class="tok-clave">sudo ifdown</span> enp0s3                 <span class="tok-coment"># 1. bajar con la configuración vieja</span>
+<span class="tok-clave">sudo nano</span> /etc/network/interfaces   <span class="tok-coment"># 2. editar</span>
+<span class="tok-clave">sudo ifup</span> enp0s3                   <span class="tok-coment"># 3. levantar con la nueva</span>
+
+<span class="tok-coment"># si ya editaste con la interfaz levantada</span>
+<span class="tok-clave">sudo ip addr flush</span> <span class="tok-atributo">dev</span> enp0s3 <span class="tok-operador">&amp;&amp;</span> <span class="tok-clave">sudo ifup</span> <span class="tok-atributo">--force</span> enp0s3</code></pre></figure>
+            <p class="nota"><code>ifdown</code> deshace lo que dice el fichero <em>en ese momento</em>. Si lo editas antes de bajar la interfaz, la IP antigua puede quedarse puesta y <code>ifup</code> dará error.</p>
+            <p class="aviso"><strong>Por SSH:</strong> escribe <code>sudo ifdown enp0s3 &amp;&amp; sudo ifup enp0s3</code> en una sola línea. Si lanzas solo <code>ifdown</code>, perderás la conexión y no podrás volver a levantarla.</p>
+          </div>
+        </section>
+        <!-- 11. DNS y nombre del equipo -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>DNS y nombre del equipo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>/etc/resolv.conf</figcaption><pre data-lang="text"><code><span class="tok-atributo">nameserver</span> 192.168.1.1
+<span class="tok-atributo">nameserver</span> 8.8.8.8
+<span class="tok-atributo">search</span> aula.local
+<span class="tok-atributo">options</span> timeout:2</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>nameserver</code></th><td>servidor DNS; se consultan en orden y como mucho se usan tres</td></tr>
+                  <tr><th scope="row"><code>search</code></th><td>dominios que se prueban con los nombres cortos: <code>ping bd</code> busca <code>bd.aula.local</code></td></tr>
+                  <tr><th scope="row"><code>/etc/hosts</code></th><td>nombres resueltos localmente; se consultan antes que el DNS</td></tr>
+                  <tr><th scope="row"><code>/etc/hostname</code></th><td>nombre del equipo (se lee al arrancar)</td></tr>
+                  <tr><th scope="row"><code>sudo hostname srv01</code></th><td>cambiar el nombre hasta el próximo reinicio</td></tr>
+                  <tr><th scope="row"><code>nslookup ejemplo.com</code></th><td>consulta DNS sencilla</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para cambiar el nombre de forma permanente, edita <code>/etc/hostname</code> y la línea <code>127.0.1.1</code> de <code>/etc/hosts</code>. Si no coinciden, <code>sudo</code> tardará en responder porque no sabe resolver el nombre de su propio equipo.</p>
+            <p class="aviso"><strong>Cuidado:</strong> dhclient, resolvconf y NetworkManager reescriben <code>/etc/resolv.conf</code>. Si tus cambios desaparecen, ponlos en <code>dns-nameservers</code> (con <code>resolvconf</code> instalado) o en la configuración del cliente DHCP.</p>
+          </div>
+        </section>
+        <!-- 12. Cliente DHCP -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Cliente DHCP</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sudo dhclient -v enp0s3</code></th><td>pedir una IP mostrando el intercambio DHCP</td></tr>
+                  <tr><th scope="row"><code>sudo dhclient -r enp0s3</code></th><td>liberar la IP concedida</td></tr>
+                  <tr><th scope="row"><code>/var/lib/dhcp/dhclient.*.leases</code></th><td>concesiones recibidas: IP, servidor, DNS, caducidad</td></tr>
+                  <tr><th scope="row"><code>/etc/dhcp/dhclient.conf</code></th><td>configuración del cliente</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>DHCPDISCOVER on enp0s3 to 255.255.255.255 port 67
+DHCPOFFER of 192.168.1.34 from 192.168.1.1
+DHCPREQUEST for 192.168.1.34 on enp0s3 to 255.255.255.255 port 67
+DHCPACK of 192.168.1.34 from 192.168.1.1
+bound to 192.168.1.34 -- renewal in 41613 seconds.</code></pre></figure>
+            <p class="nota">Son los cuatro pasos del protocolo (DORA): <strong>D</strong>iscover, <strong>O</strong>ffer, <strong>R</strong>equest, <strong>A</strong>ck. Para usar siempre tus propios DNS, añade <code>supersede domain-name-servers 1.1.1.1;</code> en <code>dhclient.conf</code>.</p>
+          </div>
+        </section>
+        <!-- 13. Wifi -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Wifi</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">iwconfig</span>                                   <span class="tok-coment"># interfaces wifi y red a la que están conectadas</span>
+<span class="tok-clave">sudo iwlist</span> wlan0 scan <span class="tok-operador">|</span> <span class="tok-clave">grep</span> ESSID         <span class="tok-coment"># redes al alcance</span>
+<span class="tok-clave">wpa_passphrase</span> <span class="tok-texto">"Aula-3"</span> <span class="tok-texto">"clave-de-la-wifi"</span>   <span class="tok-coment"># clave cifrada para no guardarla en claro</span></code></pre></figure>
+            <figure class="codigo"><figcaption>/etc/network/interfaces (requiere wpasupplicant)</figcaption><pre data-lang="text"><code><span class="tok-clave">auto</span> wlan0
+<span class="tok-clave">iface</span> wlan0 <span class="tok-tipo">inet</span> dhcp
+    <span class="tok-atributo">wpa-ssid</span> <span class="tok-texto">"Aula-3"</span>
+    <span class="tok-atributo">wpa-psk</span>  <span class="tok-texto">"clave-de-la-wifi"</span></code></pre></figure>
+            <p class="nota">Si el fichero guarda la clave, quita el permiso de lectura a los demás usuarios: <code>sudo chmod 600 /etc/network/interfaces</code>.</p>
+          </div>
+        </section>
+        <!-- 14. Errores típicos -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Errores típicos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>ifconfig: command not found</code></th><td>falta <code>net-tools</code>, o estás sin <code>sudo</code> y <code>/sbin</code> no está en tu PATH</td></tr>
+                  <tr><th scope="row" class="larga"><code>Cannot find device "eth0"</code></th><td>la interfaz se llama de otra forma (<code>enp0s3</code>…): míralo con <code>ip -br link</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>RTNETLINK answers: File exists</code></th><td>la IP o la puerta de enlace ya estaban puestas; suele pasar con dos <code>gateway</code> en interfaces distintas</td></tr>
+                  <tr><th scope="row" class="larga"><code>ifup: interface enp0s3 already configured</code></th><td>ya está levantada: haz <code>ifdown</code> primero</td></tr>
+                  <tr><th scope="row" class="larga">Al reiniciar, la interfaz no tiene IP</th><td>falta la línea <code>auto</code> o <code>allow-hotplug</code></td></tr>
+                  <tr><th scope="row" class="larga">NetworkManager dice «no gestionado»</th><td>la interfaz está en <code>/etc/network/interfaces</code> y NetworkManager la deja en paz</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si quieres volver a los nombres <code>eth0</code>, añade <code>net.ifnames=0 biosdevname=0</code> a <code>GRUB_CMDLINE_LINUX</code> en <code>/etc/default/grub</code>, ejecuta <code>sudo update-grub</code> y reinicia. Antes, cambia también los nombres en la configuración de red.</p>
+            <p class="aviso"><strong>Cuidado:</strong> en una Ubuntu con Netplan no configures además <code>/etc/network/interfaces</code>: los dos sistemas se pelearán por la misma interfaz.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="red-linux.html">← Configurar la red</a><span></span></nav>
+      <footer class="pie">Documentación: <code>man interfaces</code>, <code>man ifup</code>, <code>man ifconfig</code> y la guía de Debian en <a href="https://wiki.debian.org/NetworkConfiguration">wiki.debian.org/NetworkConfiguration</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tareas programadas · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas y redes</a><span aria-hidden="true">›</span><span>Tareas programadas</span></nav>
+          <h1>Tareas programadas</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Ejecutar tareas a una hora o cada cierto tiempo: cron y crontab, at para lo puntual y los timers de systemd.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas y redes">
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Terminal Linux</a><a href="bash-script.html">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html" aria-current="page">Tareas programadas</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué usar para cada caso</a><a href="#s2"><b>2</b>crontab</a><a href="#s3"><b>3</b>El formato de cron</a><a href="#s4"><b>4</b>Ejemplos de horarios</a><a href="#s5"><b>5</b>Cadenas especiales</a><a href="#s6"><b>6</b>Cron del sistema</a><a href="#s7"><b>7</b>El entorno de cron</a><a href="#s8"><b>8</b>Registro y depuración</a><a href="#s9"><b>9</b>at: una sola vez</a><a href="#s10"><b>10</b>Timers de systemd</a><a href="#s11"><b>11</b>cron o timers</a><a href="#s12"><b>12</b>Despistes habituales</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Los cinco campos de cron</p>
+            <figure class="codigo"><pre data-lang="text"><code># ┌───── minuto (0-59)
+# │ ┌─── hora (0-23)
+# │ │ ┌─ día del mes (1-31)
+# │ │ │ ┌ mes (1-12)
+# │ │ │ │ ┌ día de la semana (0-7, 0 y 7 = domingo)
+# * * * * *  orden a ejecutar
+  30 2 * * *  /home/ana/copia.sh</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Empezar</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">crontab</span> <span class="tok-atributo">-e</span>      <span class="tok-coment"># editar tus tareas</span>
+<span class="tok-clave">crontab</span> <span class="tok-atributo">-l</span>      <span class="tok-coment"># listarlas</span>
+<span class="tok-clave">crontab</span> <span class="tok-atributo">-r</span>      <span class="tok-coment"># borrarlas todas (¡cuidado!)</span></code></pre></figure>
+            <p class="nota">La primera vez, <code>crontab -e</code> te deja elegir editor. <code>nano</code> es el más sencillo.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué usar para cada caso -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué usar para cada caso</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>cron</code></th><td>tareas repetidas a horas fijas (copias, limpiezas, informes)</td></tr>
+                  <tr><th scope="row"><code>at</code></th><td>una única vez, en un momento concreto</td></tr>
+                  <tr><th scope="row">timers de systemd</th><td>alternativa moderna a cron, con registro y dependencias</td></tr>
+                  <tr><th scope="row"><code>anacron</code></th><td>equipos que no están siempre encendidos (portátiles)</td></tr>
+                  <tr><th scope="row">servicio</th><td>si algo debe estar <em>siempre</em> corriendo, no es una tarea: es un <a href="servicios.html">servicio</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cron es lo clásico y está en todas partes; los timers son más potentes y se integran con <a href="servicios.html">systemd</a>. Los dos conviven en el mismo sistema.</p>
+          </div>
+        </section>
+        <!-- 2. crontab -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>crontab</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada usuario tiene su propia tabla de tareas (<em>crontab</em>). Se edita con un comando, no tocando ficheros a mano.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">crontab</span> <span class="tok-atributo">-e</span>            <span class="tok-coment"># editar las tuyas</span>
+<span class="tok-clave">crontab</span> <span class="tok-atributo">-l</span>            <span class="tok-coment"># listarlas</span>
+<span class="tok-clave">crontab</span> <span class="tok-atributo">-r</span>            <span class="tok-coment"># borrarlas todas</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">crontab</span> <span class="tok-atributo">-e</span> <span class="tok-atributo">-u</span> ana   <span class="tok-coment"># editar las de otro usuario</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Ejemplo de crontab</figcaption><pre data-lang="text"><code># copia cada noche a las 2:30
+30 2 * * * /home/ana/copia.sh
+
+# limpiar temporales cada lunes a las 9:00
+0 9 * * 1 rm -rf /home/ana/tmp/*</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>crontab -r</code> borra <em>todas</em> tus tareas sin preguntar. Está peligrosamente cerca de <code>-e</code> en el teclado; usa <code>crontab -l</code> a menudo para tener una copia.</p>
+          </div>
+        </section>
+        <!-- 3. El formato de cron -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>El formato de cron</h2>
+          <div class="cuerpo">
+            <p class="txt">Cinco campos de tiempo y la orden. En cada campo:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>*</code></th><td>cualquier valor («todos»)</td></tr>
+                  <tr><th scope="row"><code>5</code></th><td>un valor exacto</td></tr>
+                  <tr><th scope="row"><code>1,15,30</code></th><td>una lista de valores</td></tr>
+                  <tr><th scope="row"><code>9-17</code></th><td>un rango</td></tr>
+                  <tr><th scope="row"><code>*/10</code></th><td>cada 10 (paso): en minutos, cada 10 minutos</td></tr>
+                  <tr><th scope="row"><code>9-17/2</code></th><td>rango con paso: de 9 a 17, cada 2</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Orden de los campos: <strong>minuto, hora, día del mes, mes, día de la semana</strong>. El domingo es 0 (y también 7).</p>
+          </div>
+        </section>
+        <!-- 4. Ejemplos de horarios -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Ejemplos de horarios</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>0 * * * *</code></th><td>cada hora en punto</td></tr>
+                  <tr><th scope="row"><code>*/15 * * * *</code></th><td>cada 15 minutos</td></tr>
+                  <tr><th scope="row"><code>0 3 * * *</code></th><td>todos los días a las 3:00</td></tr>
+                  <tr><th scope="row"><code>30 8 * * 1-5</code></th><td>de lunes a viernes a las 8:30</td></tr>
+                  <tr><th scope="row"><code>0 0 1 * *</code></th><td>el día 1 de cada mes a medianoche</td></tr>
+                  <tr><th scope="row"><code>0 12 * * 0</code></th><td>los domingos a las 12:00</td></tr>
+                  <tr><th scope="row"><code>0 9,21 * * *</code></th><td>a las 9:00 y a las 21:00</td></tr>
+                  <tr><th scope="row"><code>0 0 * * 6</code></th><td>los sábados a medianoche</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si dudas de una expresión, escríbela en <a href="https://crontab.guru/">crontab.guru</a>: la traduce a lenguaje natural al momento.</p>
+          </div>
+        </section>
+        <!-- 5. Cadenas especiales -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Cadenas especiales</h2>
+          <div class="cuerpo">
+            <p class="txt">Atajos que sustituyen a los cinco campos:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>@reboot</code></th><td>una vez, en cada arranque</td></tr>
+                  <tr><th scope="row"><code>@hourly</code></th><td>cada hora (<code>0 * * * *</code>)</td></tr>
+                  <tr><th scope="row"><code>@daily</code></th><td>cada día a medianoche (<code>0 0 * * *</code>)</td></tr>
+                  <tr><th scope="row"><code>@weekly</code></th><td>cada semana</td></tr>
+                  <tr><th scope="row"><code>@monthly</code></th><td>cada mes</td></tr>
+                  <tr><th scope="row"><code>@yearly</code></th><td>cada año</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>@reboot /home/ana/arranque.sh
+@daily /home/ana/copia.sh</code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Cron del sistema -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Cron del sistema</h2>
+          <div class="cuerpo">
+            <p class="txt">Además del crontab por usuario, el sistema tiene sus propios sitios. Ahí las líneas llevan un campo extra: <strong>el usuario</strong> que ejecuta la orden.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/etc/crontab</code></th><td>tabla global (con campo de usuario)</td></tr>
+                  <tr><th scope="row"><code>/etc/cron.d/</code></th><td>ficheros sueltos, uno por servicio</td></tr>
+                  <tr><th scope="row"><code>/etc/cron.daily/</code></th><td>scripts que se lanzan a diario (también <code>hourly</code>, <code>weekly</code>, <code>monthly</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>/etc/cron.d/miapp — fíjate en el campo de usuario</figcaption><pre data-lang="text"><code># min hora dom mes dsem  usuario  orden
+  0   4   *   *   *    ana     /opt/miapp/backup.sh</code></pre></figure>
+            <p class="nota">En <code>/etc/cron.daily/</code> y compañía basta con dejar un script ejecutable: no lleva línea de horario, lo lanza el sistema en su franja.</p>
+          </div>
+        </section>
+        <!-- 7. El entorno de cron -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>El entorno de cron</h2>
+          <div class="cuerpo">
+            <p class="aviso"><strong>La causa nº1 de «me funciona en la terminal pero no en cron».</strong> Cron corre con un entorno mínimo: un <code>PATH</code> corto, sin tus alias ni las variables de tu <code>.bashrc</code>, y desde tu <code>$HOME</code>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Rutas absolutas</th><td>usa <code>/usr/bin/python3</code>, no <code>python3</code></td></tr>
+                  <tr><th scope="row">Define el PATH</th><td>ponlo al principio del crontab</td></tr>
+                  <tr><th scope="row"><code>MAILTO</code></th><td>a dónde enviar la salida y los errores</td></tr>
+                  <tr><th scope="row">Redirige la salida</th><td>guarda todo en un log para poder mirarlo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>PATH=/usr/local/bin:/usr/bin:/bin
+MAILTO=ana@ejemplo.com
+
+# guardar salida y errores en un registro
+0 2 * * * /home/ana/copia.sh >> /home/ana/copia.log 2>&1</code></pre></figure>
+            <p class="nota"><code>&gt;&gt; fichero 2&gt;&amp;1</code> manda la salida normal y los errores al mismo log. Sin esto, la salida se pierde (o te llega por correo si hay <code>MAILTO</code>).</p>
+          </div>
+        </section>
+        <!-- 8. Registro y depuración -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Registro y depuración</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># ver que cron ha lanzado la tarea</span>
+<span class="tok-clave">grep</span> CRON /var/log/syslog
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> cron              <span class="tok-coment"># o cronie, según la distro</span>
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> cron <span class="tok-atributo">-f</span>           <span class="tok-coment"># en vivo</span>
+
+<span class="tok-coment"># probar el script tal como lo verá cron: con entorno limpio</span>
+<span class="tok-clave">env</span> <span class="tok-atributo">-i</span> /bin/sh <span class="tok-atributo">-c</span> <span class="tok-texto">'/home/ana/copia.sh'</span></code></pre></figure>
+            <p class="nota">El registro dice que cron <em>lanzó</em> la orden, no si esta funcionó. Para eso está el log propio de tu script (<code>&gt;&gt; copia.log 2&gt;&amp;1</code>).</p>
+          </div>
+        </section>
+        <!-- 9. at: una sola vez -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>at: una sola vez</h2>
+          <div class="cuerpo">
+            <p class="txt">Para ejecutar algo <strong>una única vez</strong> en un momento dado, sin repetición:</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">apt</span> install at
+
+<span class="tok-clave">echo</span> <span class="tok-texto">"/home/ana/aviso.sh"</span> | <span class="tok-clave">at</span> <span class="tok-numero">18</span>:<span class="tok-numero">00</span>
+<span class="tok-clave">at</span> <span class="tok-numero">09</span>:<span class="tok-numero">00</span> tomorrow           <span class="tok-coment"># abre un prompt; Ctrl+D para terminar</span>
+<span class="tok-clave">at</span> now + <span class="tok-numero">2</span> hours
+
+<span class="tok-clave">atq</span>                         <span class="tok-coment"># ver la cola de tareas</span>
+<span class="tok-clave">atrm</span> <span class="tok-numero">3</span>                      <span class="tok-coment"># borrar la tarea número 3</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>at 18:00</code></th><td>hoy a las 18:00</td></tr>
+                  <tr><th scope="row"><code>at now + 30 minutes</code></th><td>dentro de media hora</td></tr>
+                  <tr><th scope="row"><code>at 10am Jul 15</code></th><td>una fecha concreta</td></tr>
+                  <tr><th scope="row"><code>batch</code></th><td>ejecutar cuando el sistema esté poco cargado</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 10. Timers de systemd -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Timers de systemd</h2>
+          <div class="cuerpo">
+            <p class="txt">Un timer son dos ficheros: un <code>.service</code> que hace la tarea (igual que en <a href="servicios.html">Servicios</a>) y un <code>.timer</code> que dice cuándo lanzarlo.</p>
+            <figure class="codigo"><figcaption>/etc/systemd/system/copia.service</figcaption><pre data-lang="ini"><code>[Unit]
+Description=Copia de seguridad
+
+[Service]
+Type=oneshot
+ExecStart=/home/ana/copia.sh</code></pre></figure>
+            <figure class="codigo"><figcaption>/etc/systemd/system/copia.timer</figcaption><pre data-lang="ini"><code>[Unit]
+Description=Copia diaria a las 2:00
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target</code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> daemon-reload
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> enable <span class="tok-atributo">--now</span> copia.timer
+<span class="tok-clave">systemctl</span> list-timers            <span class="tok-coment"># ver los timers y su próxima ejecución</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>OnCalendar=</code></th><td>cuándo: <code>daily</code>, <code>weekly</code>, <code>*-*-* 02:00:00</code>, <code>Mon *-*-* 09:00</code></td></tr>
+                  <tr><th scope="row"><code>OnBootSec=</code></th><td>tras arrancar: <code>OnBootSec=5min</code></td></tr>
+                  <tr><th scope="row"><code>Persistent=true</code></th><td>si el equipo estaba apagado, ejecuta al encender (como anacron)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 11. cron o timers -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>cron o timers</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">cron</th><td>rápido de escribir, universal, una línea por tarea</td></tr>
+                  <tr><th scope="row">timers</th><td>registro con <code>journalctl</code>, dependencias, reintentos, ejecución perdida (<code>Persistent</code>)</td></tr>
+                  <tr><th scope="row"><code>anacron</code></th><td>para portátiles: si la hora pasó con el equipo apagado, ejecuta al encender</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para algo rápido y personal, cron. Para tareas del sistema que deben registrarse y no perderse aunque el equipo estuviera apagado, timers.</p>
+          </div>
+        </section>
+        <!-- 12. Despistes habituales -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Rutas relativas</th><td>en cron, todo con ruta absoluta (órdenes y ficheros)</td></tr>
+                  <tr><th scope="row">PATH corto</th><td>define <code>PATH</code> en el crontab o usa rutas completas</td></tr>
+                  <tr><th scope="row">El <code>%</code></th><td>en cron, <code>%</code> significa fin de línea; escápalo: <code>\%</code> (típico con <code>date +\%F</code>)</td></tr>
+                  <tr><th scope="row">Sin salto final</th><td>deja una línea en blanco al final del crontab</td></tr>
+                  <tr><th scope="row">No ver errores</th><td>redirige a un log: <code>&gt;&gt; log 2&gt;&amp;1</code></td></tr>
+                  <tr><th scope="row">Editar timers</th><td>tras cambiar un <code>.timer</code>, <code>daemon-reload</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El fallo más común no es el horario, sino el entorno: lo que corre en tu terminal no encuentra sus rutas dentro de cron. Prueba siempre con rutas absolutas.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="servicios.html">← Servicios y demonios</a><a class="siguiente" href="red-linux.html">Configurar la red →</a></nav>
+      <footer class="pie">Páginas de manual: <code>man 5 crontab</code>, <code>man at</code>, <code>man systemd.timer</code>. Ayuda con las expresiones en <a href="https://crontab.guru/">crontab.guru</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

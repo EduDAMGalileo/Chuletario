@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Linux · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas y redes</a><span aria-hidden="true">›</span><span>Linux</span></nav>
+          <h1>Linux</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Qué es Linux, la diferencia entre núcleo y distribución, y las grandes familias con sus gestores de paquetes.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas y redes">
+      <div class="wrap"><a href="linux.html" aria-current="page">Linux</a><a href="terminal-linux.html">Terminal Linux</a><a href="bash-script.html">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es Linux</a><a href="#s2"><b>2</b>Núcleo, distribución y escritorio</a><a href="#s3"><b>3</b>Las grandes familias</a><a href="#s4"><b>4</b>Gestores de paquetes</a><a href="#s5"><b>5</b>Versiones y soporte</a><a href="#s6"><b>6</b>Qué sistema tengo</a><a href="#s7"><b>7</b>El árbol de directorios</a><a href="#s8"><b>8</b>Elegir distribución</a><a href="#s9"><b>9</b>Probar Linux</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea en una frase</p>
+            <p class="txt">«Linux» es en rigor solo el <strong>núcleo</strong>. Lo que instalas y usas es una <strong>distribución</strong>: el núcleo más un conjunto de programas, un gestor de paquetes y un escritorio, empaquetado por un proyecto.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">De un vistazo</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Núcleo</th><td>el corazón: habla con el hardware (Linus Torvalds, 1991)</td></tr>
+                  <tr><th scope="row">GNU</th><td>las herramientas de sistema que lo rodean</td></tr>
+                  <tr><th scope="row">Distribución</th><td>el paquete completo listo para usar: Ubuntu, Debian, Fedora...</td></tr>
+                  <tr><th scope="row">Libre</th><td>código abierto: se puede ver, modificar y compartir</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es Linux -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es Linux</h2>
+          <div class="cuerpo">
+            <p class="txt">Linux es un sistema operativo libre y de código abierto, estilo Unix. Domina en servidores, supercomputadores, móviles (Android usa el núcleo Linux) y dispositivos empotrados; en el escritorio es minoritario pero muy usado en desarrollo y en seguridad.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Multiusuario</th><td>varias personas y permisos por usuario y grupo</td></tr>
+                  <tr><th scope="row">Multitarea</th><td>muchos procesos a la vez</td></tr>
+                  <tr><th scope="row">Todo es un fichero</th><td>discos, dispositivos y procesos se ven como ficheros</td></tr>
+                  <tr><th scope="row">La terminal manda</th><td>casi todo se puede hacer y automatizar por línea de comandos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para el manejo diario del sistema desde la consola, mira <a href="terminal-linux.html">Terminal Linux</a>.</p>
+          </div>
+        </section>
+        <!-- 2. Núcleo, distribución y escritorio -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Núcleo, distribución y escritorio</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Núcleo (kernel)</th><td>gestiona CPU, memoria, discos y dispositivos. Es común a todas las distros</td></tr>
+                  <tr><th scope="row">Distribución</th><td>núcleo + programas + gestor de paquetes + instalador, con una filosofía propia</td></tr>
+                  <tr><th scope="row">Entorno de escritorio</th><td>la parte gráfica: GNOME, KDE Plasma, XFCE... se puede cambiar</td></tr>
+                  <tr><th scope="row">Gestor de arranque</th><td>GRUB: elige qué sistema arrancar</td></tr>
+                  <tr><th scope="row">init / systemd</th><td>el primer proceso; arranca el resto de servicios</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Una misma distro puede ofrecer varios escritorios (las «ediciones» o «spins»). El escritorio cambia el aspecto, no el sistema de debajo.</p>
+          </div>
+        </section>
+        <!-- 3. Las grandes familias -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Las grandes familias</h2>
+          <div class="cuerpo">
+            <p class="txt">Casi todas las distros descienden de unas pocas «ramas». Saber de qué familia es una distro te dice qué gestor de paquetes usa y cómo se configura.</p>
+            <h3>Debian</h3>
+            <p class="txt">Estable y enorme. De ella salen <strong>Ubuntu</strong> (y de Ubuntu, Linux Mint, Pop!_OS) y <strong>Kali</strong> (seguridad). Paquetes <code>.deb</code>, gestor APT.</p>
+            <h3>Red Hat</h3>
+            <p class="txt">El mundo empresarial: <strong>RHEL</strong>, y sus derivadas libres <strong>Fedora</strong> (puntera), <strong>CentOS Stream</strong>, <strong>Rocky</strong> y <strong>AlmaLinux</strong>. Paquetes <code>.rpm</code>, gestor DNF.</p>
+            <h3>Arch</h3>
+            <p class="txt">Minimalista y siempre al día (<em>rolling release</em>). <strong>Arch</strong> y <strong>Manjaro</strong>. Gestor pacman y el enorme repositorio AUR.</p>
+            <h3>SUSE e independientes</h3>
+            <p class="txt"><strong>openSUSE</strong> (gestor zypper). Fuera de estas ramas: <strong>Alpine</strong> (muy ligera, típica en contenedores) y <strong>Gentoo</strong> (se compila todo).</p>
+          </div>
+        </section>
+        <!-- 4. Gestores de paquetes -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Gestores de paquetes</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada familia instala software desde sus repositorios con su propia herramienta. Estas son las equivalencias:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Debian/Ubuntu</th><td><code>apt install</code> · <code>apt update</code> · <code>apt remove</code> (paquetes <code>.deb</code>)</td></tr>
+                  <tr><th scope="row">Fedora/RHEL</th><td><code>dnf install</code> · <code>dnf upgrade</code> · <code>dnf remove</code> (paquetes <code>.rpm</code>)</td></tr>
+                  <tr><th scope="row">Arch</th><td><code>pacman -S</code> · <code>pacman -Syu</code> · <code>pacman -R</code></td></tr>
+                  <tr><th scope="row">openSUSE</th><td><code>zypper install</code> · <code>zypper update</code></td></tr>
+                  <tr><th scope="row">Alpine</th><td><code>apk add</code> · <code>apk update</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># Debian/Ubuntu: actualizar el índice e instalar</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">apt</span> update
+<span class="tok-clave">sudo</span> <span class="tok-clave">apt</span> install git
+
+<span class="tok-coment"># formatos universales, válidos en casi cualquier distro</span>
+<span class="tok-clave">flatpak</span> install flathub org.gimp.GIMP
+<span class="tok-clave">sudo</span> <span class="tok-clave">snap</span> install code <span class="tok-atributo">--classic</span></code></pre></figure>
+            <p class="nota"><strong>Flatpak</strong> y <strong>Snap</strong> son formatos que funcionan igual en todas las distros: cada aplicación trae sus dependencias. Cómodos, pero más pesados que el paquete nativo. Más de APT en <a href="terminal-linux.html#s9">Terminal Linux</a>.</p>
+          </div>
+        </section>
+        <!-- 5. Versiones y soporte -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Versiones y soporte</h2>
+          <div class="cuerpo">
+            <p class="txt">Hay dos modelos de publicación:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Versión fija</th><td>lanzamientos cada cierto tiempo (Debian, Ubuntu, Fedora). Estable y predecible</td></tr>
+                  <tr><th scope="row"><em>Rolling release</em></th><td>actualización continua, sin versiones (Arch). Siempre lo último</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">LTS</th><td><em>Long Term Support</em>: soporte largo (Ubuntu LTS, 5 años). Para servidores y producción</td></tr>
+                  <tr><th scope="row">Ubuntu</th><td>una versión cada 6 meses (<code>AA.MM</code>); LTS cada 2 años, en abril de los años pares</td></tr>
+                  <tr><th scope="row">Debian</th><td>estable cada ~2 años; también <em>testing</em> y <em>sid</em> (inestable)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para aprender y para servidores, elige una versión LTS o estable. Las <em>rolling</em> traen lo más nuevo, pero exigen mantenimiento y algún susto de vez en cuando.</p>
+          </div>
+        </section>
+        <!-- 6. Qué sistema tengo -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Qué sistema tengo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">cat</span> /etc/os-release      <span class="tok-coment"># nombre y versión de la distro</span>
+<span class="tok-clave">lsb_release</span> <span class="tok-atributo">-a</span>           <span class="tok-coment"># lo mismo, si está instalado</span>
+<span class="tok-clave">hostnamectl</span>              <span class="tok-coment"># sistema, núcleo y arquitectura</span>
+
+<span class="tok-clave">uname</span> <span class="tok-atributo">-r</span>                 <span class="tok-coment"># versión del núcleo</span>
+<span class="tok-clave">uname</span> <span class="tok-atributo">-m</span>                 <span class="tok-coment"># arquitectura: x86_64, aarch64...</span>
+<span class="tok-clave">arch</span>                     <span class="tok-coment"># atajo de uname -m</span>
+
+<span class="tok-clave">cat</span> /etc/debian_version  <span class="tok-coment"># versión, si es de la familia Debian</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/etc/os-release</code></th><td>fichero estándar con <code>NAME</code>, <code>VERSION</code>, <code>ID</code></td></tr>
+                  <tr><th scope="row"><code>uname -a</code></th><td>toda la información del núcleo de un vistazo</td></tr>
+                  <tr><th scope="row"><code>x86_64</code></th><td>PC de 64 bits (también <code>amd64</code>)</td></tr>
+                  <tr><th scope="row"><code>aarch64</code></th><td>ARM de 64 bits (Raspberry Pi, Mac con Apple Silicon)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. El árbol de directorios -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>El árbol de directorios</h2>
+          <div class="cuerpo">
+            <p class="txt">No hay unidades <code>C:</code> como en Windows. Todo cuelga de la raíz <code>/</code>, y los discos y dispositivos se «montan» dentro de ese único árbol (FHS, <em>Filesystem Hierarchy Standard</em>).</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/</code></th><td>la raíz; todo cuelga de aquí</td></tr>
+                  <tr><th scope="row"><code>/home</code></th><td>carpetas personales de cada usuario</td></tr>
+                  <tr><th scope="row"><code>/etc</code></th><td>ficheros de configuración del sistema</td></tr>
+                  <tr><th scope="row"><code>/var</code></th><td>datos variables: registros, colas, webs</td></tr>
+                  <tr><th scope="row"><code>/usr</code></th><td>programas y bibliotecas instalados</td></tr>
+                  <tr><th scope="row"><code>/bin</code>, <code>/sbin</code></th><td>ejecutables esenciales</td></tr>
+                  <tr><th scope="row"><code>/tmp</code></th><td>temporales; se borran al reiniciar</td></tr>
+                  <tr><th scope="row"><code>/dev</code>, <code>/proc</code>, <code>/sys</code></th><td>dispositivos y estado del núcleo, como ficheros</td></tr>
+                  <tr><th scope="row"><code>/mnt</code>, <code>/media</code></th><td>puntos de montaje de discos y USB</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Más detalle de cada carpeta en la sección final de <a href="terminal-linux.html#s19">Terminal Linux</a>.</p>
+          </div>
+        </section>
+        <!-- 8. Elegir distribución -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Elegir distribución</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Empezar</th><td>Ubuntu o Linux Mint: fáciles, mucha documentación en español</td></tr>
+                  <tr><th scope="row">Servidor</th><td>Debian, Ubuntu Server o Rocky/Alma: estables y con soporte largo</td></tr>
+                  <tr><th scope="row">Seguridad</th><td>Kali o Parrot: traen las herramientas ya instaladas</td></tr>
+                  <tr><th scope="row">Lo último</th><td>Fedora (versión fija moderna) o Arch (rolling)</td></tr>
+                  <tr><th scope="row">Equipo antiguo</th><td>Xubuntu, Lubuntu o similares con escritorio ligero</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Casi todo lo que aprendas vale para cualquier distro: cambian el gestor de paquetes y algún detalle. Este Chuletario usa Debian/Ubuntu (y Kali) como referencia.</p>
+          </div>
+        </section>
+        <!-- 9. Probar Linux -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Probar Linux</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Máquina virtual</th><td>VirtualBox o VMware: probar sin tocar tu sistema (lo más recomendable)</td></tr>
+                  <tr><th scope="row">Live USB</th><td>arrancar desde un USB sin instalar nada</td></tr>
+                  <tr><th scope="row">WSL</th><td>Linux dentro de Windows: <code>wsl --install</code></td></tr>
+                  <tr><th scope="row">Arranque dual</th><td>instalar junto a Windows y elegir al encender</td></tr>
+                  <tr><th scope="row">Contenedor</th><td><code>docker run -it ubuntu bash</code>: un Linux de usar y tirar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para practicar seguridad, monta las máquinas en una red interna aislada de la máquina virtual. Más en la chuleta de <a href="../hacking/pentest.html#s8">Pentest</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="terminal-linux.html">Terminal Linux →</a></nav>
+      <footer class="pie">Comparativas de distribuciones en <a href="https://distrowatch.com/">distrowatch.com</a>. El estándar de directorios (FHS) en <a href="https://refspecs.linuxfoundation.org/fhs.shtml">refspecs.linuxfoundation.org</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

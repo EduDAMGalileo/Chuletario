@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shell script · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas y redes</a><span aria-hidden="true">›</span><span>Shell script</span></nav>
+          <h1>Shell script</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Scripts de Bash: variables, argumentos, condiciones, bucles, arrays y funciones. En Kali la terminal usa zsh, pero los scripts con <code>#!/usr/bin/env bash</code> se ejecutan con Bash.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas y redes">
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Terminal Linux</a><a href="bash-script.html" aria-current="page">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Variables</a><a href="#s2"><b>2</b>Argumentos y variables especiales</a><a href="#s3"><b>3</b>Leer datos</a><a href="#s4"><b>4</b>Condiciones</a><a href="#s5"><b>5</b>if y case</a><a href="#s6"><b>6</b>Bucles</a><a href="#s7"><b>7</b>Aritmética</a><a href="#s8"><b>8</b>Arrays</a><a href="#s9"><b>9</b>Manipular cadenas</a><a href="#s10"><b>10</b>Funciones</a><a href="#s11"><b>11</b>Códigos de salida y redirecciones</a><a href="#s12"><b>12</b>Depurar y despistes habituales</a><a href="#s13"><b>13</b>Ejemplo completo</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Un script mínimo</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment">#!/usr/bin/env bash</span>
+<span class="tok-coment"># saludo.sh: saluda a quien se indique</span>
+<span class="tok-clave">set</span> <span class="tok-atributo">-euo</span> pipefail
+
+nombre=<span class="tok-texto">"${1:-mundo}"</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"Hola, $nombre"</span></code></pre></figure>
+            <p class="nota">La primera línea (<em>shebang</em>) indica qué intérprete lo ejecuta. Tiene que ser la primera, sin nada antes.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Ejecutarlo</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">chmod</span> +x saludo.sh     <span class="tok-coment"># permiso de ejecución (una vez)</span>
+./saludo.sh Ana        <span class="tok-coment"># ejecutar</span>
+<span class="tok-clave">bash</span> saludo.sh Ana     <span class="tok-coment"># ejecutar sin permiso de ejecución</span>
+<span class="tok-clave">bash</span> <span class="tok-atributo">-n</span> saludo.sh      <span class="tok-coment"># solo comprobar la sintaxis</span>
+<span class="tok-clave">bash</span> <span class="tok-atributo">-x</span> saludo.sh      <span class="tok-coment"># ver cada línea mientras se ejecuta</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Modo estricto</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>set -e</code></th><td>para el script si una orden falla</td></tr>
+                  <tr><th scope="row"><code>set -u</code></th><td>error si usas una variable sin definir</td></tr>
+                  <tr><th scope="row"><code>set -o pipefail</code></th><td>una tubería falla si falla cualquiera de sus órdenes</td></tr>
+                  <tr><th scope="row"><code>set -x</code></th><td>muestra cada orden antes de ejecutarla; <code>set +x</code> lo apaga</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Variables -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Variables</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code>nombre=<span class="tok-texto">"Ana"</span>              <span class="tok-coment"># sin espacios alrededor del =</span>
+edad=<span class="tok-numero">20</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"$nombre tiene $edad años"</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"${nombre}_copia"</span>    <span class="tok-coment"># llaves para separarla del texto</span>
+
+<span class="tok-clave">readonly</span> PI=3.14          <span class="tok-coment"># constante</span>
+<span class="tok-clave">export</span> RUTA=/opt/app      <span class="tok-coment"># visible para los programas que lances</span>
+<span class="tok-clave">unset</span> nombre              <span class="tok-coment"># borrar</span>
+
+hoy=$(<span class="tok-clave">date</span> +%F)           <span class="tok-coment"># guardar la salida de una orden</span>
+lineas=$(<span class="tok-clave">wc</span> <span class="tok-atributo">-l</span> &lt; datos.txt)</code></pre></figure>
+            <h3>Comillas</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>"..."</code></th><td>sustituye <code>$var</code> y <code>$(orden)</code>; mantiene los espacios</td></tr>
+                  <tr><th scope="row"><code>'...'</code></th><td>todo tal cual, sin sustituir nada</td></tr>
+                  <tr><th scope="row"><code>\</code></th><td>escapa el carácter siguiente: <code>\$</code>, <code>\"</code></td></tr>
+                  <tr><th scope="row">sin comillas</th><td>parte el valor por los espacios y expande <code>*</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>nombre = "Ana"</code> falla: Bash intenta ejecutar una orden llamada <code>nombre</code>. Y pon las variables entre comillas (<code>"$fichero"</code>): si el valor tiene espacios, sin comillas se parte en varios argumentos.</p>
+          </div>
+        </section>
+        <!-- 2. Argumentos y variables especiales -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Argumentos y variables especiales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>$0</code></th><td>nombre del script</td></tr>
+                  <tr><th scope="row"><code>$1 … $9</code></th><td>argumentos; a partir del décimo, <code>${10}</code></td></tr>
+                  <tr><th scope="row"><code>$#</code></th><td>número de argumentos</td></tr>
+                  <tr><th scope="row"><code>"$@"</code></th><td>todos los argumentos, cada uno por separado</td></tr>
+                  <tr><th scope="row"><code>"$*"</code></th><td>todos los argumentos juntos en un solo texto</td></tr>
+                  <tr><th scope="row"><code>$?</code></th><td>código de salida de la última orden (0 = bien)</td></tr>
+                  <tr><th scope="row"><code>$$</code></th><td>PID del script</td></tr>
+                  <tr><th scope="row"><code>$!</code></th><td>PID del último proceso lanzado con <code>&amp;</code></td></tr>
+                  <tr><th scope="row"><code>$RANDOM</code></th><td>número aleatorio de 0 a 32767</td></tr>
+                  <tr><th scope="row"><code>shift</code></th><td>descarta <code>$1</code> y corre los demás una posición</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">if</span> [ <span class="tok-variable">$#</span> <span class="tok-atributo">-lt</span> <span class="tok-numero">2</span> ]; <span class="tok-clave">then</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Uso: $0 origen destino"</span> &gt;&amp;<span class="tok-numero">2</span>
+    <span class="tok-clave">exit</span> <span class="tok-numero">1</span>
+<span class="tok-clave">fi</span>
+origen=<span class="tok-variable">$1</span>
+destino=<span class="tok-variable">$2</span>
+
+<span class="tok-clave">for</span> arg <span class="tok-clave">in</span> <span class="tok-texto">"$@"</span>; <span class="tok-clave">do</span>        <span class="tok-coment"># recorrer todos los argumentos</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"- $arg"</span>
+<span class="tok-clave">done</span></code></pre></figure>
+            <h3>Opciones con getopts</h3>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># uso: ./script.sh -v -f datos.txt</span>
+<span class="tok-clave">while</span> <span class="tok-clave">getopts</span> <span class="tok-texto">"vf:"</span> opt; <span class="tok-clave">do</span>     <span class="tok-coment"># f: lleva valor, v no</span>
+    <span class="tok-clave">case</span> <span class="tok-variable">$opt</span> <span class="tok-clave">in</span>
+        v) verbose=<span class="tok-numero">1</span> ;;
+        f) fichero=<span class="tok-variable">$OPTARG</span> ;;
+        *) <span class="tok-clave">echo</span> <span class="tok-texto">"Uso: $0 [-v] [-f fichero]"</span> &gt;&amp;<span class="tok-numero">2</span>; <span class="tok-clave">exit</span> <span class="tok-numero">1</span> ;;
+    <span class="tok-clave">esac</span>
+<span class="tok-clave">done</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 3. Leer datos -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Leer datos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">read</span> <span class="tok-atributo">-p</span> <span class="tok-texto">"Nombre: "</span> nombre
+<span class="tok-clave">read</span> <span class="tok-atributo">-sp</span> <span class="tok-texto">"Contraseña: "</span> clave; <span class="tok-clave">echo</span>     <span class="tok-coment"># -s: no se ve lo que escribes</span>
+<span class="tok-clave">read</span> <span class="tok-atributo">-t</span> <span class="tok-numero">10</span> <span class="tok-atributo">-p</span> <span class="tok-texto">"¿Seguir? (s/n) "</span> resp    <span class="tok-coment"># espera 10 segundos como mucho</span>
+<span class="tok-clave">read</span> <span class="tok-atributo">-n</span> <span class="tok-numero">1</span> <span class="tok-atributo">-p</span> <span class="tok-texto">"Pulsa una tecla"</span> tecla
+<span class="tok-clave">read</span> <span class="tok-atributo">-ra</span> colores &lt;&lt;&lt; <span class="tok-texto">"rojo verde azul"</span>  <span class="tok-coment"># en un array</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-p "texto"</code></th><td>muestra un mensaje antes de leer</td></tr>
+                  <tr><th scope="row"><code>-s</code></th><td>no muestra lo que se escribe</td></tr>
+                  <tr><th scope="row"><code>-r</code></th><td>no interpreta las <code>\</code> (úsalo casi siempre)</td></tr>
+                  <tr><th scope="row"><code>-t 10</code></th><td>tiempo límite en segundos</td></tr>
+                  <tr><th scope="row"><code>-n 1</code></th><td>lee un solo carácter, sin esperar al Intro</td></tr>
+                  <tr><th scope="row"><code>-a arr</code></th><td>guarda cada palabra en un array</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Leer un fichero línea a línea</h3>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">while</span> IFS= <span class="tok-clave">read</span> <span class="tok-atributo">-r</span> linea; <span class="tok-clave">do</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"&gt; $linea"</span>
+<span class="tok-clave">done</span> &lt; datos.txt
+
+<span class="tok-coment"># separar campos: IFS indica el separador</span>
+<span class="tok-clave">while</span> IFS=: <span class="tok-clave">read</span> <span class="tok-atributo">-r</span> usuario _ uid _; <span class="tok-clave">do</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"$usuario tiene UID $uid"</span>
+<span class="tok-clave">done</span> &lt; /etc/passwd</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Condiciones -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Condiciones</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>[ ... ]</code></th><td>la orden <code>test</code> clásica; funciona en cualquier shell</td></tr>
+                  <tr><th scope="row"><code>[[ ... ]]</code></th><td>propia de Bash: admite <code>&amp;&amp;</code>, <code>||</code>, patrones y expresiones regulares</td></tr>
+                  <tr><th scope="row"><code>(( ... ))</code></th><td>comparaciones numéricas con <code>&lt; &gt; ==</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Números</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-eq  -ne</code></th><td>igual / distinto</td></tr>
+                  <tr><th scope="row"><code>-lt  -le</code></th><td>menor / menor o igual</td></tr>
+                  <tr><th scope="row"><code>-gt  -ge</code></th><td>mayor / mayor o igual</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Cadenas</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>=  !=</code></th><td>igual / distinto (en <code>[[ ]]</code> también vale <code>==</code>)</td></tr>
+                  <tr><th scope="row"><code>-z "$s"</code></th><td>está vacía</td></tr>
+                  <tr><th scope="row"><code>-n "$s"</code></th><td>no está vacía</td></tr>
+                  <tr><th scope="row"><code>[[ $s == A* ]]</code></th><td>coincide con el patrón</td></tr>
+                  <tr><th scope="row"><code>[[ $s =~ ^[0-9]+$ ]]</code></th><td>coincide con la expresión regular</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Ficheros</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-e</code></th><td>existe</td></tr>
+                  <tr><th scope="row"><code>-f  -d</code></th><td>es un fichero normal / una carpeta</td></tr>
+                  <tr><th scope="row"><code>-r  -w  -x</code></th><td>se puede leer / escribir / ejecutar</td></tr>
+                  <tr><th scope="row"><code>-s</code></th><td>existe y no está vacío</td></tr>
+                  <tr><th scope="row"><code>-L</code></th><td>es un enlace simbólico</td></tr>
+                  <tr><th scope="row"><code>a -nt b</code></th><td><code>a</code> es más reciente que <code>b</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">if</span> [[ <span class="tok-atributo">-f</span> <span class="tok-texto">"$fichero"</span> &amp;&amp; <span class="tok-atributo">-r</span> <span class="tok-texto">"$fichero"</span> ]]; <span class="tok-clave">then</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Existe y se puede leer"</span>
+<span class="tok-clave">fi</span>
+
+[[ <span class="tok-atributo">-d</span> <span class="tok-texto">"$destino"</span> ]] || <span class="tok-clave">mkdir</span> <span class="tok-atributo">-p</span> <span class="tok-texto">"$destino"</span>
+[[ <span class="tok-variable">$email</span> =~ ^[^@]+@[^@]+\.[a-z]+$ ]] &amp;&amp; <span class="tok-clave">echo</span> <span class="tok-texto">"Parece un correo"</span>
+(( edad &gt;= <span class="tok-numero">18</span> )) &amp;&amp; <span class="tok-clave">echo</span> <span class="tok-texto">"Mayor de edad"</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> los corchetes necesitan espacios: <code>[ "$a" -eq 1 ]</code>, nunca <code>["$a" -eq 1]</code>. Y <code>-eq</code> es para números; para texto, <code>=</code>.</p>
+          </div>
+        </section>
+        <!-- 5. if y case -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>if y case</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">if</span> (( nota &gt;= <span class="tok-numero">9</span> )); <span class="tok-clave">then</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Sobresaliente"</span>
+<span class="tok-clave">elif</span> (( nota &gt;= <span class="tok-numero">5</span> )); <span class="tok-clave">then</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Aprobado"</span>
+<span class="tok-clave">else</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Suspenso"</span>
+<span class="tok-clave">fi</span></code></pre></figure>
+            <h3>Usar una orden como condición</h3>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># se cumple si la orden termina bien (código 0)</span>
+<span class="tok-clave">if</span> <span class="tok-clave">grep</span> <span class="tok-atributo">-q</span> <span class="tok-texto">"^$usuario:"</span> /etc/passwd; <span class="tok-clave">then</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"El usuario existe"</span>
+<span class="tok-clave">fi</span>
+
+<span class="tok-clave">if</span> ! ping <span class="tok-atributo">-c</span> <span class="tok-numero">1</span> <span class="tok-atributo">-W</span> <span class="tok-numero">1</span> <span class="tok-texto">"$host"</span> &amp;&gt; /dev/null; <span class="tok-clave">then</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"$host no responde"</span>
+<span class="tok-clave">fi</span></code></pre></figure>
+            <h3>case</h3>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">case</span> <span class="tok-texto">"$opcion"</span> <span class="tok-clave">in</span>
+    <span class="tok-numero">1</span>|alta)  <span class="tok-clave">echo</span> <span class="tok-texto">"Alta"</span> ;;
+    <span class="tok-numero">2</span>|baja)  <span class="tok-clave">echo</span> <span class="tok-texto">"Baja"</span> ;;
+    [sS]*)   <span class="tok-clave">echo</span> <span class="tok-texto">"Sí"</span> ;;
+    *.txt)   <span class="tok-clave">echo</span> <span class="tok-texto">"Fichero de texto"</span> ;;
+    *)       <span class="tok-clave">echo</span> <span class="tok-texto">"Opción no válida"</span> ;;
+<span class="tok-clave">esac</span></code></pre></figure>
+            <p class="nota">Cada caso termina en <code>;;</code> y <code>*)</code> recoge todo lo demás. Los casos admiten patrones como los de los nombres de fichero.</p>
+          </div>
+        </section>
+        <!-- 6. Bucles -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Bucles</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">for</span> fruta <span class="tok-clave">in</span> manzana pera uva; <span class="tok-clave">do</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"$fruta"</span>
+<span class="tok-clave">done</span>
+
+<span class="tok-clave">for</span> i <span class="tok-clave">in</span> {1..10}; <span class="tok-clave">do</span> <span class="tok-clave">echo</span> <span class="tok-texto">"$i"</span>; <span class="tok-clave">done</span>        <span class="tok-coment"># rango</span>
+<span class="tok-clave">for</span> i <span class="tok-clave">in</span> {0..100..5}; <span class="tok-clave">do</span> <span class="tok-clave">echo</span> <span class="tok-texto">"$i"</span>; <span class="tok-clave">done</span>    <span class="tok-coment"># de 5 en 5</span>
+
+<span class="tok-clave">for</span> (( i = <span class="tok-numero">0</span>; <span class="tok-clave">i</span> &lt; <span class="tok-numero">10</span>; <span class="tok-clave">i</span>++ )); <span class="tok-clave">do</span>            <span class="tok-coment"># estilo C</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"$i"</span>
+<span class="tok-clave">done</span>
+
+<span class="tok-clave">for</span> f <span class="tok-clave">in</span> *.log; <span class="tok-clave">do</span>                          <span class="tok-coment"># ficheros de la carpeta</span>
+    <span class="tok-clave">gzip</span> <span class="tok-texto">"$f"</span>
+<span class="tok-clave">done</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code>contador=<span class="tok-numero">0</span>
+<span class="tok-clave">while</span> (( contador &lt; <span class="tok-numero">5</span> )); <span class="tok-clave">do</span>                <span class="tok-coment"># mientras se cumpla</span>
+    (( contador++ ))
+<span class="tok-clave">done</span>
+
+<span class="tok-clave">until</span> <span class="tok-clave">ping</span> <span class="tok-atributo">-c</span> <span class="tok-numero">1</span> <span class="tok-texto">"$host"</span> &amp;&gt; /dev/null; <span class="tok-clave">do</span>    <span class="tok-coment"># hasta que se cumpla</span>
+    <span class="tok-clave">sleep</span> <span class="tok-numero">5</span>
+<span class="tok-clave">done</span>
+
+<span class="tok-clave">while</span> <span class="tok-clave">true</span>; <span class="tok-clave">do</span>                              <span class="tok-coment"># infinito</span>
+    <span class="tok-clave">read</span> <span class="tok-atributo">-p</span> <span class="tok-texto">"Orden (q para salir): "</span> orden
+    [[ <span class="tok-variable">$orden</span> == q ]] &amp;&amp; <span class="tok-clave">break</span>
+<span class="tok-clave">done</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>break</code></th><td>sale del bucle</td></tr>
+                  <tr><th scope="row"><code>continue</code></th><td>salta a la siguiente vuelta</td></tr>
+                  <tr><th scope="row"><code>break 2</code></th><td>sale de dos bucles anidados</td></tr>
+                  <tr><th scope="row"><code>seq 1 2 10</code></th><td>1 3 5 7 9: como <code>{1..10..2}</code> pero admite variables</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>{1..$n}</code> no funciona, porque las llaves se expanden antes que las variables. Usa <code>for (( i = 1; i &lt;= n; i++ ))</code> o <code>$(seq 1 "$n")</code>.</p>
+          </div>
+        </section>
+        <!-- 7. Aritmética -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Aritmética</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code>a=<span class="tok-numero">7</span>
+b=<span class="tok-numero">2</span>
+<span class="tok-clave">echo</span> $(( a + b ))      <span class="tok-coment"># 9</span>
+<span class="tok-clave">echo</span> $(( a / b ))      <span class="tok-coment"># 3: solo enteros</span>
+<span class="tok-clave">echo</span> $(( a % b ))      <span class="tok-coment"># 1: resto</span>
+<span class="tok-clave">echo</span> $(( a ** b ))     <span class="tok-coment"># 49: potencia</span>
+
+(( a++ ))
+(( total += a ))
+media=$(( total / <span class="tok-numero">3</span> ))
+
+<span class="tok-clave">echo</span> <span class="tok-texto">"scale=2; 7 / 2"</span> | <span class="tok-clave">bc</span>     <span class="tok-coment"># 3.50: decimales con bc</span></code></pre></figure>
+            <p class="nota">Dentro de <code>$(( ))</code> y <code>(( ))</code> las variables no necesitan <code>$</code>. Bash solo sabe hacer cuentas con enteros; para decimales, <code>bc</code> o <code>awk</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Arrays -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Arrays</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code>frutas=(<span class="tok-clave">manzana</span> pera uva)
+<span class="tok-clave">frutas</span>+=(kiwi)               <span class="tok-coment"># añadir al final</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"${frutas[0]}"</span>          <span class="tok-coment"># primer elemento</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"${frutas[@]}"</span>          <span class="tok-coment"># todos</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"${#frutas[@]}"</span>         <span class="tok-coment"># cuántos hay</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"${!frutas[@]}"</span>         <span class="tok-coment"># sus índices</span>
+<span class="tok-clave">unset</span> <span class="tok-texto">'frutas[1]'</span>            <span class="tok-coment"># borrar uno</span>
+
+<span class="tok-clave">for</span> f <span class="tok-clave">in</span> <span class="tok-texto">"${frutas[@]}"</span>; <span class="tok-clave">do</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"$f"</span>
+<span class="tok-clave">done</span>
+
+<span class="tok-clave">mapfile</span> <span class="tok-atributo">-t</span> lineas &lt; datos.txt   <span class="tok-coment"># fichero a array, una línea por elemento</span></code></pre></figure>
+            <h3>Arrays asociativos (clave → valor)</h3>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">declare</span> <span class="tok-atributo">-A</span> edades
+edades[ana]=<span class="tok-numero">20</span>
+edades[luis]=<span class="tok-numero">31</span>
+
+<span class="tok-clave">for</span> nombre <span class="tok-clave">in</span> <span class="tok-texto">"${!edades[@]}"</span>; <span class="tok-clave">do</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"$nombre: ${edades[$nombre]}"</span>
+<span class="tok-clave">done</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>$frutas</code> sin índice es solo el primer elemento. Para todos, <code>"${frutas[@]}"</code> con las comillas.</p>
+          </div>
+        </section>
+        <!-- 9. Manipular cadenas -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Manipular cadenas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>${#s}</code></th><td>longitud</td></tr>
+                  <tr><th scope="row"><code>${s:2:3}</code></th><td>trozo: desde la posición 2, 3 caracteres</td></tr>
+                  <tr><th scope="row"><code>${s#patrón}</code></th><td>quita el principio más corto que encaje; <code>##</code> el más largo</td></tr>
+                  <tr><th scope="row"><code>${s%patrón}</code></th><td>quita el final más corto que encaje; <code>%%</code> el más largo</td></tr>
+                  <tr><th scope="row"><code>${s/a/b}</code></th><td>reemplaza la primera aparición; <code>//</code> todas</td></tr>
+                  <tr><th scope="row"><code>${s^^}  ${s,,}</code></th><td>a mayúsculas / minúsculas</td></tr>
+                  <tr><th scope="row"><code>${s:-valor}</code></th><td><code>valor</code> si <code>s</code> está vacía o sin definir</td></tr>
+                  <tr><th scope="row"><code>${s:=valor}</code></th><td>lo mismo, y además se lo asigna</td></tr>
+                  <tr><th scope="row"><code>${s:?mensaje}</code></th><td>si está vacía, muestra el error y para el script</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code>ruta=<span class="tok-texto">"/home/ana/fotos/playa.jpg"</span>
+fichero=<span class="tok-texto">"${ruta##*/}"</span>    <span class="tok-coment"># playa.jpg        (como basename)</span>
+carpeta=<span class="tok-texto">"${ruta%/*}"</span>     <span class="tok-coment"># /home/ana/fotos  (como dirname)</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"${fichero%.*}"</span>     <span class="tok-coment"># playa            sin extensión</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"${fichero##*.}"</span>    <span class="tok-coment"># jpg              solo la extensión</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"${fichero/.jpg/.png}"</span>   <span class="tok-coment"># playa.png</span>
+
+<span class="tok-clave">for</span> f <span class="tok-clave">in</span> *.jpeg; <span class="tok-clave">do</span>
+    <span class="tok-clave">mv</span> <span class="tok-texto">"$f"</span> <span class="tok-texto">"${f%.jpeg}.jpg"</span>   <span class="tok-coment"># renombrar extensiones en bloque</span>
+<span class="tok-clave">done</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Funciones -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Funciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-funcion">saludar</span>() {
+    <span class="tok-clave">local</span> nombre=<span class="tok-variable">$1</span>          <span class="tok-coment"># local: solo existe dentro de la función</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Hola, $nombre"</span>
+}
+<span class="tok-clave">saludar</span> <span class="tok-texto">"Ana"</span>                <span class="tok-coment"># se llama sin paréntesis</span>
+
+<span class="tok-funcion">sumar</span>() {
+    <span class="tok-clave">echo</span> $(( <span class="tok-variable">$1</span> + <span class="tok-variable">$2</span> ))      <span class="tok-coment"># para "devolver" un dato, se imprime</span>
+}
+total=$(<span class="tok-clave">sumar</span> <span class="tok-numero">3</span> <span class="tok-numero">4</span>)           <span class="tok-coment"># y se recoge con $( )</span>
+
+<span class="tok-funcion">es_par</span>() {
+    (( <span class="tok-variable">$1</span> % <span class="tok-numero">2</span> == <span class="tok-numero">0</span> ))        <span class="tok-coment"># el código de salida es el resultado</span>
+}
+<span class="tok-clave">if</span> <span class="tok-clave">es_par</span> <span class="tok-numero">4</span>; <span class="tok-clave">then</span> <span class="tok-clave">echo</span> <span class="tok-texto">"par"</span>; <span class="tok-clave">fi</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>$1  $2  $#  $@</code></th><td>dentro de una función son sus argumentos, no los del script</td></tr>
+                  <tr><th scope="row"><code>local var</code></th><td>variable local; sin <code>local</code>, es global</td></tr>
+                  <tr><th scope="row"><code>return 1</code></th><td>sale con ese código (0 a 255)</td></tr>
+                  <tr><th scope="row"><code>function nombre { }</code></th><td>otra forma de definirla, solo en Bash</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>return</code> no devuelve datos, solo un código de éxito o error. Las funciones tienen que estar definidas antes de la línea que las llama.</p>
+          </div>
+        </section>
+        <!-- 11. Códigos de salida y redirecciones -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Códigos de salida y redirecciones</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>exit 0</code></th><td>termina bien; cualquier otro número indica error</td></tr>
+                  <tr><th scope="row"><code>orden1 &amp;&amp; orden2</code></th><td>ejecuta la segunda si la primera va bien</td></tr>
+                  <tr><th scope="row"><code>orden1 || orden2</code></th><td>ejecuta la segunda si la primera falla</td></tr>
+                  <tr><th scope="row"><code>&gt;  &gt;&gt;</code></th><td>salida a un fichero: sobrescribir / añadir</td></tr>
+                  <tr><th scope="row"><code>2&gt;</code></th><td>los errores a un fichero</td></tr>
+                  <tr><th scope="row"><code>&amp;&gt; /dev/null</code></th><td>descartar salida y errores</td></tr>
+                  <tr><th scope="row"><code>&gt;&amp;2</code></th><td>escribir en la salida de errores</td></tr>
+                  <tr><th scope="row"><code>&lt;&lt;EOF</code></th><td>texto de varias líneas como entrada (<em>here document</em>)</td></tr>
+                  <tr><th scope="row"><code>&lt;&lt;&lt; "$s"</code></th><td>una cadena como entrada</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">mkdir</span> <span class="tok-atributo">-p</span> <span class="tok-texto">"$destino"</span> || { <span class="tok-clave">echo</span> <span class="tok-texto">"No se pudo crear $destino"</span> &gt;&amp;<span class="tok-numero">2</span>; <span class="tok-clave">exit</span> <span class="tok-numero">1</span>; }
+
+<span class="tok-clave">cat</span> &gt; config.ini &lt;&lt;<span class="tok-texto">EOF
+usuario=$USER
+fecha=$(date +%F)
+EOF</span>
+
+<span class="tok-funcion">log</span>() { <span class="tok-clave">echo</span> <span class="tok-texto">"[$(date +%T)] $*"</span> &gt;&gt; script.log; }
+<span class="tok-clave">log</span> <span class="tok-texto">"Copia terminada"</span></code></pre></figure>
+            <h3>trap: limpiar al salir</h3>
+            <figure class="codigo"><pre data-lang="bash"><code>tmp=$(mktemp)
+<span class="tok-clave">trap</span> <span class="tok-texto">'rm -f "$tmp"'</span> EXIT     <span class="tok-coment"># se ejecuta al terminar, aunque sea por error o Ctrl+C</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 12. Depurar y despistes habituales -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Depurar y despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>bash -n script.sh</code></th><td>comprueba la sintaxis sin ejecutar</td></tr>
+                  <tr><th scope="row"><code>bash -x script.sh</code></th><td>muestra cada línea con las variables ya sustituidas</td></tr>
+                  <tr><th scope="row"><code>set -x  …  set +x</code></th><td>lo mismo, solo en un trozo del script</td></tr>
+                  <tr><th scope="row"><code>shellcheck script.sh</code></th><td>detecta errores típicos (<code>sudo apt install shellcheck</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong><code>$'\r': command not found</code>:</strong> el script se guardó en Windows con saltos de línea CRLF. Conviértelo con <code>dos2unix script.sh</code> o <code>sed -i 's/\r$//' script.sh</code>, y en VS Code cambia «CRLF» por «LF» en la barra inferior.</p>
+            <p class="aviso"><strong><code>sh script.sh</code> no es lo mismo que <code>bash script.sh</code>:</strong> en Debian y Ubuntu, <code>sh</code> es <code>dash</code>, que no entiende <code>[[ ]]</code>, arrays ni <code>{1..10}</code>, y además ignora el shebang.</p>
+            <p class="aviso"><strong><code>cd carpeta</code> sin comprobar:</strong> si falla, el resto del script sigue en la carpeta equivocada. Mejor <code>cd carpeta || exit 1</code>.</p>
+          </div>
+        </section>
+        <!-- 13. Ejemplo completo -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Ejemplo completo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>copia.sh: guarda una carpeta comprimida y borra las copias de más de 7 días</figcaption><pre data-lang="bash"><code><span class="tok-coment">#!/usr/bin/env bash</span>
+<span class="tok-clave">set</span> <span class="tok-atributo">-euo</span> pipefail
+
+origen=<span class="tok-texto">"${1:?Uso: $0 carpeta [destino]}"</span>
+destino=<span class="tok-texto">"${2:-$HOME/copias}"</span>
+dias=<span class="tok-numero">7</span>
+
+<span class="tok-clave">if</span> [[ ! <span class="tok-atributo">-d</span> <span class="tok-texto">"$origen"</span> ]]; <span class="tok-clave">then</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"No existe la carpeta $origen"</span> &gt;&amp;<span class="tok-numero">2</span>
+    <span class="tok-clave">exit</span> <span class="tok-numero">1</span>
+<span class="tok-clave">fi</span>
+
+<span class="tok-clave">mkdir</span> <span class="tok-atributo">-p</span> <span class="tok-texto">"$destino"</span>
+nombre=<span class="tok-texto">"$(basename "</span><span class="tok-variable">$origen</span><span class="tok-texto">")_$(date +%Y%m%d_%H%M).tar.gz"</span>
+
+<span class="tok-clave">tar</span> <span class="tok-atributo">-czf</span> <span class="tok-texto">"$destino/$nombre"</span> <span class="tok-atributo">-C</span> <span class="tok-texto">"$(dirname "</span><span class="tok-variable">$origen</span><span class="tok-texto">")"</span> <span class="tok-texto">"$(basename "</span><span class="tok-variable">$origen</span><span class="tok-texto">")"</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"Copia creada: $destino/$nombre"</span>
+
+<span class="tok-clave">find</span> <span class="tok-texto">"$destino"</span> <span class="tok-atributo">-name</span> <span class="tok-texto">"*.tar.gz"</span> <span class="tok-atributo">-mtime</span> +<span class="tok-texto">"$dias"</span> <span class="tok-atributo">-delete</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"Copias de más de $dias días eliminadas"</span></code></pre></figure>
+            <p class="nota">Para que se ejecute sola cada noche, añádelo a <code>crontab -e</code>: <code>0 2 * * * /home/ana/copia.sh /home/ana/proyectos</code>. Más en la sección de cron de <a href="terminal-linux.html#s18">Terminal Linux</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="terminal-linux.html">← Terminal Linux</a><a class="siguiente" href="servicios.html">Servicios y demonios →</a></nav>
+      <footer class="pie">Manual completo: <code>man bash</code>. Ayuda de las órdenes internas: <code>help read</code>, <code>help test</code>. Comprobar un script en línea: <a href="https://www.shellcheck.net/">shellcheck.net</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

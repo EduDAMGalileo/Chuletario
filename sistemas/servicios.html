@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Servicios y demonios · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas y redes</a><span aria-hidden="true">›</span><span>Servicios y demonios</span></nav>
+          <h1>Servicios y demonios</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Gestionar servicios con systemd: arrancar, habilitar, consultar el estado y los puertos, y poner tu propio programa como servicio.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas y redes">
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Terminal Linux</a><a href="bash-script.html">Shell script</a><a href="servicios.html" aria-current="page">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es un demonio y systemd</a><a href="#s2"><b>2</b>Controlar servicios</a><a href="#s3"><b>3</b>Ver y buscar servicios</a><a href="#s4"><b>4</b>Anatomía de un unit</a><a href="#s5"><b>5</b>Crear tu propio servicio</a><a href="#s6"><b>6</b>Opciones clave del unit</a><a href="#s7"><b>7</b>Registros con journalctl</a><a href="#s8"><b>8</b>Puertos y sockets</a><a href="#s9"><b>9</b>Objetivos y arranque</a><a href="#s10"><b>10</b>Servicios de usuario</a><a href="#s11"><b>11</b>Despistes habituales</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La orden que más usarás</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> status nginx     <span class="tok-coment"># ¿cómo está?</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> restart nginx    <span class="tok-coment"># reiniciarlo</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> enable nginx     <span class="tok-coment"># que arranque solo al encender</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">El ciclo de un servicio</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>start</code> / <code>stop</code></th><td>arrancar / parar ahora</td></tr>
+                  <tr><th scope="row"><code>restart</code></th><td>parar y arrancar</td></tr>
+                  <tr><th scope="row"><code>reload</code></th><td>recargar la config sin cortar el servicio</td></tr>
+                  <tr><th scope="row"><code>enable</code> / <code>disable</code></th><td>arrancar solo al inicio, o no</td></tr>
+                  <tr><th scope="row"><code>status</code></th><td>estado, PID y últimas líneas del registro</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es un demonio y systemd -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es un demonio y systemd</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>demonio</strong> (<em>daemon</em>) es un programa que corre en segundo plano, sin terminal ni usuario delante: un servidor web, la base de datos, el SSH... Su nombre suele acabar en <code>d</code>: <code>sshd</code>, <code>systemd</code>, <code>cupsd</code>.</p>
+            <p class="txt"><strong>systemd</strong> es el primer proceso que arranca (PID 1) y el que gestiona todos los demás. Cada cosa que administra es una <strong>unit</strong>; las de tipo servicio terminan en <code>.service</code>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>.service</code></th><td>un servicio (un demonio)</td></tr>
+                  <tr><th scope="row"><code>.socket</code></th><td>un puerto o socket que arranca el servicio al recibir tráfico</td></tr>
+                  <tr><th scope="row"><code>.timer</code></th><td>un temporizador (alternativa a cron)</td></tr>
+                  <tr><th scope="row"><code>.target</code></th><td>un grupo de units (un «modo» del sistema)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>systemctl</code> controla servicios; <code>journalctl</code> lee sus registros. Son las dos herramientas de esta chuleta.</p>
+          </div>
+        </section>
+        <!-- 2. Controlar servicios -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Controlar servicios</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> start ssh         <span class="tok-coment"># arrancar ahora</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> stop ssh          <span class="tok-coment"># parar</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> restart ssh       <span class="tok-coment"># reiniciar</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> reload ssh        <span class="tok-coment"># recargar config sin cortar</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> status ssh        <span class="tok-coment"># ver estado y registro reciente</span>
+
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> enable ssh        <span class="tok-coment"># arrancar al inicio</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> disable ssh       <span class="tok-coment"># no arrancar al inicio</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> enable <span class="tok-atributo">--now</span> ssh  <span class="tok-coment"># habilitar y arrancar de una vez</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>is-active nombre</code></th><td>¿está corriendo? Responde <code>active</code> / <code>inactive</code></td></tr>
+                  <tr><th scope="row"><code>is-enabled nombre</code></th><td>¿arranca al inicio?</td></tr>
+                  <tr><th scope="row"><code>mask</code> / <code>unmask</code></th><td>bloquear un servicio para que no se pueda arrancar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Diferencia clave: <code>start</code> lo arranca <em>ahora</em>; <code>enable</code> hace que arranque <em>en cada inicio</em>. Casi siempre quieres las dos cosas: <code>enable --now</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Ver y buscar servicios -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Ver y buscar servicios</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># servicios cargados y en marcha</span>
+<span class="tok-clave">systemctl</span> list-units <span class="tok-atributo">--type</span>=service
+<span class="tok-clave">systemctl</span> list-units <span class="tok-atributo">--type</span>=service <span class="tok-atributo">--state</span>=running
+
+<span class="tok-coment"># todos los servicios instalados y si arrancan al inicio</span>
+<span class="tok-clave">systemctl</span> list-unit-files <span class="tok-atributo">--type</span>=service
+
+<span class="tok-coment"># los que han fallado</span>
+<span class="tok-clave">systemctl</span> <span class="tok-atributo">--failed</span>
+
+<span class="tok-coment"># ver la configuración efectiva de un servicio</span>
+<span class="tok-clave">systemctl</span> cat ssh
+<span class="tok-clave">systemctl</span> show ssh</code></pre></figure>
+            <p class="nota">En <code>list-unit-files</code>, la columna <code>enabled</code>/<code>disabled</code> dice si arranca solo; en <code>list-units</code>, <code>active (running)</code> dice si está en marcha ahora mismo.</p>
+          </div>
+        </section>
+        <!-- 4. Anatomía de un unit -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Anatomía de un unit</h2>
+          <div class="cuerpo">
+            <p class="txt">Un fichero <code>.service</code> tiene tres secciones. Los del sistema viven en <code>/etc/systemd/system/</code> (los tuyos) y <code>/lib/systemd/system/</code> (los de los paquetes).</p>
+            <figure class="codigo"><pre data-lang="ini"><code>[Unit]
+Description=Mi servicio de ejemplo
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/mi-programa
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>[Unit]</code></th><td>descripción y orden de arranque (<code>After</code>, <code>Requires</code>)</td></tr>
+                  <tr><th scope="row"><code>[Service]</code></th><td>qué se ejecuta y cómo</td></tr>
+                  <tr><th scope="row"><code>[Install]</code></th><td>a qué target se engancha con <code>enable</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Crear tu propio servicio -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Crear tu propio servicio</h2>
+          <div class="cuerpo">
+            <p class="txt">Para que un programa o script tuyo corra como servicio y arranque solo:</p>
+            <figure class="codigo"><figcaption>1· crear el fichero</figcaption><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">nano</span> /etc/systemd/system/miapp.service</code></pre></figure>
+            <figure class="codigo"><figcaption>2· definir el servicio</figcaption><pre data-lang="ini"><code>[Unit]
+Description=Mi aplicación web
+After=network.target
+
+[Service]
+Type=simple
+User=miapp
+WorkingDirectory=/opt/miapp
+ExecStart=/opt/miapp/venv/bin/python app.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</code></pre></figure>
+            <figure class="codigo"><figcaption>3· recargar systemd, arrancar y habilitar</figcaption><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> daemon-reload
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> enable <span class="tok-atributo">--now</span> miapp
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> status miapp</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> cada vez que edites el fichero <code>.service</code>, ejecuta <code>sudo systemctl daemon-reload</code> antes de reiniciar el servicio, o systemd seguirá usando la versión antigua.</p>
+          </div>
+        </section>
+        <!-- 6. Opciones clave del unit -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Opciones clave del unit</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ExecStart=</code></th><td>la orden que arranca el servicio (ruta absoluta)</td></tr>
+                  <tr><th scope="row"><code>Type=simple</code></th><td>el proceso no se bifurca (lo normal)</td></tr>
+                  <tr><th scope="row"><code>Type=forking</code></th><td>el programa se va a segundo plano él solo</td></tr>
+                  <tr><th scope="row"><code>Type=oneshot</code></th><td>hace algo y termina (scripts de tarea única)</td></tr>
+                  <tr><th scope="row"><code>Restart=on-failure</code></th><td>reiniciar si falla; también <code>always</code></td></tr>
+                  <tr><th scope="row"><code>RestartSec=5</code></th><td>esperar 5 s antes de reiniciar</td></tr>
+                  <tr><th scope="row"><code>User=</code> · <code>Group=</code></th><td>con qué usuario corre (no lo dejes como root si no hace falta)</td></tr>
+                  <tr><th scope="row"><code>WorkingDirectory=</code></th><td>carpeta de trabajo</td></tr>
+                  <tr><th scope="row"><code>Environment=</code></th><td>variables de entorno: <code>Environment=PORT=8080</code></td></tr>
+                  <tr><th scope="row"><code>EnvironmentFile=</code></th><td>leer variables de un fichero</td></tr>
+                  <tr><th scope="row"><code>ExecReload=</code></th><td>qué hacer en <code>reload</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Por seguridad, crea un usuario dedicado sin privilegios para tu servicio y ponlo en <code>User=</code>. Si el programa se ve comprometido, el daño queda acotado.</p>
+          </div>
+        </section>
+        <!-- 7. Registros con journalctl -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Registros con journalctl</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> ssh                <span class="tok-coment"># registro de un servicio</span>
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> ssh <span class="tok-atributo">-f</span>             <span class="tok-coment"># seguir en vivo (como tail -f)</span>
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> ssh <span class="tok-atributo">-n</span> <span class="tok-numero">50</span>          <span class="tok-coment"># las últimas 50 líneas</span>
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> ssh <span class="tok-atributo">--since</span> today  <span class="tok-coment"># desde hoy</span>
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-u</span> ssh <span class="tok-atributo">-p</span> err         <span class="tok-coment"># solo errores</span>
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-b</span>                    <span class="tok-coment"># desde el último arranque</span>
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">-k</span>                    <span class="tok-coment"># mensajes del núcleo (dmesg)</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-u nombre</code></th><td>filtrar por servicio</td></tr>
+                  <tr><th scope="row"><code>-f</code></th><td>seguir en tiempo real</td></tr>
+                  <tr><th scope="row"><code>-e</code></th><td>saltar al final</td></tr>
+                  <tr><th scope="row"><code>--since</code> · <code>--until</code></th><td>rango de tiempo: <code>"2024-01-01 10:00"</code>, <code>"1 hour ago"</code></td></tr>
+                  <tr><th scope="row"><code>-p</code></th><td>prioridad: <code>err</code>, <code>warning</code>, <code>info</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si el diario ocupa mucho: <code>journalctl --disk-usage</code> para verlo y <code>sudo journalctl --vacuum-time=7d</code> para dejar solo la última semana.</p>
+          </div>
+        </section>
+        <!-- 8. Puertos y sockets -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Puertos y sockets</h2>
+          <div class="cuerpo">
+            <p class="txt">Para saber qué servicio está escuchando en qué puerto, la herramienta moderna es <code>ss</code> (sustituye a <code>netstat</code>):</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">ss</span> <span class="tok-atributo">-tulpn</span>           <span class="tok-coment"># puertos a la escucha, con el proceso</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">ss</span> <span class="tok-atributo">-tp</span>              <span class="tok-coment"># conexiones TCP establecidas</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">ss</span> <span class="tok-atributo">-tulpn</span> | <span class="tok-clave">grep</span> <span class="tok-numero">443</span>   <span class="tok-coment"># quién usa el 443</span>
+
+<span class="tok-clave">sudo</span> <span class="tok-clave">lsof</span> <span class="tok-atributo">-i</span> :<span class="tok-numero">80</span>         <span class="tok-coment"># qué proceso tiene abierto el puerto 80</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> status apache2   <span class="tok-coment"># y a qué servicio pertenece</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-t</code> · <code>-u</code></th><td>TCP · UDP</td></tr>
+                  <tr><th scope="row"><code>-l</code></th><td>solo los que escuchan (listening)</td></tr>
+                  <tr><th scope="row"><code>-p</code></th><td>mostrar el proceso (necesita sudo)</td></tr>
+                  <tr><th scope="row"><code>-n</code></th><td>números de puerto en vez de nombres</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>ss -tulpn</code> es la orden estrella para auditar qué expone un equipo. Lo que no debería estar abierto, se para y se deshabilita; lo demás, se filtra con el <a href="../seguridad/iptables.html">cortafuegos</a>.</p>
+          </div>
+        </section>
+        <!-- 9. Objetivos y arranque -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Objetivos y arranque</h2>
+          <div class="cuerpo">
+            <p class="txt">Los <strong>targets</strong> son grupos de servicios que definen el estado del sistema (el equivalente moderno a los antiguos «niveles de ejecución»).</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>multi-user.target</code></th><td>sistema completo sin interfaz gráfica (servidores)</td></tr>
+                  <tr><th scope="row"><code>graphical.target</code></th><td>lo anterior más el escritorio</td></tr>
+                  <tr><th scope="row"><code>rescue.target</code></th><td>modo mínimo de rescate</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">systemctl</span> get-default                    <span class="tok-coment"># target por defecto</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> set-default multi-user.target   <span class="tok-coment"># arrancar sin gráficos</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> isolate rescue.target     <span class="tok-coment"># cambiar de target ahora</span>
+
+<span class="tok-clave">systemctl</span> list-dependencies graphical.target   <span class="tok-coment"># qué arranca con él</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Servicios de usuario -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Servicios de usuario</h2>
+          <div class="cuerpo">
+            <p class="txt">Puedes tener servicios propios sin ser root, que corren solo con tu sesión. Van en <code>~/.config/systemd/user/</code> y se manejan con <code>--user</code>.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">systemctl</span> <span class="tok-atributo">--user</span> daemon-reload
+<span class="tok-clave">systemctl</span> <span class="tok-atributo">--user</span> enable <span class="tok-atributo">--now</span> miapp
+<span class="tok-clave">systemctl</span> <span class="tok-atributo">--user</span> status miapp
+<span class="tok-clave">journalctl</span> <span class="tok-atributo">--user</span> <span class="tok-atributo">-u</span> miapp
+
+<span class="tok-coment"># que sigan corriendo aunque cierres la sesión</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">loginctl</span> enable-linger <span class="tok-variable">$USER</span></code></pre></figure>
+            <p class="nota">Útil para tareas personales (un bot, una sincronización) sin tocar la configuración del sistema ni pedir permisos de administrador.</p>
+          </div>
+        </section>
+        <!-- 11. Despistes habituales -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Editar y no recargar</th><td>tras tocar un <code>.service</code>, <code>daemon-reload</code> siempre</td></tr>
+                  <tr><th scope="row"><code>start</code> vs <code>enable</code></th><td>uno arranca ahora; el otro, en cada inicio. Suele hacer falta <code>enable --now</code></td></tr>
+                  <tr><th scope="row">Rutas relativas</th><td><code>ExecStart</code> necesita la ruta absoluta del ejecutable</td></tr>
+                  <tr><th scope="row">Correr como root</th><td>pon <code>User=</code> con una cuenta sin privilegios siempre que puedas</td></tr>
+                  <tr><th scope="row">No mirar el log</th><td>si <code>status</code> dice «failed», <code>journalctl -u nombre -n 50</code> dice por qué</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para ejecutar algo a una hora o cada cierto tiempo en vez de dejarlo siempre corriendo, usa <a href="tareas.html">Tareas programadas</a> (cron o timers).</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="bash-script.html">← Shell script</a><a class="siguiente" href="tareas.html">Tareas programadas →</a></nav>
+      <footer class="pie">Páginas de manual: <code>man systemctl</code>, <code>man systemd.service</code>, <code>man journalctl</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
