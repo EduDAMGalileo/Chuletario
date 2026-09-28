@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sintaxis básica · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="php">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">PHP</a><span aria-hidden="true">›</span><span>Sintaxis básica</span></nav>
+          <h1>Sintaxis básica</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Variables, cadenas, operadores, control de flujo, arrays y funciones. Los ejemplos son para PHP 8 o posterior.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de PHP">
+      <div class="wrap"><a href="sintaxis.html" aria-current="page">Sintaxis básica</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Variables, tipos y constantes</a><a href="#s2"><b>2</b>Cadenas de texto</a><a href="#s3"><b>3</b>Operadores</a><a href="#s4"><b>4</b>Mostrar y leer datos</a><a href="#s5"><b>5</b>Condicionales</a><a href="#s6"><b>6</b>Bucles</a><a href="#s7"><b>7</b>Arrays</a><a href="#s8"><b>8</b>Funciones</a><a href="#s9"><b>9</b>Incluir ficheros</a><a href="#s10"><b>10</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Un script mínimo</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// hola.php</span>
+<span class="tok-variable">$nombre</span> = <span class="tok-texto">"Ana"</span>;
+<span class="tok-clave">echo</span> <span class="tok-texto">"Hola, $nombre\n"</span>;
+
+<span class="tok-coment">// Si el fichero solo tiene PHP, no se cierra con ?&gt;</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">PHP dentro de HTML</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;h1&gt;</span><span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">echo</span> <span class="tok-variable">$titulo</span>; <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/h1&gt;</span>
+<span class="tok-etiqueta">&lt;ul&gt;</span>
+<span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">foreach</span> (<span class="tok-variable">$productos</span> <span class="tok-clave">as</span> <span class="tok-variable">$p</span>): <span class="tok-etiqueta">?&gt;</span>
+    <span class="tok-etiqueta">&lt;li&gt;</span><span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$p</span>) <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/li&gt;</span>
+<span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">endforeach</span>; <span class="tok-etiqueta">?&gt;</span>
+<span class="tok-etiqueta">&lt;/ul&gt;</span></code></pre></figure>
+            <p class="nota"><code>&lt;?= $x ?&gt;</code> es la forma corta de <code>&lt;?php echo $x; ?&gt;</code>.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Ejecutar</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">php</span> hola.php              <span class="tok-coment"># ejecutar en la terminal</span>
+<span class="tok-clave">php</span> <span class="tok-atributo">-S</span> localhost:<span class="tok-numero">8000</span>     <span class="tok-coment"># servidor de pruebas en la carpeta actual</span>
+<span class="tok-clave">php</span> <span class="tok-atributo">-a</span>                    <span class="tok-coment"># consola interactiva</span>
+<span class="tok-clave">php</span> <span class="tok-atributo">-l</span> hola.php           <span class="tok-coment"># comprobar la sintaxis sin ejecutar</span>
+<span class="tok-clave">php</span> <span class="tok-atributo">-v</span>                    <span class="tok-coment"># versión instalada</span></code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Variables, tipos y constantes -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Variables, tipos y constantes</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>int</code></th><td>entero: <code>42</code>, <code>-7</code>, <code>1_000_000</code></td></tr>
+                  <tr><th scope="row"><code>float</code></th><td>decimal: <code>9.99</code>, <code>1.5e3</code></td></tr>
+                  <tr><th scope="row"><code>string</code></th><td>texto: <code>'hola'</code> o <code>"hola"</code></td></tr>
+                  <tr><th scope="row"><code>bool</code></th><td><code>true</code> o <code>false</code></td></tr>
+                  <tr><th scope="row"><code>array</code></th><td>lista o diccionario: <code>[1, 2, 3]</code></td></tr>
+                  <tr><th scope="row"><code>null</code></th><td>sin valor</td></tr>
+                  <tr><th scope="row"><code>object</code></th><td>instancia de una clase</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$edad</span> = <span class="tok-numero">20</span>;                  <span class="tok-coment">// int</span>
+<span class="tok-variable">$precio</span> = <span class="tok-numero">9.99</span>;              <span class="tok-coment">// float</span>
+<span class="tok-variable">$nombre</span> = <span class="tok-texto">"Ana"</span>;             <span class="tok-coment">// string</span>
+<span class="tok-variable">$activo</span> = <span class="tok-clave">true</span>;              <span class="tok-coment">// bool</span>
+<span class="tok-variable">$notas</span> = [<span class="tok-numero">7</span>, <span class="tok-numero">8.5</span>, <span class="tok-numero">9</span>];        <span class="tok-coment">// array</span>
+<span class="tok-variable">$nada</span> = <span class="tok-clave">null</span>;
+
+<span class="tok-variable">$edad</span> = <span class="tok-texto">"veinte"</span>;            <span class="tok-coment">// válido: el tipo lo marca el valor</span>
+
+<span class="tok-clave">const</span> <span class="tok-tipo">IVA</span> = <span class="tok-numero">0.21</span>;            <span class="tok-coment">// constante</span>
+<span class="tok-funcion">define</span>(<span class="tok-texto">'APP'</span>, <span class="tok-texto">'Chuletario'</span>); <span class="tok-coment">// otra forma, en tiempo de ejecución</span>
+<span class="tok-clave">echo</span> <span class="tok-tipo">IVA</span>, <span class="tok-tipo">APP</span>;               <span class="tok-coment">// las constantes van sin $</span>
+
+<span class="tok-funcion">var_dump</span>(<span class="tok-variable">$precio</span>);           <span class="tok-coment">// float(9.99): tipo y valor</span>
+<span class="tok-clave">echo</span> <span class="tok-funcion">gettype</span>(<span class="tok-variable">$nombre</span>);       <span class="tok-coment">// string</span></code></pre></figure>
+            <h3>Comprobar y convertir</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>is_int()  is_float()</code></th><td>¿es de ese tipo?</td></tr>
+                  <tr><th scope="row"><code>is_string()  is_bool()</code></th><td>¿es de ese tipo?</td></tr>
+                  <tr><th scope="row"><code>is_array()  is_null()</code></th><td>¿es de ese tipo?</td></tr>
+                  <tr><th scope="row"><code>is_numeric()</code></th><td>número o texto que parece un número: <code>"42"</code></td></tr>
+                  <tr><th scope="row"><code>isset($x)</code></th><td>existe y no es <code>null</code></td></tr>
+                  <tr><th scope="row"><code>empty($x)</code></th><td>no existe o es «falso»: <code>0</code>, <code>""</code>, <code>"0"</code>, <code>[]</code>, <code>null</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$n</span> = (<span class="tok-tipo">int</span>) <span class="tok-texto">"42abc"</span>;      <span class="tok-coment">// 42</span>
+<span class="tok-variable">$d</span> = (<span class="tok-tipo">float</span>) <span class="tok-texto">"3.5"</span>;      <span class="tok-coment">// 3.5</span>
+<span class="tok-variable">$s</span> = (<span class="tok-tipo">string</span>) <span class="tok-numero">42</span>;        <span class="tok-coment">// "42"</span>
+<span class="tok-variable">$b</span> = (<span class="tok-tipo">bool</span>) <span class="tok-texto">"0"</span>;         <span class="tok-coment">// false</span>
+<span class="tok-variable">$n</span> = <span class="tok-funcion">intval</span>(<span class="tok-texto">"12"</span>);       <span class="tok-coment">// 12, igual que (int)</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> los nombres de variables distinguen mayúsculas: <code>$nombre</code> y <code>$Nombre</code> son distintas. Los de funciones no.</p>
+          </div>
+        </section>
+        <!-- 2. Cadenas de texto -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Cadenas de texto</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$nombre</span> = <span class="tok-texto">"Ana"</span>;
+<span class="tok-clave">echo</span> <span class="tok-texto">'Hola, $nombre'</span>;          <span class="tok-coment">// Hola, $nombre  (simples: tal cual)</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"Hola, $nombre"</span>;          <span class="tok-coment">// Hola, Ana      (dobles: sustituye)</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"Total: {$pedido['total']} €"</span>;   <span class="tok-coment">// llaves para expresiones</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"Uno\tDos\n"</span>;             <span class="tok-coment">// \n y \t solo con comillas dobles</span>
+
+<span class="tok-clave">echo</span> <span class="tok-texto">'Hola, '</span> . <span class="tok-variable">$nombre</span> . <span class="tok-texto">'!'</span>; <span class="tok-coment">// el punto concatena</span>
+<span class="tok-variable">$texto</span> = <span class="tok-texto">"Hola"</span>;
+<span class="tok-variable">$texto</span> .= <span class="tok-texto">" mundo"</span>;            <span class="tok-coment">// añadir al final</span></code></pre></figure>
+            <h3>Heredoc: texto de varias líneas</h3>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$html</span> = <span class="tok-texto">&lt;&lt;&lt;HTML
+    &lt;p&gt;Hola, $nombre&lt;/p&gt;
+    &lt;p&gt;Tienes {$avisos} avisos&lt;/p&gt;
+    HTML</span>;
+
+<span class="tok-coment">// Nowdoc: con comillas simples no sustituye variables</span>
+<span class="tok-variable">$plantilla</span> = <span class="tok-texto">&lt;&lt;&lt;'TXT'
+    Esto sale tal cual: $nombre
+    TXT</span>;</code></pre></figure>
+            <h3>Funciones de cadena</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>strlen($s)</code></th><td>longitud en bytes</td></tr>
+                  <tr><th scope="row"><code>mb_strlen($s)</code></th><td>longitud en caracteres (con tildes y ñ)</td></tr>
+                  <tr><th scope="row"><code>strtoupper()  strtolower()</code></th><td>a mayúsculas / minúsculas</td></tr>
+                  <tr><th scope="row"><code>ucfirst()  ucwords()</code></th><td>primera letra / cada palabra en mayúscula</td></tr>
+                  <tr><th scope="row"><code>trim()  ltrim()  rtrim()</code></th><td>quita espacios de los extremos</td></tr>
+                  <tr><th scope="row"><code>str_contains($s, 'x')</code></th><td>¿contiene? (PHP 8)</td></tr>
+                  <tr><th scope="row"><code>str_starts_with()</code></th><td>¿empieza por? También <code>str_ends_with()</code></td></tr>
+                  <tr><th scope="row"><code>strpos($s, 'x')</code></th><td>posición o <code>false</code> si no está</td></tr>
+                  <tr><th scope="row"><code>substr($s, 0, 3)</code></th><td>trozo: desde 0, 3 caracteres</td></tr>
+                  <tr><th scope="row"><code>str_replace('a', 'b', $s)</code></th><td>reemplaza todas las apariciones</td></tr>
+                  <tr><th scope="row"><code>explode(',', $s)</code></th><td>texto a array</td></tr>
+                  <tr><th scope="row"><code>implode(', ', $arr)</code></th><td>array a texto</td></tr>
+                  <tr><th scope="row"><code>str_repeat('-', 20)</code></th><td>repetir</td></tr>
+                  <tr><th scope="row"><code>str_pad($s, 10, '0', STR_PAD_LEFT)</code></th><td>rellenar hasta una longitud</td></tr>
+                  <tr><th scope="row"><code>number_format($n, 2, ',', '.')</code></th><td><code>1.234,50</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>strlen("año")</code> devuelve 4, porque la ñ ocupa dos bytes en UTF-8. Para texto en español usa las funciones <code>mb_</code>: <code>mb_strlen</code>, <code>mb_substr</code>, <code>mb_strtoupper</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Operadores -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Operadores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>+  -  *  /  %</code></th><td><code>7 / 2</code> = 3.5 (no trunca) · <code>intdiv(7, 2)</code> = 3</td></tr>
+                  <tr><th scope="row"><code>**</code></th><td>potencia: <code>2 ** 10</code> = 1024</td></tr>
+                  <tr><th scope="row"><code>.  .=</code></th><td>concatenar texto</td></tr>
+                  <tr><th scope="row"><code>++  --</code></th><td>incrementa o decrementa en 1</td></tr>
+                  <tr><th scope="row"><code>+=  -=  *=  /=</code></th><td><code>$x += 3</code> equivale a <code>$x = $x + 3</code></td></tr>
+                  <tr><th scope="row"><code>==  !=</code></th><td>igual / distinto <strong>convirtiendo</strong> tipos</td></tr>
+                  <tr><th scope="row"><code>===  !==</code></th><td>igual / distinto en valor <strong>y</strong> tipo</td></tr>
+                  <tr><th scope="row"><code>&lt;  &lt;=  &gt;  &gt;=</code></th><td>comparaciones</td></tr>
+                  <tr><th scope="row"><code>&lt;=&gt;</code></th><td>nave espacial: -1, 0 o 1 (para ordenar)</td></tr>
+                  <tr><th scope="row"><code>&amp;&amp;  ||  !</code></th><td>y, o, no</td></tr>
+                  <tr><th scope="row"><code>??</code></th><td>valor por defecto si no existe o es <code>null</code></td></tr>
+                  <tr><th scope="row"><code>??=</code></th><td>asigna solo si no existe o es <code>null</code></td></tr>
+                  <tr><th scope="row"><code>cond ? a : b</code></th><td>ternario</td></tr>
+                  <tr><th scope="row"><code>a ?: b</code></th><td><code>a</code> si es «verdadero»; si no, <code>b</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-funcion">var_dump</span>(<span class="tok-texto">"1"</span> == <span class="tok-texto">"01"</span>);     <span class="tok-coment">// true: los compara como números</span>
+<span class="tok-funcion">var_dump</span>(<span class="tok-texto">"1"</span> === <span class="tok-texto">"01"</span>);    <span class="tok-coment">// false: son textos distintos</span>
+<span class="tok-funcion">var_dump</span>(<span class="tok-numero">0</span> == <span class="tok-texto">"a"</span>);        <span class="tok-coment">// false en PHP 8 (true en PHP 7)</span>
+<span class="tok-funcion">var_dump</span>(<span class="tok-numero">1</span> &lt;=&gt; <span class="tok-numero">2</span>);         <span class="tok-coment">// int(-1)</span>
+
+<span class="tok-variable">$usuario</span> = <span class="tok-variable">$_GET</span>[<span class="tok-texto">'usuario'</span>] ?? <span class="tok-texto">'anónimo'</span>;
+<span class="tok-variable">$config</span>[<span class="tok-texto">'tema'</span>] ??= <span class="tok-texto">'claro'</span>;
+<span class="tok-variable">$titulo</span> = <span class="tok-variable">$entrada</span> ?: <span class="tok-texto">'Sin título'</span>;
+<span class="tok-variable">$estado</span> = (<span class="tok-variable">$nota</span> &gt;= <span class="tok-numero">5</span>) ? <span class="tok-texto">'Aprobado'</span> : <span class="tok-texto">'Suspenso'</span>;</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> usa <code>===</code> por defecto. Con <code>==</code>, <code>strpos()</code> puede engañarte: si devuelve <code>0</code> (está al principio), <code>0 == false</code> es verdadero.</p>
+          </div>
+        </section>
+        <!-- 4. Mostrar y leer datos -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Mostrar y leer datos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-clave">echo</span> <span class="tok-texto">"Hola"</span>, <span class="tok-texto">" mundo"</span>, <span class="tok-tipo">PHP_EOL</span>;   <span class="tok-coment">// PHP_EOL: salto de línea</span>
+<span class="tok-clave">print</span> <span class="tok-texto">"Hola\n"</span>;                   <span class="tok-coment">// como echo, con un solo valor</span>
+<span class="tok-funcion">printf</span>(<span class="tok-texto">"%s tiene %d años y %.2f €\n"</span>, <span class="tok-variable">$nombre</span>, <span class="tok-variable">$edad</span>, <span class="tok-variable">$saldo</span>);
+<span class="tok-variable">$codigo</span> = <span class="tok-funcion">sprintf</span>(<span class="tok-texto">"%05d"</span>, <span class="tok-numero">42</span>);    <span class="tok-coment">// "00042": devuelve el texto</span>
+
+<span class="tok-funcion">print_r</span>(<span class="tok-variable">$lista</span>);                  <span class="tok-coment">// array legible</span>
+<span class="tok-funcion">var_dump</span>(<span class="tok-variable">$lista</span>);                 <span class="tok-coment">// con tipos: para depurar</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>%s</code></th><td>texto</td></tr>
+                  <tr><th scope="row"><code>%d</code></th><td>entero</td></tr>
+                  <tr><th scope="row"><code>%.2f</code></th><td>decimal con 2 decimales</td></tr>
+                  <tr><th scope="row"><code>%05d</code></th><td>entero con ceros a la izquierda hasta 5 cifras</td></tr>
+                  <tr><th scope="row"><code>%-10s</code></th><td>texto alineado a la izquierda en 10 caracteres</td></tr>
+                  <tr><th scope="row"><code>%%</code></th><td>el símbolo %</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Leer en la terminal</h3>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$nombre</span> = <span class="tok-funcion">readline</span>(<span class="tok-texto">"Nombre: "</span>);
+<span class="tok-variable">$edad</span> = (<span class="tok-tipo">int</span>) <span class="tok-funcion">readline</span>(<span class="tok-texto">"Edad: "</span>);
+<span class="tok-variable">$linea</span> = <span class="tok-funcion">trim</span>(<span class="tok-funcion">fgets</span>(<span class="tok-tipo">STDIN</span>));      <span class="tok-coment">// alternativa sin readline</span></code></pre></figure>
+            <h3>Leer en la web (formularios y URL)</h3>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$nombre</span> = <span class="tok-variable">$_POST</span>[<span class="tok-texto">'nombre'</span>] ?? <span class="tok-texto">''</span>;        <span class="tok-coment">// &lt;form method="post"&gt;</span>
+<span class="tok-variable">$pagina</span> = (<span class="tok-tipo">int</span>) (<span class="tok-variable">$_GET</span>[<span class="tok-texto">'pagina'</span>] ?? <span class="tok-numero">1</span>);  <span class="tok-coment">// lista.php?pagina=2</span>
+
+<span class="tok-clave">if</span> (<span class="tok-variable">$_SERVER</span>[<span class="tok-texto">'REQUEST_METHOD'</span>] === <span class="tok-texto">'POST'</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Hola, "</span> . <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$nombre</span>);
+}</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> nunca muestres lo que escribe el usuario sin pasarlo por <code>htmlspecialchars()</code>. Si no, puede inyectar HTML o JavaScript en tu página (XSS).</p>
+          </div>
+        </section>
+        <!-- 5. Condicionales -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Condicionales</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-clave">if</span> (<span class="tok-variable">$nota</span> &gt;= <span class="tok-numero">9</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Sobresaliente"</span>;
+} <span class="tok-clave">elseif</span> (<span class="tok-variable">$nota</span> &gt;= <span class="tok-numero">5</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Aprobado"</span>;
+} <span class="tok-clave">else</span> {
+    <span class="tok-clave">echo</span> <span class="tok-texto">"Suspenso"</span>;
+}</code></pre></figure>
+            <h3>match (PHP 8): devuelve un valor</h3>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$dias</span> = <span class="tok-clave">match</span> (<span class="tok-variable">$mes</span>) {
+    <span class="tok-numero">2</span> =&gt; <span class="tok-numero">28</span>,
+    <span class="tok-numero">4</span>, <span class="tok-numero">6</span>, <span class="tok-numero">9</span>, <span class="tok-numero">11</span> =&gt; <span class="tok-numero">30</span>,
+    <span class="tok-clave">default</span> =&gt; <span class="tok-numero">31</span>,
+};
+
+<span class="tok-variable">$calificacion</span> = <span class="tok-clave">match</span> (<span class="tok-clave">true</span>) {
+    <span class="tok-variable">$nota</span> &gt;= <span class="tok-numero">9</span> =&gt; <span class="tok-texto">'Sobresaliente'</span>,
+    <span class="tok-variable">$nota</span> &gt;= <span class="tok-numero">5</span> =&gt; <span class="tok-texto">'Aprobado'</span>,
+    <span class="tok-clave">default</span> =&gt; <span class="tok-texto">'Suspenso'</span>,
+};</code></pre></figure>
+            <p class="nota"><code>match</code> compara con <code>===</code>, no necesita <code>break</code> y lanza un error si ningún caso coincide y no hay <code>default</code>.</p>
+            <h3>switch clásico</h3>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-clave">switch</span> (<span class="tok-variable">$opcion</span>) {
+    <span class="tok-clave">case</span> <span class="tok-numero">1</span>:
+        <span class="tok-clave">echo</span> <span class="tok-texto">"Nuevo"</span>;
+        <span class="tok-clave">break</span>;
+    <span class="tok-clave">case</span> <span class="tok-numero">2</span>:
+    <span class="tok-clave">case</span> <span class="tok-numero">3</span>:                 <span class="tok-coment">// 2 y 3 hacen lo mismo</span>
+        <span class="tok-clave">echo</span> <span class="tok-texto">"Editar"</span>;
+        <span class="tok-clave">break</span>;
+    <span class="tok-clave">default</span>:
+        <span class="tok-clave">echo</span> <span class="tok-texto">"Opción no válida"</span>;
+}</code></pre></figure>
+            <h3>Sintaxis alternativa, para plantillas HTML</h3>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">if</span> (<span class="tok-variable">$logueado</span>): <span class="tok-etiqueta">?&gt;</span>
+    <span class="tok-etiqueta">&lt;p&gt;</span><span class="tok-tipo">Bienvenido</span>, <span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$usuario</span> <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/p&gt;</span>
+<span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">else</span>: <span class="tok-etiqueta">?&gt;</span>
+    <span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>=<span class="tok-texto">"login.php"</span>&gt;<span class="tok-tipo">Entrar</span><span class="tok-etiqueta">&lt;/a&gt;</span>
+<span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">endif</span>; <span class="tok-etiqueta">?&gt;</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Bucles -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Bucles</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-coment">// for: cuando sabes cuántas vueltas</span>
+<span class="tok-clave">for</span> (<span class="tok-variable">$i</span> = <span class="tok-numero">0</span>; <span class="tok-variable">$i</span> &lt; <span class="tok-numero">10</span>; <span class="tok-variable">$i</span>++) {
+    <span class="tok-clave">echo</span> <span class="tok-variable">$i</span>;
+}
+
+<span class="tok-coment">// foreach: recorrer un array</span>
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$nombres</span> <span class="tok-clave">as</span> <span class="tok-variable">$nombre</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-texto">"$nombre\n"</span>;
+}
+
+<span class="tok-coment">// foreach con clave y valor</span>
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$edades</span> <span class="tok-clave">as</span> <span class="tok-variable">$nombre</span> =&gt; <span class="tok-variable">$edad</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-texto">"$nombre tiene $edad años\n"</span>;
+}
+
+<span class="tok-coment">// while: mientras se cumpla</span>
+<span class="tok-clave">while</span> (<span class="tok-variable">$n</span> &gt; <span class="tok-numero">0</span>) {
+    <span class="tok-variable">$n</span>--;
+}
+
+<span class="tok-coment">// do-while: al menos una vez</span>
+<span class="tok-clave">do</span> {
+    <span class="tok-variable">$opcion</span> = (<span class="tok-tipo">int</span>) <span class="tok-funcion">readline</span>(<span class="tok-texto">"Opción: "</span>);
+} <span class="tok-clave">while</span> (<span class="tok-variable">$opcion</span> !== <span class="tok-numero">0</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>break</code></th><td>sale del bucle</td></tr>
+                  <tr><th scope="row"><code>continue</code></th><td>salta a la siguiente vuelta</td></tr>
+                  <tr><th scope="row"><code>break 2</code></th><td>sale de dos bucles anidados</td></tr>
+                  <tr><th scope="row"><code>foreach (...): endforeach;</code></th><td>sintaxis alternativa; también <code>endfor</code> y <code>endwhile</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-coment">// modificar los elementos: por referencia con &amp;</span>
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$precios</span> <span class="tok-clave">as</span> &amp;<span class="tok-variable">$precio</span>) {
+    <span class="tok-variable">$precio</span> *= <span class="tok-numero">1.21</span>;
+}
+<span class="tok-clave">unset</span>(<span class="tok-variable">$precio</span>);   <span class="tok-coment">// rompe la referencia al terminar</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> si no haces <code>unset()</code> después de un <code>foreach</code> por referencia, la variable sigue apuntando al último elemento y un bucle posterior puede machacarlo.</p>
+          </div>
+        </section>
+        <!-- 7. Arrays -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Arrays</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-coment">// indexado: las posiciones empiezan en 0</span>
+<span class="tok-variable">$frutas</span> = [<span class="tok-texto">'manzana'</span>, <span class="tok-texto">'pera'</span>, <span class="tok-texto">'uva'</span>];
+<span class="tok-variable">$frutas</span>[] = <span class="tok-texto">'kiwi'</span>;               <span class="tok-coment">// añade al final</span>
+<span class="tok-clave">echo</span> <span class="tok-variable">$frutas</span>[<span class="tok-numero">0</span>];                  <span class="tok-coment">// manzana</span>
+<span class="tok-clave">echo</span> <span class="tok-funcion">count</span>(<span class="tok-variable">$frutas</span>);              <span class="tok-coment">// 4</span>
+
+<span class="tok-coment">// asociativo: clave =&gt; valor</span>
+<span class="tok-variable">$persona</span> = [
+    <span class="tok-texto">'nombre'</span> =&gt; <span class="tok-texto">'Ana'</span>,
+    <span class="tok-texto">'edad'</span> =&gt; <span class="tok-numero">20</span>,
+];
+<span class="tok-variable">$persona</span>[<span class="tok-texto">'ciudad'</span>] = <span class="tok-texto">'Sevilla'</span>;   <span class="tok-coment">// añade o cambia</span>
+<span class="tok-clave">unset</span>(<span class="tok-variable">$persona</span>[<span class="tok-texto">'edad'</span>]);          <span class="tok-coment">// elimina</span>
+
+<span class="tok-coment">// multidimensional</span>
+<span class="tok-variable">$tabla</span> = [[<span class="tok-numero">1</span>, <span class="tok-numero">2</span>], [<span class="tok-numero">3</span>, <span class="tok-numero">4</span>]];
+<span class="tok-clave">echo</span> <span class="tok-variable">$tabla</span>[<span class="tok-numero">1</span>][<span class="tok-numero">0</span>];                <span class="tok-coment">// 3</span>
+
+<span class="tok-coment">// desestructurar y unir</span>
+[<span class="tok-variable">$a</span>, <span class="tok-variable">$b</span>] = [<span class="tok-numero">10</span>, <span class="tok-numero">20</span>];
+[<span class="tok-texto">'nombre'</span> =&gt; <span class="tok-variable">$n</span>] = <span class="tok-variable">$persona</span>;
+<span class="tok-variable">$todas</span> = [...<span class="tok-variable">$frutas</span>, <span class="tok-texto">'melón'</span>];</code></pre></figure>
+            <h3>Funciones de array</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>count($a)</code></th><td>número de elementos</td></tr>
+                  <tr><th scope="row"><code>in_array($v, $a)</code></th><td>¿contiene el valor?</td></tr>
+                  <tr><th scope="row"><code>array_search($v, $a)</code></th><td>clave del valor, o <code>false</code></td></tr>
+                  <tr><th scope="row"><code>array_key_exists($k, $a)</code></th><td>¿existe la clave?</td></tr>
+                  <tr><th scope="row"><code>array_keys()  array_values()</code></th><td>solo las claves / solo los valores</td></tr>
+                  <tr><th scope="row"><code>array_push()  array_pop()</code></th><td>añadir / sacar por el final</td></tr>
+                  <tr><th scope="row"><code>array_unshift()  array_shift()</code></th><td>añadir / sacar por el principio</td></tr>
+                  <tr><th scope="row"><code>array_merge($a, $b)</code></th><td>unir arrays</td></tr>
+                  <tr><th scope="row"><code>array_slice($a, 1, 2)</code></th><td>trozo: desde 1, 2 elementos</td></tr>
+                  <tr><th scope="row"><code>sort()  rsort()</code></th><td>ordena por valor y renumera las claves</td></tr>
+                  <tr><th scope="row"><code>asort()  arsort()</code></th><td>ordena por valor manteniendo las claves</td></tr>
+                  <tr><th scope="row"><code>ksort()  krsort()</code></th><td>ordena por clave</td></tr>
+                  <tr><th scope="row"><code>usort($a, $fn)</code></th><td>ordena con tu propia comparación</td></tr>
+                  <tr><th scope="row"><code>array_sum()  max()  min()</code></th><td>suma, máximo y mínimo</td></tr>
+                  <tr><th scope="row"><code>array_unique()</code></th><td>quita duplicados</td></tr>
+                  <tr><th scope="row"><code>array_reverse()</code></th><td>invierte el orden</td></tr>
+                  <tr><th scope="row"><code>range(1, 10)</code></th><td><code>[1, 2, ..., 10]</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$dobles</span> = <span class="tok-funcion">array_map</span>(<span class="tok-clave">fn</span>(<span class="tok-variable">$n</span>) =&gt; <span class="tok-variable">$n</span> * <span class="tok-numero">2</span>, <span class="tok-variable">$numeros</span>);
+<span class="tok-variable">$pares</span> = <span class="tok-funcion">array_filter</span>(<span class="tok-variable">$numeros</span>, <span class="tok-clave">fn</span>(<span class="tok-variable">$n</span>) =&gt; <span class="tok-variable">$n</span> % <span class="tok-numero">2</span> === <span class="tok-numero">0</span>);
+<span class="tok-funcion">usort</span>(<span class="tok-variable">$personas</span>, <span class="tok-clave">fn</span>(<span class="tok-variable">$a</span>, <span class="tok-variable">$b</span>) =&gt; <span class="tok-variable">$a</span>[<span class="tok-texto">'edad'</span>] &lt;=&gt; <span class="tok-variable">$b</span>[<span class="tok-texto">'edad'</span>]);</code></pre></figure>
+            <p class="nota">Las funciones de ordenación modifican el array original y devuelven <code>true</code>: no hagas <code>$a = sort($a)</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Funciones -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Funciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-clave">function</span> <span class="tok-funcion">saludar</span>(<span class="tok-tipo">string</span> <span class="tok-variable">$nombre</span>, <span class="tok-tipo">string</span> <span class="tok-variable">$saludo</span> = <span class="tok-texto">'Hola'</span>): <span class="tok-tipo">string</span> {
+    <span class="tok-clave">return</span> <span class="tok-texto">"$saludo, $nombre"</span>;
+}
+
+<span class="tok-clave">echo</span> <span class="tok-funcion">saludar</span>(<span class="tok-texto">'Ana'</span>);                               <span class="tok-coment">// Hola, Ana</span>
+<span class="tok-clave">echo</span> <span class="tok-funcion">saludar</span>(saludo: <span class="tok-texto">'Buenas'</span>, nombre: <span class="tok-texto">'Luis'</span>);    <span class="tok-coment">// argumentos con nombre</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>?int</code></th><td>puede ser <code>int</code> o <code>null</code></td></tr>
+                  <tr><th scope="row"><code>int|string</code></th><td>tipo unión: uno u otro</td></tr>
+                  <tr><th scope="row"><code>: void</code></th><td>no devuelve nada</td></tr>
+                  <tr><th scope="row"><code>mixed</code></th><td>cualquier tipo</td></tr>
+                  <tr><th scope="row"><code>int ...$nums</code></th><td>número variable de argumentos (llegan como array)</td></tr>
+                  <tr><th scope="row"><code>int &amp;$n</code></th><td>por referencia: la función puede cambiar la variable</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-clave">function</span> <span class="tok-funcion">sumar</span>(<span class="tok-tipo">int</span> ...<span class="tok-variable">$numeros</span>): <span class="tok-tipo">int</span> {
+    <span class="tok-clave">return</span> <span class="tok-funcion">array_sum</span>(<span class="tok-variable">$numeros</span>);
+}
+<span class="tok-clave">echo</span> <span class="tok-funcion">sumar</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>);                 <span class="tok-coment">// 6</span>
+
+<span class="tok-clave">function</span> <span class="tok-funcion">incrementar</span>(<span class="tok-tipo">int</span> &amp;<span class="tok-variable">$n</span>): <span class="tok-tipo">void</span> {
+    <span class="tok-variable">$n</span>++;
+}</code></pre></figure>
+            <h3>Funciones anónimas y flecha</h3>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$doble</span> = <span class="tok-clave">function</span> (<span class="tok-variable">$x</span>) {
+    <span class="tok-clave">return</span> <span class="tok-variable">$x</span> * <span class="tok-numero">2</span>;
+};
+
+<span class="tok-variable">$factor</span> = <span class="tok-numero">3</span>;
+<span class="tok-variable">$triple</span> = <span class="tok-clave">function</span> (<span class="tok-variable">$x</span>) <span class="tok-clave">use</span> (<span class="tok-variable">$factor</span>) {   <span class="tok-coment">// use: trae variables de fuera</span>
+    <span class="tok-clave">return</span> <span class="tok-variable">$x</span> * <span class="tok-variable">$factor</span>;
+};
+
+<span class="tok-variable">$cuadruple</span> = <span class="tok-clave">fn</span>(<span class="tok-variable">$x</span>) =&gt; <span class="tok-variable">$x</span> * <span class="tok-numero">4</span>;           <span class="tok-coment">// flecha: ve las de fuera sola</span>
+<span class="tok-clave">echo</span> <span class="tok-variable">$cuadruple</span>(<span class="tok-numero">5</span>);                      <span class="tok-coment">// 20</span></code></pre></figure>
+            <h3>Ámbito de las variables</h3>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-variable">$total</span> = <span class="tok-numero">0</span>;
+
+<span class="tok-clave">function</span> <span class="tok-funcion">anadir</span>(<span class="tok-tipo">int</span> <span class="tok-variable">$total</span>, <span class="tok-tipo">int</span> <span class="tok-variable">$cantidad</span>): <span class="tok-tipo">int</span> {
+    <span class="tok-coment">// aquí dentro no se ve el $total de fuera: se pasa como parámetro</span>
+    <span class="tok-clave">return</span> <span class="tok-variable">$total</span> + <span class="tok-variable">$cantidad</span>;
+}
+
+<span class="tok-variable">$total</span> = <span class="tok-funcion">anadir</span>(<span class="tok-variable">$total</span>, <span class="tok-numero">5</span>);</code></pre></figure>
+            <p class="nota">Pon <code>declare(strict_types=1);</code> en la primera línea del fichero para que PHP no convierta tipos al llamar a funciones: <code>sumar("3")</code> dará error en vez de aceptar el texto.</p>
+          </div>
+        </section>
+        <!-- 9. Incluir ficheros -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Incluir ficheros</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>include</code></th><td>si no encuentra el fichero, avisa y sigue</td></tr>
+                  <tr><th scope="row"><code>require</code></th><td>si no lo encuentra, error y se para</td></tr>
+                  <tr><th scope="row"><code>include_once  require_once</code></th><td>no lo vuelve a cargar si ya se cargó</td></tr>
+                  <tr><th scope="row"><code>__DIR__</code></th><td>carpeta del fichero actual</td></tr>
+                  <tr><th scope="row"><code>__FILE__  __LINE__</code></th><td>ruta del fichero y línea actual</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-clave">require_once</span> <span class="tok-tipo">__DIR__</span> . <span class="tok-texto">'/funciones.php'</span>;
+<span class="tok-clave">include</span> <span class="tok-tipo">__DIR__</span> . <span class="tok-texto">'/plantillas/cabecera.php'</span>;
+
+<span class="tok-coment">// un fichero puede devolver un valor con return</span>
+<span class="tok-variable">$config</span> = <span class="tok-clave">require</span> <span class="tok-tipo">__DIR__</span> . <span class="tok-texto">'/config.php'</span>;</code></pre></figure>
+            <p class="nota">Usa rutas con <code>__DIR__</code>: una ruta relativa como <code>'config.php'</code> depende de desde dónde se ejecute el script.</p>
+          </div>
+        </section>
+        <!-- 10. Despistes habituales -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>nombre = 1;</code></th><td>falta el <code>$</code>: todas las variables lo llevan</td></tr>
+                  <tr><th scope="row"><code>"a" + "b"</code></th><td>el <code>+</code> suma; para unir texto es <code>.</code></td></tr>
+                  <tr><th scope="row"><code>'Hola $x'</code></th><td>las comillas simples no sustituyen variables</td></tr>
+                  <tr><th scope="row"><code>if ($x = 5)</code></th><td>asigna en vez de comparar: es <code>==</code> o <code>===</code></td></tr>
+                  <tr><th scope="row"><code>$a['clave']</code></th><td>si no existe, da un aviso: usa <code>$a['clave'] ?? valor</code></td></tr>
+                  <tr><th scope="row"><code>echo $array;</code></th><td>muestra «Array»: usa <code>print_r</code> o <code>var_dump</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Headers already sent:</strong> <code>header()</code>, <code>setcookie()</code> y <code>session_start()</code> tienen que ir antes de enviar cualquier salida. Un espacio o una línea en blanco antes de <code>&lt;?php</code>, o después de un <code>?&gt;</code> final, ya cuenta como salida.</p>
+            <p class="nota">Para ver los errores mientras desarrollas: <code>ini_set('display_errors', '1');</code> y <code>error_reporting(E_ALL);</code> al principio del script.</p>
+          </div>
+        </section>
+      </div>
+      <footer class="pie">Documentación oficial en español: <a href="https://www.php.net/manual/es/">php.net/manual/es</a>. Desde la terminal, <code>php --rf nombre_funcion</code> muestra los parámetros de una función.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
