@@ -23,11 +23,25 @@
     </header>
     <main class="wrap">
       <p class="intro">Cada chuleta tiene su índice de secciones, ejemplos que se pueden copiar con un clic y una versión pensada para imprimir. Funcionan sin conexión: basta con abrir los ficheros.</p>
-      <!-- Tema: Sistemas y redes -->
+      <!-- Tema: Sistemas -->
       <section class="grupo">
-        <h2><a href="sistemas/index.html">Sistemas y redes</a></h2>
-        <p class="desc-tema">La terminal de Linux y el análisis de una red.</p>
-        <div class="fichas"><a class="ficha" href="sistemas/linux.html" style="--color-tema: #A80030"><span class="nombre">Linux</span><span class="desc">Qué es Linux, el núcleo y las distribuciones, y las grandes familias con sus gestores de paquetes.</span></a><a class="ficha" href="sistemas/terminal-linux.html" style="--color-tema: #A80030"><span class="nombre">Terminal Linux</span><span class="desc">Comandos más usados en sistemas basados en Debian, como Ubuntu y Kali.</span></a><a class="ficha" href="sistemas/bash-script.html" style="--color-tema: #A80030"><span class="nombre">Shell script</span><span class="desc">Scripts de Bash: variables, condiciones, bucles, arrays y funciones.</span></a><a class="ficha" href="sistemas/servicios.html" style="--color-tema: #A80030"><span class="nombre">Servicios y demonios</span><span class="desc">systemd: arrancar y habilitar servicios, poner un programa como servicio, logs y puertos.</span></a><a class="ficha" href="sistemas/tareas.html" style="--color-tema: #A80030"><span class="nombre">Tareas programadas</span><span class="desc">Programar tareas con cron, at y los timers de systemd.</span></a><a class="ficha" href="sistemas/red-linux.html" style="--color-tema: #A80030"><span class="nombre">Configurar la red</span><span class="desc">IP, rutas y DNS con el comando ip, Netplan y NetworkManager.</span></a><a class="ficha" href="sistemas/red-clasica.html" style="--color-tema: #A80030"><span class="nombre">Red: método clásico</span><span class="desc">ifconfig, route y /etc/network/interfaces con ifupdown.</span></a></div>
+        <h2><a href="sistemas/index.html">Sistemas</a></h2>
+        <p class="desc-tema">El sistema operativo Linux y su administración.</p>
+        <h3 class="lenguaje">El sistema</h3>
+      <div class="fichas"><a class="ficha" href="sistemas/linux.html" style="--color-tema: #A80030"><span class="nombre">Linux</span><span class="desc">Qué es Linux, el núcleo y las distribuciones, y las grandes familias con sus gestores de paquetes.</span></a><a class="ficha" href="sistemas/terminal-linux.html" style="--color-tema: #A80030"><span class="nombre">Terminal Linux</span><span class="desc">Comandos más usados en sistemas basados en Debian, como Ubuntu y Kali.</span></a></div>
+      <h3 class="lenguaje">Editor</h3>
+      <div class="fichas"><a class="ficha" href="sistemas/vim.html" style="--color-tema: #A80030"><span class="nombre">Vim</span><span class="desc">El editor modal de la terminal: modos, moverse, editar, buscar y configurar.</span></a></div>
+      <h3 class="lenguaje">Administración</h3>
+      <div class="fichas"><a class="ficha" href="sistemas/bash-script.html" style="--color-tema: #A80030"><span class="nombre">Shell script</span><span class="desc">Scripts de Bash: variables, condiciones, bucles, arrays y funciones.</span></a><a class="ficha" href="sistemas/servicios.html" style="--color-tema: #A80030"><span class="nombre">Servicios y demonios</span><span class="desc">systemd: arrancar y habilitar servicios, poner un programa como servicio, logs y puertos.</span></a><a class="ficha" href="sistemas/tareas.html" style="--color-tema: #A80030"><span class="nombre">Tareas programadas</span><span class="desc">Programar tareas con cron, at y los timers de systemd.</span></a></div>
+      </section>
+      <!-- Tema: Redes -->
+      <section class="grupo">
+        <h2><a href="redes/index.html">Redes</a></h2>
+        <p class="desc-tema">Los modelos de red (OSI y TCP/IP) y la configuración en Linux.</p>
+        <h3 class="lenguaje">Teoría</h3>
+      <div class="fichas"><a class="ficha" href="redes/osi.html" style="--color-tema: #1565C0"><span class="nombre">Modelo OSI</span><span class="desc">El modelo de referencia de 7 capas: función y protocolos de cada una.</span></a><a class="ficha" href="redes/tcp-ip.html" style="--color-tema: #1565C0"><span class="nombre">Modelo TCP/IP</span><span class="desc">El modelo de internet: 4 capas, protocolos, puertos y el viaje de un paquete.</span></a></div>
+      <h3 class="lenguaje">Configuración en Linux</h3>
+      <div class="fichas"><a class="ficha" href="redes/red-linux.html" style="--color-tema: #1565C0"><span class="nombre">Configurar la red</span><span class="desc">IP, rutas y DNS con el comando ip, Netplan y NetworkManager.</span></a><a class="ficha" href="redes/red-clasica.html" style="--color-tema: #1565C0"><span class="nombre">Red: método clásico</span><span class="desc">ifconfig, route y /etc/network/interfaces con ifupdown.</span></a></div>
       </section>
       <!-- Tema: Hacking -->
       <section class="grupo">
@@ -38,8 +52,8 @@
       <!-- Tema: Seguridad -->
       <section class="grupo">
         <h2><a href="seguridad/index.html">Seguridad</a></h2>
-        <p class="desc-tema">El lado defensivo: cortafuegos, cifrado y red privada.</p>
-        <div class="fichas"><a class="ficha" href="seguridad/iptables.html" style="--color-tema: #0B6E99"><span class="nombre">iptables</span><span class="desc">El cortafuegos clásico de Linux: tablas, cadenas y reglas.</span></a><a class="ficha" href="seguridad/nftables.html" style="--color-tema: #0B6E99"><span class="nombre">nftables</span><span class="desc">El cortafuegos moderno de Linux, sucesor de iptables.</span></a></div>
+        <p class="desc-tema">El lado defensivo: fundamentos, cortafuegos y (pronto) cifrado y VPN.</p>
+        <div class="fichas"><a class="ficha" href="seguridad/introduccion.html" style="--color-tema: #0B6E99"><span class="nombre">Introducción</span><span class="desc">Tipos de seguridad, los pilares CIDAN y las técnicas de cada uno.</span></a><a class="ficha" href="seguridad/cortafuegos.html" style="--color-tema: #0B6E99"><span class="nombre">Cortafuegos</span><span class="desc">Qué es un cortafuegos, generaciones, tipos y para qué sirve cada uno.</span></a><a class="ficha" href="seguridad/iptables.html" style="--color-tema: #0B6E99"><span class="nombre">iptables</span><span class="desc">El cortafuegos clásico de Linux: tablas, cadenas y reglas.</span></a><a class="ficha" href="seguridad/nftables.html" style="--color-tema: #0B6E99"><span class="nombre">nftables</span><span class="desc">El cortafuegos moderno de Linux, sucesor de iptables.</span></a></div>
       </section>
       <!-- Tema: Control de versiones -->
       <section class="grupo">
