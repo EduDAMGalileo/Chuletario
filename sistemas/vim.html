@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vim · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><span>Vim</span></nav>
+          <h1>Vim</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El editor modal de la terminal. Cuesta empezar, pero una vez dentro se edita a la velocidad del pensamiento. Lo esencial para sobrevivir y luego volar.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas">
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Terminal Linux</a><a href="vim.html" aria-current="page">Vim</a><a href="bash-script.html">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Por qué es modal</a><a href="#s2"><b>2</b>Entrar y salir</a><a href="#s3"><b>3</b>Los modos</a><a href="#s4"><b>4</b>Moverse</a><a href="#s5"><b>5</b>Insertar texto</a><a href="#s6"><b>6</b>Borrar, copiar y pegar</a><a href="#s7"><b>7</b>Operador + movimiento</a><a href="#s8"><b>8</b>Buscar y reemplazar</a><a href="#s9"><b>9</b>Modo visual</a><a href="#s10"><b>10</b>Varios ficheros</a><a href="#s11"><b>11</b>Configuración</a><a href="#s12"><b>12</b>Supervivencia</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Lo primero: cómo salir</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Esc</code> luego <code>:q!</code></th><td>salir SIN guardar (la vía de escape)</td></tr>
+                  <tr><th scope="row"><code>:wq</code> o <code>ZZ</code></th><td>guardar y salir</td></tr>
+                  <tr><th scope="row"><code>:w</code></th><td>guardar sin salir</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si te pierdes, pulsa <code>Esc</code> un par de veces: vuelves al modo normal, desde donde se controla todo.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Aprender jugando</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">vimtutor</span>        <span class="tok-coment"># tutorial interactivo de 30 min (¡empieza aquí!)</span>
+<span class="tok-clave">vim</span> fichero     <span class="tok-coment"># abrir un fichero</span>
+<span class="tok-clave">vim</span>             <span class="tok-coment"># abrir vacío</span></code></pre></figure>
+            <p class="nota"><code>vimtutor</code> viene con Vim y es la mejor forma de coger soltura. En muchos sistemas <code>vi</code> es en realidad Vim.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Por qué es modal -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Por qué es modal</h2>
+          <div class="cuerpo">
+            <p class="txt">En un editor normal, las teclas escriben. En Vim, las teclas <strong>son órdenes</strong> salvo cuando estás en modo inserción. Eso permite editar sin tocar el ratón ni las flechas: mover, borrar y cambiar texto con pulsaciones cortas.</p>
+            <p class="txt">La curva de entrada es empinada porque hay que cambiar de mentalidad: <strong>primero se navega y se dan órdenes; escribir es solo un modo más</strong>. Una vez interiorizado, es rapidísimo, y está en cualquier servidor Linux por defecto.</p>
+            <p class="aviso"><strong>Regla de oro:</strong> pasa el mayor tiempo posible en modo normal. Entra en inserción, escribe lo justo y vuelve a <code>Esc</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Entrar y salir -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Entrar y salir</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>vim fichero</code></th><td>abrir (o crear) un fichero</td></tr>
+                  <tr><th scope="row"><code>:w</code></th><td>guardar</td></tr>
+                  <tr><th scope="row"><code>:w otro.txt</code></th><td>guardar con otro nombre</td></tr>
+                  <tr><th scope="row"><code>:q</code></th><td>salir (si no hay cambios)</td></tr>
+                  <tr><th scope="row"><code>:q!</code></th><td>salir descartando cambios</td></tr>
+                  <tr><th scope="row"><code>:wq</code> · <code>:x</code> · <code>ZZ</code></th><td>guardar y salir</td></tr>
+                  <tr><th scope="row"><code>:wa</code> · <code>:qa</code></th><td>guardar / salir de todos los ficheros abiertos</td></tr>
+                  <tr><th scope="row"><code>:w !sudo tee %</code></th><td>guardar como root un fichero abierto sin permisos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las órdenes que empiezan por <code>:</code> son del modo comando: se escriben abajo y se confirman con <code>Enter</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Los modos -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Los modos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Normal</th><td>el de partida: navegar y dar órdenes. Se vuelve con <code>Esc</code></td></tr>
+                  <tr><th scope="row">Inserción</th><td>escribir texto. Se entra con <code>i</code>, <code>a</code>, <code>o</code>...</td></tr>
+                  <tr><th scope="row">Visual</th><td>seleccionar texto. Se entra con <code>v</code>, <code>V</code>, <code>Ctrl+v</code></td></tr>
+                  <tr><th scope="row">Comando</th><td>órdenes de línea (<code>:</code>) y búsquedas (<code>/</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>        i a o        :  /
+NORMAL ─────────▶ INSERCIÓN / COMANDO
+       ◀─────────
+          Esc</code></pre></figure>
+            <p class="nota">Abajo del todo, Vim indica el modo: <code>-- INSERT --</code>, <code>-- VISUAL --</code>. Si no pone nada, estás en normal.</p>
+          </div>
+        </section>
+        <!-- 4. Moverse -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Moverse (modo normal)</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>h j k l</code></th><td>izquierda, abajo, arriba, derecha</td></tr>
+                  <tr><th scope="row"><code>w  b</code></th><td>palabra siguiente / anterior</td></tr>
+                  <tr><th scope="row"><code>e</code></th><td>final de la palabra</td></tr>
+                  <tr><th scope="row"><code>0  ^  $</code></th><td>inicio de línea / primer carácter / final de línea</td></tr>
+                  <tr><th scope="row"><code>gg  G</code></th><td>principio / final del fichero</td></tr>
+                  <tr><th scope="row"><code>42G</code> · <code>:42</code></th><td>ir a la línea 42</td></tr>
+                  <tr><th scope="row"><code>Ctrl+d  Ctrl+u</code></th><td>media página abajo / arriba</td></tr>
+                  <tr><th scope="row"><code>{  }</code></th><td>párrafo anterior / siguiente</td></tr>
+                  <tr><th scope="row"><code>%</code></th><td>salta al paréntesis o llave pareja</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Casi todo se puede multiplicar con un número delante: <code>5j</code> baja 5 líneas, <code>3w</code> avanza 3 palabras.</p>
+          </div>
+        </section>
+        <!-- 5. Insertar texto -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Insertar texto</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>i  a</code></th><td>insertar antes / después del cursor</td></tr>
+                  <tr><th scope="row"><code>I  A</code></th><td>al inicio / al final de la línea</td></tr>
+                  <tr><th scope="row"><code>o  O</code></th><td>abrir línea nueva debajo / encima</td></tr>
+                  <tr><th scope="row"><code>Esc</code></th><td>volver a modo normal</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Estas teclas entran en modo inserción en un punto distinto. Elige la que te deje el cursor donde vas a escribir y ahorrarás movimientos.</p>
+          </div>
+        </section>
+        <!-- 6. Borrar, copiar y pegar -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Borrar, copiar y pegar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>x</code></th><td>borrar el carácter bajo el cursor</td></tr>
+                  <tr><th scope="row"><code>dd</code></th><td>borrar (cortar) la línea entera</td></tr>
+                  <tr><th scope="row"><code>dw</code> · <code>d$</code></th><td>borrar hasta fin de palabra / de línea</td></tr>
+                  <tr><th scope="row"><code>yy</code></th><td>copiar (yank) la línea</td></tr>
+                  <tr><th scope="row"><code>yw</code></th><td>copiar una palabra</td></tr>
+                  <tr><th scope="row"><code>p  P</code></th><td>pegar después / antes del cursor</td></tr>
+                  <tr><th scope="row"><code>r</code></th><td>reemplazar un carácter</td></tr>
+                  <tr><th scope="row"><code>cc  cw</code></th><td>cambiar línea / palabra (borra y entra en inserción)</td></tr>
+                  <tr><th scope="row"><code>u</code> · <code>Ctrl+r</code></th><td>deshacer / rehacer</td></tr>
+                  <tr><th scope="row"><code>.</code></th><td>repetir la última edición</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En Vim, borrar (<code>d</code>) y copiar (<code>y</code>) guardan lo mismo en el «registro»: se pega con <code>p</code>. Cortar y copiar son la misma idea.</p>
+          </div>
+        </section>
+        <!-- 7. Operador + movimiento -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Operador + movimiento</h2>
+          <div class="cuerpo">
+            <p class="txt">La clave de Vim: se combina un <strong>operador</strong> (qué hacer) con un <strong>movimiento</strong> (dónde). Aprendes pocas piezas y las mezclas.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Operadores</th><td><code>d</code> borrar · <code>c</code> cambiar · <code>y</code> copiar · <code>&gt;</code> indentar</td></tr>
+                  <tr><th scope="row">Movimientos</th><td><code>w</code> palabra · <code>$</code> fin de línea · <code>G</code> fin · <code>}</code> párrafo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>dw</code></th><td>borrar una palabra</td></tr>
+                  <tr><th scope="row"><code>d3w</code></th><td>borrar tres palabras</td></tr>
+                  <tr><th scope="row"><code>ci"</code></th><td>cambiar el texto entre comillas</td></tr>
+                  <tr><th scope="row"><code>di(</code></th><td>borrar dentro de los paréntesis</td></tr>
+                  <tr><th scope="row"><code>dG</code></th><td>borrar hasta el final del fichero</td></tr>
+                  <tr><th scope="row"><code>yi{</code></th><td>copiar dentro de las llaves</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>i</code> = «dentro de» (<em>inner</em>) y <code>a</code> = «alrededor de». Así, <code>ci"</code> cambia lo de dentro de las comillas y <code>ca"</code> incluye las comillas.</p>
+          </div>
+        </section>
+        <!-- 8. Buscar y reemplazar -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Buscar y reemplazar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/texto</code></th><td>buscar hacia delante</td></tr>
+                  <tr><th scope="row"><code>?texto</code></th><td>buscar hacia atrás</td></tr>
+                  <tr><th scope="row"><code>n  N</code></th><td>siguiente / anterior coincidencia</td></tr>
+                  <tr><th scope="row"><code>*</code></th><td>buscar la palabra bajo el cursor</td></tr>
+                  <tr><th scope="row"><code>:noh</code></th><td>quitar el resaltado de la búsqueda</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Sustituir (:s)</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>:s/viejo/nuevo/</code></th><td>en la línea actual, la primera</td></tr>
+                  <tr><th scope="row"><code>:s/viejo/nuevo/g</code></th><td>en la línea actual, todas</td></tr>
+                  <tr><th scope="row"><code>:%s/viejo/nuevo/g</code></th><td>en todo el fichero</td></tr>
+                  <tr><th scope="row"><code>:%s/viejo/nuevo/gc</code></th><td>en todo, pidiendo confirmación</td></tr>
+                  <tr><th scope="row"><code>:10,20s/.../.../g</code></th><td>solo entre las líneas 10 y 20</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>%</code> significa «todo el fichero» y <code>g</code>, «todas las de la línea». Sin <code>g</code>, solo cambia la primera de cada línea.</p>
+          </div>
+        </section>
+        <!-- 9. Modo visual -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Modo visual</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>v</code></th><td>selección por caracteres</td></tr>
+                  <tr><th scope="row"><code>V</code></th><td>selección por líneas</td></tr>
+                  <tr><th scope="row"><code>Ctrl+v</code></th><td>selección en bloque (columnas)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">Seleccionas moviéndote y luego aplicas un operador sobre la selección:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>d</code></th><td>borrar lo seleccionado</td></tr>
+                  <tr><th scope="row"><code>y</code></th><td>copiarlo</td></tr>
+                  <tr><th scope="row"><code>&gt;  &lt;</code></th><td>indentar / desindentar</td></tr>
+                  <tr><th scope="row"><code>u  U</code></th><td>a minúsculas / mayúsculas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El modo bloque (<code>Ctrl+v</code>) es ideal para editar varias líneas a la vez: selecciona una columna, pulsa <code>I</code>, escribe y <code>Esc</code>, y se aplica a todas.</p>
+          </div>
+        </section>
+        <!-- 10. Varios ficheros -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Varios ficheros</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>:e fichero</code></th><td>abrir otro fichero</td></tr>
+                  <tr><th scope="row"><code>:sp</code> · <code>:vsp</code></th><td>dividir la ventana horizontal / vertical</td></tr>
+                  <tr><th scope="row"><code>Ctrl+w</code> + <code>h j k l</code></th><td>saltar entre ventanas</td></tr>
+                  <tr><th scope="row"><code>:tabnew</code></th><td>pestaña nueva</td></tr>
+                  <tr><th scope="row"><code>gt  gT</code></th><td>pestaña siguiente / anterior</td></tr>
+                  <tr><th scope="row"><code>:ls</code></th><td>listar los buffers abiertos</td></tr>
+                  <tr><th scope="row"><code>:bn  :bp</code></th><td>buffer siguiente / anterior</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Un <strong>buffer</strong> es un fichero cargado en memoria; las <strong>ventanas</strong> y <strong>pestañas</strong> son vistas de esos buffers.</p>
+          </div>
+        </section>
+        <!-- 11. Configuración -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Configuración</h2>
+          <div class="cuerpo">
+            <p class="txt">Los ajustes van en <code>~/.vimrc</code>. Un punto de partida razonable:</p>
+            <figure class="codigo"><figcaption>~/.vimrc</figcaption><pre data-lang="vim"><code>syntax on              " resaltado de sintaxis
+set number             " números de línea
+set relativenumber     " numeración relativa (para los saltos)
+set tabstop=4          " ancho de tabulación
+set shiftwidth=4       " ancho de la indentación
+set expandtab          " tabuladores como espacios
+set incsearch          " buscar mientras escribes
+set ignorecase         " búsqueda sin distinguir mayúsculas
+set hlsearch           " resaltar las coincidencias
+set mouse=a            " permitir el ratón</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>:set number</code></th><td>activar una opción sobre la marcha</td></tr>
+                  <tr><th scope="row"><code>:set nonumber</code></th><td>desactivarla</td></tr>
+                  <tr><th scope="row"><code>:help opción</code></th><td>la ayuda integrada, enorme y muy buena</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 12. Supervivencia -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Supervivencia</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Todo se lía</th><td>pulsa <code>Esc</code> y vuelves a modo normal</td></tr>
+                  <tr><th scope="row">No puedo escribir</th><td>estás en normal: pulsa <code>i</code> para insertar</td></tr>
+                  <tr><th scope="row">No me deja salir</th><td>hay cambios: <code>:wq</code> para guardar o <code>:q!</code> para descartar</td></tr>
+                  <tr><th scope="row">He roto algo</th><td><code>u</code> deshace; mantenlo pulsado para retroceder</td></tr>
+                  <tr><th scope="row">Aparece <code>E37</code></th><td>«cambios sin guardar»: usa <code>!</code> para forzar</td></tr>
+                  <tr><th scope="row">Fichero <code>.swp</code></th><td>quedó una sesión abierta; recupera con <code>vim -r</code> o borra el <code>.swp</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El mejor consejo: haz <code>vimtutor</code> una vez de principio a fin. Media hora que ahorra semanas de frustración.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="terminal-linux.html">← Terminal Linux</a><a class="siguiente" href="bash-script.html">Shell script →</a></nav>
+      <footer class="pie">Ayuda integrada: <code>:help</code>. Tutorial: <code>vimtutor</code>. Documentación en <a href="https://www.vim.org/docs.php">vim.org/docs</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
