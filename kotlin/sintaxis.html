@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sintaxis básica · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="kotlin">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Kotlin</a><span aria-hidden="true">›</span><span>Sintaxis básica</span></nav>
+          <h1>Sintaxis básica</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Variables, tipos, control de flujo, colecciones, funciones y seguridad frente a nulos. Lenguaje moderno sobre la JVM, muy usado en Android.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Kotlin">
+      <div class="wrap"><a href="sintaxis.html" aria-current="page">Sintaxis básica</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Variables y tipos</a><a href="#s2"><b>2</b>Cadenas de texto</a><a href="#s3"><b>3</b>Operadores</a><a href="#s4"><b>4</b>Mostrar y leer</a><a href="#s5"><b>5</b>Condicionales</a><a href="#s6"><b>6</b>Bucles</a><a href="#s7"><b>7</b>Colecciones</a><a href="#s8"><b>8</b>Funciones</a><a href="#s9"><b>9</b>Seguridad frente a nulos</a><a href="#s10"><b>10</b>Clases</a><a href="#s11"><b>11</b>Excepciones</a><a href="#s12"><b>12</b>Despistes habituales</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Un programa mínimo</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// Hola.kt</span>
+<span class="tok-clave">fun</span> <span class="tok-funcion">main</span>() {
+    <span class="tok-funcion">print</span>(<span class="tok-texto">"¿Cómo te llamas? "</span>)
+    <span class="tok-clave">val</span> nombre = <span class="tok-funcion">readLine</span>()
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"Hola, $nombre"</span>)
+}</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Ejecutar</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">kotlinc</span> Hola.kt <span class="tok-atributo">-include-runtime</span> <span class="tok-atributo">-d</span> hola.jar
+<span class="tok-clave">java</span> <span class="tok-atributo">-jar</span> hola.jar
+
+<span class="tok-clave">kotlin</span> Hola.kt        <span class="tok-coment"># compilar y ejecutar en un paso</span>
+<span class="tok-clave">kotlinc-jvm</span>           <span class="tok-coment"># consola interactiva (REPL)</span></code></pre></figure>
+            <p class="nota">No hay <code>;</code> al final de cada línea. Lo normal es programar en IntelliJ IDEA o Android Studio.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Variables y tipos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Variables y tipos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> nombre = <span class="tok-texto">"Ana"</span>       <span class="tok-coment">// val: no se puede reasignar (como final)</span>
+<span class="tok-clave">var</span> edad = <span class="tok-numero">20</span>            <span class="tok-coment">// var: se puede cambiar</span>
+edad = <span class="tok-numero">21</span>
+
+<span class="tok-clave">val</span> precio: <span class="tok-tipo">Double</span> = <span class="tok-numero">9.99</span>   <span class="tok-coment">// tipo explícito</span>
+<span class="tok-clave">val</span> activo = <span class="tok-clave">true</span>           <span class="tok-coment">// el tipo se deduce</span>
+const <span class="tok-clave">val</span> <span class="tok-tipo">PI</span> = <span class="tok-numero">3.14159</span>      <span class="tok-coment">// constante en tiempo de compilación</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Int</code></th><td>entero de 32 bits: <code>42</code></td></tr>
+                  <tr><th scope="row"><code>Long</code></th><td>entero de 64 bits: <code>10L</code></td></tr>
+                  <tr><th scope="row"><code>Double</code>, <code>Float</code></th><td>decimales: <code>9.99</code>, <code>3.5f</code></td></tr>
+                  <tr><th scope="row"><code>Boolean</code></th><td><code>true</code> o <code>false</code></td></tr>
+                  <tr><th scope="row"><code>Char</code></th><td>un carácter: <code>'a'</code></td></tr>
+                  <tr><th scope="row"><code>String</code></th><td>texto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Prefiere <code>val</code>:</strong> usa <code>val</code> por defecto y <code>var</code> solo cuando de verdad necesites reasignar. Ayuda a evitar errores.</p>
+          </div>
+        </section>
+        <!-- 2. Cadenas de texto -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Cadenas de texto</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> nombre = <span class="tok-texto">"Ana"</span>
+<span class="tok-clave">val</span> edad = <span class="tok-numero">20</span>
+
+<span class="tok-coment">// plantillas: $variable y ${expresión}</span>
+<span class="tok-funcion">println</span>(<span class="tok-texto">"Hola, $nombre, tienes $edad años"</span>)
+<span class="tok-funcion">println</span>(<span class="tok-texto">"El año que viene: ${edad + 1}"</span>)
+
+<span class="tok-clave">val</span> texto = <span class="tok-texto">"Hola"</span> + <span class="tok-texto">" mundo"</span>     <span class="tok-coment">// concatenar</span>
+<span class="tok-clave">val</span> bloque = <span class="tok-texto">"""
+    texto de
+    varias líneas
+"""</span>.<span class="tok-funcion">trimIndent</span>()</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>s.length</code></th><td>longitud (propiedad, sin paréntesis)</td></tr>
+                  <tr><th scope="row"><code>s.uppercase()</code></th><td>mayúsculas; también <code>lowercase()</code></td></tr>
+                  <tr><th scope="row"><code>s.trim()</code></th><td>quita espacios de los extremos</td></tr>
+                  <tr><th scope="row"><code>s.replace("a","b")</code></th><td>reemplazar</td></tr>
+                  <tr><th scope="row"><code>s.split(",")</code></th><td>texto a lista</td></tr>
+                  <tr><th scope="row"><code>s.contains("sol")</code></th><td>¿contiene? También <code>startsWith</code></td></tr>
+                  <tr><th scope="row"><code>s[0]</code></th><td>un carácter por su índice</td></tr>
+                  <tr><th scope="row"><code>s.toInt()</code></th><td>convertir texto a número</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3. Operadores -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Operadores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>+  -  *  /  %</code></th><td><code>7 / 2</code> = 3 entre enteros; <code>7.0 / 2</code> = 3.5</td></tr>
+                  <tr><th scope="row"><code>==  !=</code></th><td>igual / distinto por valor (llama a <code>equals</code>)</td></tr>
+                  <tr><th scope="row"><code>===  !==</code></th><td>¿es el mismo objeto?</td></tr>
+                  <tr><th scope="row"><code>&lt;  &lt;=  &gt;  &gt;=</code></th><td>comparaciones</td></tr>
+                  <tr><th scope="row"><code>&amp;&amp;  ||  !</code></th><td>y, o, no</td></tr>
+                  <tr><th scope="row"><code>in  !in</code></th><td>pertenencia: <code>x in 1..10</code></td></tr>
+                  <tr><th scope="row"><code>..</code></th><td>rango: <code>1..5</code></td></tr>
+                  <tr><th scope="row"><code>?:</code></th><td>Elvis: valor por defecto si es nulo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> mayor = <span class="tok-clave">if</span> (a &gt; b) a <span class="tok-clave">else</span> b        <span class="tok-coment">// if es una expresión</span>
+<span class="tok-clave">val</span> nombre = entrada ?: <span class="tok-texto">"anónimo"</span>      <span class="tok-coment">// Elvis: si es null, "anónimo"</span>
+<span class="tok-clave">if</span> (x <span class="tok-clave">in</span> <span class="tok-numero">1</span>..<span class="tok-numero">100</span>) <span class="tok-funcion">println</span>(<span class="tok-texto">"en rango"</span>)</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> en Kotlin <code>==</code> compara valores (llama a <code>equals()</code>), al revés que en Java. Para identidad de objeto se usa <code>===</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Mostrar y leer -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Mostrar y leer</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-funcion">println</span>(<span class="tok-texto">"Con salto de línea"</span>)
+<span class="tok-funcion">print</span>(<span class="tok-texto">"Sin salto"</span>)
+<span class="tok-funcion">println</span>(<span class="tok-texto">"Suma: ${2 + 3}"</span>)
+
+<span class="tok-clave">val</span> linea = <span class="tok-funcion">readLine</span>()                 <span class="tok-coment">// lee una línea (String?)</span>
+<span class="tok-clave">val</span> edad = <span class="tok-funcion">readLine</span>()?.<span class="tok-funcion">toInt</span>() ?: <span class="tok-numero">0</span>    <span class="tok-coment">// a número, o 0 si viene null</span>
+<span class="tok-funcion">print</span>(<span class="tok-texto">"Nombre: "</span>)
+<span class="tok-clave">val</span> nombre = <span class="tok-funcion">readLine</span>().<span class="tok-funcion">orEmpty</span>()      <span class="tok-coment">// "" si es null</span></code></pre></figure>
+            <p class="nota"><code>readLine()</code> devuelve <code>String?</code> (puede ser nulo). Por eso se combina con <code>?.</code> y <code>?:</code> al convertir.</p>
+          </div>
+        </section>
+        <!-- 5. Condicionales -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Condicionales</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">if</span> (nota &gt;= <span class="tok-numero">9</span>) {
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"Sobresaliente"</span>)
+} <span class="tok-clave">else</span> <span class="tok-clave">if</span> (nota &gt;= <span class="tok-numero">5</span>) {
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"Aprobado"</span>)
+} <span class="tok-clave">else</span> {
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"Suspenso"</span>)
+}</code></pre></figure>
+            <h3>when: como el switch, pero mejor</h3>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> tipo = <span class="tok-clave">when</span> (dia) {
+    <span class="tok-texto">"sábado"</span>, <span class="tok-texto">"domingo"</span> -&gt; <span class="tok-texto">"Fin de semana"</span>
+    <span class="tok-texto">"viernes"</span> -&gt; <span class="tok-texto">"Casi"</span>
+    <span class="tok-clave">else</span> -&gt; <span class="tok-texto">"Laborable"</span>
+}
+
+<span class="tok-clave">val</span> nivel = <span class="tok-clave">when</span> {                     <span class="tok-coment">// sin argumento: como un if-else</span>
+    nota &gt;= <span class="tok-numero">9</span> -&gt; <span class="tok-texto">"Alto"</span>
+    nota &gt;= <span class="tok-numero">5</span> -&gt; <span class="tok-texto">"Medio"</span>
+    <span class="tok-clave">else</span> -&gt; <span class="tok-texto">"Bajo"</span>
+}</code></pre></figure>
+            <p class="nota">Tanto <code>if</code> como <code>when</code> son expresiones: devuelven un valor que puedes asignar directamente.</p>
+          </div>
+        </section>
+        <!-- 6. Bucles -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Bucles</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// for sobre un rango</span>
+<span class="tok-clave">for</span> (i <span class="tok-clave">in</span> <span class="tok-numero">0</span>..<span class="tok-numero">9</span>) <span class="tok-funcion">println</span>(i)          <span class="tok-coment">// 0 a 9 (incluido)</span>
+<span class="tok-clave">for</span> (i <span class="tok-clave">in</span> <span class="tok-numero">0</span> until <span class="tok-numero">10</span>) <span class="tok-funcion">println</span>(i)    <span class="tok-coment">// 0 a 9 (sin el 10)</span>
+<span class="tok-clave">for</span> (i <span class="tok-clave">in</span> <span class="tok-numero">10</span> downTo <span class="tok-numero">1</span>) <span class="tok-funcion">println</span>(i)   <span class="tok-coment">// cuenta atrás</span>
+<span class="tok-clave">for</span> (i <span class="tok-clave">in</span> <span class="tok-numero">0</span>..<span class="tok-numero">20</span> step <span class="tok-numero">2</span>) <span class="tok-funcion">println</span>(i)  <span class="tok-coment">// de 2 en 2</span>
+
+<span class="tok-coment">// for sobre una colección</span>
+<span class="tok-clave">for</span> (fruta <span class="tok-clave">in</span> frutas) <span class="tok-funcion">println</span>(fruta)
+
+<span class="tok-coment">// con índice</span>
+<span class="tok-clave">for</span> ((i, fruta) <span class="tok-clave">in</span> frutas.<span class="tok-funcion">withIndex</span>()) <span class="tok-funcion">println</span>(<span class="tok-texto">"$i: $fruta"</span>)
+
+<span class="tok-coment">// while</span>
+<span class="tok-clave">while</span> (quedaTrabajo) {
+    <span class="tok-funcion">procesar</span>()
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>1..5</code></th><td>rango cerrado: 1,2,3,4,5</td></tr>
+                  <tr><th scope="row"><code>until</code></th><td>excluye el final</td></tr>
+                  <tr><th scope="row"><code>downTo</code></th><td>descendente</td></tr>
+                  <tr><th scope="row"><code>step</code></th><td>salto entre valores</td></tr>
+                  <tr><th scope="row"><code>break  continue</code></th><td>salir / siguiente vuelta</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Colecciones -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Colecciones</h2>
+          <div class="cuerpo">
+            <p class="txt">Kotlin distingue colecciones <strong>de solo lectura</strong> de las <strong>mutables</strong>:</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> frutas = <span class="tok-funcion">listOf</span>(<span class="tok-texto">"manzana"</span>, <span class="tok-texto">"pera"</span>)        <span class="tok-coment">// inmutable</span>
+<span class="tok-clave">val</span> lista = <span class="tok-funcion">mutableListOf</span>(<span class="tok-texto">"a"</span>, <span class="tok-texto">"b"</span>)           <span class="tok-coment">// modificable</span>
+lista.<span class="tok-funcion">add</span>(<span class="tok-texto">"c"</span>)
+<span class="tok-funcion">println</span>(frutas[<span class="tok-numero">0</span>])                            <span class="tok-coment">// manzana</span>
+<span class="tok-funcion">println</span>(frutas.size)
+
+<span class="tok-clave">val</span> edades = <span class="tok-funcion">mapOf</span>(<span class="tok-texto">"Ana"</span> to <span class="tok-numero">20</span>, <span class="tok-texto">"Luis"</span> to <span class="tok-numero">31</span>)  <span class="tok-coment">// inmutable</span>
+<span class="tok-clave">val</span> m = mutableMapOf&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Int</span>&gt;()
+m[<span class="tok-texto">"Ana"</span>] = <span class="tok-numero">20</span>
+<span class="tok-funcion">println</span>(edades[<span class="tok-texto">"Ana"</span>])
+
+<span class="tok-clave">val</span> vistos = <span class="tok-funcion">setOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>)                   <span class="tok-coment">// conjunto</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Operaciones funcionales</figcaption><pre data-lang="kotlin"><code><span class="tok-clave">val</span> dobles = numeros.map { it * <span class="tok-numero">2</span> }
+<span class="tok-clave">val</span> pares = numeros.filter { it % <span class="tok-numero">2</span> == <span class="tok-numero">0</span> }
+<span class="tok-clave">val</span> total = numeros.<span class="tok-funcion">sum</span>()
+<span class="tok-clave">val</span> mayores = personas.filter { it.edad &gt;= <span class="tok-numero">18</span> }
+                      .sortedBy { it.nombre }</code></pre></figure>
+            <p class="nota"><code>it</code> es el nombre implícito del único parámetro de una lambda. <code>listOf</code> crea listas inmutables; usa <code>mutableListOf</code> solo si vas a modificarla.</p>
+          </div>
+        </section>
+        <!-- 8. Funciones -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Funciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">fun</span> <span class="tok-funcion">saludar</span>(nombre: <span class="tok-tipo">String</span>, saludo: <span class="tok-tipo">String</span> = <span class="tok-texto">"Hola"</span>): <span class="tok-tipo">String</span> {
+    <span class="tok-clave">return</span> <span class="tok-texto">"$saludo, $nombre"</span>
+}
+
+<span class="tok-coment">// cuerpo de expresión: si es una sola línea</span>
+<span class="tok-clave">fun</span> <span class="tok-funcion">area</span>(base: <span class="tok-tipo">Double</span>, altura: <span class="tok-tipo">Double</span>) = base * altura / <span class="tok-numero">2</span>
+
+<span class="tok-funcion">println</span>(<span class="tok-funcion">saludar</span>(<span class="tok-texto">"Ana"</span>))                    <span class="tok-coment">// Hola, Ana</span>
+<span class="tok-funcion">println</span>(<span class="tok-funcion">saludar</span>(<span class="tok-texto">"Luis"</span>, saludo = <span class="tok-texto">"Buenas"</span>))  <span class="tok-coment">// argumento con nombre</span>
+
+<span class="tok-coment">// número variable de argumentos</span>
+<span class="tok-clave">fun</span> <span class="tok-funcion">suma</span>(<span class="tok-clave">vararg</span> numeros: <span class="tok-tipo">Int</span>) = numeros.<span class="tok-funcion">sum</span>()
+
+<span class="tok-coment">// lambda (función anónima)</span>
+<span class="tok-clave">val</span> doble = { x: <span class="tok-tipo">Int</span> -&gt; x * <span class="tok-numero">2</span> }
+
+<span class="tok-coment">// función de extensión: añadir un método a un tipo existente</span>
+<span class="tok-clave">fun</span> <span class="tok-tipo">String</span>.<span class="tok-funcion">entreComillas</span>() = <span class="tok-texto">"\"$this\""</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>fun nombre(): Tipo</code></th><td>declarar una función</td></tr>
+                  <tr><th scope="row"><code>= expresión</code></th><td>cuerpo corto, sin llaves ni <code>return</code></td></tr>
+                  <tr><th scope="row"><code>param: Tipo = valor</code></th><td>valor por defecto</td></tr>
+                  <tr><th scope="row"><code>vararg</code></th><td>número variable de argumentos</td></tr>
+                  <tr><th scope="row"><code>{ x -> ... }</code></th><td>lambda</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 9. Seguridad frente a nulos -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Seguridad frente a nulos</h2>
+          <div class="cuerpo">
+            <p class="txt">La característica estrella de Kotlin: el tipo dice si algo puede ser nulo. <code>String</code> nunca es nulo; <code>String?</code> sí puede serlo, y el compilador te obliga a tratarlo.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">var</span> nombre: <span class="tok-tipo">String</span> = <span class="tok-texto">"Ana"</span>
+nombre = <span class="tok-clave">null</span>           <span class="tok-coment">// ERROR de compilación</span>
+
+<span class="tok-clave">var</span> apodo: <span class="tok-tipo">String</span>? = <span class="tok-clave">null</span>   <span class="tok-coment">// este sí admite null</span>
+
+<span class="tok-coment">// llamada segura: si es null, devuelve null en vez de fallar</span>
+<span class="tok-clave">val</span> largo = apodo?.length
+
+<span class="tok-coment">// Elvis: valor por defecto si es null</span>
+<span class="tok-clave">val</span> n = apodo?.length ?: <span class="tok-numero">0</span>
+
+<span class="tok-coment">// dejar que falle si es null (evítalo salvo que estés seguro)</span>
+<span class="tok-clave">val</span> forzado = apodo!!.length</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Tipo?</code></th><td>puede ser nulo</td></tr>
+                  <tr><th scope="row"><code>?.</code></th><td>llamada segura: no falla si es nulo</td></tr>
+                  <tr><th scope="row"><code>?:</code></th><td>Elvis: valor alternativo si es nulo</td></tr>
+                  <tr><th scope="row"><code>!!</code></th><td>afirma que no es nulo (lanza excepción si lo es)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>!!</code> desactiva la protección y provoca un <code>NullPointerException</code> si el valor era nulo. Úsalo lo mínimo; casi siempre hay una solución con <code>?.</code> o <code>?:</code>.</p>
+          </div>
+        </section>
+        <!-- 10. Clases -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Clases</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// el constructor va en la propia cabecera</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Persona</span>(<span class="tok-clave">val</span> nombre: <span class="tok-tipo">String</span>, <span class="tok-clave">var</span> edad: <span class="tok-tipo">Int</span>) {
+    <span class="tok-clave">fun</span> <span class="tok-funcion">saludar</span>() = <span class="tok-texto">"Hola, soy $nombre"</span>
+}
+
+<span class="tok-clave">val</span> p = <span class="tok-tipo">Persona</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">20</span>)     <span class="tok-coment">// sin new</span>
+<span class="tok-funcion">println</span>(p.nombre)
+p.edad = <span class="tok-numero">21</span>
+
+<span class="tok-coment">// data class: equals, hashCode, toString y copy gratis</span>
+<span class="tok-clave">data</span> <span class="tok-clave">class</span> <span class="tok-tipo">Punto</span>(<span class="tok-clave">val</span> x: <span class="tok-tipo">Int</span>, <span class="tok-clave">val</span> y: <span class="tok-tipo">Int</span>)
+<span class="tok-clave">val</span> a = <span class="tok-tipo">Punto</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>)
+<span class="tok-clave">val</span> b = a.<span class="tok-funcion">copy</span>(y = <span class="tok-numero">5</span>)
+
+<span class="tok-coment">// enum</span>
+<span class="tok-clave">enum</span> <span class="tok-clave">class</span> <span class="tok-tipo">Dia</span> { <span class="tok-tipo">LUNES</span>, <span class="tok-tipo">MARTES</span>, <span class="tok-tipo">MIERCOLES</span> }
+
+<span class="tok-coment">// object: un único ejemplar (singleton)</span>
+<span class="tok-clave">object</span> <span class="tok-tipo">Config</span> { <span class="tok-clave">val</span> version = <span class="tok-texto">"1.0"</span> }</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>class</code></th><td>clase normal; el constructor va en la cabecera</td></tr>
+                  <tr><th scope="row"><code>data class</code></th><td>para guardar datos: genera <code>toString</code>, <code>equals</code>, <code>copy</code>...</td></tr>
+                  <tr><th scope="row"><code>object</code></th><td>un único ejemplar (singleton)</td></tr>
+                  <tr><th scope="row"><code>enum class</code></th><td>conjunto fijo de valores</td></tr>
+                  <tr><th scope="row"><code>interface</code></th><td>contrato que otras clases implementan</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 11. Excepciones -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Excepciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">try</span> {
+    <span class="tok-clave">val</span> n = <span class="tok-funcion">readLine</span>()!!.<span class="tok-funcion">toInt</span>()
+    <span class="tok-funcion">println</span>(<span class="tok-numero">10</span> / n)
+} <span class="tok-clave">catch</span> (e: <span class="tok-tipo">NumberFormatException</span>) {
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"Eso no es un número"</span>)
+} <span class="tok-clave">catch</span> (e: <span class="tok-tipo">ArithmeticException</span>) {
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"No se puede dividir entre cero"</span>)
+} <span class="tok-clave">finally</span> {
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"Siempre se ejecuta"</span>)
+}
+
+<span class="tok-coment">// try también es una expresión</span>
+<span class="tok-clave">val</span> n = <span class="tok-clave">try</span> { texto.<span class="tok-funcion">toInt</span>() } <span class="tok-clave">catch</span> (e: <span class="tok-tipo">Exception</span>) { <span class="tok-numero">0</span> }
+
+<span class="tok-clave">throw</span> <span class="tok-tipo">IllegalArgumentException</span>(<span class="tok-texto">"valor no válido"</span>)</code></pre></figure>
+            <p class="nota">A diferencia de Java, Kotlin no obliga a declarar ni capturar excepciones (no hay <em>checked exceptions</em>). Aun así, captura las que puedas manejar.</p>
+          </div>
+        </section>
+        <!-- 12. Despistes habituales -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>val</code> vs <code>var</code></th><td><code>val</code> no se reasigna; empieza siempre por él</td></tr>
+                  <tr><th scope="row">Abusar de <code>!!</code></th><td>rompe la seguridad frente a nulos; usa <code>?.</code> y <code>?:</code></td></tr>
+                  <tr><th scope="row"><code>==</code> compara valor</th><td>al revés que en Java; para identidad, <code>===</code></td></tr>
+                  <tr><th scope="row">División entera</th><td><code>1 / 2</code> = 0; usa <code>1.0 / 2</code></td></tr>
+                  <tr><th scope="row"><code>listOf</code> es inmutable</th><td>si necesitas añadir, <code>mutableListOf</code></td></tr>
+                  <tr><th scope="row">Sin <code>new</code></th><td>los objetos se crean llamando a la clase: <code>Persona("Ana", 20)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Kotlin y <a href="../java/sintaxis.html">Java</a> conviven en el mismo proyecto y comparten bibliotecas: es habitual migrar de uno a otro poco a poco.</p>
+          </div>
+        </section>
+      </div>
+      <footer class="pie">Documentación oficial en <a href="https://kotlinlang.org/docs/home.html">kotlinlang.org</a>. Se puede probar sin instalar nada en <a href="https://play.kotlinlang.org/">play.kotlinlang.org</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

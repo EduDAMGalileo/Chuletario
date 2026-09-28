@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sintaxis básica · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="python">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Python</a><span aria-hidden="true">›</span><span>Sintaxis básica</span></nav>
+          <h1>Sintaxis básica</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Variables, tipos, control de flujo, colecciones y funciones. Los ejemplos son para Python 3.10 o posterior.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Python">
+      <div class="wrap"><a href="sintaxis.html" aria-current="page">Sintaxis básica</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Variables y tipos</a><a href="#s2"><b>2</b>Cadenas de texto</a><a href="#s3"><b>3</b>Operadores</a><a href="#s4"><b>4</b>Mostrar y leer</a><a href="#s5"><b>5</b>Condicionales</a><a href="#s6"><b>6</b>Bucles</a><a href="#s7"><b>7</b>Listas, tuplas y diccionarios</a><a href="#s8"><b>8</b>Funciones</a><a href="#s9"><b>9</b>Comprensiones</a><a href="#s10"><b>10</b>Ficheros y excepciones</a><a href="#s11"><b>11</b>Módulos</a><a href="#s12"><b>12</b>Despistes habituales</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Un programa mínimo</p>
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-coment"># hola.py</span>
+<span class="tok-clave">def</span> <span class="tok-funcion">main</span>():
+    nombre = <span class="tok-funcion">input</span>(<span class="tok-texto">"¿Cómo te llamas? "</span>)
+    <span class="tok-funcion">print</span>(<span class="tok-texto">f"Hola, {nombre}"</span>)
+
+<span class="tok-clave">if</span> __name__ == <span class="tok-texto">"__main__"</span>:
+    <span class="tok-funcion">main</span>()</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Ejecutar</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">python3</span> hola.py        <span class="tok-coment"># ejecutar</span>
+<span class="tok-clave">python3</span>                <span class="tok-coment"># consola interactiva (REPL)</span>
+<span class="tok-clave">python3</span> <span class="tok-atributo">-m</span> venv venv   <span class="tok-coment"># crear un entorno virtual</span>
+<span class="tok-clave">source</span> venv/bin/activate
+<span class="tok-clave">pip</span> install requests   <span class="tok-coment"># instalar un paquete</span></code></pre></figure>
+            <p class="nota">La indentación <strong>es</strong> la sintaxis: cuatro espacios marcan cada bloque. No hay llaves ni <code>;</code>.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Variables y tipos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Variables y tipos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>int</code></th><td>entero: <code>42</code>, <code>-7</code>, <code>1_000_000</code></td></tr>
+                  <tr><th scope="row"><code>float</code></th><td>decimal: <code>9.99</code>, <code>1.5e3</code></td></tr>
+                  <tr><th scope="row"><code>str</code></th><td>texto: <code>'hola'</code> o <code>"hola"</code></td></tr>
+                  <tr><th scope="row"><code>bool</code></th><td><code>True</code> o <code>False</code></td></tr>
+                  <tr><th scope="row"><code>list</code>, <code>tuple</code></th><td>listas y tuplas</td></tr>
+                  <tr><th scope="row"><code>dict</code>, <code>set</code></th><td>diccionarios y conjuntos</td></tr>
+                  <tr><th scope="row"><code>None</code></th><td>ausencia de valor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="python"><code>edad = <span class="tok-numero">20</span>                <span class="tok-coment"># el tipo lo marca el valor</span>
+precio = <span class="tok-numero">9.99</span>
+nombre = <span class="tok-texto">"Ana"</span>
+activo = <span class="tok-clave">True</span>
+nada = <span class="tok-clave">None</span>
+
+x = y = <span class="tok-numero">0</span>                <span class="tok-coment"># asignación múltiple</span>
+a, b = <span class="tok-numero">1</span>, <span class="tok-numero">2</span>              <span class="tok-coment"># desempaquetado</span>
+a, b = b, a              <span class="tok-coment"># intercambio sin variable temporal</span>
+
+<span class="tok-tipo">PI</span> = <span class="tok-numero">3.14159</span>             <span class="tok-coment"># constante: por convenio, en MAYÚSCULAS</span>
+
+edad = <span class="tok-texto">"veinte"</span>          <span class="tok-coment"># válido: una variable puede cambiar de tipo</span>
+
+<span class="tok-funcion">print</span>(<span class="tok-funcion">type</span>(edad))        <span class="tok-coment"># &lt;class 'str'&gt;</span>
+<span class="tok-funcion">print</span>(<span class="tok-tipo">int</span>(<span class="tok-texto">"42"</span>), <span class="tok-tipo">float</span>(<span class="tok-texto">"3.5"</span>), <span class="tok-tipo">str</span>(<span class="tok-numero">42</span>))   <span class="tok-coment"># conversiones</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> Python distingue mayúsculas: <code>nombre</code> y <code>Nombre</code> son variables distintas. Y no se declara el tipo: se asigna y ya está.</p>
+          </div>
+        </section>
+        <!-- 2. Cadenas de texto -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Cadenas de texto</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="python"><code>nombre = <span class="tok-texto">"Ana"</span>
+edad = <span class="tok-numero">20</span>
+
+<span class="tok-coment"># f-strings: la forma moderna de dar formato</span>
+<span class="tok-funcion">print</span>(<span class="tok-texto">f"Hola, {nombre}, tienes {edad} años"</span>)
+<span class="tok-funcion">print</span>(<span class="tok-texto">f"{precio:.2f} €"</span>)          <span class="tok-coment"># 2 decimales</span>
+<span class="tok-funcion">print</span>(<span class="tok-texto">f"{nombre:&gt;10}"</span>)            <span class="tok-coment"># alinear a la derecha en 10</span>
+
+texto = <span class="tok-texto">"Hola"</span> + <span class="tok-texto">" "</span> + <span class="tok-texto">"mundo"</span>    <span class="tok-coment"># concatenar</span>
+linea = <span class="tok-texto">"-"</span> * <span class="tok-numero">20</span>                  <span class="tok-coment"># repetir</span>
+frase = <span class="tok-texto">"""texto de
+varias líneas"""</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>len(s)</code></th><td>longitud</td></tr>
+                  <tr><th scope="row"><code>s.upper()  s.lower()</code></th><td>mayúsculas / minúsculas</td></tr>
+                  <tr><th scope="row"><code>s.strip()</code></th><td>quita espacios de los extremos</td></tr>
+                  <tr><th scope="row"><code>s.replace('a','b')</code></th><td>reemplazar</td></tr>
+                  <tr><th scope="row"><code>s.split(',')</code></th><td>texto a lista</td></tr>
+                  <tr><th scope="row"><code>', '.join(lista)</code></th><td>lista a texto</td></tr>
+                  <tr><th scope="row"><code>s.startswith('http')</code></th><td>¿empieza por? También <code>endswith</code></td></tr>
+                  <tr><th scope="row"><code>'sol' in s</code></th><td>¿contiene?</td></tr>
+                  <tr><th scope="row"><code>s[0]  s[-1]  s[1:4]</code></th><td>indexar y rebanar (<em>slicing</em>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las cadenas son inmutables: los métodos devuelven una nueva, no cambian la original.</p>
+          </div>
+        </section>
+        <!-- 3. Operadores -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Operadores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>+  -  *  /</code></th><td><code>7 / 2</code> = 3.5 (siempre decimal)</td></tr>
+                  <tr><th scope="row"><code>//  %</code></th><td>división entera y resto: <code>7 // 2</code> = 3</td></tr>
+                  <tr><th scope="row"><code>**</code></th><td>potencia: <code>2 ** 10</code> = 1024</td></tr>
+                  <tr><th scope="row"><code>==  !=</code></th><td>igual / distinto (compara valores)</td></tr>
+                  <tr><th scope="row"><code>&lt;  &lt;=  &gt;  &gt;=</code></th><td>comparaciones; se encadenan: <code>0 &lt; x &lt; 10</code></td></tr>
+                  <tr><th scope="row"><code>and  or  not</code></th><td>lógicos (en palabras, no símbolos)</td></tr>
+                  <tr><th scope="row"><code>in  not in</code></th><td>pertenencia: <code>3 in [1,2,3]</code></td></tr>
+                  <tr><th scope="row"><code>is  is not</code></th><td>¿es el mismo objeto? (para <code>None</code>)</td></tr>
+                  <tr><th scope="row"><code>a if c else b</code></th><td>condicional (ternario)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-funcion">print</span>(<span class="tok-numero">7</span> // <span class="tok-numero">2</span>, <span class="tok-numero">7</span> % <span class="tok-numero">2</span>)          <span class="tok-coment"># 3 1</span>
+estado = <span class="tok-texto">"Aprobado"</span> <span class="tok-clave">if</span> nota &gt;= <span class="tok-numero">5</span> <span class="tok-clave">else</span> <span class="tok-texto">"Suspenso"</span>
+<span class="tok-clave">if</span> <span class="tok-numero">0</span> &lt; x &lt; <span class="tok-numero">100</span>:               <span class="tok-coment"># comparaciones encadenadas</span>
+    <span class="tok-funcion">print</span>(<span class="tok-texto">"en rango"</span>)</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> usa <code>is</code> solo con <code>None</code> (<code>if x is None</code>). Para comparar valores, siempre <code>==</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Mostrar y leer -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Mostrar y leer</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-funcion">print</span>(<span class="tok-texto">"Hola"</span>, <span class="tok-texto">"mundo"</span>)            <span class="tok-coment"># Hola mundo (separa con espacio)</span>
+<span class="tok-funcion">print</span>(<span class="tok-texto">"sin salto"</span>, end=<span class="tok-texto">""</span>)        <span class="tok-coment"># sin salto de línea</span>
+<span class="tok-funcion">print</span>(<span class="tok-texto">"a"</span>, <span class="tok-texto">"b"</span>, <span class="tok-texto">"c"</span>, sep=<span class="tok-texto">", "</span>)    <span class="tok-coment"># a, b, c</span>
+
+nombre = <span class="tok-funcion">input</span>(<span class="tok-texto">"Nombre: "</span>)        <span class="tok-coment"># input SIEMPRE devuelve texto</span>
+edad = <span class="tok-tipo">int</span>(<span class="tok-funcion">input</span>(<span class="tok-texto">"Edad: "</span>))       <span class="tok-coment"># convertir a número</span>
+precio = <span class="tok-tipo">float</span>(<span class="tok-funcion">input</span>(<span class="tok-texto">"Precio: "</span>))</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>input()</code> devuelve siempre una cadena. Si esperas un número, conviértelo con <code>int()</code> o <code>float()</code>, o fallará al operar.</p>
+          </div>
+        </section>
+        <!-- 5. Condicionales -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Condicionales</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-clave">if</span> nota &gt;= <span class="tok-numero">9</span>:
+    <span class="tok-funcion">print</span>(<span class="tok-texto">"Sobresaliente"</span>)
+<span class="tok-clave">elif</span> nota &gt;= <span class="tok-numero">5</span>:
+    <span class="tok-funcion">print</span>(<span class="tok-texto">"Aprobado"</span>)
+<span class="tok-clave">else</span>:
+    <span class="tok-funcion">print</span>(<span class="tok-texto">"Suspenso"</span>)</code></pre></figure>
+            <h3>match (Python 3.10+)</h3>
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-clave">match</span> dia:
+    <span class="tok-clave">case</span> <span class="tok-texto">"sábado"</span> | <span class="tok-texto">"domingo"</span>:
+        <span class="tok-funcion">print</span>(<span class="tok-texto">"Fin de semana"</span>)
+    <span class="tok-clave">case</span> <span class="tok-texto">"viernes"</span>:
+        <span class="tok-funcion">print</span>(<span class="tok-texto">"Casi"</span>)
+    <span class="tok-clave">case</span> _:
+        <span class="tok-funcion">print</span>(<span class="tok-texto">"Laborable"</span>)</code></pre></figure>
+            <p class="nota">El bloque tras los dos puntos va indentado. Lo que se considera «falso»: <code>False</code>, <code>0</code>, <code>""</code>, <code>[]</code>, <code>{}</code> y <code>None</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Bucles -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Bucles</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-coment"># for sobre una secuencia</span>
+<span class="tok-clave">for</span> fruta <span class="tok-clave">in</span> [<span class="tok-texto">"manzana"</span>, <span class="tok-texto">"pera"</span>, <span class="tok-texto">"uva"</span>]:
+    <span class="tok-funcion">print</span>(fruta)
+
+<span class="tok-coment"># range: números</span>
+<span class="tok-clave">for</span> i <span class="tok-clave">in</span> <span class="tok-tipo">range</span>(<span class="tok-numero">5</span>):          <span class="tok-coment"># 0,1,2,3,4</span>
+    <span class="tok-funcion">print</span>(i)
+<span class="tok-clave">for</span> i <span class="tok-clave">in</span> <span class="tok-tipo">range</span>(<span class="tok-numero">2</span>, <span class="tok-numero">10</span>, <span class="tok-numero">2</span>):   <span class="tok-coment"># 2,4,6,8 (inicio, fin, paso)</span>
+    <span class="tok-funcion">print</span>(i)
+
+<span class="tok-coment"># índice y valor a la vez</span>
+<span class="tok-clave">for</span> i, fruta <span class="tok-clave">in</span> <span class="tok-funcion">enumerate</span>(frutas):
+    <span class="tok-funcion">print</span>(i, fruta)
+
+<span class="tok-coment"># recorrer dos listas en paralelo</span>
+<span class="tok-clave">for</span> nombre, edad <span class="tok-clave">in</span> <span class="tok-funcion">zip</span>(nombres, edades):
+    <span class="tok-funcion">print</span>(nombre, edad)
+
+<span class="tok-coment"># while</span>
+<span class="tok-clave">while</span> queda_trabajo:
+    <span class="tok-funcion">procesar</span>()</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>break</code></th><td>salir del bucle</td></tr>
+                  <tr><th scope="row"><code>continue</code></th><td>siguiente vuelta</td></tr>
+                  <tr><th scope="row"><code>for...else</code></th><td>el <code>else</code> se ejecuta si no hubo <code>break</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Listas, tuplas y diccionarios -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Listas, tuplas y diccionarios</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-coment"># lista: ordenada y modificable</span>
+frutas = [<span class="tok-texto">"manzana"</span>, <span class="tok-texto">"pera"</span>]
+frutas.<span class="tok-funcion">append</span>(<span class="tok-texto">"uva"</span>)
+frutas[<span class="tok-numero">0</span>] = <span class="tok-texto">"kiwi"</span>
+<span class="tok-funcion">print</span>(frutas[-<span class="tok-numero">1</span>])            <span class="tok-coment"># última: "uva"</span>
+<span class="tok-funcion">print</span>(frutas[<span class="tok-numero">1</span>:])            <span class="tok-coment"># desde la 1</span>
+
+<span class="tok-coment"># tupla: ordenada e inmutable</span>
+punto = (<span class="tok-numero">10</span>, <span class="tok-numero">20</span>)
+x, y = punto
+
+<span class="tok-coment"># diccionario: clave -&gt; valor</span>
+persona = {<span class="tok-texto">"nombre"</span>: <span class="tok-texto">"Ana"</span>, <span class="tok-texto">"edad"</span>: <span class="tok-numero">20</span>}
+persona[<span class="tok-texto">"ciudad"</span>] = <span class="tok-texto">"Sevilla"</span>
+<span class="tok-funcion">print</span>(persona[<span class="tok-texto">"nombre"</span>])
+<span class="tok-funcion">print</span>(persona.<span class="tok-funcion">get</span>(<span class="tok-texto">"pais"</span>, <span class="tok-texto">"?"</span>))   <span class="tok-coment"># valor por defecto si no está</span>
+<span class="tok-clave">for</span> clave, valor <span class="tok-clave">in</span> persona.<span class="tok-funcion">items</span>():
+    <span class="tok-funcion">print</span>(clave, valor)
+
+<span class="tok-coment"># conjunto: sin duplicados</span>
+vistos = {<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>}
+vistos.<span class="tok-funcion">add</span>(<span class="tok-numero">2</span>)               <span class="tok-coment"># sigue teniendo 3 elementos</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>len(x)</code></th><td>número de elementos</td></tr>
+                  <tr><th scope="row"><code>lista.sort()</code></th><td>ordenar en el sitio; <code>sorted(x)</code> devuelve una copia</td></tr>
+                  <tr><th scope="row"><code>lista.pop()</code></th><td>saca y devuelve el último</td></tr>
+                  <tr><th scope="row"><code>del d['clave']</code></th><td>borrar una clave</td></tr>
+                  <tr><th scope="row"><code>'clave' in d</code></th><td>¿existe la clave?</td></tr>
+                  <tr><th scope="row"><code>sum(), max(), min()</code></th><td>suma, máximo y mínimo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> asignar <code>b = a</code> con una lista no la copia: las dos apuntan a la misma. Para copiar, <code>b = a.copy()</code> o <code>b = a[:]</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Funciones -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Funciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-clave">def</span> <span class="tok-funcion">saludar</span>(nombre, saludo=<span class="tok-texto">"Hola"</span>):   <span class="tok-coment"># saludo tiene valor por defecto</span>
+    <span class="tok-clave">return</span> <span class="tok-texto">f"{saludo}, {nombre}"</span>
+
+<span class="tok-funcion">print</span>(<span class="tok-funcion">saludar</span>(<span class="tok-texto">"Ana"</span>))                 <span class="tok-coment"># Hola, Ana</span>
+<span class="tok-funcion">print</span>(<span class="tok-funcion">saludar</span>(<span class="tok-texto">"Luis"</span>, saludo=<span class="tok-texto">"Buenas"</span>))   <span class="tok-coment"># argumento por nombre</span>
+
+<span class="tok-coment"># tipos opcionales (anotaciones, no obligan)</span>
+<span class="tok-clave">def</span> <span class="tok-funcion">area</span>(base: <span class="tok-tipo">float</span>, altura: <span class="tok-tipo">float</span>) -&gt; <span class="tok-tipo">float</span>:
+    <span class="tok-clave">return</span> base * altura / <span class="tok-numero">2</span>
+
+<span class="tok-coment"># número variable de argumentos</span>
+<span class="tok-clave">def</span> <span class="tok-funcion">suma</span>(*numeros):                   <span class="tok-coment"># numeros llega como tupla</span>
+    <span class="tok-clave">return</span> <span class="tok-funcion">sum</span>(numeros)
+
+<span class="tok-clave">def</span> <span class="tok-funcion">config</span>(**opciones):               <span class="tok-coment"># opciones llega como dict</span>
+    <span class="tok-funcion">print</span>(opciones)
+
+<span class="tok-coment"># función anónima</span>
+doble = <span class="tok-clave">lambda</span> x: x * <span class="tok-numero">2</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>*args</code></th><td>argumentos posicionales sobrantes (tupla)</td></tr>
+                  <tr><th scope="row"><code>**kwargs</code></th><td>argumentos con nombre sobrantes (dict)</td></tr>
+                  <tr><th scope="row"><code>return a, b</code></th><td>devolver varios valores (como tupla)</td></tr>
+                  <tr><th scope="row"><code>lambda x: ...</code></th><td>función de una línea</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> no uses una lista o un dict como valor por defecto (<code>def f(x=[])</code>): se comparte entre llamadas. Usa <code>def f(x=None)</code> y créala dentro.</p>
+          </div>
+        </section>
+        <!-- 9. Comprensiones -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Comprensiones</h2>
+          <div class="cuerpo">
+            <p class="txt">Una forma compacta y muy «pythónica» de crear listas, diccionarios y conjuntos:</p>
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-coment"># [expresión for elemento in iterable if condición]</span>
+cuadrados = [n * n <span class="tok-clave">for</span> n <span class="tok-clave">in</span> <span class="tok-tipo">range</span>(<span class="tok-numero">10</span>)]
+pares = [n <span class="tok-clave">for</span> n <span class="tok-clave">in</span> numeros <span class="tok-clave">if</span> n % <span class="tok-numero">2</span> == <span class="tok-numero">0</span>]
+nombres = [p[<span class="tok-texto">"nombre"</span>] <span class="tok-clave">for</span> p <span class="tok-clave">in</span> personas]
+
+<span class="tok-coment"># diccionario</span>
+por_id = {u[<span class="tok-texto">"id"</span>]: u <span class="tok-clave">for</span> u <span class="tok-clave">in</span> usuarios}
+
+<span class="tok-coment"># conjunto</span>
+iniciales = {nombre[<span class="tok-numero">0</span>] <span class="tok-clave">for</span> nombre <span class="tok-clave">in</span> nombres}</code></pre></figure>
+            <p class="nota">Equivale a un bucle con <code>append</code>, pero en una línea. Si se complica, es mejor un bucle normal: la legibilidad manda.</p>
+          </div>
+        </section>
+        <!-- 10. Ficheros y excepciones -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Ficheros y excepciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-coment"># with cierra el fichero solo al terminar</span>
+<span class="tok-clave">with</span> <span class="tok-funcion">open</span>(<span class="tok-texto">"datos.txt"</span>, encoding=<span class="tok-texto">"utf-8"</span>) <span class="tok-clave">as</span> f:
+    <span class="tok-clave">for</span> linea <span class="tok-clave">in</span> f:
+        <span class="tok-funcion">print</span>(linea.<span class="tok-funcion">strip</span>())
+
+<span class="tok-clave">with</span> <span class="tok-funcion">open</span>(<span class="tok-texto">"salida.txt"</span>, <span class="tok-texto">"w"</span>, encoding=<span class="tok-texto">"utf-8"</span>) <span class="tok-clave">as</span> f:
+    f.<span class="tok-funcion">write</span>(<span class="tok-texto">"una línea\n"</span>)
+
+texto = <span class="tok-funcion">open</span>(<span class="tok-texto">"datos.txt"</span>, encoding=<span class="tok-texto">"utf-8"</span>).<span class="tok-funcion">read</span>()   <span class="tok-coment"># todo de golpe</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-clave">try</span>:
+    n = <span class="tok-tipo">int</span>(<span class="tok-funcion">input</span>(<span class="tok-texto">"Número: "</span>))
+    resultado = <span class="tok-numero">10</span> / n
+<span class="tok-clave">except</span> <span class="tok-tipo">ValueError</span>:
+    <span class="tok-funcion">print</span>(<span class="tok-texto">"Eso no es un número"</span>)
+<span class="tok-clave">except</span> <span class="tok-tipo">ZeroDivisionError</span>:
+    <span class="tok-funcion">print</span>(<span class="tok-texto">"No se puede dividir entre cero"</span>)
+<span class="tok-clave">else</span>:
+    <span class="tok-funcion">print</span>(resultado)          <span class="tok-coment"># si no hubo error</span>
+<span class="tok-clave">finally</span>:
+    <span class="tok-funcion">print</span>(<span class="tok-texto">"Siempre se ejecuta"</span>)
+
+<span class="tok-clave">raise</span> <span class="tok-tipo">ValueError</span>(<span class="tok-texto">"mensaje"</span>)   <span class="tok-coment"># lanzar una excepción</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>"r"  "w"  "a"</code></th><td>leer / escribir (sobrescribe) / añadir</td></tr>
+                  <tr><th scope="row"><code>encoding="utf-8"</code></th><td>ponlo siempre, para las tildes y la ñ</td></tr>
+                  <tr><th scope="row"><code>with</code></th><td>cierra el recurso solo, incluso si hay error</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 11. Módulos -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Módulos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="python"><code><span class="tok-clave">import</span> math
+<span class="tok-funcion">print</span>(math.<span class="tok-funcion">sqrt</span>(<span class="tok-numero">16</span>), math.pi)
+
+<span class="tok-clave">from</span> datetime <span class="tok-clave">import</span> date          <span class="tok-coment"># importar algo concreto</span>
+<span class="tok-funcion">print</span>(date.<span class="tok-funcion">today</span>())
+
+<span class="tok-clave">from</span> random <span class="tok-clave">import</span> randint <span class="tok-clave">as</span> dado  <span class="tok-coment"># con otro nombre</span>
+<span class="tok-funcion">print</span>(<span class="tok-funcion">dado</span>(<span class="tok-numero">1</span>, <span class="tok-numero">6</span>))
+
+<span class="tok-clave">import</span> mi_modulo                    <span class="tok-coment"># un fichero mi_modulo.py tuyo</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>math</code></th><td>funciones matemáticas</td></tr>
+                  <tr><th scope="row"><code>random</code></th><td>números aleatorios</td></tr>
+                  <tr><th scope="row"><code>datetime</code></th><td>fechas y horas</td></tr>
+                  <tr><th scope="row"><code>os</code>, <code>sys</code></th><td>sistema y argumentos</td></tr>
+                  <tr><th scope="row"><code>json</code></th><td>leer y escribir JSON</td></tr>
+                  <tr><th scope="row"><code>pip install</code></th><td>instalar paquetes de terceros (requests, ...)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Trabaja siempre dentro de un entorno virtual (<code>python3 -m venv venv</code>) para no mezclar las dependencias de cada proyecto.</p>
+          </div>
+        </section>
+        <!-- 12. Despistes habituales -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Mezclar espacios y tabuladores</th><td>usa siempre 4 espacios; un <code>IndentationError</code> suele ser esto</td></tr>
+                  <tr><th scope="row">Olvidar los <code>:</code></th><td><code>if</code>, <code>for</code>, <code>def</code>... terminan en dos puntos</td></tr>
+                  <tr><th scope="row"><code>input()</code> es texto</th><td>conviértelo con <code>int()</code> antes de operar</td></tr>
+                  <tr><th scope="row"><code>=</code> vs <code>==</code></th><td>uno asigna, dos comparan</td></tr>
+                  <tr><th scope="row">Copiar listas</th><td><code>b = a</code> no copia; usa <code>a.copy()</code></td></tr>
+                  <tr><th scope="row">Índices desde 0</th><td>el primero es <code>[0]</code>; el último, <code>[-1]</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Comprueba el estilo con <code>ruff</code> o <code>flake8</code>, y formatea con <code>black</code>. La guía de estilo oficial es la PEP 8.</p>
+          </div>
+        </section>
+      </div>
+      <footer class="pie">Documentación oficial en <a href="https://docs.python.org/es/3/">docs.python.org/es</a>. Tutorial y referencia del lenguaje, con traducción al español.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
