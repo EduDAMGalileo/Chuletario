@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cortafuegos · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="seguridad">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Seguridad</a><span aria-hidden="true">›</span><span>Cortafuegos</span></nav>
+          <h1>Cortafuegos</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Qué es un cortafuegos, sus generaciones, los tipos que existen y para qué sirve cada uno. La teoría antes de iptables y nftables.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Seguridad">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="cortafuegos.html" aria-current="page">Cortafuegos</a><a href="iptables.html">iptables</a><a href="nftables.html">nftables</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es un cortafuegos</a><a href="#s2"><b>2</b>Las generaciones</a><a href="#s3"><b>3</b>Tipos por tecnología</a><a href="#s4"><b>4</b>Tipos por ubicación</a><a href="#s5"><b>5</b>Hardware o software</a><a href="#s6"><b>6</b>Políticas y reglas</a><a href="#s7"><b>7</b>La DMZ</a><a href="#s8"><b>8</b>Qué protege y qué no</a><a href="#s9"><b>9</b>Cortafuegos en Linux</a><a href="#s10"><b>10</b>Buenas prácticas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Un cortafuegos es un filtro entre dos redes: decide qué tráfico pasa y cuál se bloquea, según un conjunto de reglas. Es la frontera de la <a href="introduccion.html#s5">seguridad lógica</a> de red.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Idea clave</p>
+            <p class="txt">Cuanto más «alto» mira (recuerda las <a href="../redes/osi.html">capas OSI</a>), más entiende del tráfico y mejor decide, pero más le cuesta. Un filtro de paquetes mira IP y puertos (capa 3-4); uno de aplicación entiende HTTP (capa 7).</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es un cortafuegos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es un cortafuegos</h2>
+          <div class="cuerpo">
+            <p class="txt">Un cortafuegos (<em>firewall</em>) controla el tráfico de red que entra y sale, permitiéndolo o bloqueándolo según reglas. Su trabajo es separar zonas de confianza distintas: por ejemplo, tu red interna de internet.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Filtra</th><td>por IP, puerto, protocolo, estado o contenido</td></tr>
+                  <tr><th scope="row">Separa</th><td>zonas con distinto nivel de confianza</td></tr>
+                  <tr><th scope="row">Registra</th><td>deja constancia del tráfico y de los bloqueos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El nombre viene de los muros cortafuegos de los edificios: paredes que frenan el avance del fuego de una zona a otra.</p>
+          </div>
+        </section>
+        <!-- 2. Las generaciones -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Las generaciones</h2>
+          <div class="cuerpo">
+            <p class="txt">Los cortafuegos han evolucionado mirando cada vez más «arriba» en las capas de red:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">1ª · Filtrado de paquetes</th><td>mira cada paquete por separado: IP, puerto y protocolo. Rápido pero sin memoria</td></tr>
+                  <tr><th scope="row">2ª · Con estado</th><td>recuerda las conexiones abiertas y permite sus respuestas (<em>stateful</em>)</td></tr>
+                  <tr><th scope="row">3ª · De aplicación</th><td>entiende protocolos como HTTP o FTP (proxy, capa 7)</td></tr>
+                  <tr><th scope="row">NGFW</th><td><em>Next-Generation Firewall</em>: suma control de aplicaciones, IPS, antivirus e inspección profunda</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El salto de la 1ª a la 2ª generación fue clave: al recordar el estado de la conexión, no hace falta una regla para cada respuesta. Es lo que hacen iptables y nftables.</p>
+          </div>
+        </section>
+        <!-- 3. Tipos por tecnología -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Tipos por tecnología</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Filtrado de paquetes</th><td>reglas por IP/puerto/protocolo. Capa 3-4. Simple y veloz</td></tr>
+                  <tr><th scope="row">Inspección con estado</th><td>sigue el estado de cada conexión. Capa 3-4. El estándar actual</td></tr>
+                  <tr><th scope="row">Proxy / pasarela</th><td>hace de intermediario: el cliente habla con el proxy y este con el destino. Capa 7</td></tr>
+                  <tr><th scope="row">NGFW</th><td>identifica aplicaciones y usuarios, con IPS y antimalware integrados</td></tr>
+                  <tr><th scope="row">WAF</th><td>protege aplicaciones web (inyección SQL, XSS). Capa 7</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Un <strong>WAF</strong> es un cortafuegos especializado en tráfico web: es la defensa contra ataques como los de <a href="../hacking/sqlmap.html">sqlmap</a>.</p>
+          </div>
+        </section>
+        <!-- 4. Tipos por ubicación -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Tipos por ubicación</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Perimetral (de red)</th><td>en el borde de la red, entre la LAN e internet. Protege a todos los equipos</td></tr>
+                  <tr><th scope="row">De host (personal)</th><td>en el propio equipo (ufw, el de Windows). Protege solo a esa máquina</td></tr>
+                  <tr><th scope="row">De segmento</th><td>entre zonas internas (VLAN), para aislar departamentos</td></tr>
+                  <tr><th scope="row">En la nube</th><td>grupos de seguridad y cortafuegos gestionados del proveedor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Lo habitual es combinar: un cortafuegos perimetral protege la red y, además, cada equipo lleva el suyo de host. Eso es <a href="introduccion.html#s12">defensa en profundidad</a>.</p>
+          </div>
+        </section>
+        <!-- 5. Hardware o software -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Hardware o software</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Hardware</th><td>un aparato dedicado (Cisco, Fortinet, pfSense). Rápido, protege toda la red</td></tr>
+                  <tr><th scope="row">Software</th><td>un programa en el equipo (iptables, ufw, el de Windows)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">En el fondo, un cortafuegos «hardware» es también software corriendo en un equipo especializado. La diferencia es que está dedicado a esa tarea y suele proteger a toda una red desde el perímetro.</p>
+          </div>
+        </section>
+        <!-- 6. Políticas y reglas -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Políticas y reglas</h2>
+          <div class="cuerpo">
+            <p class="txt">Una regla dice qué hacer con un tráfico que cumpla unos criterios. La <strong>política por defecto</strong> es qué pasa con lo que no encaja en ninguna regla.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Lista blanca</th><td>denegar todo salvo lo permitido (<em>default deny</em>). Lo seguro</td></tr>
+                  <tr><th scope="row">Lista negra</th><td>permitir todo salvo lo prohibido (<em>default allow</em>). Más cómodo, menos seguro</td></tr>
+                  <tr><th scope="row">Orden</th><td>las reglas se evalúan de arriba abajo; gana la primera que coincide</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Regla de oro:</strong> política por defecto de denegar y abrir solo lo necesario. Es más trabajo, pero cualquier servicio que olvides queda cerrado, no expuesto.</p>
+          </div>
+        </section>
+        <!-- 7. La DMZ -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>La DMZ</h2>
+          <div class="cuerpo">
+            <p class="txt">La <strong>DMZ</strong> (zona desmilitarizada) es una red intermedia donde se colocan los servicios accesibles desde internet (web, correo), separados de la red interna.</p>
+            <figure class="codigo"><pre data-lang="text"><code>Internet ──▶ [Cortafuegos] ──▶ DMZ (web, correo)
+                   │
+                   └──▶ Red interna (equipos, datos)</code></pre></figure>
+            <p class="txt">Si atacan el servidor web de la DMZ, el intruso no llega directamente a la red interna: hay otro cortafuegos entre medias. Se expone lo justo y se protege lo importante.</p>
+          </div>
+        </section>
+        <!-- 8. Qué protege y qué no -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Qué protege y qué no</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Sí controla</th><td>qué conexiones entran y salen, y hacia qué puertos y servicios</td></tr>
+                  <tr><th scope="row">No sustituye</th><td>al antivirus: no analiza malware que llega por un canal permitido</td></tr>
+                  <tr><th scope="row">No ve</th><td>el contenido cifrado, salvo que haga inspección TLS</td></tr>
+                  <tr><th scope="row">No frena</th><td>a un usuario interno legítimo que actúa mal, ni el phishing</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> un cortafuegos es una capa, no la seguridad entera. Convive con antivirus, actualizaciones, copias y formación. Ninguna medida basta sola.</p>
+          </div>
+        </section>
+        <!-- 9. Cortafuegos en Linux -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Cortafuegos en Linux</h2>
+          <div class="cuerpo">
+            <p class="txt">En Linux, el cortafuegos vive en el núcleo (<strong>netfilter</strong>). Por encima hay varias herramientas para configurarlo:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">netfilter</th><td>el motor, dentro del núcleo</td></tr>
+                  <tr><th scope="row"><a href="iptables.html">iptables</a></th><td>la herramienta clásica</td></tr>
+                  <tr><th scope="row"><a href="nftables.html">nftables</a></th><td>la moderna, que la sustituye</td></tr>
+                  <tr><th scope="row">ufw</th><td>capa sencilla sobre iptables (Ubuntu)</td></tr>
+                  <tr><th scope="row">firewalld</th><td>gestión por zonas (Fedora, RHEL)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># ufw: lo más sencillo para un equipo</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">ufw</span> default deny incoming
+<span class="tok-clave">sudo</span> <span class="tok-clave">ufw</span> allow <span class="tok-numero">22</span>/tcp
+<span class="tok-clave">sudo</span> <span class="tok-clave">ufw</span> enable
+<span class="tok-clave">sudo</span> <span class="tok-clave">ufw</span> status verbose</code></pre></figure>
+            <p class="nota">Todos son cortafuegos con estado (2ª generación). Para el detalle, sigue con <a href="iptables.html">iptables</a> y <a href="nftables.html">nftables</a>.</p>
+          </div>
+        </section>
+        <!-- 10. Buenas prácticas -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Buenas prácticas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Denegar por defecto</th><td>abrir solo lo necesario</td></tr>
+                  <tr><th scope="row">Mínima exposición</th><td>cerrar los puertos y servicios que no se usen</td></tr>
+                  <tr><th scope="row">Permitir por estado</th><td>aceptar las respuestas de conexiones ya establecidas</td></tr>
+                  <tr><th scope="row">Registrar</th><td>guardar y revisar los bloqueos</td></tr>
+                  <tr><th scope="row">Documentar</th><td>anotar qué hace cada regla y por qué</td></tr>
+                  <tr><th scope="row">Probar</th><td>comprobar desde fuera qué queda expuesto (ver <a href="../hacking/nmap.html">Nmap</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Revisa qué expone tu equipo con <code>ss -tulpn</code> (ver <a href="../sistemas/servicios.html#s8">Servicios</a>) y ciérralo en el cortafuegos y en el propio servicio.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="introduccion.html">← Introducción</a><a class="siguiente" href="iptables.html">iptables →</a></nav>
+      <footer class="pie">Continúa en <a href="iptables.html">iptables</a> y <a href="nftables.html">nftables</a> para la configuración práctica en Linux.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
