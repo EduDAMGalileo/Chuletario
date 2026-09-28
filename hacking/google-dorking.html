@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google dorking · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="hacking">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Hacking</a><span aria-hidden="true">›</span><span>Google dorking</span></nav>
+          <h1>Google dorking</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Búsquedas avanzadas para encontrar información expuesta. Reconocimiento pasivo: úsalo para auditar tu propia presencia o en objetivos autorizados.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Hacking">
+      <div class="wrap"><a href="pentest.html">Pentest</a><a href="google-dorking.html" aria-current="page">Google dorking</a><a href="nmap.html">Nmap</a><a href="netcat.html">Netcat</a><a href="sqlmap.html">sqlmap</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es y para qué sirve</a><a href="#s2"><b>2</b>Operadores básicos</a><a href="#s3"><b>3</b>Operadores por sitio y URL</a><a href="#s4"><b>4</b>Combinar operadores</a><a href="#s5"><b>5</b>Documentos y ficheros</a><a href="#s6"><b>6</b>Directorios y paneles</a><a href="#s7"><b>7</b>Ficheros sensibles</a><a href="#s8"><b>8</b>Google Hacking Database</a><a href="#s9"><b>9</b>Dorking en otros servicios</a><a href="#s10"><b>10</b>Cómo protegerte</a><a href="#s11"><b>11</b>Normas de uso</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="aviso"><strong>Buscar es legal; acceder puede no serlo.</strong> Encontrar algo con Google es reconocimiento pasivo, pero entrar en un panel ajeno, descargar una base de datos expuesta o usar credenciales filtradas es acceso no autorizado (art. 197 bis del Código Penal), aunque el enlace apareciera en una búsqueda. Practica sobre tu propio dominio o sobre objetivos con permiso escrito.</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Google indexa mucho más de lo que la gente cree: paneles de administración, copias de seguridad, ficheros de configuración, documentos internos. Los <em>dorks</em> son búsquedas con operadores que filtran justo eso.</p>
+            <figure class="codigo"><pre data-lang="text"><code>site:tudominio.com filetype:pdf
+intitle:"index of" "backup"</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Reglas de sintaxis</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>operador:valor</code></th><td>sin espacio tras los dos puntos</td></tr>
+                  <tr><th scope="row"><code>"frase exacta"</code></th><td>entre comillas, tal cual</td></tr>
+                  <tr><th scope="row"><code>-palabra</code></th><td>excluir un término</td></tr>
+                  <tr><th scope="row"><code>a OR b</code></th><td>uno u otro (<code>OR</code> en mayúsculas)</td></tr>
+                  <tr><th scope="row"><code>( )</code></th><td>agrupar</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es y para qué sirve -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es y para qué sirve</h2>
+          <div class="cuerpo">
+            <p class="txt">El <em>Google dorking</em> (o <em>Google hacking</em>) es usar operadores de búsqueda para localizar información que no debería ser pública pero que el buscador ha indexado. Es una técnica de la fase de <a href="pentest.html#s3">reconocimiento</a>, y es <strong>pasiva</strong>: no tocas los sistemas del objetivo, solo consultas lo que Google ya tiene guardado.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Auditoría</th><td>ver qué de tu organización está expuesto sin querer</td></tr>
+                  <tr><th scope="row">Pentest / OSINT</th><td>reunir información del objetivo antes de escanear</td></tr>
+                  <tr><th scope="row">Bug bounty</th><td>encontrar subdominios y ficheros olvidados</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">No deja rastro en el objetivo, pero Google sí registra tus búsquedas. Para trabajos serios se usan cuentas y conexiones separadas.</p>
+          </div>
+        </section>
+        <!-- 2. Operadores básicos -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Operadores básicos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>"..."</code></th><td>frase exacta</td></tr>
+                  <tr><th scope="row"><code>-termino</code></th><td>excluir ese término</td></tr>
+                  <tr><th scope="row"><code>OR</code> · <code>|</code></th><td>uno u otro</td></tr>
+                  <tr><th scope="row"><code>*</code></th><td>comodín: una palabra cualquiera</td></tr>
+                  <tr><th scope="row"><code>( )</code></th><td>agrupar términos</td></tr>
+                  <tr><th scope="row"><code>número..número</code></th><td>rango: <code>precio 100..500</code></td></tr>
+                  <tr><th scope="row"><code>AROUND(3)</code></th><td>dos palabras a menos de N de distancia</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>("copia de seguridad" OR backup) -ejemplo
+informe * 2024..2025</code></pre></figure>
+          </div>
+        </section>
+        <!-- 3. Operadores por sitio y URL -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Operadores por sitio y URL</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>site:</code></th><td>solo en ese dominio: <code>site:ejemplo.com</code></td></tr>
+                  <tr><th scope="row"><code>inurl:</code></th><td>el texto aparece en la URL: <code>inurl:admin</code></td></tr>
+                  <tr><th scope="row"><code>allinurl:</code></th><td>todas las palabras en la URL</td></tr>
+                  <tr><th scope="row"><code>intitle:</code></th><td>en el título de la página</td></tr>
+                  <tr><th scope="row"><code>allintitle:</code></th><td>todas las palabras en el título</td></tr>
+                  <tr><th scope="row"><code>intext:</code></th><td>en el cuerpo del texto</td></tr>
+                  <tr><th scope="row"><code>filetype:</code> · <code>ext:</code></th><td>por extensión: <code>filetype:pdf</code></td></tr>
+                  <tr><th scope="row"><code>cache:</code></th><td>la copia guardada por Google</td></tr>
+                  <tr><th scope="row"><code>related:</code></th><td>sitios parecidos a uno dado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Empieza siempre acotando con <code>site:</code> a tu dominio. Es la forma limpia de practicar: ves lo que tú expones, sin husmear en sitios ajenos.</p>
+          </div>
+        </section>
+        <!-- 4. Combinar operadores -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Combinar operadores</h2>
+          <div class="cuerpo">
+            <p class="txt">La potencia real está en encadenarlos. Todos los ejemplos van acotados a tu propio dominio para auditarlo:</p>
+            <figure class="codigo"><figcaption>Documentos ofimáticos publicados sin querer</figcaption><pre data-lang="text"><code>site:tudominio.com (filetype:pdf OR filetype:xlsx OR filetype:docx)</code></pre></figure>
+            <figure class="codigo"><figcaption>Subdominios y entornos de pruebas</figcaption><pre data-lang="text"><code>site:*.tudominio.com -www
+site:tudominio.com inurl:(dev OR test OR staging OR pre)</code></pre></figure>
+            <figure class="codigo"><figcaption>Páginas de acceso</figcaption><pre data-lang="text"><code>site:tudominio.com inurl:(login OR admin OR panel OR wp-admin)</code></pre></figure>
+            <p class="nota">Cambia <code>tudominio.com</code> por el dominio que estés autorizado a revisar. Sin <code>site:</code>, estas mismas búsquedas rastrean todo internet.</p>
+          </div>
+        </section>
+        <!-- 5. Documentos y ficheros -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Documentos y ficheros</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>filetype:pdf</code></th><td>informes, manuales, actas</td></tr>
+                  <tr><th scope="row"><code>filetype:xlsx</code> · <code>csv</code></th><td>hojas de cálculo, a veces con datos personales</td></tr>
+                  <tr><th scope="row"><code>filetype:docx</code></th><td>documentos de texto</td></tr>
+                  <tr><th scope="row"><code>filetype:sql</code></th><td>volcados de bases de datos</td></tr>
+                  <tr><th scope="row"><code>filetype:log</code></th><td>registros con rutas y errores</td></tr>
+                  <tr><th scope="row"><code>filetype:bak</code> · <code>old</code></th><td>copias de seguridad de código</td></tr>
+                  <tr><th scope="row"><code>filetype:conf</code> · <code>ini</code></th><td>ficheros de configuración</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>site:tudominio.com filetype:sql
+site:tudominio.com filetype:log</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> aunque el fichero aparezca en la búsqueda, abrirlo o descargarlo de un dominio que no controlas ya es acceder a información ajena. Si auditas para un cliente, acláralo en el alcance.</p>
+          </div>
+        </section>
+        <!-- 6. Directorios y paneles -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Directorios y paneles</h2>
+          <div class="cuerpo">
+            <p class="txt">Cuando un servidor web tiene el listado de directorios activado, Google indexa la lista de ficheros. El clásico:</p>
+            <figure class="codigo"><pre data-lang="text"><code>site:tudominio.com intitle:"index of"
+site:tudominio.com intitle:"index of" (backup OR copia OR .git)</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>intitle:"index of"</code></th><td>listado de directorio abierto</td></tr>
+                  <tr><th scope="row"><code>inurl:/.git</code></th><td>repositorio Git expuesto</td></tr>
+                  <tr><th scope="row"><code>inurl:phpinfo</code></th><td>página <code>phpinfo()</code> con la configuración del servidor</td></tr>
+                  <tr><th scope="row"><code>intitle:"phpMyAdmin"</code></th><td>gestor de base de datos accesible</td></tr>
+                  <tr><th scope="row"><code>inurl:/wp-content/</code></th><td>instalaciones de WordPress</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Un directorio abierto o un <code>.git</code> expuesto permiten descargar código y configuración enteros. Es de los hallazgos más frecuentes al auditar un dominio propio.</p>
+          </div>
+        </section>
+        <!-- 7. Ficheros sensibles -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Ficheros sensibles</h2>
+          <div class="cuerpo">
+            <p class="txt">Patrones típicos que revelan secretos filtrados. Compruébalos <strong>en tu dominio</strong> para taparlos antes de que lo haga otro:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>filetype:env "DB_PASSWORD"</code></th><td>fichero <code>.env</code> con credenciales</td></tr>
+                  <tr><th scope="row"><code>filetype:sql "INSERT INTO users"</code></th><td>volcado con usuarios</td></tr>
+                  <tr><th scope="row"><code>intitle:"index of" ".ssh"</code></th><td>claves SSH expuestas</td></tr>
+                  <tr><th scope="row"><code>inurl:config filetype:txt</code></th><td>configuración en texto plano</td></tr>
+                  <tr><th scope="row"><code>filetype:xml inurl:web.config</code></th><td>configuración de aplicaciones .NET</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>site:tudominio.com (filetype:env OR filetype:ini OR filetype:conf)</code></pre></figure>
+            <p class="aviso"><strong>Si encuentras algo así en un sistema ajeno,</strong> no lo abras ni lo uses: documéntalo y repórtalo por el canal acordado. Usar credenciales encontradas, aunque estuvieran «a la vista», es intrusión.</p>
+          </div>
+        </section>
+        <!-- 8. Google Hacking Database -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Google Hacking Database</h2>
+          <div class="cuerpo">
+            <p class="txt">La <strong>GHDB</strong> (Google Hacking Database), en Exploit-DB, es un catálogo público de dorks ya probados, clasificados por lo que buscan: ficheros con contraseñas, dispositivos en línea, mensajes de error, etc.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">GHDB</th><td><code>exploit-db.com/google-hacking-database</code></td></tr>
+                  <tr><th scope="row">Categorías</th><td>por tipo: <em>Files Containing Passwords</em>, <em>Sensitive Directories</em>...</td></tr>
+                  <tr><th scope="row"><code>Pagodo</code>, <code>GoogleDorker</code></th><td>herramientas que automatizan lanzar dorks de la GHDB</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado con automatizar:</strong> lanzar muchas búsquedas seguidas hace que Google te pida un CAPTCHA o te bloquee la IP. Además, scrapear resultados va contra sus condiciones de uso. Para volumen, existen APIs de búsqueda de pago.</p>
+          </div>
+        </section>
+        <!-- 9. Dorking en otros servicios -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Dorking en otros servicios</h2>
+          <div class="cuerpo">
+            <p class="txt">La técnica no es exclusiva de Google. Cada plataforma tiene sus filtros:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Bing</th><td><code>site:</code>, <code>ip:</code> (busca por dirección IP), <code>feed:</code></td></tr>
+                  <tr><th scope="row">DuckDuckGo</th><td>operadores parecidos; menos filtrado</td></tr>
+                  <tr><th scope="row">Shodan</th><td>buscador de dispositivos: <code>port:</code>, <code>country:</code>, <code>org:</code></td></tr>
+                  <tr><th scope="row">Censys</th><td>servicios y certificados expuestos en internet</td></tr>
+                  <tr><th scope="row">GitHub</th><td><code>filename:.env</code>, <code>"api_key"</code>: secretos en el código</td></tr>
+                  <tr><th scope="row">Wayback Machine</th><td>versiones antiguas de una web</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El <em>GitHub dorking</em> es hoy tan productivo como el de Google: busca claves de API y contraseñas subidas por error a repositorios públicos.</p>
+          </div>
+        </section>
+        <!-- 10. Cómo protegerte -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Cómo protegerte</h2>
+          <div class="cuerpo">
+            <p class="txt">El lado defensivo, que es el objetivo de aprender esto:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>robots.txt</code></th><td>pide no indexar rutas (orientativo; no protege nada)</td></tr>
+                  <tr><th scope="row"><code>X-Robots-Tag: noindex</code></th><td>cabecera para excluir ficheros del índice</td></tr>
+                  <tr><th scope="row">Autenticación</th><td>lo sensible, detrás de login; nunca solo «oculto»</td></tr>
+                  <tr><th scope="row">Desactivar listados</th><td><code>Options -Indexes</code> en Apache</td></tr>
+                  <tr><th scope="row">Fuera del <em>web root</em></th><td><code>.env</code>, copias y <code>.git</code> nunca en la carpeta pública</td></tr>
+                  <tr><th scope="row">Search Console</th><td>revisar qué tiene Google indexado y pedir su retirada</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Ojo:</strong> <code>robots.txt</code> no oculta nada; al contrario, es una lista de las rutas que no quieres que se vean. Lo privado se protege con autenticación, no escondiéndolo.</p>
+          </div>
+        </section>
+        <!-- 11. Normas de uso -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Normas de uso</h2>
+          <div class="cuerpo"><p class="txt">Buscar información pública es legal, pero la línea se cruza al acceder. Practica sobre tu propio dominio o sobre objetivos con permiso escrito. Si en una auditoría autorizada encuentras datos expuestos de terceros, no los abras ni los reutilices: documenta la URL y repórtalo. Trata cualquier hallazgo como información sensible y no lo difundas. La misma búsqueda que te ayuda a proteger un sitio sirve para atacarlo; la diferencia es qué haces después.</p></div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="pentest.html">← Pentest</a><a class="siguiente" href="nmap.html">Nmap →</a></nav>
+      <footer class="pie">Google Hacking Database en <a href="https://www.exploit-db.com/google-hacking-database">exploit-db.com/google-hacking-database</a>. Operadores oficiales en la <a href="https://support.google.com/websearch/answer/2466433">ayuda de Google</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
