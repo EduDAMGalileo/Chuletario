@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cookies y sesiones · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="php">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">PHP</a><span aria-hidden="true">›</span><span>Cookies y sesiones</span></nav>
+          <h1>Cookies y sesiones</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Mantener el estado entre peticiones en PHP: cookies del lado del cliente, sesiones del lado del servidor, y cómo verlas en el navegador.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de PHP">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="cookies-sesiones.html" aria-current="page">Cookies y sesiones</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Por qué hacen falta</a><a href="#s2"><b>2</b>Qué es una cookie</a><a href="#s3"><b>3</b>Cookies en PHP</a><a href="#s4"><b>4</b>Opciones de una cookie</a><a href="#s5"><b>5</b>Qué es una sesión</a><a href="#s6"><b>6</b>Sesiones en PHP</a><a href="#s7"><b>7</b>Cookies o sesiones</a><a href="#s8"><b>8</b>Verlas en el navegador</a><a href="#s9"><b>9</b>Seguridad</a><a href="#s10"><b>10</b>Despistes</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt"><a href="../redes/http.html">HTTP no tiene estado</a>: cada petición es independiente. Para «recordar» quién eres entre páginas (que has iniciado sesión, tu carrito...) se usan <strong>cookies</strong> (guardadas en el navegador) y <strong>sesiones</strong> (guardadas en el servidor).</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Dónde vive cada cosa</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cookie</th><td>en el navegador del cliente</td></tr>
+                  <tr><th scope="row">Sesión</th><td>en el servidor; el navegador solo guarda su identificador</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Por qué hacen falta</h2>
+          <div class="cuerpo">
+            <p class="txt">Al ser HTTP sin estado, el servidor no sabe si dos peticiones vienen del mismo usuario. Cookies y sesiones resuelven eso: permiten mantener información entre peticiones (login, idioma, carrito de la compra).</p>
+            <p class="nota">Repaso del funcionamiento a nivel de protocolo (<code>Set-Cookie</code> / <code>Cookie</code>) en <a href="../redes/http.html#s9">HTTP y HTTPS</a>.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Qué es una cookie</h2>
+          <div class="cuerpo">
+            <p class="txt">Un pequeño dato (clave-valor) que el servidor pide guardar al navegador. El navegador lo reenvía en cada petición a ese sitio, así el servidor lo reconoce.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tamaño</th><td>pequeñas (unos 4 KB)</td></tr>
+                  <tr><th scope="row">Por dominio</th><td>el navegador solo las envía a su sitio</td></tr>
+                  <tr><th scope="row">Caducidad</th><td>de sesión (al cerrar el navegador) o con fecha</td></tr>
+                  <tr><th scope="row">Visibles</th><td>el usuario puede verlas y borrarlas</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Cookies en PHP</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// crear una cookie ANTES de cualquier salida HTML</span>
+<span class="tok-funcion">setcookie</span>(<span class="tok-texto">"idioma"</span>, <span class="tok-texto">"es"</span>, <span class="tok-funcion">time</span>() + <span class="tok-numero">3600</span>);   <span class="tok-coment">// caduca en 1 hora</span>
+
+<span class="tok-coment">// leerla (estará disponible en la SIGUIENTE petición)</span>
+<span class="tok-variable">$idioma</span> = <span class="tok-variable">$_COOKIE</span>[<span class="tok-texto">"idioma"</span>] ?? <span class="tok-texto">"es"</span>;
+
+<span class="tok-coment">// borrarla: ponerle una fecha pasada</span>
+<span class="tok-funcion">setcookie</span>(<span class="tok-texto">"idioma"</span>, <span class="tok-texto">""</span>, <span class="tok-funcion">time</span>() - <span class="tok-numero">3600</span>);</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>setcookie()</code> envía una cabecera HTTP, así que debe ir <strong>antes</strong> de imprimir nada (ni HTML, ni un espacio, ni un <code>echo</code>). Si no, el clásico error <em>«headers already sent»</em>.</p>
+            <p class="nota">Una cookie recién creada no aparece en <code>$_COOKIE</code> hasta la siguiente petición: el navegador aún no la ha reenviado.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Opciones de una cookie</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-funcion">setcookie</span>(<span class="tok-texto">"token"</span>, <span class="tok-variable">$valor</span>, [
+    <span class="tok-texto">"expires"</span>  =&gt; <span class="tok-funcion">time</span>() + <span class="tok-numero">86400</span>,
+    <span class="tok-texto">"path"</span>     =&gt; <span class="tok-texto">"/"</span>,
+    <span class="tok-texto">"domain"</span>   =&gt; <span class="tok-texto">"ejemplo.com"</span>,
+    <span class="tok-texto">"secure"</span>   =&gt; <span class="tok-clave">true</span>,      <span class="tok-coment">// solo por HTTPS</span>
+    <span class="tok-texto">"httponly"</span> =&gt; <span class="tok-clave">true</span>,      <span class="tok-coment">// no accesible desde JavaScript</span>
+    <span class="tok-texto">"samesite"</span> =&gt; <span class="tok-texto">"Lax"</span>,     <span class="tok-coment">// control entre sitios</span>
+]);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>expires</code></th><td>cuándo caduca; sin ella, dura hasta cerrar el navegador</td></tr>
+                  <tr><th scope="row"><code>path</code> / <code>domain</code></th><td>en qué rutas y dominios vale</td></tr>
+                  <tr><th scope="row"><code>secure</code></th><td>solo se envía por HTTPS</td></tr>
+                  <tr><th scope="row"><code>httponly</code></th><td>JavaScript no puede leerla (evita robo por XSS)</td></tr>
+                  <tr><th scope="row"><code>samesite</code></th><td><code>Lax</code>, <code>Strict</code> o <code>None</code>: envío entre sitios (evita CSRF)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Qué es una sesión</h2>
+          <div class="cuerpo">
+            <p class="txt">Los datos se guardan en el <strong>servidor</strong>; el navegador solo recibe una cookie con el <strong>identificador de sesión</strong> (<code>PHPSESSID</code>). Así, información sensible no viaja ni se almacena en el cliente.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">En el servidor</th><td>los datos (usuario, permisos...)</td></tr>
+                  <tr><th scope="row">En el cliente</th><td>solo el ID de sesión, en una cookie</td></tr>
+                  <tr><th scope="row">Más segura</th><td>el usuario no ve ni manipula los datos</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Sesiones en PHP</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-funcion">session_start</span>();                 <span class="tok-coment">// al principio, antes de cualquier salida</span>
+
+<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">"usuario"</span>] = <span class="tok-texto">"ana"</span>;    <span class="tok-coment">// guardar</span>
+<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">"rol"</span>] = <span class="tok-texto">"admin"</span>;
+
+<span class="tok-variable">$u</span> = <span class="tok-variable">$_SESSION</span>[<span class="tok-texto">"usuario"</span>] ?? <span class="tok-clave">null</span>;   <span class="tok-coment">// leer</span>
+
+<span class="tok-clave">unset</span>(<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">"rol"</span>]);         <span class="tok-coment">// borrar un dato</span>
+
+<span class="tok-coment">// cerrar la sesión por completo (logout)</span>
+<span class="tok-funcion">session_unset</span>();
+<span class="tok-funcion">session_destroy</span>();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>session_start()</code></th><td>inicia o retoma la sesión; en cada página que la use</td></tr>
+                  <tr><th scope="row"><code>$_SESSION</code></th><td>el array donde se guardan los datos</td></tr>
+                  <tr><th scope="row"><code>session_destroy()</code></th><td>destruye la sesión (logout)</td></tr>
+                  <tr><th scope="row"><code>session_regenerate_id()</code></th><td>cambia el ID (tras iniciar sesión)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> igual que las cookies, <code>session_start()</code> envía cabeceras: colócalo antes de cualquier HTML o salida.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Cookies o sesiones</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cookies</th><td>datos no sensibles: idioma, tema, «recuérdame»</td></tr>
+                  <tr><th scope="row">Sesiones</th><td>datos sensibles: usuario autenticado, permisos, carrito</td></tr>
+                  <tr><th scope="row">Persistencia</th><td>la cookie puede durar días; la sesión, hasta cerrar o caducar</td></tr>
+                  <tr><th scope="row">Ubicación</th><td>cookie en el cliente; sesión en el servidor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Van de la mano: la sesión necesita una cookie (el <code>PHPSESSID</code>) para funcionar. No metas contraseñas ni datos privados en cookies.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Verlas en el navegador</h2>
+          <div class="cuerpo">
+            <p class="txt">Con las herramientas de desarrollo (F12). El sitio donde se ven cambia de nombre según el navegador:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Chrome / Edge</th><td>pestaña <em>Application</em> › <em>Cookies</em> (y <em>Storage</em>)</td></tr>
+                  <tr><th scope="row">Firefox</th><td>pestaña <em>Almacenamiento</em> (<em>Storage</em>) › <em>Cookies</em></td></tr>
+                  <tr><th scope="row">Safari</th><td><em>Desarrollo</em> › <em>Almacenamiento</em></td></tr>
+                  <tr><th scope="row">Todos</th><td>la pestaña <em>Red</em> (Network) muestra <code>Set-Cookie</code> y <code>Cookie</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Ahí ves nombre, valor, caducidad y los indicadores <code>HttpOnly</code>, <code>Secure</code> y <code>SameSite</code> de cada cookie; también puedes borrarlas para probar.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Seguridad</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>HttpOnly</code></th><td>evita que un XSS robe la cookie de sesión</td></tr>
+                  <tr><th scope="row"><code>Secure</code></th><td>la cookie solo viaja cifrada (HTTPS)</td></tr>
+                  <tr><th scope="row"><code>SameSite</code></th><td>mitiga el CSRF (peticiones desde otros sitios)</td></tr>
+                  <tr><th scope="row">Regenerar el ID</th><td><code>session_regenerate_id(true)</code> al iniciar sesión, contra la fijación</td></tr>
+                  <tr><th scope="row">No confíes en cookies</th><td>el usuario puede manipularlas; valida en el servidor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> nunca guardes contraseñas ni permisos en una cookie sin más: el cliente puede cambiarla. Lo sensible, en la sesión (servidor). Ver <a href="../seguridad/introduccion.html">Seguridad</a>.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Despistes</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Headers already sent</th><td><code>setcookie</code>/<code>session_start</code> antes de cualquier salida</td></tr>
+                  <tr><th scope="row">La cookie no aparece</th><td>está disponible en la siguiente petición, no en la actual</td></tr>
+                  <tr><th scope="row">No borra bien</th><td>usa el mismo <code>path</code>/<code>domain</code> que al crearla</td></tr>
+                  <tr><th scope="row">Sesión que no persiste</th><td>falta <code>session_start()</code> en alguna página</td></tr>
+                  <tr><th scope="row">Logout incompleto</th><td>haz <code>session_unset()</code> y <code>session_destroy()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sintaxis.html">← Sintaxis básica</a><span></span></nav>
+      <footer class="pie">Documentación: <a href="https://www.php.net/manual/es/features.cookies.php">cookies</a> y <a href="https://www.php.net/manual/es/book.session.php">sesiones</a> en php.net.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

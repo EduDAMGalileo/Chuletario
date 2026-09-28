@@ -21,76 +21,100 @@
         </div>
       </div>
     </header>
+    <nav class="menu-secciones" aria-label="Secciones del Chuletario">
+      <div class="wrap"><a href="#programacion" style="--color-tema: #2F5CD6">Programación</a><a href="#sistemas" style="--color-tema: #B01B3F">Sistemas</a><a href="#redes" style="--color-tema: #0E7C9B">Redes</a><a href="#hacking" style="--color-tema: #2E7D32">Hacking</a><a href="#seguridad" style="--color-tema: #3E5C76">Seguridad</a><a href="#git" style="--color-tema: #E4572E">Control de versiones</a><a href="#docker" style="--color-tema: #1B9A8B">Virtualización</a><a href="#qa" style="--color-tema: #B0710B">QA</a><a href="#bases-datos" style="--color-tema: #C2185B">Bases de datos</a><a href="#web" style="--color-tema: #6A8F00">Desarrollo web</a><a href="#marcas" style="--color-tema: #6D28D9">Lenguajes de marcas</a></div>
+    </nav>
     <main class="wrap">
       <p class="intro">Cada chuleta tiene su índice de secciones, ejemplos que se pueden copiar con un clic y una versión pensada para imprimir. Funcionan sin conexión: basta con abrir los ficheros.</p>
-      <!-- Tema: Sistemas -->
-      <section class="grupo">
+                  <!-- Tema: Programación -->
+      <section class="grupo" id="programacion" style="--color-tema: #2F5CD6">
+        <h2><a href="programacion/index.html">Programación</a></h2>
+        <p class="desc-tema">Fundamentos, metodologías y lenguajes de programación.</p>
+        <h3 class="lenguaje">Fundamentos</h3>
+        <div class="fichas"><a class="ficha" href="programacion/fundamentos.html" style="--color-tema: #2F5CD6"><span class="nombre">Fundamentos de programación</span><span class="desc">Algoritmo, fases del desarrollo, paradigmas e historia de los lenguajes.</span></a><a class="ficha" href="programacion/pseudocodigo.html" style="--color-tema: #2F5CD6"><span class="nombre">Pseudocódigo y diagramas</span><span class="desc">Diseñar el algoritmo antes de programar, con pseudocódigo y diagramas de flujo.</span></a><a class="ficha" href="programacion/entornos.html" style="--color-tema: #2F5CD6"><span class="nombre">Entornos de desarrollo</span><span class="desc">Qué es un IDE, qué debería tener y en qué nos ayuda.</span></a><a class="ficha" href="programacion/eclipse.html" style="--color-tema: #2F5CD6"><span class="nombre">Eclipse</span><span class="desc">El IDE clásico de Java: build path, ejecutar y depurar, Git y atajos.</span></a></div>
+        <h3 class="lenguaje">Metodologías</h3>
+        <div class="fichas"><a class="ficha" href="programacion/agile.html" style="--color-tema: #2F5CD6"><span class="nombre">Agile</span><span class="desc">Desarrollo ágil: manifiesto, Scrum, Kanban e historias de usuario.</span></a><a class="ficha" href="programacion/cascada.html" style="--color-tema: #2F5CD6"><span class="nombre">Modelo en cascada</span><span class="desc">El modelo clásico y secuencial de desarrollo.</span></a></div>
+        <h3 class="lenguaje"><a href="java/index.html">Java</a></h3>
+        <div class="fichas"><a class="ficha" href="java/sintaxis.html" style="--color-tema: #2F5CD6"><span class="nombre">Sintaxis básica</span><span class="desc">Tipos, variables, operadores, control de flujo y arrays.</span></a><a class="ficha" href="java/strings.html" style="--color-tema: #2F5CD6"><span class="nombre">Strings</span><span class="desc">Métodos de String, formato de texto, bloques de texto y StringBuilder.</span></a><a class="ficha" href="java/poo.html" style="--color-tema: #2F5CD6"><span class="nombre">Orientación a objetos</span><span class="desc">Clases, herencia, interfaces, records, enums y pattern matching.</span></a><a class="ficha" href="java/excepciones.html" style="--color-tema: #2F5CD6"><span class="nombre">Excepciones</span><span class="desc">try-catch, excepciones comprobadas, recursos y errores propios.</span></a><a class="ficha" href="java/colecciones.html" style="--color-tema: #2F5CD6"><span class="nombre">Colecciones</span><span class="desc">List, Set, Map, recorridos, ordenación y utilidades.</span></a><a class="ficha" href="java/streams.html" style="--color-tema: #2F5CD6"><span class="nombre">Lambdas y streams</span><span class="desc">Expresiones lambda, interfaces funcionales, streams y Optional.</span></a><a class="ficha" href="java/fechas.html" style="--color-tema: #2F5CD6"><span class="nombre">Fechas y horas</span><span class="desc">LocalDate, LocalDateTime, Duration, Period, formato y cálculos.</span></a><a class="ficha" href="java/ficheros.html" style="--color-tema: #2F5CD6"><span class="nombre">Ficheros y entrada/salida</span><span class="desc">Leer y escribir ficheros, rutas y entrada por teclado.</span></a><a class="ficha" href="java/entrada-salida.html" style="--color-tema: #2F5CD6"><span class="nombre">Clases de entrada/salida</span><span class="desc">Jerarquía de flujos de bytes y caracteres, y los métodos de cada clase.</span></a><a class="ficha" href="java/maven.html" style="--color-tema: #2F5CD6"><span class="nombre">Maven</span><span class="desc">Compilar, gestionar dependencias y empaquetar proyectos Java.</span></a></div>
+        <h3 class="lenguaje"><a href="python/index.html">Python</a></h3>
+        <div class="fichas"><a class="ficha" href="python/sintaxis.html" style="--color-tema: #2F5CD6"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, tipos, control de flujo, colecciones y funciones.</span></a></div>
+        <h3 class="lenguaje"><a href="kotlin/index.html">Kotlin</a></h3>
+        <div class="fichas"><a class="ficha" href="kotlin/sintaxis.html" style="--color-tema: #2F5CD6"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, tipos, control de flujo, colecciones, funciones y nulos.</span></a></div>
+        <h3 class="lenguaje"><a href="php/index.html">PHP</a></h3>
+        <div class="fichas"><a class="ficha" href="php/sintaxis.html" style="--color-tema: #2F5CD6"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, cadenas, operadores, control de flujo, arrays y funciones.</span></a><a class="ficha" href="php/cookies-sesiones.html" style="--color-tema: #2F5CD6"><span class="nombre">Cookies y sesiones</span><span class="desc">Mantener el estado en la web y verlo en el navegador.</span></a></div>
+      </section>
+<!-- Tema: Sistemas -->
+      <section class="grupo" id="sistemas" style="--color-tema: #B01B3F">
         <h2><a href="sistemas/index.html">Sistemas</a></h2>
         <p class="desc-tema">El sistema operativo Linux y su administración.</p>
         <h3 class="lenguaje">El sistema</h3>
-      <div class="fichas"><a class="ficha" href="sistemas/linux.html" style="--color-tema: #A80030"><span class="nombre">Linux</span><span class="desc">Qué es Linux, el núcleo y las distribuciones, y las grandes familias con sus gestores de paquetes.</span></a><a class="ficha" href="sistemas/terminal-linux.html" style="--color-tema: #A80030"><span class="nombre">Terminal Linux</span><span class="desc">Comandos más usados en sistemas basados en Debian, como Ubuntu y Kali.</span></a></div>
+      <div class="fichas"><a class="ficha" href="sistemas/linux.html" style="--color-tema: #B01B3F"><span class="nombre">Linux</span><span class="desc">Qué es Linux, el núcleo y las distribuciones, y las grandes familias con sus gestores de paquetes.</span></a><a class="ficha" href="sistemas/terminal-linux.html" style="--color-tema: #B01B3F"><span class="nombre">Terminal Linux</span><span class="desc">Comandos más usados en sistemas basados en Debian, como Ubuntu y Kali.</span></a></div>
       <h3 class="lenguaje">Editor</h3>
-      <div class="fichas"><a class="ficha" href="sistemas/vim.html" style="--color-tema: #A80030"><span class="nombre">Vim</span><span class="desc">El editor modal de la terminal: modos, moverse, editar, buscar y configurar.</span></a></div>
+      <div class="fichas"><a class="ficha" href="sistemas/vim.html" style="--color-tema: #B01B3F"><span class="nombre">Vim</span><span class="desc">El editor modal de la terminal: modos, moverse, editar, buscar y configurar.</span></a></div>
       <h3 class="lenguaje">Administración</h3>
-      <div class="fichas"><a class="ficha" href="sistemas/bash-script.html" style="--color-tema: #A80030"><span class="nombre">Shell script</span><span class="desc">Scripts de Bash: variables, condiciones, bucles, arrays y funciones.</span></a><a class="ficha" href="sistemas/servicios.html" style="--color-tema: #A80030"><span class="nombre">Servicios y demonios</span><span class="desc">systemd: arrancar y habilitar servicios, poner un programa como servicio, logs y puertos.</span></a><a class="ficha" href="sistemas/tareas.html" style="--color-tema: #A80030"><span class="nombre">Tareas programadas</span><span class="desc">Programar tareas con cron, at y los timers de systemd.</span></a></div>
+      <div class="fichas"><a class="ficha" href="sistemas/bash-script.html" style="--color-tema: #B01B3F"><span class="nombre">Shell script</span><span class="desc">Scripts de Bash: variables, condiciones, bucles, arrays y funciones.</span></a><a class="ficha" href="sistemas/servicios.html" style="--color-tema: #B01B3F"><span class="nombre">Servicios y demonios</span><span class="desc">systemd: arrancar y habilitar servicios, poner un programa como servicio, logs y puertos.</span></a><a class="ficha" href="sistemas/tareas.html" style="--color-tema: #B01B3F"><span class="nombre">Tareas programadas</span><span class="desc">Programar tareas con cron, at y los timers de systemd.</span></a></div>
       </section>
-      <!-- Tema: Redes -->
-      <section class="grupo">
+            <!-- Tema: Redes -->
+      <section class="grupo" id="redes" style="--color-tema: #0E7C9B">
         <h2><a href="redes/index.html">Redes</a></h2>
-        <p class="desc-tema">Los modelos de red (OSI y TCP/IP) y la configuración en Linux.</p>
+        <p class="desc-tema">Modelos de red, protocolos y configuración en Linux.</p>
         <h3 class="lenguaje">Teoría</h3>
-      <div class="fichas"><a class="ficha" href="redes/osi.html" style="--color-tema: #1565C0"><span class="nombre">Modelo OSI</span><span class="desc">El modelo de referencia de 7 capas: función y protocolos de cada una.</span></a><a class="ficha" href="redes/tcp-ip.html" style="--color-tema: #1565C0"><span class="nombre">Modelo TCP/IP</span><span class="desc">El modelo de internet: 4 capas, protocolos, puertos y el viaje de un paquete.</span></a></div>
-      <h3 class="lenguaje">Configuración en Linux</h3>
-      <div class="fichas"><a class="ficha" href="redes/red-linux.html" style="--color-tema: #1565C0"><span class="nombre">Configurar la red</span><span class="desc">IP, rutas y DNS con el comando ip, Netplan y NetworkManager.</span></a><a class="ficha" href="redes/red-clasica.html" style="--color-tema: #1565C0"><span class="nombre">Red: método clásico</span><span class="desc">ifconfig, route y /etc/network/interfaces con ifupdown.</span></a></div>
+        <div class="fichas"><a class="ficha" href="redes/osi.html" style="--color-tema: #0E7C9B"><span class="nombre">Modelo OSI</span><span class="desc">El modelo de referencia de 7 capas: función y protocolos de cada una.</span></a><a class="ficha" href="redes/tcp-ip.html" style="--color-tema: #0E7C9B"><span class="nombre">Modelo TCP/IP</span><span class="desc">El modelo de internet: 4 capas, protocolos, puertos y el viaje de un paquete.</span></a></div>
+        <h3 class="lenguaje">Protocolos</h3>
+        <div class="fichas"><a class="ficha" href="redes/http.html" style="--color-tema: #0E7C9B"><span class="nombre">HTTP y HTTPS</span><span class="desc">El protocolo de la web: métodos, códigos de estado, cabeceras y HTTPS.</span></a></div>
+        <h3 class="lenguaje">Configuración en Linux</h3>
+        <div class="fichas"><a class="ficha" href="redes/red-linux.html" style="--color-tema: #0E7C9B"><span class="nombre">Configurar la red</span><span class="desc">IP, rutas y DNS con el comando ip, Netplan y NetworkManager.</span></a><a class="ficha" href="redes/red-clasica.html" style="--color-tema: #0E7C9B"><span class="nombre">Red: método clásico</span><span class="desc">ifconfig, route y /etc/network/interfaces con ifupdown.</span></a></div>
       </section>
       <!-- Tema: Hacking -->
-      <section class="grupo">
+      <section class="grupo" id="hacking" style="--color-tema: #2E7D32">
         <h2><a href="hacking/index.html">Hacking</a></h2>
         <p class="desc-tema">Test de intrusión: fases y herramientas, para entornos autorizados.</p>
         <div class="fichas"><a class="ficha" href="hacking/pentest.html" style="--color-tema: #2E7D32"><span class="nombre">Pentest</span><span class="desc">Las fases de un test de intrusión y las herramientas típicas de cada una.</span></a><a class="ficha" href="hacking/google-dorking.html" style="--color-tema: #2E7D32"><span class="nombre">Google dorking</span><span class="desc">Búsquedas avanzadas para encontrar información expuesta.</span></a><a class="ficha" href="hacking/nmap.html" style="--color-tema: #2E7D32"><span class="nombre">Nmap</span><span class="desc">Descubrimiento de equipos, escaneo de puertos y detección de servicios.</span></a><a class="ficha" href="hacking/netcat.html" style="--color-tema: #2E7D32"><span class="nombre">Netcat</span><span class="desc">Conectar, escuchar, transferir datos y depurar servicios de red.</span></a><a class="ficha" href="hacking/sqlmap.html" style="--color-tema: #2E7D32"><span class="nombre">sqlmap</span><span class="desc">Detección y explotación automática de inyección SQL.</span></a></div>
       </section>
       <!-- Tema: Seguridad -->
-      <section class="grupo">
+      <section class="grupo" id="seguridad" style="--color-tema: #3E5C76">
         <h2><a href="seguridad/index.html">Seguridad</a></h2>
         <p class="desc-tema">El lado defensivo: fundamentos, cortafuegos y (pronto) cifrado y VPN.</p>
-        <div class="fichas"><a class="ficha" href="seguridad/introduccion.html" style="--color-tema: #0B6E99"><span class="nombre">Introducción</span><span class="desc">Tipos de seguridad, los pilares CIDAN y las técnicas de cada uno.</span></a><a class="ficha" href="seguridad/cortafuegos.html" style="--color-tema: #0B6E99"><span class="nombre">Cortafuegos</span><span class="desc">Qué es un cortafuegos, generaciones, tipos y para qué sirve cada uno.</span></a><a class="ficha" href="seguridad/iptables.html" style="--color-tema: #0B6E99"><span class="nombre">iptables</span><span class="desc">El cortafuegos clásico de Linux: tablas, cadenas y reglas.</span></a><a class="ficha" href="seguridad/nftables.html" style="--color-tema: #0B6E99"><span class="nombre">nftables</span><span class="desc">El cortafuegos moderno de Linux, sucesor de iptables.</span></a></div>
+        <div class="fichas"><a class="ficha" href="seguridad/introduccion.html" style="--color-tema: #3E5C76"><span class="nombre">Introducción</span><span class="desc">Tipos de seguridad, los pilares CIDAN y las técnicas de cada uno.</span></a><a class="ficha" href="seguridad/cortafuegos.html" style="--color-tema: #3E5C76"><span class="nombre">Cortafuegos</span><span class="desc">Qué es un cortafuegos, generaciones, tipos y para qué sirve cada uno.</span></a><a class="ficha" href="seguridad/iptables.html" style="--color-tema: #3E5C76"><span class="nombre">iptables</span><span class="desc">El cortafuegos clásico de Linux: tablas, cadenas y reglas.</span></a><a class="ficha" href="seguridad/nftables.html" style="--color-tema: #3E5C76"><span class="nombre">nftables</span><span class="desc">El cortafuegos moderno de Linux, sucesor de iptables.</span></a></div>
       </section>
       <!-- Tema: Control de versiones -->
-      <section class="grupo">
-        <h2><a href="git/git.html">Control de versiones</a></h2>
-        <p class="desc-tema">Git en el día a día.</p>
-        <div class="fichas"><a class="ficha" href="git/git.html" style="--color-tema: #F05032"><span class="nombre">Git</span><span class="desc">Configuración, flujo diario, ramas, merge y cómo deshacer cambios.</span></a></div>
+      <section class="grupo" id="git" style="--color-tema: #E4572E">
+        <h2><a href="git/index.html">Control de versiones</a></h2>
+        <p class="desc-tema">Git en el día a día y la colaboración con GitHub.</p>
+        <div class="fichas"><a class="ficha" href="git/git.html" style="--color-tema: #E4572E"><span class="nombre">Git</span><span class="desc">Configuración, flujo diario, ramas, merge y cómo deshacer cambios.</span></a><a class="ficha" href="git/github.html" style="--color-tema: #E4572E"><span class="nombre">GitHub</span><span class="desc">Forks, pull requests, code review y el flujo del código abierto.</span></a></div>
       </section>
-      <!-- Tema: Programación (un subapartado por lenguaje) -->
-      <section class="grupo">
-        <h2><a href="programacion/index.html">Programación</a></h2>
-        <p class="desc-tema">Lenguajes de programación, cada uno con sus chuletas.</p>
-        <h3 class="lenguaje"><a href="java/index.html">Java</a></h3>
-        <div class="fichas"><a class="ficha" href="java/sintaxis.html" style="--color-tema: #E76F00"><span class="nombre">Sintaxis básica</span><span class="desc">Tipos, variables, operadores, control de flujo y arrays.</span></a><a class="ficha" href="java/strings.html" style="--color-tema: #E76F00"><span class="nombre">Strings</span><span class="desc">Métodos de String, formato de texto, bloques de texto y StringBuilder.</span></a><a class="ficha" href="java/poo.html" style="--color-tema: #E76F00"><span class="nombre">Orientación a objetos</span><span class="desc">Clases, herencia, interfaces, records, enums y pattern matching.</span></a><a class="ficha" href="java/excepciones.html" style="--color-tema: #E76F00"><span class="nombre">Excepciones</span><span class="desc">try-catch, excepciones comprobadas, recursos y errores propios.</span></a><a class="ficha" href="java/colecciones.html" style="--color-tema: #E76F00"><span class="nombre">Colecciones</span><span class="desc">List, Set, Map, recorridos, ordenación y utilidades.</span></a><a class="ficha" href="java/streams.html" style="--color-tema: #E76F00"><span class="nombre">Lambdas y streams</span><span class="desc">Expresiones lambda, interfaces funcionales, streams y Optional.</span></a><a class="ficha" href="java/fechas.html" style="--color-tema: #E76F00"><span class="nombre">Fechas y horas</span><span class="desc">LocalDate, LocalDateTime, Duration, Period, formato y cálculos con fechas.</span></a><a class="ficha" href="java/ficheros.html" style="--color-tema: #E76F00"><span class="nombre">Ficheros y entrada/salida</span><span class="desc">Leer y escribir ficheros, rutas y entrada por teclado.</span></a><a class="ficha" href="java/entrada-salida.html" style="--color-tema: #E76F00"><span class="nombre">Clases de entrada/salida</span><span class="desc">Jerarquía de flujos de bytes y caracteres, y los métodos de cada clase.</span></a></div>
-        <h3 class="lenguaje"><a href="python/index.html">Python</a></h3>
-        <div class="fichas"><a class="ficha" href="python/sintaxis.html" style="--color-tema: #3776AB"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, tipos, control de flujo, colecciones y funciones.</span></a></div>
-        <h3 class="lenguaje"><a href="kotlin/index.html">Kotlin</a></h3>
-        <div class="fichas"><a class="ficha" href="kotlin/sintaxis.html" style="--color-tema: #7F52FF"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, tipos, control de flujo, colecciones, funciones y nulos.</span></a></div>
-        <h3 class="lenguaje"><a href="php/index.html">PHP</a></h3>
-        <div class="fichas"><a class="ficha" href="php/sintaxis.html" style="--color-tema: #4F5B93"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, cadenas, operadores, control de flujo, arrays y funciones.</span></a></div>
+            <!-- Tema: Virtualización -->
+      <section class="grupo" id="docker" style="--color-tema: #1B9A8B">
+        <h2><a href="docker/index.html">Virtualización</a></h2>
+        <p class="desc-tema">Entornos aislados y reproducibles: contenedores y máquinas virtuales.</p>
+        <div class="fichas"><a class="ficha" href="docker/docker.html" style="--color-tema: #1B9A8B"><span class="nombre">Docker</span><span class="desc">Contenedores: imágenes, Dockerfile, volúmenes, redes y Docker Compose.</span></a><a class="ficha" href="docker/vagrant.html" style="--color-tema: #1B9A8B"><span class="nombre">Vagrant</span><span class="desc">Máquinas virtuales reproducibles desde un Vagrantfile.</span></a></div>
+      </section>
+      <!-- Tema: QA -->
+      <section class="grupo" id="qa" style="--color-tema: #B0710B">
+        <h2><a href="qa/index.html">QA</a></h2>
+        <p class="desc-tema">Calidad y pruebas de software: fundamentos y, poco a poco, herramientas.</p>
+        <div class="fichas"><a class="ficha" href="qa/fundamentos.html" style="--color-tema: #B0710B"><span class="nombre">Fundamentos</span><span class="desc">Ramas de QA, niveles y tipos de prueba, roles, proceso y defectos.</span></a></div>
       </section>
       <!-- Tema: Bases de datos -->
-      <section class="grupo">
+      <section class="grupo" id="bases-datos" style="--color-tema: #C2185B">
         <h2><a href="bases-datos/index.html">Bases de datos</a></h2>
         <p class="desc-tema">SQL y las particularidades de cada gestor.</p>
-        <div class="fichas"><a class="ficha" href="bases-datos/sql.html" style="--color-tema: #00758F"><span class="nombre">SQL</span><span class="desc">DDL, DML, consultas, JOIN, agrupación y transacciones.</span></a><a class="ficha" href="bases-datos/postgresql.html" style="--color-tema: #00758F"><span class="nombre">PostgreSQL</span><span class="desc">Comandos de psql y diferencias de sintaxis con MySQL.</span></a></div>
+        <div class="fichas"><a class="ficha" href="bases-datos/sql.html" style="--color-tema: #C2185B"><span class="nombre">SQL</span><span class="desc">DDL, DML, consultas, JOIN, agrupación y transacciones.</span></a><a class="ficha" href="bases-datos/postgresql.html" style="--color-tema: #C2185B"><span class="nombre">PostgreSQL</span><span class="desc">Comandos de psql y diferencias de sintaxis con MySQL.</span></a></div>
       </section>
       <!-- Tema: Desarrollo web -->
-      <section class="grupo">
+      <section class="grupo" id="web" style="--color-tema: #6A8F00">
         <h2><a href="web/index.html">Desarrollo web</a></h2>
         <p class="desc-tema">Estructura y estilo de una página.</p>
-        <div class="fichas"><a class="ficha" href="web/html.html" style="--color-tema: #E34C26"><span class="nombre">HTML</span><span class="desc">Estructura, etiquetas semánticas, tablas y formularios.</span></a><a class="ficha" href="web/css.html" style="--color-tema: #E34C26"><span class="nombre">CSS</span><span class="desc">Selectores, modelo de caja, Flexbox, Grid y responsive.</span></a></div>
+        <div class="fichas"><a class="ficha" href="web/html.html" style="--color-tema: #6A8F00"><span class="nombre">HTML</span><span class="desc">Estructura, etiquetas semánticas, tablas y formularios.</span></a><a class="ficha" href="web/css.html" style="--color-tema: #6A8F00"><span class="nombre">CSS</span><span class="desc">Selectores, modelo de caja, Flexbox, Grid y responsive.</span></a></div>
       </section>
-      <!-- Tema: XML -->
-      <section class="grupo">
-        <h2><a href="xml/index.html">XML</a></h2>
-        <p class="desc-tema">Definir, validar y consultar documentos XML.</p>
-        <div class="fichas"><a class="ficha" href="xml/dtd.html" style="--color-tema: #5E6AD2"><span class="nombre">DTD</span><span class="desc">Elementos, atributos, entidades y validación.</span></a><a class="ficha" href="xml/xsd.html" style="--color-tema: #5E6AD2"><span class="nombre">XML Schema</span><span class="desc">Tipos simples y complejos, restricciones y claves.</span></a><a class="ficha" href="xml/xpath.html" style="--color-tema: #5E6AD2"><span class="nombre">XPath</span><span class="desc">Rutas, ejes, predicados y funciones para consultar XML.</span></a><a class="ficha" href="xml/xquery.html" style="--color-tema: #5E6AD2"><span class="nombre">XQuery</span><span class="desc">Consultas FLWOR, construcción de XML, agrupación y actualización.</span></a></div>
+      <!-- Tema: Lenguajes de marcas -->
+      <section class="grupo" id="marcas" style="--color-tema: #6D28D9">
+        <h2><a href="xml/index.html">Lenguajes de marcas</a></h2>
+        <p class="desc-tema">XML y sus tecnologías, y otros formatos de datos y texto: JSON, YAML y Markdown.</p>
+        <h3 class="lenguaje">XML</h3>
+      <div class="fichas"><a class="ficha" href="xml/dtd.html" style="--color-tema: #6D28D9"><span class="nombre">DTD</span><span class="desc">Elementos, atributos, entidades y validación.</span></a><a class="ficha" href="xml/xsd.html" style="--color-tema: #6D28D9"><span class="nombre">XML Schema</span><span class="desc">Tipos simples y complejos, restricciones y claves.</span></a><a class="ficha" href="xml/xpath.html" style="--color-tema: #6D28D9"><span class="nombre">XPath</span><span class="desc">Rutas, ejes, predicados y funciones para consultar XML.</span></a><a class="ficha" href="xml/xquery.html" style="--color-tema: #6D28D9"><span class="nombre">XQuery</span><span class="desc">Consultas FLWOR, construcción de XML, agrupación y actualización.</span></a></div>
+      <h3 class="lenguaje">Otros formatos</h3>
+      <div class="fichas"><a class="ficha" href="xml/json.html" style="--color-tema: #6D28D9"><span class="nombre">JSON</span><span class="desc">El formato de intercambio de datos de la web y las APIs.</span></a><a class="ficha" href="xml/yaml.html" style="--color-tema: #6D28D9"><span class="nombre">YAML</span><span class="desc">Configuración legible: Docker Compose, Kubernetes, CI/CD.</span></a><a class="ficha" href="xml/markdown.html" style="--color-tema: #6D28D9"><span class="nombre">Markdown</span><span class="desc">Texto con formato para README, documentación y notas.</span></a></div>
       </section>
       <footer class="pie">Proyecto abierto: se pueden añadir chuletas nuevas creando un fichero HTML dentro de la carpeta de su tema.</footer>
     </main>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Maven · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Maven</span></nav>
+          <h1>Maven</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">La herramienta que compila, gestiona dependencias y empaqueta proyectos Java. Un <code>pom.xml</code> y unos comandos.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="strings.html">Strings</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="maven.html" aria-current="page">Maven</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es Maven</a><a href="#s2"><b>2</b>Estructura del proyecto</a><a href="#s3"><b>3</b>El pom.xml</a><a href="#s4"><b>4</b>Coordenadas</a><a href="#s5"><b>5</b>Dependencias</a><a href="#s6"><b>6</b>Repositorios</a><a href="#s7"><b>7</b>Ciclo de vida</a><a href="#s8"><b>8</b>Comandos</a><a href="#s9"><b>9</b>Plugins</a><a href="#s10"><b>10</b>Maven o Gradle</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Qué resuelve</p>
+            <p class="txt">Maven automatiza el ciclo de construir un proyecto Java: descarga las <strong>librerías</strong> que necesita, <strong>compila</strong>, ejecuta las <strong>pruebas</strong> y <strong>empaqueta</strong> el resultado (un <code>.jar</code>), todo con un comando y una configuración común.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Lo mínimo</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">mvn</span> clean package     <span class="tok-coment"># limpia, compila, prueba y empaqueta</span>
+<span class="tok-clave">mvn</span> test              <span class="tok-coment"># solo las pruebas</span>
+<span class="tok-clave">mvn</span> <span class="tok-atributo">--version</span></code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es Maven</h2>
+          <div class="cuerpo">
+            <p class="txt">Una herramienta de gestión y construcción de proyectos, sobre todo Java. Se basa en el principio de «convención sobre configuración»: si sigues su estructura estándar, apenas hay que configurar nada.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Dependencias</th><td>descarga las librerías y las suyas propias</td></tr>
+                  <tr><th scope="row">Construcción</th><td>compilar, probar y empaquetar</td></tr>
+                  <tr><th scope="row">Estándar</th><td>misma estructura y comandos en cualquier proyecto</td></tr>
+                  <tr><th scope="row"><code>pom.xml</code></th><td>el fichero que lo describe todo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Estructura del proyecto</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="text"><code>mi-proyecto/
+├── pom.xml
+└── src/
+    ├── main/
+    │   ├── java/         código fuente
+    │   └── resources/    ficheros de configuración
+    └── test/
+        └── java/         pruebas</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>src/main/java</code></th><td>el código de la aplicación</td></tr>
+                  <tr><th scope="row"><code>src/test/java</code></th><td>las pruebas (JUnit)</td></tr>
+                  <tr><th scope="row"><code>target/</code></th><td>lo que genera Maven (clases, jar); no se versiona</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Respetar estas rutas es lo que evita configurar Maven: busca el código donde por convención debe estar.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>El pom.xml</h2>
+          <div class="cuerpo">
+            <p class="txt">El <em>Project Object Model</em>: describe el proyecto, sus dependencias y cómo construirlo.</p>
+            <figure class="codigo"><figcaption>pom.xml mínimo</figcaption><pre data-lang="xml"><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0"&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;groupId&gt;com.ejemplo&lt;/groupId&gt;
+  &lt;artifactId&gt;mi-app&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+
+  &lt;properties&gt;
+    &lt;maven.compiler.release&gt;21&lt;/maven.compiler.release&gt;
+    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+  &lt;/properties&gt;
+
+  &lt;dependencies&gt;
+    &lt;!-- aquí van las librerías --&gt;
+  &lt;/dependencies&gt;
+&lt;/project&gt;</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Coordenadas</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada proyecto y cada librería se identifica con tres datos (GAV), como una dirección única en el mundo Maven:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>groupId</code></th><td>la organización: <code>org.springframework</code></td></tr>
+                  <tr><th scope="row"><code>artifactId</code></th><td>el nombre del proyecto o librería</td></tr>
+                  <tr><th scope="row"><code>version</code></th><td>la versión: <code>3.2.0</code></td></tr>
+                  <tr><th scope="row"><code>packaging</code></th><td>el tipo: <code>jar</code> (por defecto), <code>war</code>, <code>pom</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Con groupId + artifactId + version, Maven localiza exactamente cualquier librería en los repositorios.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Dependencias</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="xml"><code>&lt;dependencies&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;
+    &lt;artifactId&gt;junit-jupiter&lt;/artifactId&gt;
+    &lt;version&gt;5.10.0&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>compile</code></th><td>disponible siempre (por defecto)</td></tr>
+                  <tr><th scope="row"><code>test</code></th><td>solo al compilar y ejecutar las pruebas</td></tr>
+                  <tr><th scope="row"><code>provided</code></th><td>la aporta el entorno (p. ej. el servidor)</td></tr>
+                  <tr><th scope="row"><code>runtime</code></th><td>solo al ejecutar, no al compilar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Maven descarga también las dependencias <em>de</em> tus dependencias (transitivas), y resuelve las versiones. Se buscan en <a href="https://mvnrepository.com/">mvnrepository.com</a>.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Repositorios</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Central</th><td>el repositorio público por defecto (Maven Central)</td></tr>
+                  <tr><th scope="row">Local</th><td><code>~/.m2/repository</code>: caché de lo ya descargado</td></tr>
+                  <tr><th scope="row">Remoto propio</th><td>de empresa (Nexus, Artifactory)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La primera compilación descarga muchas librerías al <code>.m2</code> local; las siguientes van rápidas porque ya están en caché.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Ciclo de vida</h2>
+          <div class="cuerpo">
+            <p class="txt">Maven construye por <strong>fases</strong> encadenadas: ejecutar una lanza todas las anteriores.</p>
+            <div class="pasos">
+              <div class="paso"><b>validate</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><b>compile</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><b>test</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><b>package</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><b>verify</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><b>install</b></div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>compile</code></th><td>compila el código fuente</td></tr>
+                  <tr><th scope="row"><code>test</code></th><td>ejecuta las pruebas unitarias</td></tr>
+                  <tr><th scope="row"><code>package</code></th><td>empaqueta en <code>.jar</code> o <code>.war</code></td></tr>
+                  <tr><th scope="row"><code>install</code></th><td>copia el artefacto al repositorio local</td></tr>
+                  <tr><th scope="row"><code>deploy</code></th><td>lo sube a un repositorio remoto</td></tr>
+                  <tr><th scope="row"><code>clean</code></th><td>borra <code>target/</code> (ciclo aparte)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Comandos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">mvn</span> clean             <span class="tok-coment"># borra target/</span>
+<span class="tok-clave">mvn</span> compile           <span class="tok-coment"># compila</span>
+<span class="tok-clave">mvn</span> test              <span class="tok-coment"># compila y prueba</span>
+<span class="tok-clave">mvn</span> package           <span class="tok-coment"># genera el .jar en target/</span>
+<span class="tok-clave">mvn</span> clean package     <span class="tok-coment"># lo habitual: de cero hasta el .jar</span>
+<span class="tok-clave">mvn</span> install           <span class="tok-coment"># instala en el repositorio local (~/.m2)</span>
+
+<span class="tok-clave">mvn</span> dependency:tree   <span class="tok-coment"># árbol de dependencias</span>
+<span class="tok-clave">mvn</span> <span class="tok-atributo">-DskipTests</span> package   <span class="tok-coment"># empaquetar sin pasar las pruebas</span>
+<span class="tok-clave">java</span> <span class="tok-atributo">-jar</span> target/mi-app-1.0.0.jar   <span class="tok-coment"># ejecutar el resultado</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Plugins</h2>
+          <div class="cuerpo">
+            <p class="txt">Maven hace su trabajo a través de plugins. Cada fase del ciclo la ejecuta un plugin; puedes añadir y configurar los que necesites.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>compiler</code></th><td>compila; fija la versión de Java</td></tr>
+                  <tr><th scope="row"><code>surefire</code></th><td>ejecuta las pruebas</td></tr>
+                  <tr><th scope="row"><code>shade</code> / <code>assembly</code></th><td>crea un jar «gordo» con las dependencias dentro</td></tr>
+                  <tr><th scope="row"><code>spring-boot</code></th><td>empaqueta y ejecuta apps de Spring Boot</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para distribuir una app ejecutable de un solo fichero, el plugin <code>shade</code> mete todas las dependencias dentro del jar.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Maven o Gradle</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Maven</th><td>configuración en XML, muy estándar y estable; el más extendido</td></tr>
+                  <tr><th scope="row">Gradle</th><td>configuración en Groovy/Kotlin, más flexible y rápido; habitual en Android y Kotlin</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los dos hacen lo mismo (dependencias y construcción). Maven es la puerta de entrada clásica en Java; <a href="../kotlin/index.html">Kotlin</a> y Android suelen usar Gradle.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="entrada-salida.html">← Clases de entrada/salida</a><span></span></nav>
+      <footer class="pie">Documentación oficial en <a href="https://maven.apache.org/">maven.apache.org</a>. Buscador de librerías: <a href="https://mvnrepository.com/">mvnrepository.com</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

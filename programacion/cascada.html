@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modelo en cascada · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="programacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Programación</a><span aria-hidden="true">›</span><span>Modelo en cascada</span></nav>
+          <h1>Modelo en cascada</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El modelo clásico y secuencial: cada fase termina antes de empezar la siguiente. Lo opuesto a Agile.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Programación">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="pseudocodigo.html">Pseudocódigo y diagramas</a><a href="entornos.html">Entornos de desarrollo</a><a href="eclipse.html">Eclipse</a><a href="agile.html">Agile</a><a href="cascada.html" aria-current="page">Modelo en cascada</a><a href="../java/index.html">Java</a><a href="../python/index.html">Python</a><a href="../kotlin/index.html">Kotlin</a><a href="../php/index.html">PHP</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es</a><a href="#s2"><b>2</b>Las fases</a><a href="#s3"><b>3</b>Características</a><a href="#s4"><b>4</b>Ventajas</a><a href="#s5"><b>5</b>Inconvenientes</a><a href="#s6"><b>6</b>Cuándo usarlo</a><a href="#s7"><b>7</b>Cascada o Agile</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">El desarrollo avanza en fases <strong>secuenciales</strong>, como una cascada: el agua no sube. No se pasa a la siguiente fase hasta terminar la anterior, y volver atrás es costoso.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">El flujo</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Requisitos</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Diseño</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Código</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>Pruebas</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">5</span><b>Manten.</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es</h2>
+          <div class="cuerpo">
+            <p class="txt">El modelo en cascada (<em>waterfall</em>) es el enfoque tradicional del desarrollo de software: un proceso lineal donde cada fase se completa y se documenta antes de comenzar la siguiente. Se planifica todo al principio y se entrega al final.</p>
+            <p class="nota">Viene de la ingeniería clásica, donde cambiar algo ya construido es carísimo, así que se diseña todo con detalle antes de «construir».</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Las fases</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">1 · Requisitos</th><td>se recoge y documenta todo lo que debe hacer</td></tr>
+                  <tr><th scope="row">2 · Diseño</th><td>arquitectura y detalle de la solución</td></tr>
+                  <tr><th scope="row">3 · Implementación</th><td>se escribe el código</td></tr>
+                  <tr><th scope="row">4 · Pruebas</th><td>se verifica que cumple los requisitos</td></tr>
+                  <tr><th scope="row">5 · Implantación</th><td>se entrega y se pone en marcha</td></tr>
+                  <tr><th scope="row">6 · Mantenimiento</th><td>correcciones y mejoras posteriores</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Son las mismas <a href="fundamentos.html#s5">fases del desarrollo</a>, pero aquí se recorren una vez y en orden estricto.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Características</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Secuencial</th><td>una fase tras otra, sin solaparse</td></tr>
+                  <tr><th scope="row">Documentado</th><td>cada fase produce documentos que aprueba el cliente</td></tr>
+                  <tr><th scope="row">Requisitos cerrados</th><td>se definen al principio y no deberían cambiar</td></tr>
+                  <tr><th scope="row">Entrega única</th><td>el cliente ve el producto al final</td></tr>
+                  <tr><th scope="row">Rígido</th><td>volver a una fase anterior es costoso</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Ventajas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Simple y claro</th><td>fácil de entender y de gestionar</td></tr>
+                  <tr><th scope="row">Planificable</th><td>plazos y costes definidos desde el inicio</td></tr>
+                  <tr><th scope="row">Bien documentado</th><td>útil en proyectos que exigen trazabilidad</td></tr>
+                  <tr><th scope="row">Hitos claros</th><td>cada fase es un punto de control medible</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Inconvenientes</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Poco flexible</th><td>un cambio de requisitos obliga a retroceder y cuesta caro</td></tr>
+                  <tr><th scope="row">Feedback tardío</th><td>el cliente no ve nada hasta el final</td></tr>
+                  <tr><th scope="row">Riesgo alto</th><td>los errores de las primeras fases se descubren tarde</td></tr>
+                  <tr><th scope="row">Pruebas al final</th><td>si algo del diseño estaba mal, se ve muy tarde</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>El gran riesgo:</strong> si los requisitos iniciales eran incorrectos o cambian, se descubre al final, cuando corregir es más caro. De ahí surgió Agile.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Cuándo usarlo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Requisitos estables</th><td>se conocen bien y no van a cambiar</td></tr>
+                  <tr><th scope="row">Proyectos regulados</th><td>sanidad, aeronáutica, obra pública: exigen documentación</td></tr>
+                  <tr><th scope="row">Contrato cerrado</th><td>alcance, plazo y precio fijados de antemano</td></tr>
+                  <tr><th scope="row">Proyectos pequeños</th><td>y bien entendidos desde el inicio</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Cascada o Agile</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-fila"><div class="cmp-a"><code>Cascada: planificar todo → entregar al final</code></div><div class="cmp-b"><code>Agile: ciclos cortos → entregar y ajustar</code></div></div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cambios</th><td>cascada los evita; <a href="agile.html">Agile</a> los abraza</td></tr>
+                  <tr><th scope="row">Entrega</th><td>cascada al final; Agile continua</td></tr>
+                  <tr><th scope="row">Documentación</th><td>cascada mucha; Agile la justa</td></tr>
+                  <tr><th scope="row">Cliente</th><td>cascada al inicio y al final; Agile todo el tiempo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Hoy predomina Agile en software, pero cascada sigue vigente donde los requisitos son fijos y la documentación es obligatoria. Muchos proyectos combinan ambos.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="agile.html">← Agile</a><span></span></nav>
+      <footer class="pie">El modelo lo describió Winston Royce en 1970 (curiosamente, como ejemplo de lo que podía fallar).</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

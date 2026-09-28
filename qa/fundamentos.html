@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fundamentos de QA · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="qa">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">QA</a><span aria-hidden="true">›</span><span>Fundamentos</span></nav>
+          <h1>Fundamentos de QA</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El aseguramiento de la calidad del software: sus ramas, los niveles y tipos de prueba, los roles y el proceso. La base antes de las herramientas.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de QA">
+      <div class="wrap"><a href="fundamentos.html" aria-current="page">Fundamentos</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es QA</a><a href="#s2"><b>2</b>QA, QC y testing</a><a href="#s3"><b>3</b>Las ramas de QA</a><a href="#s4"><b>4</b>Niveles de prueba</a><a href="#s5"><b>5</b>Tipos de prueba</a><a href="#s6"><b>6</b>Caja negra y caja blanca</a><a href="#s7"><b>7</b>Roles</a><a href="#s8"><b>8</b>El proceso</a><a href="#s9"><b>9</b>Casos de prueba y defectos</a><a href="#s10"><b>10</b>Automatización y CI/CD</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt"><strong>QA</strong> (<em>Quality Assurance</em>) es asegurar que el software cumple lo que debe y funciona bien. No es solo «buscar bugs» al final: es un proceso que acompaña todo el desarrollo para <strong>prevenir</strong> defectos, no solo detectarlos.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Probar cuesta menos que arreglar</p>
+            <p class="txt">Cuanto antes se detecta un fallo, más barato es corregirlo. Un error encontrado en producción cuesta mucho más que uno detectado al programar. Por eso se prueba pronto y a menudo.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es QA</h2>
+          <div class="cuerpo">
+            <p class="txt">El aseguramiento de la calidad es el conjunto de actividades para garantizar que un producto software cumple los requisitos y las expectativas: que hace lo que debe, no falla y es usable, seguro y mantenible.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Prevenir</th><td>evitar que los defectos aparezcan (procesos, revisiones)</td></tr>
+                  <tr><th scope="row">Detectar</th><td>encontrar los que se cuelan (pruebas)</td></tr>
+                  <tr><th scope="row">Medir</th><td>saber en qué estado está la calidad</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La calidad no se «añade» al final: se construye durante todo el desarrollo. QA participa desde los requisitos, no solo al terminar.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>QA, QC y testing</h2>
+          <div class="cuerpo">
+            <p class="txt">Tres términos que se confunden a menudo:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">QA</th><td>asegurar la calidad: el <em>proceso</em> completo, orientado a prevenir</td></tr>
+                  <tr><th scope="row">QC (control de calidad)</th><td>comprobar el producto: encontrar defectos en lo ya hecho</td></tr>
+                  <tr><th scope="row">Testing</th><td>la actividad concreta de ejecutar pruebas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Símil: QA es diseñar la receta y la cocina para que salga bien; QC es probar el plato antes de servirlo; testing es la cucharada de prueba.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Las ramas de QA</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Manual</th><td>una persona ejecuta las pruebas a mano</td></tr>
+                  <tr><th scope="row">Automatizada</th><td>scripts que ejecutan las pruebas solos</td></tr>
+                  <tr><th scope="row">Funcional</th><td>comprueba <em>qué</em> hace: que cumple los requisitos</td></tr>
+                  <tr><th scope="row">No funcional</th><td>comprueba <em>cómo</em> lo hace: rendimiento, seguridad, usabilidad</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">No se excluyen: lo repetitivo se automatiza y lo exploratorio se hace a mano. Lo funcional y lo no funcional se combinan según el proyecto.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Niveles de prueba</h2>
+          <div class="cuerpo">
+            <p class="txt">Según el tamaño de lo que se prueba, de lo más pequeño a lo más grande (la «pirámide de pruebas»):</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Unitaria</th><td>una función o clase aislada. Muchas, rápidas y baratas</td></tr>
+                  <tr><th scope="row">Integración</th><td>varias piezas trabajando juntas</td></tr>
+                  <tr><th scope="row">Sistema</th><td>la aplicación completa de principio a fin</td></tr>
+                  <tr><th scope="row">Aceptación</th><td>que cumple lo que el cliente pedía (UAT)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><strong>Pirámide de pruebas:</strong> muchas unitarias (base), menos de integración y pocas de sistema (cima). Las de arriba son más lentas y frágiles.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Tipos de prueba</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Funcional</th><td>hace lo que debe</td></tr>
+                  <tr><th scope="row">Regresión</th><td>lo que ya funcionaba sigue funcionando tras un cambio</td></tr>
+                  <tr><th scope="row">Humo (smoke)</th><td>comprobación rápida de que lo básico va</td></tr>
+                  <tr><th scope="row">Rendimiento / carga</th><td>cómo responde bajo mucha demanda</td></tr>
+                  <tr><th scope="row">Seguridad</th><td>resiste ataques (ver <a href="../hacking/pentest.html">Pentest</a>)</td></tr>
+                  <tr><th scope="row">Usabilidad</th><td>es fácil de usar</td></tr>
+                  <tr><th scope="row">Compatibilidad</th><td>funciona en distintos navegadores y dispositivos</td></tr>
+                  <tr><th scope="row">Exploratoria</th><td>probar sin guion, investigando</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Caja negra y caja blanca</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Caja negra</th><td>se prueba sin ver el código: entradas y salidas</td></tr>
+                  <tr><th scope="row">Caja blanca</th><td>se prueba conociendo el código y su lógica interna</td></tr>
+                  <tr><th scope="row">Caja gris</th><td>algo de conocimiento interno, sin verlo todo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Caja negra la puede hacer alguien sin ver el código (prueba requisitos); caja blanca la suele hacer quien programa (cubre caminos internos, como las pruebas unitarias).</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Roles</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">QA Tester</th><td>diseña y ejecuta pruebas, reporta defectos</td></tr>
+                  <tr><th scope="row">QA Engineer</th><td>define estrategia, procesos y métricas de calidad</td></tr>
+                  <tr><th scope="row">QA Automation / SDET</th><td>programa las pruebas automatizadas (<em>Software Dev. Engineer in Test</em>)</td></tr>
+                  <tr><th scope="row">QA Lead / Manager</th><td>coordina el equipo y la calidad global</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En equipos ágiles, la calidad es responsabilidad de todos, no solo del rol de QA: quien programa también escribe pruebas.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>El proceso</h2>
+          <div class="cuerpo">
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Planificar</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Diseñar</b><small>casos</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Ejecutar</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>Reportar</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">5</span><b>Cerrar</b></div>
+            </div>
+            <p class="txt">El ciclo de vida de las pruebas: se planifica qué probar, se diseñan los casos, se ejecutan, se reportan los defectos encontrados y, tras corregirlos, se vuelve a probar (re-test) y se cierra.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Casos de prueba y defectos</h2>
+          <div class="cuerpo">
+            <h3>Caso de prueba</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Precondición</th><td>estado de partida</td></tr>
+                  <tr><th scope="row">Pasos</th><td>qué hacer</td></tr>
+                  <tr><th scope="row">Resultado esperado</th><td>qué debería ocurrir</td></tr>
+                  <tr><th scope="row">Resultado real</th><td>qué ocurrió (pasa / falla)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Defecto (bug)</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Severidad</th><td>el impacto técnico del fallo</td></tr>
+                  <tr><th scope="row">Prioridad</th><td>la urgencia de arreglarlo</td></tr>
+                  <tr><th scope="row">Reproducible</th><td>pasos para provocarlo de nuevo</td></tr>
+                  <tr><th scope="row">Estado</th><td>abierto, en curso, resuelto, cerrado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Severidad y prioridad no son lo mismo: un fallo grave en una función que nadie usa puede ser de alta severidad y baja prioridad.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Automatización y CI/CD</h2>
+          <div class="cuerpo">
+            <p class="txt">Las pruebas repetitivas se automatizan para lanzarlas una y otra vez sin esfuerzo, sobre todo las de regresión. Se integran en el flujo de entrega continua (CI/CD): en cada cambio de código se ejecutan solas.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Unitarias</th><td>JUnit (Java), pytest (Python)</td></tr>
+                  <tr><th scope="row">Web (E2E)</th><td>Selenium, Cypress, Playwright</td></tr>
+                  <tr><th scope="row">API</th><td>Postman, REST Assured</td></tr>
+                  <tr><th scope="row">Carga</th><td>JMeter, k6</td></tr>
+                  <tr><th scope="row">CI/CD</th><td>ejecuta las pruebas en cada push (GitHub Actions, Jenkins)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Aquí iremos añadiendo chuletas de cada tecnología. Para el flujo automatizado, ver <a href="../git/github.html#s12">GitHub Actions</a>.</p>
+          </div>
+        </section>
+      </div>
+      <footer class="pie">Sección en construcción: iremos añadiendo herramientas (JUnit, Selenium, Postman...) y tipos de prueba en detalle.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

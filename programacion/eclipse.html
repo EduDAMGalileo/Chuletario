@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Eclipse · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="programacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Programación</a><span aria-hidden="true">›</span><span>Eclipse</span></nav>
+          <h1>Eclipse</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El IDE clásico de Java: proyectos, el build path, ejecutar y depurar, integrar Git y los atajos que más se usan.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Programación">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="pseudocodigo.html">Pseudocódigo y diagramas</a><a href="entornos.html">Entornos de desarrollo</a><a href="eclipse.html" aria-current="page">Eclipse</a><a href="agile.html">Agile</a><a href="cascada.html">Modelo en cascada</a><a href="../java/index.html">Java</a><a href="../python/index.html">Python</a><a href="../kotlin/index.html">Kotlin</a><a href="../php/index.html">PHP</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es Eclipse</a><a href="#s2"><b>2</b>Instalación y workspace</a><a href="#s3"><b>3</b>Perspectivas y vistas</a><a href="#s4"><b>4</b>Crear un proyecto</a><a href="#s5"><b>5</b>El Build Path</a><a href="#s6"><b>6</b>Escribir código</a><a href="#s7"><b>7</b>Ejecutar y depurar</a><a href="#s8"><b>8</b>Integrar Git</a><a href="#s9"><b>9</b>Atajos útiles</a><a href="#s10"><b>10</b>Consejos</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Eclipse es un IDE libre, veterano y muy usado para <strong>Java</strong> (y ampliable a otros lenguajes con plugins). Todo gira en torno a un <strong>workspace</strong> (espacio de trabajo) que contiene tus proyectos.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Conceptos clave</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Workspace</th><td>carpeta con tus proyectos y ajustes</td></tr>
+                  <tr><th scope="row">Perspectiva</th><td>disposición de vistas para una tarea</td></tr>
+                  <tr><th scope="row">Build Path</th><td>qué usa el proyecto para compilar</td></tr>
+                  <tr><th scope="row">JRE / JDK</th><td>la versión de Java del proyecto</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es Eclipse</h2>
+          <div class="cuerpo">
+            <p class="txt">Un entorno de desarrollo integrado, gratuito y de código abierto, referencia histórica en Java. Muy usado en formación y empresa; en los últimos años comparte terreno con <a href="entornos.html">IntelliJ IDEA y VS Code</a>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Eclipse IDE for Java Developers</th><td>la edición para empezar con Java</td></tr>
+                  <tr><th scope="row">Eclipse IDE for Enterprise Java</th><td>añade web y Jakarta EE</td></tr>
+                  <tr><th scope="row">Plugins</th><td>amplían el IDE (PyDev, EGit, etc.)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Instalación y workspace</h2>
+          <div class="cuerpo">
+            <p class="txt">Necesita un <strong>JDK</strong> instalado (no basta el JRE si vas a compilar). Al arrancar, Eclipse pide la carpeta del <strong>workspace</strong>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">JDK</th><td>el kit de desarrollo de Java (incluye el compilador)</td></tr>
+                  <tr><th scope="row">Workspace</th><td>carpeta que agrupa proyectos y su configuración</td></tr>
+                  <tr><th scope="row">Varios workspaces</th><td>puedes tener uno por asignatura o cliente</td></tr>
+                  <tr><th scope="row">Window › Preferences</th><td>toda la configuración del entorno</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Comprueba la versión de Java del entorno en <em>Window › Preferences › Java › Installed JREs</em>. Debe apuntar a un JDK, no solo a un JRE.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Perspectivas y vistas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Vista</th><td>un panel: Package Explorer, Console, Problems, Outline</td></tr>
+                  <tr><th scope="row">Perspectiva</th><td>un conjunto de vistas: Java, Debug, Git</td></tr>
+                  <tr><th scope="row">Package Explorer</th><td>el árbol de proyectos y ficheros</td></tr>
+                  <tr><th scope="row">Console</th><td>la salida del programa</td></tr>
+                  <tr><th scope="row">Problems</th><td>errores y avisos de compilación</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si «pierdes» un panel, recupéralo en <em>Window › Show View</em>, o restablece con <em>Window › Perspective › Reset Perspective</em>.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Crear un proyecto</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">File › New › Java Project</th><td>un proyecto Java normal</td></tr>
+                  <tr><th scope="row">File › New › Maven Project</th><td>proyecto gestionado con <a href="../java/maven.html">Maven</a></td></tr>
+                  <tr><th scope="row"><code>src</code></th><td>carpeta del código fuente</td></tr>
+                  <tr><th scope="row">Paquete</th><td>New › Package, antes de las clases</td></tr>
+                  <tr><th scope="row">Clase</th><td>New › Class; marca <code>public static void main</code> si es el punto de entrada</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Eclipse compila <strong>automáticamente</strong> al guardar (<em>Build Automatically</em>): no hay un paso manual de compilar como en la terminal.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>El Build Path</h2>
+          <div class="cuerpo">
+            <p class="txt">El <strong>build path</strong> define qué necesita el proyecto para compilar: la versión de Java, las librerías (JAR) y las carpetas de fuentes. Se abre con clic derecho en el proyecto › <em>Build Path</em> o <em>Properties › Java Build Path</em>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Source</th><td>carpetas con código fuente (<code>src</code>)</td></tr>
+                  <tr><th scope="row">Libraries</th><td>los JAR y el JRE del sistema</td></tr>
+                  <tr><th scope="row">Add External JARs</th><td>añadir una librería descargada a mano</td></tr>
+                  <tr><th scope="row">Add Library</th><td>añadir JUnit, el JRE, etc.</td></tr>
+                  <tr><th scope="row">Order and Export</th><td>orden y qué se exporta al empaquetar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> si usas <a href="../java/maven.html">Maven</a>, las dependencias las gestiona el <code>pom.xml</code>, no el build path a mano. Mézclalos y tendrás librerías duplicadas o que desaparecen al actualizar.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Escribir código</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+Espacio</th><td>autocompletar</td></tr>
+                  <tr><th scope="row">Ctrl+1</th><td>Quick Fix: soluciones a un error</td></tr>
+                  <tr><th scope="row"><code>sysout</code> + Ctrl+Espacio</th><td>genera <code>System.out.println()</code></td></tr>
+                  <tr><th scope="row">Ctrl+Shift+O</th><td>organizar los <code>import</code></td></tr>
+                  <tr><th scope="row">Ctrl+Shift+F</th><td>formatear el código</td></tr>
+                  <tr><th scope="row">Alt+Shift+S</th><td>menú Source: getters/setters, constructores...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El subrayado rojo marca errores; el amarillo, avisos. Pasa el ratón por encima o pulsa <strong>Ctrl+1</strong> sobre el error para que Eclipse proponga el arreglo.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Ejecutar y depurar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+F11</th><td>ejecutar</td></tr>
+                  <tr><th scope="row">F11</th><td>ejecutar en modo depuración</td></tr>
+                  <tr><th scope="row">Doble clic al margen</th><td>poner o quitar un breakpoint</td></tr>
+                  <tr><th scope="row">F5</th><td>entrar en el método (step into)</td></tr>
+                  <tr><th scope="row">F6</th><td>siguiente línea (step over)</td></tr>
+                  <tr><th scope="row">F8</th><td>continuar hasta el siguiente breakpoint</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En la perspectiva <em>Debug</em>, la vista <em>Variables</em> muestra el valor de todo en el momento en que el programa está parado. Ver también el <a href="entornos.html#s6">depurador</a> en general.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Integrar Git</h2>
+          <div class="cuerpo">
+            <p class="txt">Eclipse trae <strong>EGit</strong> integrado. Clic derecho en el proyecto › <em>Team</em> para todo lo de <a href="../git/git.html">Git</a>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Team › Share Project</th><td>poner el proyecto bajo control de versiones</td></tr>
+                  <tr><th scope="row">Team › Commit</th><td>confirmar cambios</td></tr>
+                  <tr><th scope="row">Team › Push / Pull</th><td>sincronizar con el remoto (<a href="../git/github.html">GitHub</a>)</td></tr>
+                  <tr><th scope="row">Git Staging</th><td>vista para preparar y confirmar</td></tr>
+                  <tr><th scope="row">Git Repositories</th><td>vista para clonar y gestionar repos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Añade un <code>.gitignore</code> que excluya <code>bin/</code>, <code>target/</code> y los ficheros de proyecto de Eclipse (<code>.settings/</code>, <code>.classpath</code>, <code>.project</code>) si el equipo usa otros IDE.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Atajos útiles</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+Shift+L</th><td>ver todos los atajos</td></tr>
+                  <tr><th scope="row">Ctrl+Shift+R</th><td>abrir un recurso (fichero) por nombre</td></tr>
+                  <tr><th scope="row">Ctrl+Shift+T</th><td>abrir una clase/tipo por nombre</td></tr>
+                  <tr><th scope="row">Ctrl+clic · F3</th><td>ir a la definición</td></tr>
+                  <tr><th scope="row">Alt+Shift+R</th><td>renombrar (refactor) en todo el proyecto</td></tr>
+                  <tr><th scope="row">Ctrl+/</th><td>comentar / descomentar</td></tr>
+                  <tr><th scope="row">Ctrl+D</th><td>borrar la línea</td></tr>
+                  <tr><th scope="row">Alt+↑ / ↓</th><td>mover la línea arriba / abajo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Consejos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Versiones</th><td>Eclipse publica una versión cada trimestre (2024-12, 2025-03...)</td></tr>
+                  <tr><th scope="row">Java del proyecto</th><td>revisa que el <em>Compiler compliance level</em> coincida con tu JDK</td></tr>
+                  <tr><th scope="row">Un error raro</th><td><em>Project › Clean</em> recompila desde cero</td></tr>
+                  <tr><th scope="row">Formato del equipo</th><td>comparte el <em>formatter</em> para un estilo común</td></tr>
+                  <tr><th scope="row">No versionar</th><td><code>bin/</code>, <code>.settings/</code>, <code>.classpath</code>, <code>.project</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si vienes de la terminal, recuerda: aquí no ejecutas <code>javac</code> a mano; Eclipse compila al guardar y ejecuta con Ctrl+F11.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="entornos.html">← Entornos de desarrollo</a><a class="siguiente" href="agile.html">Agile →</a></nav>
+      <footer class="pie">Descarga en <a href="https://www.eclipse.org/downloads/">eclipse.org/downloads</a>. Guía de la interfaz en la ayuda: <em>Help › Help Contents</em>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

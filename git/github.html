@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GitHub · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="git">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Control de versiones</a><span aria-hidden="true">›</span><span>GitHub</span></nav>
+          <h1>GitHub</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Trabajar con repositorios remotos: forks, pull requests, code review y el flujo del código abierto. Continúa la chuleta de Git.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Control de versiones">
+      <div class="wrap"><a href="git.html">Git</a><a href="github.html" aria-current="page">GitHub</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>GitHub y los remotos</a><a href="#s2"><b>2</b>Clonar y sincronizar</a><a href="#s3"><b>3</b>Autenticación</a><a href="#s4"><b>4</b>Flujo con ramas</a><a href="#s5"><b>5</b>Forks</a><a href="#s6"><b>6</b>Pull requests</a><a href="#s7"><b>7</b>Code review</a><a href="#s8"><b>8</b>Mantener el fork al día</a><a href="#s9"><b>9</b>Issues y proyectos</a><a href="#s10"><b>10</b>Contribuir a open source</a><a href="#s11"><b>11</b>Licencias</a><a href="#s12"><b>12</b>Releases, Actions y gh</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">El flujo de una contribución</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Fork</b><small>tu copia</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Branch</b><small>una rama</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Push</b><small>subir</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>PR</b><small>proponer</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">5</span><b>Review</b><small>revisar</small></div>
+            </div>
+          </div>
+          <div>
+            <p class="banda-titulo">Git y GitHub no son lo mismo</p>
+            <p class="txt"><strong>Git</strong> es el sistema de control de versiones (ver <a href="git.html">Git</a>). <strong>GitHub</strong> es una plataforma web que aloja repositorios Git y añade forks, pull requests, revisión de código e issues.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. GitHub y los remotos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>GitHub y los remotos</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>remoto</strong> es una copia del repositorio en un servidor. <code>origin</code> es el nombre habitual del remoto principal.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">git</span> remote <span class="tok-atributo">-v</span>                       <span class="tok-coment"># ver los remotos</span>
+<span class="tok-clave">git</span> remote add origin URL           <span class="tok-coment"># enlazar con un repo de GitHub</span>
+<span class="tok-clave">git</span> remote set-url origin URL       <span class="tok-coment"># cambiar la URL</span>
+<span class="tok-clave">git</span> push <span class="tok-atributo">-u</span> origin main             <span class="tok-coment"># primera subida (fija el upstream)</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>origin</code></th><td>tu remoto (normalmente, tu repo en GitHub)</td></tr>
+                  <tr><th scope="row"><code>upstream</code></th><td>por convenio, el repo original del que hiciste fork</td></tr>
+                  <tr><th scope="row"><code>-u</code></th><td>asocia la rama local con la remota; luego basta <code>git push</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Clonar y sincronizar -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Clonar y sincronizar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">git</span> clone URL                <span class="tok-coment"># descargar un repo entero</span>
+<span class="tok-clave">git</span> clone URL carpeta        <span class="tok-coment"># ...en una carpeta con otro nombre</span>
+
+<span class="tok-clave">git</span> fetch                    <span class="tok-coment"># traer cambios del remoto SIN mezclar</span>
+<span class="tok-clave">git</span> pull                     <span class="tok-coment"># traer y mezclar (fetch + merge)</span>
+<span class="tok-clave">git</span> pull <span class="tok-atributo">--rebase</span>            <span class="tok-coment"># traer y reaplicar tus commits encima</span>
+<span class="tok-clave">git</span> push                     <span class="tok-coment"># subir tus commits</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>fetch</code></th><td>descarga los cambios pero no toca tu rama</td></tr>
+                  <tr><th scope="row"><code>pull</code></th><td>fetch + merge en un paso</td></tr>
+                  <tr><th scope="row"><code>pull --rebase</code></th><td>historial más limpio, sin commits de merge</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Haz <code>pull</code> antes de empezar a trabajar y antes de <code>push</code>: reduces los conflictos. El día a día de Git está en su propia <a href="git.html">chuleta</a>.</p>
+          </div>
+        </section>
+        <!-- 3. Autenticación -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Autenticación</h2>
+          <div class="cuerpo">
+            <p class="txt">GitHub ya no acepta la contraseña de la cuenta para <code>git push</code>. Hay dos formas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Token (HTTPS)</th><td>un <em>Personal Access Token</em> que se usa como contraseña</td></tr>
+                  <tr><th scope="row">Clave SSH</th><td>un par de claves; no pide nada en cada push</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># SSH: generar la clave y copiar la pública a GitHub</span>
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-t</span> ed25519 <span class="tok-atributo">-C</span> <span class="tok-texto">"tu@correo.com"</span>
+<span class="tok-clave">cat</span> ~/.ssh/id_ed25519.pub          <span class="tok-coment"># pégala en GitHub › Settings › SSH keys</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-T</span> git@github.com              <span class="tok-coment"># probar la conexión</span>
+
+<span class="tok-clave">git</span> clone git@github.com:usuario/repo.git   <span class="tok-coment"># clonar por SSH</span></code></pre></figure>
+            <p class="nota">Con SSH la URL es <code>git@github.com:usuario/repo.git</code>; con HTTPS es <code>https://github.com/usuario/repo.git</code>. Más sobre SSH en la parte de <a href="../sistemas/terminal-linux.html#s14">Terminal Linux</a>.</p>
+          </div>
+        </section>
+        <!-- 4. Flujo con ramas -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Flujo con ramas</h2>
+          <div class="cuerpo">
+            <p class="txt">La norma: no se trabaja directamente en <code>main</code>. Cada cambio va en su rama y se integra por pull request.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">git</span> switch <span class="tok-atributo">-c</span> feature/login    <span class="tok-coment"># crear y cambiar a una rama nueva</span>
+<span class="tok-coment"># ...editar y hacer commits...</span>
+<span class="tok-clave">git</span> push <span class="tok-atributo">-u</span> origin feature/login
+
+<span class="tok-coment"># luego, en GitHub, se abre el pull request de esa rama hacia main</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Rama corta</th><td>una rama por tarea o arreglo, con nombre descriptivo</td></tr>
+                  <tr><th scope="row">Commits claros</th><td>mensajes que expliquen el porqué</td></tr>
+                  <tr><th scope="row"><code>main</code> protegida</th><td>solo se toca a través de PR revisados</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Forks -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Forks</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>fork</strong> es tu copia personal de un repositorio ajeno, en tu cuenta de GitHub. Se usa cuando no tienes permiso de escritura en el original: el flujo típico del open source.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># 1. En GitHub, botón "Fork" del repo original.</span>
+<span class="tok-coment"># 2. Clonar TU fork:</span>
+<span class="tok-clave">git</span> clone git@github.com:tu-usuario/proyecto.git
+<span class="tok-clave">cd</span> proyecto
+
+<span class="tok-coment"># 3. Añadir el repo original como "upstream":</span>
+<span class="tok-clave">git</span> remote add upstream git@github.com:autor-original/proyecto.git
+<span class="tok-clave">git</span> remote <span class="tok-atributo">-v</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>origin</code></th><td>tu fork (tienes permiso de escritura)</td></tr>
+                  <tr><th scope="row"><code>upstream</code></th><td>el proyecto original (solo lectura para ti)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Con permiso de escritura en el repo (tu equipo), no hace falta fork: trabajas con ramas directamente. El fork es para contribuir «desde fuera».</p>
+          </div>
+        </section>
+        <!-- 6. Pull requests -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Pull requests</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>pull request</strong> (PR) propone integrar los cambios de una rama en otra. Es donde se revisa, se debate y se aprueba el código antes de mezclarlo.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Base ← compare</th><td>rama destino ← rama con tus cambios</td></tr>
+                  <tr><th scope="row">Descripción</th><td>qué cambia y por qué; enlaza el issue (<code>Closes #12</code>)</td></tr>
+                  <tr><th scope="row">Draft</th><td>borrador: aún no listo para revisar</td></tr>
+                  <tr><th scope="row">Checks</th><td>las pruebas automáticas deben pasar</td></tr>
+                  <tr><th scope="row">Actualizar</th><td>haces <code>push</code> a la rama y el PR se actualiza solo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Desde un fork, el PR va de <code>tu-usuario:feature</code> hacia <code>autor-original:main</code>. GitHub lo detecta y ofrece abrirlo tras el <code>push</code>.</p>
+          </div>
+        </section>
+        <!-- 7. Code review -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Code review</h2>
+          <div class="cuerpo">
+            <p class="txt">Revisar el código de un PR antes de integrarlo mejora la calidad y reparte el conocimiento. En la pestaña <em>Files changed</em>:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Comentar</th><td>en una línea concreta o en el conjunto</td></tr>
+                  <tr><th scope="row">Approve</th><td>el código está listo para integrarse</td></tr>
+                  <tr><th scope="row">Request changes</th><td>hay que corregir cosas antes de mezclar</td></tr>
+                  <tr><th scope="row">Comment</th><td>observaciones sin aprobar ni rechazar</td></tr>
+                  <tr><th scope="row">Suggestion</th><td>propones un cambio de código que se aplica con un clic</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Como autor: responde a cada comentario, corrige y vuelve a pedir revisión. Como revisor: sé concreto y amable; comenta el código, no a la persona.</p>
+          </div>
+        </section>
+        <!-- 8. Mantener el fork al día -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Mantener el fork al día</h2>
+          <div class="cuerpo">
+            <p class="txt">Mientras trabajas, el proyecto original avanza. Sincroniza tu fork con <code>upstream</code> para no quedarte atrás:</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">git</span> fetch upstream               <span class="tok-coment"># traer los cambios del original</span>
+<span class="tok-clave">git</span> switch main
+<span class="tok-clave">git</span> merge upstream/main          <span class="tok-coment"># o: git rebase upstream/main</span>
+<span class="tok-clave">git</span> push origin main             <span class="tok-coment"># actualizar tu fork en GitHub</span></code></pre></figure>
+            <p class="txt">Si tu PR tiene conflictos con la rama base, actualiza tu rama con los últimos cambios, resuélvelos en local y vuelve a subir.</p>
+            <p class="aviso"><strong>Cuidado:</strong> no reescribas el historial (<code>rebase</code>, <code>push --force</code>) de una rama que otros ya estén usando. En tu propia rama de PR suele ser seguro; en <code>main</code> compartida, no.</p>
+          </div>
+        </section>
+        <!-- 9. Issues y proyectos -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Issues y proyectos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Issue</th><td>una tarea, error o propuesta; la unidad de trabajo</td></tr>
+                  <tr><th scope="row">Labels</th><td>etiquetas: <code>bug</code>, <code>enhancement</code>, <code>good first issue</code></td></tr>
+                  <tr><th scope="row">Milestone</th><td>agrupa issues hacia un objetivo o versión</td></tr>
+                  <tr><th scope="row">Projects</th><td>tablero tipo kanban con las tareas</td></tr>
+                  <tr><th scope="row">Assignees</th><td>quién se encarga</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En un commit o PR, escribir <code>Closes #42</code> o <code>Fixes #42</code> cierra automáticamente el issue 42 al integrarse. <code>good first issue</code> marca tareas fáciles para empezar a colaborar.</p>
+          </div>
+        </section>
+        <!-- 10. Contribuir a open source -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Contribuir a open source</h2>
+          <div class="cuerpo">
+            <p class="txt">El camino habitual para aportar a un proyecto abierto:</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Fork</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Rama</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Commit</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>Push</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">5</span><b>PR</b></div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>CONTRIBUTING.md</code></th><td>léelo: dice cómo contribuir a ese proyecto</td></tr>
+                  <tr><th scope="row"><code>CODE_OF_CONDUCT.md</code></th><td>normas de convivencia</td></tr>
+                  <tr><th scope="row">Issue primero</th><td>para cambios grandes, coméntalo antes de programar</td></tr>
+                  <tr><th scope="row">PR pequeño</th><td>un cambio por PR; más fácil de revisar y aceptar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Empieza por proyectos con la etiqueta <code>good first issue</code> y respeta el estilo del proyecto. Una buena descripción del PR facilita mucho que lo acepten.</p>
+          </div>
+        </section>
+        <!-- 11. Licencias -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Licencias</h2>
+          <div class="cuerpo">
+            <p class="txt">La licencia dice qué se puede hacer con el código. <strong>Sin licencia, el código no es libre</strong>: por defecto, todos los derechos reservados.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">MIT</th><td>permisiva: usar casi sin condiciones, citando al autor</td></tr>
+                  <tr><th scope="row">Apache 2.0</th><td>permisiva, con cláusula de patentes</td></tr>
+                  <tr><th scope="row">BSD</th><td>permisiva, parecida a MIT</td></tr>
+                  <tr><th scope="row">GPL v3</th><td>copyleft: lo derivado debe seguir siendo libre con la misma licencia</td></tr>
+                  <tr><th scope="row">AGPL</th><td>como GPL, y también si se ofrece por red (SaaS)</td></tr>
+                  <tr><th scope="row">Creative Commons</th><td>para contenidos (textos, imágenes), no para código</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Permisiva (MIT, Apache) = casi todo vale. Copyleft (GPL) = obliga a compartir igual lo derivado. El fichero <code>LICENSE</code> en la raíz del repo la declara.</p>
+          </div>
+        </section>
+        <!-- 12. Releases, Actions y gh -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Releases, Actions y gh</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Releases</th><td>versiones publicadas, a partir de una etiqueta (<code>git tag v1.0</code>)</td></tr>
+                  <tr><th scope="row">Actions</th><td>automatización (CI/CD): pruebas y despliegue en cada push</td></tr>
+                  <tr><th scope="row">Pages</th><td>publicar un sitio web estático desde el repo</td></tr>
+                  <tr><th scope="row"><code>README.md</code></th><td>la portada del repo; lo primero que se lee</td></tr>
+                  <tr><th scope="row"><code>.gitignore</code></th><td>qué ficheros no versionar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>gh: el CLI oficial de GitHub</figcaption><pre data-lang="bash"><code><span class="tok-clave">gh</span> auth login                <span class="tok-coment"># autenticarse</span>
+<span class="tok-clave">gh</span> repo clone usuario/repo
+<span class="tok-clave">gh</span> pr create                 <span class="tok-coment"># abrir un PR desde la terminal</span>
+<span class="tok-clave">gh</span> pr checkout <span class="tok-numero">42</span>            <span class="tok-coment"># traer el PR 42 para probarlo</span>
+<span class="tok-clave">gh</span> pr review <span class="tok-atributo">--approve</span>
+<span class="tok-clave">gh</span> issue list</code></pre></figure>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="git.html">← Git</a><span></span></nav>
+      <footer class="pie">Documentación en <a href="https://docs.github.com/es">docs.github.com</a>. Elegir licencia en <a href="https://choosealicense.com/">choosealicense.com</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

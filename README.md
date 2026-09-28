@@ -16,19 +16,22 @@ chuletario/
 │   └── favicon.svg
 ├── sistemas/               linux, terminal-linux, vim, bash-script,
 │                           servicios, tareas
-├── redes/                  osi, tcp-ip, red-linux, red-clasica
+├── redes/                  osi, tcp-ip, http, red-linux, red-clasica
 ├── hacking/                pentest, google-dorking, nmap, netcat, sqlmap
 ├── seguridad/              introduccion, cortafuegos, iptables, nftables
-├── git/                    git
-├── programacion/           índice de lenguajes (enlaza java/ y php/)
+├── git/                    git, github
+├── docker/                 docker, vagrant (Virtualización)
+├── qa/                     fundamentos
+├── programacion/           fundamentos, pseudocodigo, entornos, eclipse,
+│                           agile, cascada, y los lenguajes
 ├── java/                   sintaxis, strings, poo, colecciones,
 │                           streams, excepciones, ficheros
 ├── python/                 sintaxis
 ├── kotlin/                 sintaxis
-├── php/                    sintaxis
+├── php/                    sintaxis, cookies-sesiones
 ├── bases-datos/            sql, postgresql
 ├── web/                    html, css
-└── xml/                    dtd, xsd, xpath, xquery
+└── xml/                    dtd, xsd, xpath, xquery, json, yaml, markdown
 ```
 
 Cada tema con más de una chuleta tiene su propio `index.html`.

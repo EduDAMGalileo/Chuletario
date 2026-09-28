@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fundamentos de programación · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="programacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Programación</a><span aria-hidden="true">›</span><span>Fundamentos</span></nav>
+          <h1>Fundamentos de programación</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Qué es un algoritmo, las fases del desarrollo, los paradigmas y una breve historia de los lenguajes. La base antes de escribir código.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Programación">
+      <div class="wrap"><a href="fundamentos.html" aria-current="page">Fundamentos</a><a href="pseudocodigo.html">Pseudocódigo y diagramas</a><a href="entornos.html">Entornos de desarrollo</a><a href="eclipse.html">Eclipse</a><a href="agile.html">Agile</a><a href="cascada.html">Modelo en cascada</a><a href="../java/index.html">Java</a><a href="../python/index.html">Python</a><a href="../kotlin/index.html">Kotlin</a><a href="../php/index.html">PHP</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es programar</a><a href="#s2"><b>2</b>Qué es un algoritmo</a><a href="#s3"><b>3</b>Propiedades de un algoritmo</a><a href="#s4"><b>4</b>Del problema al programa</a><a href="#s5"><b>5</b>Fases del desarrollo</a><a href="#s6"><b>6</b>Paradigmas</a><a href="#s7"><b>7</b>Tipos de lenguajes</a><a href="#s8"><b>8</b>Compilado o interpretado</a><a href="#s9"><b>9</b>Historia de los lenguajes</a><a href="#s10"><b>10</b>Siguientes pasos</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Programar es descomponer un problema en pasos tan concretos que una máquina pueda ejecutarlos. Antes del lenguaje viene el <strong>razonamiento</strong>: entender el problema y diseñar el algoritmo.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Entrada → Proceso → Salida</p>
+            <p class="txt">Casi todo programa sigue este esquema: recibe unos <strong>datos de entrada</strong>, les aplica un <strong>proceso</strong> (el algoritmo) y produce un <strong>resultado</strong>.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es programar</h2>
+          <div class="cuerpo">
+            <p class="txt">Programar es dar instrucciones a un ordenador para que resuelva un problema o realice una tarea. El ordenador no «entiende»: ejecuta al pie de la letra lo que se le indica, así que hay que ser preciso y no dar nada por supuesto.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Programa</th><td>conjunto de instrucciones que resuelven una tarea</td></tr>
+                  <tr><th scope="row">Código fuente</th><td>esas instrucciones escritas en un lenguaje</td></tr>
+                  <tr><th scope="row">Software</th><td>el programa ya construido y en uso</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Lo difícil no suele ser el lenguaje, sino <em>pensar</em> la solución. Por eso se empieza por algoritmos, pseudocódigo y diagramas antes que por la sintaxis.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Qué es un algoritmo</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>algoritmo</strong> es una secuencia ordenada y finita de pasos que resuelve un problema. Es independiente del lenguaje: la misma receta se puede escribir en Java, Python o pseudocódigo.</p>
+            <p class="txt">El símil clásico es una <strong>receta de cocina</strong>: ingredientes (datos de entrada), pasos (el proceso) y el plato (la salida).</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Algoritmo</th><td>el «qué» y el «cómo» resolver, sin atarse a un lenguaje</td></tr>
+                  <tr><th scope="row">Programa</th><td>ese algoritmo traducido a un lenguaje concreto</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Propiedades de un algoritmo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Preciso</th><td>cada paso está definido sin ambigüedad</td></tr>
+                  <tr><th scope="row">Definido</th><td>con los mismos datos, da siempre el mismo resultado</td></tr>
+                  <tr><th scope="row">Finito</th><td>termina tras un número limitado de pasos</td></tr>
+                  <tr><th scope="row">Con entrada</th><td>recibe cero o más datos</td></tr>
+                  <tr><th scope="row">Con salida</th><td>produce uno o más resultados</td></tr>
+                  <tr><th scope="row">Efectivo</th><td>cada paso es realizable en la práctica</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Un procedimiento que nunca termina (un bucle infinito no deseado) no es un algoritmo válido: falla la propiedad de finitud.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Del problema al programa</h2>
+          <div class="cuerpo">
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Analizar</b><small>entender</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Diseñar</b><small>algoritmo</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Codificar</b><small>escribir</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>Probar</b><small>verificar</small></div>
+            </div>
+            <p class="txt">Ante un problema: primero se identifican los <strong>datos de entrada</strong>, el <strong>resultado</strong> que se busca y el <strong>proceso</strong> que lleva de uno a otro. Solo entonces se diseña el algoritmo (con <a href="pseudocodigo.html">pseudocódigo o un diagrama</a>) y por último se traduce a un lenguaje.</p>
+            <p class="nota">Programar directamente sin diseñar es la causa más común de código enrevesado. Piensa primero, teclea después.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Fases del desarrollo</h2>
+          <div class="cuerpo">
+            <p class="txt">El ciclo de vida del software organiza el trabajo en fases. Con más o menos detalle, casi todas las metodologías las recorren:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">1 · Análisis</th><td>qué debe hacer (requisitos)</td></tr>
+                  <tr><th scope="row">2 · Diseño</th><td>cómo se va a hacer (arquitectura, algoritmos)</td></tr>
+                  <tr><th scope="row">3 · Codificación</th><td>escribir el programa</td></tr>
+                  <tr><th scope="row">4 · Pruebas</th><td>comprobar que funciona y no falla</td></tr>
+                  <tr><th scope="row">5 · Implantación</th><td>ponerlo en producción</td></tr>
+                  <tr><th scope="row">6 · Mantenimiento</th><td>corregir y mejorar con el tiempo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cómo se recorren estas fases (todas seguidas o en ciclos cortos que se repiten) es lo que distingue al <a href="cascada.html">modelo en cascada</a> de <a href="agile.html">Agile</a>.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Paradigmas</h2>
+          <div class="cuerpo">
+            <p class="txt">Un paradigma es una forma de plantear los programas. Un mismo lenguaje puede admitir varios.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Imperativo</th><td>una secuencia de órdenes que cambian el estado (C, Pascal)</td></tr>
+                  <tr><th scope="row">Orientado a objetos</th><td>objetos que combinan datos y comportamiento (<a href="../java/poo.html">Java</a>, Kotlin)</td></tr>
+                  <tr><th scope="row">Funcional</th><td>funciones sin efectos secundarios (Haskell; también <a href="../java/streams.html">streams</a>)</td></tr>
+                  <tr><th scope="row">Declarativo</th><td>se describe el «qué», no el «cómo» (SQL, HTML)</td></tr>
+                  <tr><th scope="row">Lógico</th><td>reglas y hechos (Prolog)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Tipos de lenguajes</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Bajo nivel</th><td>cercano a la máquina: ensamblador, código máquina</td></tr>
+                  <tr><th scope="row">Alto nivel</th><td>cercano a las personas: Java, Python, C#</td></tr>
+                  <tr><th scope="row">De marcas</th><td>estructuran datos o texto, no «programan»: <a href="../xml/index.html">HTML, XML</a></td></tr>
+                  <tr><th scope="row">De propósito general</th><td>sirven para casi todo (Python, Java)</td></tr>
+                  <tr><th scope="row">De dominio específico</th><td>para un área concreta (SQL para datos)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cuanto más alto el nivel, más fácil de leer y escribir para las personas, y más trabajo hace por ti el lenguaje.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Compilado o interpretado</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Compilado</th><td>se traduce entero a código máquina antes de ejecutar (C, Go). Rápido</td></tr>
+                  <tr><th scope="row">Interpretado</th><td>se ejecuta línea a línea al vuelo (Python, JavaScript). Flexible</td></tr>
+                  <tr><th scope="row">Híbrido</th><td>a un código intermedio que ejecuta una máquina virtual (Java → JVM)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Java compila a <em>bytecode</em>, que ejecuta la JVM: por eso «se escribe una vez y corre en cualquier sitio». La frontera entre compilado e interpretado es hoy difusa.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Historia de los lenguajes</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">1957 · Fortran</th><td>primer lenguaje de alto nivel, para cálculo científico</td></tr>
+                  <tr><th scope="row">1959 · COBOL</th><td>gestión y banca (aún en uso)</td></tr>
+                  <tr><th scope="row">1972 · C</th><td>sistemas; base de casi todo lo posterior</td></tr>
+                  <tr><th scope="row">1991 · Python</th><td>legible y versátil</td></tr>
+                  <tr><th scope="row">1995 · Java, JavaScript, PHP</th><td>la explosión de internet</td></tr>
+                  <tr><th scope="row">2000s · C#, Go, Swift, Kotlin</th><td>modernos, sobre plataformas grandes</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cada lenguaje nace para resolver las limitaciones del anterior. Conocer de dónde vienen ayuda a entender por qué son como son.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Siguientes pasos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><a href="pseudocodigo.html">Pseudocódigo y diagramas</a></th><td>diseñar el algoritmo antes de programar</td></tr>
+                  <tr><th scope="row"><a href="entornos.html">Entornos de desarrollo</a><a href="eclipse.html">Eclipse</a></th><td>las herramientas para escribir código</td></tr>
+                  <tr><th scope="row"><a href="agile.html">Agile</a> · <a href="cascada.html">Cascada</a></th><td>cómo se organiza un proyecto</td></tr>
+                  <tr><th scope="row"><a href="../java/sintaxis.html">Un lenguaje</a></th><td>llevar el algoritmo a código real</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="pseudocodigo.html">Pseudocódigo y diagramas →</a></nav>
+      <footer class="pie">La base para cualquier lenguaje. Sigue con el diseño de algoritmos en <a href="pseudocodigo.html">Pseudocódigo y diagramas de flujo</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

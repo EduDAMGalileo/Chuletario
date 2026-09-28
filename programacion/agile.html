@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agile · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="programacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Programación</a><span aria-hidden="true">›</span><span>Agile</span></nav>
+          <h1>Agile</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El desarrollo ágil: entregar valor en ciclos cortos, adaptándose al cambio. Scrum, Kanban y el manifiesto.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Programación">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="pseudocodigo.html">Pseudocódigo y diagramas</a><a href="entornos.html">Entornos de desarrollo</a><a href="eclipse.html">Eclipse</a><a href="agile.html" aria-current="page">Agile</a><a href="cascada.html">Modelo en cascada</a><a href="../java/index.html">Java</a><a href="../python/index.html">Python</a><a href="../kotlin/index.html">Kotlin</a><a href="../php/index.html">PHP</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es Agile</a><a href="#s2"><b>2</b>Los cuatro valores</a><a href="#s3"><b>3</b>Principios clave</a><a href="#s4"><b>4</b>Scrum</a><a href="#s5"><b>5</b>Kanban</a><a href="#s6"><b>6</b>Historias de usuario</a><a href="#s7"><b>7</b>Ventajas y límites</a><a href="#s8"><b>8</b>Agile o cascada</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">En vez de planificarlo todo al principio y entregar al final, Agile trabaja en <strong>ciclos cortos</strong> (iteraciones): se construye un trozo funcional, se enseña, se recoge <em>feedback</em> y se ajusta. Se adapta al cambio en lugar de temerlo.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">El ciclo</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Planificar</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Construir</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Revisar</b></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>Ajustar</b></div>
+            </div>
+            <p class="txt">...y vuelta a empezar, en iteraciones de una a cuatro semanas.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es Agile</h2>
+          <div class="cuerpo">
+            <p class="txt">Un conjunto de metodologías de desarrollo basadas en el <strong>Manifiesto Ágil</strong> (2001): entregas frecuentes, colaboración con el cliente y capacidad de adaptación. No es un método concreto, sino una filosofía; Scrum y Kanban son formas de aplicarla.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Iterativo</th><td>se trabaja en ciclos que se repiten</td></tr>
+                  <tr><th scope="row">Incremental</th><td>cada ciclo añade algo funcional al producto</td></tr>
+                  <tr><th scope="row">Adaptable</th><td>los requisitos pueden cambiar sobre la marcha</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Los cuatro valores</h2>
+          <div class="cuerpo">
+            <p class="txt">El manifiesto valora más lo de la izquierda, sin despreciar lo de la derecha:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Individuos e interacciones</th><td>más que procesos y herramientas</td></tr>
+                  <tr><th scope="row">Software funcionando</th><td>más que documentación exhaustiva</td></tr>
+                  <tr><th scope="row">Colaboración con el cliente</th><td>más que negociación de contratos</td></tr>
+                  <tr><th scope="row">Responder al cambio</th><td>más que seguir un plan cerrado</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Principios clave</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Entregas frecuentes</th><td>software útil cada pocas semanas</td></tr>
+                  <tr><th scope="row">Feedback continuo</th><td>enseñar pronto y a menudo para corregir rápido</td></tr>
+                  <tr><th scope="row">Equipos autoorganizados</th><td>deciden cómo hacer su trabajo</td></tr>
+                  <tr><th scope="row">Ritmo sostenible</th><td>un paso que se pueda mantener sin quemarse</td></tr>
+                  <tr><th scope="row">Simplicidad</th><td>hacer lo justo, no de más</td></tr>
+                  <tr><th scope="row">Mejora continua</th><td>revisar cómo trabaja el equipo y ajustar</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Scrum</h2>
+          <div class="cuerpo">
+            <p class="txt">El marco ágil más usado. Organiza el trabajo en <strong>sprints</strong>: iteraciones de duración fija (1-4 semanas) al final de las cuales hay algo entregable.</p>
+            <h3>Roles</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Product Owner</th><td>decide qué se hace y prioriza</td></tr>
+                  <tr><th scope="row">Scrum Master</th><td>facilita el proceso y quita obstáculos</td></tr>
+                  <tr><th scope="row">Equipo</th><td>construye el producto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Eventos y artefactos</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Sprint</th><td>la iteración de trabajo</td></tr>
+                  <tr><th scope="row">Daily</th><td>reunión diaria breve de sincronización</td></tr>
+                  <tr><th scope="row">Review</th><td>al final del sprint, se enseña lo hecho</td></tr>
+                  <tr><th scope="row">Retrospectiva</th><td>qué mejorar como equipo</td></tr>
+                  <tr><th scope="row">Product Backlog</th><td>lista priorizada de todo lo pendiente</td></tr>
+                  <tr><th scope="row">Sprint Backlog</th><td>lo que entra en el sprint actual</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Kanban</h2>
+          <div class="cuerpo">
+            <p class="txt">Otra forma ágil, basada en un <strong>tablero</strong> con columnas por las que avanzan las tareas. A diferencia de Scrum, es un flujo continuo, sin sprints.</p>
+            <div class="flujo">
+              <div class="caja caja-1">Por hacer</div>
+              <div class="flecha"><span class="linea">→</span></div>
+              <div class="caja caja-2">En curso</div>
+              <div class="flecha"><span class="linea">→</span></div>
+              <div class="caja caja-3">Hecho</div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tablero</th><td>columnas que representan el estado del trabajo</td></tr>
+                  <tr><th scope="row">Límite de WIP</th><td>máximo de tareas «en curso» a la vez, para no dispersarse</td></tr>
+                  <tr><th scope="row">Flujo continuo</th><td>las tareas entran cuando hace falta, sin iteraciones fijas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los tableros de <a href="../git/github.html#s9">GitHub Projects</a> o Trello son Kanban. Muchos equipos mezclan Scrum y Kanban («Scrumban»).</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Historias de usuario</h2>
+          <div class="cuerpo">
+            <p class="txt">La forma ágil de describir un requisito, desde el punto de vista de quien lo usa:</p>
+            <figure class="codigo"><pre data-lang="text"><code>Como [tipo de usuario]
+quiero [objetivo]
+para [beneficio].
+
+Ejemplo:
+Como cliente, quiero filtrar por precio
+para encontrar antes lo que busco.</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Pequeña</th><td>cabe en un sprint</td></tr>
+                  <tr><th scope="row">Con valor</th><td>aporta algo útil al usuario</td></tr>
+                  <tr><th scope="row">Criterios de aceptación</th><td>cómo se sabe que está terminada</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Ventajas y límites</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>A favor:</strong> se adapta al cambio, entrega valor pronto, detecta problemas antes y el cliente ve avances continuos.</p>
+            <p class="txt"><strong>En contra:</strong> cuesta estimar el coste y el plazo totales, exige implicación constante del cliente y puede generar poca documentación.</p>
+            <p class="aviso"><strong>Ojo:</strong> «ser ágil» no es no planificar ni no documentar; es hacerlo de forma continua y en la medida justa, no todo de golpe al principio.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Agile o cascada</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Agile</th><td>requisitos que cambian, entregas rápidas, cliente disponible</td></tr>
+                  <tr><th scope="row"><a href="cascada.html">Cascada</a></th><td>requisitos fijos y claros, contratos cerrados, mucha regulación</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">No hay una mejor siempre: depende del proyecto. Compáralas en el <a href="cascada.html">Modelo en cascada</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="eclipse.html">← Eclipse</a><a class="siguiente" href="cascada.html">Modelo en cascada →</a></nav>
+      <footer class="pie">El <a href="https://agilemanifesto.org/iso/es/manifesto.html">Manifiesto Ágil</a> está traducido al español.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

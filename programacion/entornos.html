@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entornos de desarrollo · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="programacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Programación</a><span aria-hidden="true">›</span><span>Entornos de desarrollo</span></nav>
+          <h1>Entornos de desarrollo</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Qué es un IDE, qué debería tener y en qué nos ayuda a escribir código mejor y más rápido.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Programación">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="pseudocodigo.html">Pseudocódigo y diagramas</a><a href="entornos.html" aria-current="page">Entornos de desarrollo</a><a href="eclipse.html">Eclipse</a><a href="agile.html">Agile</a><a href="cascada.html">Modelo en cascada</a><a href="../java/index.html">Java</a><a href="../python/index.html">Python</a><a href="../kotlin/index.html">Kotlin</a><a href="../php/index.html">PHP</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es un IDE</a><a href="#s2"><b>2</b>Qué debería tener</a><a href="#s3"><b>3</b>En qué nos ayuda</a><a href="#s4"><b>4</b>IDE o editor</a><a href="#s5"><b>5</b>Cuáles hay</a><a href="#s6"><b>6</b>El depurador</a><a href="#s7"><b>7</b>Herramientas integradas</a><a href="#s8"><b>8</b>Productividad</a><a href="#s9"><b>9</b>Consejos</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Un <strong>IDE</strong> (Entorno de Desarrollo Integrado) reúne en un solo programa todo lo necesario para programar: editar, ejecutar, depurar y gestionar el proyecto. Un buen entorno hace de multiplicador: escribes mejor código en menos tiempo.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">De un vistazo</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Editor</th><td>escribir el código, con ayudas</td></tr>
+                  <tr><th scope="row">Ejecución</th><td>compilar y lanzar el programa</td></tr>
+                  <tr><th scope="row">Depurador</th><td>buscar errores paso a paso</td></tr>
+                  <tr><th scope="row">Integración</th><td>Git, terminal, dependencias</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es un IDE</h2>
+          <div class="cuerpo">
+            <p class="txt">Un IDE integra las herramientas del desarrollo en una sola interfaz. En vez de saltar entre el editor, la terminal, el compilador y el depurador, lo tienes todo conectado y trabajando junto.</p>
+            <p class="nota">IDE = <em>Integrated Development Environment</em>. La palabra clave es «integrado»: las piezas se comunican entre sí.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Qué debería tener</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Editor con resaltado</th><td>colorea la sintaxis para leer mejor</td></tr>
+                  <tr><th scope="row">Autocompletado</th><td>sugiere métodos, variables y argumentos</td></tr>
+                  <tr><th scope="row">Detección de errores</th><td>subraya fallos antes de ejecutar</td></tr>
+                  <tr><th scope="row">Compilar y ejecutar</th><td>con un botón, sin salir del programa</td></tr>
+                  <tr><th scope="row">Depurador</th><td>ejecutar paso a paso e inspeccionar</td></tr>
+                  <tr><th scope="row">Control de versiones</th><td>Git integrado (ver <a href="../git/git.html">Git</a>)</td></tr>
+                  <tr><th scope="row">Terminal</th><td>una consola dentro del entorno</td></tr>
+                  <tr><th scope="row">Refactorización</th><td>renombrar y reorganizar de forma segura</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>En qué nos ayuda</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Menos errores</th><td>avisa de fallos de sintaxis y de tipos al escribir</td></tr>
+                  <tr><th scope="row">Más rápido</th><td>autocompletado, plantillas y atajos</td></tr>
+                  <tr><th scope="row">Navegar</th><td>saltar a la definición de una función o clase</td></tr>
+                  <tr><th scope="row">Entender código ajeno</th><td>ver quién llama a qué, buscar usos</td></tr>
+                  <tr><th scope="row">Refactor seguro</th><td>renombrar en todo el proyecto sin romper nada</td></tr>
+                  <tr><th scope="row">Formato automático</th><td>estilo consistente sin pensarlo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Al aprender, conviene entender también qué hace el IDE por debajo (compilar, ejecutar): así no dependes de los botones si algún día trabajas desde la terminal.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>IDE o editor</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Editor de código</th><td>ligero y rápido; funciones extra por extensiones (VS Code)</td></tr>
+                  <tr><th scope="row">IDE completo</th><td>todo integrado y potente para un lenguaje; más pesado (IntelliJ)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">La frontera se difumina: VS Code con extensiones se acerca a un IDE, y muchos IDEs son cada vez más ligeros. Elige según el proyecto y el lenguaje.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Cuáles hay</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">VS Code</th><td>editor universal, enorme catálogo de extensiones</td></tr>
+                  <tr><th scope="row">IntelliJ IDEA</th><td>referencia para Java y Kotlin (JetBrains)</td></tr>
+                  <tr><th scope="row">Eclipse / NetBeans</th><td>IDEs clásicos de Java</td></tr>
+                  <tr><th scope="row">PyCharm</th><td>Python (JetBrains)</td></tr>
+                  <tr><th scope="row">Android Studio</th><td>apps Android, sobre IntelliJ</td></tr>
+                  <tr><th scope="row">Vim / Neovim</th><td>en la terminal, muy configurable (ver <a href="../sistemas/vim.html">Vim</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para Java y Kotlin, IntelliJ es lo más cómodo; para casi todo lo demás, VS Code es una apuesta segura para empezar.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>El depurador</h2>
+          <div class="cuerpo">
+            <p class="txt">La herramienta que más diferencia a un IDE de un editor: ejecutar el programa paso a paso para ver qué hace por dentro, en lugar de llenar el código de <code>print</code>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Punto de ruptura</th><td><em>breakpoint</em>: el programa se para en esa línea</td></tr>
+                  <tr><th scope="row">Paso a paso</th><td>ejecutar una línea cada vez (<em>step</em>)</td></tr>
+                  <tr><th scope="row">Entrar / salir</th><td>meterse en una función o salir de ella</td></tr>
+                  <tr><th scope="row">Inspeccionar</th><td>ver el valor de las variables en ese momento</td></tr>
+                  <tr><th scope="row">Pila de llamadas</th><td>qué función llamó a cuál</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Saber usar el depurador es de las habilidades que más tiempo ahorra. Un <em>breakpoint</em> bien puesto vale por veinte <code>print</code>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Herramientas integradas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Linter</th><td>avisa de código sospechoso o mal estilo</td></tr>
+                  <tr><th scope="row">Formatter</th><td>ordena el formato automáticamente (Prettier, Black)</td></tr>
+                  <tr><th scope="row">Gestor de dependencias</th><td><a href="../java/maven.html">Maven</a>, npm, pip integrados</td></tr>
+                  <tr><th scope="row">Pruebas</th><td>lanzar los tests y ver los resultados</td></tr>
+                  <tr><th scope="row">Git</th><td>commits, ramas y diferencias sin salir</td></tr>
+                  <tr><th scope="row">Asistente IA</th><td>autocompletado y explicaciones con IA</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Productividad</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Buscar acción</th><td>Ctrl+Shift+P (VS Code) · doble Shift (IntelliJ)</td></tr>
+                  <tr><th scope="row">Ir a fichero</th><td>Ctrl+P / Ctrl+Shift+N</td></tr>
+                  <tr><th scope="row">Ir a definición</th><td>F12 / Ctrl+clic</td></tr>
+                  <tr><th scope="row">Renombrar</th><td>F2 / Shift+F6</td></tr>
+                  <tr><th scope="row">Formatear</th><td>Shift+Alt+F / Ctrl+Alt+L</td></tr>
+                  <tr><th scope="row">Comentar</th><td>Ctrl+/</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Aprende primero los atajos de buscar acción, ir a definición y renombrar: son los que más se repiten.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Consejos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Entorno reproducible</th><td>que el proyecto se pueda montar igual en otra máquina (venv, <a href="../docker/docker.html">Docker</a>)</td></tr>
+                  <tr><th scope="row">Activa el formatter</th><td>formato consistente desde el principio</td></tr>
+                  <tr><th scope="row">Usa el control de versiones</th><td>integra <a href="../git/git.html">Git</a> desde el primer día</td></tr>
+                  <tr><th scope="row">No abuses de plugins</th><td>demasiadas extensiones ralentizan el entorno</td></tr>
+                  <tr><th scope="row">Aprende el depurador</th><td>antes que llenar todo de mensajes</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="pseudocodigo.html">← Pseudocódigo y diagramas</a><a class="siguiente" href="eclipse.html">Eclipse →</a></nav>
+      <footer class="pie">Elige el entorno que te resulte cómodo y dedica un rato a configurarlo bien: se amortiza cada día.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

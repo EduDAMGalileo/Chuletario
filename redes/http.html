@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HTTP y HTTPS · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="redes">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Redes</a><span aria-hidden="true">›</span><span>HTTP y HTTPS</span></nav>
+          <h1>HTTP y HTTPS</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El protocolo de la web: peticiones y respuestas, métodos, códigos de estado, cabeceras y el cifrado con HTTPS.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Redes">
+      <div class="wrap"><a href="osi.html">Modelo OSI</a><a href="tcp-ip.html">Modelo TCP/IP</a><a href="http.html" aria-current="page">HTTP y HTTPS</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es HTTP</a><a href="#s2"><b>2</b>Petición y respuesta</a><a href="#s3"><b>3</b>Anatomía de una petición</a><a href="#s4"><b>4</b>Métodos</a><a href="#s5"><b>5</b>Códigos de estado</a><a href="#s6"><b>6</b>Cabeceras</a><a href="#s7"><b>7</b>HTTPS y TLS</a><a href="#s8"><b>8</b>Versiones</a><a href="#s9"><b>9</b>Estado y cookies</a><a href="#s10"><b>10</b>Herramientas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">HTTP es el protocolo con el que el navegador (cliente) pide páginas y datos a un servidor. Funciona por <strong>petición-respuesta</strong>: el cliente pregunta, el servidor contesta. Es de la capa de <a href="tcp-ip.html#s6">aplicación</a>, sobre TCP.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Petición → Respuesta</p>
+            <figure class="codigo"><pre data-lang="text"><code>GET /productos HTTP/1.1     →   HTTP/1.1 200 OK
+Host: tienda.com                 Content-Type: application/json
+                                 [ ... datos ... ]</code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es HTTP</h2>
+          <div class="cuerpo">
+            <p class="txt"><em>HyperText Transfer Protocol</em>: el protocolo de la World Wide Web. Define cómo se piden y se envían recursos (páginas, imágenes, datos) entre un cliente y un servidor.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cliente-servidor</th><td>el cliente pide, el servidor responde</td></tr>
+                  <tr><th scope="row">Sin estado</th><td>cada petición es independiente; no recuerda la anterior</td></tr>
+                  <tr><th scope="row">Textual</th><td>los mensajes son texto legible (hasta HTTP/2)</td></tr>
+                  <tr><th scope="row">Sobre TCP</th><td>puerto 80 (HTTP) y 443 (HTTPS)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Que sea «sin estado» es clave: como no recuerda nada entre peticiones, para saber quién eres se usan cookies y sesiones (sección 9).</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Petición y respuesta</h2>
+          <div class="cuerpo">
+            <p class="txt">Toda comunicación HTTP es un intercambio: el cliente envía una <strong>petición</strong> (request) y el servidor devuelve una <strong>respuesta</strong> (response).</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Cliente</b><small>pide</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Servidor</b><small>procesa</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Respuesta</b><small>+ estado</small></div>
+            </div>
+            <p class="nota">Cada recurso de una web (el HTML, cada imagen, cada script) es una petición HTTP distinta. Una sola página puede lanzar decenas.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Anatomía de una petición</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="text"><code>POST /login HTTP/1.1          ← línea: método, ruta, versión
+Host: ejemplo.com             ← cabeceras
+Content-Type: application/json
+Authorization: Bearer abc123
+                              ← línea en blanco
+{"usuario": "ana"}            ← cuerpo (opcional)</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Línea inicial</th><td>método + ruta + versión</td></tr>
+                  <tr><th scope="row">Cabeceras</th><td>metadatos: tipo de contenido, autenticación...</td></tr>
+                  <tr><th scope="row">Cuerpo</th><td>los datos (en POST/PUT); opcional</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La respuesta tiene la misma forma: línea de estado (<code>HTTP/1.1 200 OK</code>), cabeceras y cuerpo.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Métodos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>GET</code></th><td>pedir un recurso (no modifica nada)</td></tr>
+                  <tr><th scope="row"><code>POST</code></th><td>enviar datos, crear un recurso</td></tr>
+                  <tr><th scope="row"><code>PUT</code></th><td>crear o reemplazar un recurso entero</td></tr>
+                  <tr><th scope="row"><code>PATCH</code></th><td>modificar parte de un recurso</td></tr>
+                  <tr><th scope="row"><code>DELETE</code></th><td>borrar un recurso</td></tr>
+                  <tr><th scope="row"><code>HEAD</code></th><td>como GET pero solo las cabeceras</td></tr>
+                  <tr><th scope="row"><code>OPTIONS</code></th><td>qué métodos admite el servidor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>GET</code> es <em>seguro</em> (no cambia nada) e <em>idempotente</em> (repetirlo da igual). <code>POST</code> no: enviar dos veces un formulario crea dos registros.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Códigos de estado</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>1xx</code></th><td>informativo</td></tr>
+                  <tr><th scope="row"><code>2xx</code></th><td>éxito: <code>200 OK</code>, <code>201 Created</code>, <code>204 No Content</code></td></tr>
+                  <tr><th scope="row"><code>3xx</code></th><td>redirección: <code>301</code> (permanente), <code>302</code>, <code>304 Not Modified</code></td></tr>
+                  <tr><th scope="row"><code>4xx</code></th><td>error del cliente: <code>400</code>, <code>401</code>, <code>403</code>, <code>404 Not Found</code></td></tr>
+                  <tr><th scope="row"><code>5xx</code></th><td>error del servidor: <code>500</code>, <code>502</code>, <code>503</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>401</code> vs <code>403</code></th><td>no autenticado (¿quién eres?) vs autenticado pero sin permiso</td></tr>
+                  <tr><th scope="row"><code>404</code> vs <code>500</code></th><td>no existe el recurso vs falló el servidor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Regla mnemotécnica: 2xx bien, 3xx «mira en otro sitio», 4xx «te has equivocado tú», 5xx «me he equivocado yo (el servidor)».</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Cabeceras</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Host</code></th><td>el dominio solicitado</td></tr>
+                  <tr><th scope="row"><code>Content-Type</code></th><td>tipo del cuerpo: <code>application/json</code>, <code>text/html</code></td></tr>
+                  <tr><th scope="row"><code>Authorization</code></th><td>credenciales o token</td></tr>
+                  <tr><th scope="row"><code>User-Agent</code></th><td>qué cliente/navegador hace la petición</td></tr>
+                  <tr><th scope="row"><code>Accept</code></th><td>qué formatos acepta el cliente</td></tr>
+                  <tr><th scope="row"><code>Cache-Control</code></th><td>cómo y cuánto cachear</td></tr>
+                  <tr><th scope="row"><code>Set-Cookie</code></th><td>el servidor pide guardar una cookie</td></tr>
+                  <tr><th scope="row"><code>Location</code></th><td>a dónde redirige (con 3xx)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>HTTPS y TLS</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>HTTPS</strong> es HTTP <em>cifrado</em> con TLS. Todo el intercambio va protegido: nadie por el medio puede leerlo ni alterarlo.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Confidencialidad</th><td>el tráfico va cifrado</td></tr>
+                  <tr><th scope="row">Integridad</th><td>no se puede modificar sin que se note</td></tr>
+                  <tr><th scope="row">Autenticidad</th><td>el certificado prueba que el servidor es quien dice</td></tr>
+                  <tr><th scope="row">Certificado</th><td>lo emite una CA (autoridad de certificación); gratis con Let's Encrypt</td></tr>
+                  <tr><th scope="row">Puerto</th><td>443</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El candado del navegador significa que la conexión está cifrada y el certificado es válido, no que el sitio sea «de fiar». Más sobre cifrado en la sección de <a href="../seguridad/introduccion.html">Seguridad</a>.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Versiones</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">HTTP/1.1</th><td>textual; una petición tras otra por conexión</td></tr>
+                  <tr><th scope="row">HTTP/2</th><td>binario; varias peticiones a la vez por una conexión (multiplexación)</td></tr>
+                  <tr><th scope="row">HTTP/3</th><td>sobre QUIC (UDP); más rápido y resistente a pérdidas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las versiones son compatibles hacia atrás: el navegador y el servidor negocian la más alta que ambos soporten.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Estado y cookies</h2>
+          <div class="cuerpo">
+            <p class="txt">Como HTTP no recuerda nada entre peticiones, para mantener una sesión (saber que ya te has identificado) se usan <strong>cookies</strong>: el servidor manda <code>Set-Cookie</code> y el navegador la reenvía en cada petición.</p>
+            <figure class="codigo"><pre data-lang="text"><code>Respuesta:  Set-Cookie: sesion=abc123; HttpOnly; Secure
+Petición:   Cookie: sesion=abc123</code></pre></figure>
+            <p class="nota">Cómo se crean y gestionan del lado del servidor, y cómo verlas en el navegador, en la chuleta de <a href="../php/cookies-sesiones.html">Cookies y sesiones (PHP)</a>.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Herramientas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">curl</span> <span class="tok-atributo">-i</span> https://ejemplo.com            <span class="tok-coment"># respuesta con cabeceras</span>
+<span class="tok-clave">curl</span> <span class="tok-atributo">-X</span> POST <span class="tok-atributo">-d</span> <span class="tok-texto">'{"a":1}'</span> \
+     <span class="tok-atributo">-H</span> <span class="tok-texto">"Content-Type: application/json"</span> https://api.ejemplo.com
+<span class="tok-clave">curl</span> <span class="tok-atributo">-I</span> https://ejemplo.com            <span class="tok-coment"># solo cabeceras (HEAD)</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>curl</code></th><td>hacer peticiones desde la terminal</td></tr>
+                  <tr><th scope="row">DevTools › Network</th><td>ver todas las peticiones del navegador (F12)</td></tr>
+                  <tr><th scope="row">Postman / Insomnia</th><td>probar APIs con interfaz</td></tr>
+                  <tr><th scope="row"><a href="../hacking/netcat.html">Netcat</a></th><td>hablar HTTP a mano, byte a byte</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="tcp-ip.html">← Modelo TCP/IP</a><a class="siguiente" href="red-linux.html">Configurar la red →</a></nav>
+      <footer class="pie">Referencia de HTTP en <a href="https://developer.mozilla.org/es/docs/Web/HTTP">MDN Web Docs</a> (en español).</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
