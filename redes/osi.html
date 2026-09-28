@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modelo OSI · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="redes">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Redes</a><span aria-hidden="true">›</span><span>Modelo OSI</span></nav>
+          <h1>Modelo OSI</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El modelo de referencia de 7 capas: qué hace cada una, sus protocolos y cómo viaja un dato de arriba abajo.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Redes">
+      <div class="wrap"><a href="osi.html" aria-current="page">Modelo OSI</a><a href="tcp-ip.html">Modelo TCP/IP</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es el modelo OSI</a><a href="#s2"><b>2</b>Las siete capas</a><a href="#s3"><b>3</b>Capas físicas (1-2)</a><a href="#s4"><b>4</b>Capas de red y transporte (3-4)</a><a href="#s5"><b>5</b>Capas superiores (5-7)</a><a href="#s6"><b>6</b>Encapsulación</a><a href="#s7"><b>7</b>Dispositivos por capa</a><a href="#s8"><b>8</b>Cómo recordarlo</a><a href="#s9"><b>9</b>OSI frente a TCP/IP</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">OSI (<em>Open Systems Interconnection</em>) divide la comunicación en red en <strong>7 capas</strong>. Cada una tiene una función concreta y habla solo con la de arriba y la de abajo. Es un modelo <strong>de referencia</strong>: sirve para entender y ubicar problemas, aunque internet funcione con TCP/IP.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">De arriba abajo</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">7 Aplicación</th><td>lo que usa el programa</td></tr>
+                  <tr><th scope="row">6 Presentación</th><td>formato y cifrado</td></tr>
+                  <tr><th scope="row">5 Sesión</th><td>abrir y mantener el diálogo</td></tr>
+                  <tr><th scope="row">4 Transporte</th><td>TCP/UDP, puertos</td></tr>
+                  <tr><th scope="row">3 Red</th><td>IP, enrutamiento</td></tr>
+                  <tr><th scope="row">2 Enlace</th><td>MAC, tramas</td></tr>
+                  <tr><th scope="row">1 Física</th><td>cables y señales</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es el modelo OSI -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es el modelo OSI</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo publicó la ISO en 1984 para que sistemas de fabricantes distintos pudieran entenderse. Separa la comunicación en capas independientes: cada una ofrece un servicio a la de arriba y se apoya en la de abajo, sin tener que saber cómo trabaja el resto.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Modularidad</th><td>cambiar una capa (p. ej. wifi por cable) no afecta a las demás</td></tr>
+                  <tr><th scope="row">Diagnóstico</th><td>ayuda a situar un fallo: «es un problema de capa 3» (IP), no de capa 7</td></tr>
+                  <tr><th scope="row">Lenguaje común</th><td>todo el sector habla de «capa 2», «capa 7»...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Es teórico. En la práctica se usa <a href="tcp-ip.html">TCP/IP</a>, que agrupa estas 7 capas en 4, pero OSI sigue siendo la referencia para explicar y diagnosticar.</p>
+          </div>
+        </section>
+        <!-- 2. Las siete capas -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Las siete capas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">7 · Aplicación</th><td>servicios al usuario. HTTP, DNS, FTP, SMTP</td></tr>
+                  <tr><th scope="row">6 · Presentación</th><td>formato, codificación y cifrado. TLS, ASCII, JPEG</td></tr>
+                  <tr><th scope="row">5 · Sesión</th><td>abre, mantiene y cierra la conversación. NetBIOS, RPC</td></tr>
+                  <tr><th scope="row">4 · Transporte</th><td>entrega fiable y puertos. TCP, UDP</td></tr>
+                  <tr><th scope="row">3 · Red</th><td>direcciones lógicas y rutas. IP, ICMP, routers</td></tr>
+                  <tr><th scope="row">2 · Enlace</th><td>direcciones físicas en la red local. MAC, Ethernet, switches</td></tr>
+                  <tr><th scope="row">1 · Física</th><td>bits como señales por el medio. cables, fibra, radio</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La unidad de datos (PDU) cambia por capa: en la 4 son <strong>segmentos</strong> (o datagramas en UDP), en la 3 <strong>paquetes</strong>, en la 2 <strong>tramas</strong> y en la 1 <strong>bits</strong>.</p>
+          </div>
+        </section>
+        <!-- 3. Capas físicas (1-2) -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Capas físicas (1-2)</h2>
+          <div class="cuerpo">
+            <h3>Capa 1 · Física</h3>
+            <p class="txt">Transmite los bits como señales eléctricas, luminosas o de radio. Define cables, conectores, voltajes y frecuencias.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ejemplos</th><td>cable de cobre (RJ45), fibra óptica, wifi (radio), USB</td></tr>
+                  <tr><th scope="row">Dispositivos</th><td>hub, repetidor, cableado, tarjeta de red (parte física)</td></tr>
+                  <tr><th scope="row">PDU</th><td>bit</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Capa 2 · Enlace de datos</h3>
+            <p class="txt">Entrega tramas entre equipos de la <strong>misma red local</strong> usando la dirección física (MAC). Detecta errores de transmisión.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Direccionamiento</th><td>dirección MAC (48 bits: <code>a4:5e:60:...</code>)</td></tr>
+                  <tr><th scope="row">Protocolos</th><td>Ethernet, Wi-Fi (802.11), PPP, ARP (enlace/red)</td></tr>
+                  <tr><th scope="row">Dispositivos</th><td>switch, puente (bridge)</td></tr>
+                  <tr><th scope="row">PDU</th><td>trama (frame)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 4. Capas de red y transporte (3-4) -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Capas de red y transporte (3-4)</h2>
+          <div class="cuerpo">
+            <h3>Capa 3 · Red</h3>
+            <p class="txt">Lleva los paquetes <strong>entre redes distintas</strong>: elige la ruta (enrutamiento) usando direcciones lógicas (IP).</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Direccionamiento</th><td>dirección IP (IPv4 e IPv6)</td></tr>
+                  <tr><th scope="row">Protocolos</th><td>IP, ICMP (ping), IPsec, protocolos de enrutamiento (OSPF, BGP)</td></tr>
+                  <tr><th scope="row">Dispositivos</th><td>router, cortafuegos (nivel de red)</td></tr>
+                  <tr><th scope="row">PDU</th><td>paquete</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Capa 4 · Transporte</h3>
+            <p class="txt">Comunica <strong>procesos</strong> (no equipos): identifica cada servicio con un puerto y decide si la entrega es fiable o no.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">TCP</th><td>fiable, ordenado, con conexión (web, correo)</td></tr>
+                  <tr><th scope="row">UDP</th><td>rápido, sin conexión ni garantías (streaming, DNS, juegos)</td></tr>
+                  <tr><th scope="row">Direccionamiento</th><td>número de puerto (0-65535)</td></tr>
+                  <tr><th scope="row">PDU</th><td>segmento (TCP) / datagrama (UDP)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Capas superiores (5-7) -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Capas superiores (5-7)</h2>
+          <div class="cuerpo">
+            <h3>Capa 5 · Sesión</h3>
+            <p class="txt">Abre, mantiene y cierra el «diálogo» entre dos aplicaciones. Controla de quién es el turno y reanuda si se corta.</p>
+            <p class="txt"><strong>Ejemplos:</strong> NetBIOS, RPC, sockets, control de sesiones.</p>
+            <h3>Capa 6 · Presentación</h3>
+            <p class="txt">Traduce el formato de los datos para que ambos lados se entiendan: codificación de caracteres, compresión y <strong>cifrado</strong>.</p>
+            <p class="txt"><strong>Ejemplos:</strong> TLS/SSL, ASCII y Unicode, JPEG, MP3.</p>
+            <h3>Capa 7 · Aplicación</h3>
+            <p class="txt">La que ve el usuario a través de sus programas: navegador, cliente de correo, etc. Ofrece los servicios de red.</p>
+            <p class="txt"><strong>Ejemplos:</strong> HTTP/HTTPS, DNS, FTP, SMTP, SSH, DHCP.</p>
+            <p class="nota">En TCP/IP, estas tres capas (5, 6 y 7) se juntan en una sola: la de aplicación.</p>
+          </div>
+        </section>
+        <!-- 6. Encapsulación -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Encapsulación</h2>
+          <div class="cuerpo">
+            <p class="txt">Al enviar, el dato baja capa por capa y cada una le añade su propia cabecera (y la 2, también una cola). Al recibir, sube y cada capa quita la suya. Es como meter una carta en sobres cada vez más grandes.</p>
+            <figure class="codigo"><pre data-lang="text"><code>7 Aplicación   [ datos ]
+4 Transporte   [ TCP | datos ]                 → segmento
+3 Red          [ IP | TCP | datos ]            → paquete
+2 Enlace       [ MAC | IP | TCP | datos | FCS ] → trama
+1 Física       0101110101...                   → bits</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Encapsular</th><td>al enviar: cada capa envuelve lo que recibe de la de arriba</td></tr>
+                  <tr><th scope="row">Desencapsular</th><td>al recibir: cada capa retira su cabecera y sube el resto</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Dispositivos por capa -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Dispositivos por capa</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada dispositivo de red «trabaja» hasta una capa concreta: es la más alta que es capaz de leer para tomar decisiones.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cable, hub, repetidor</th><td>capa 1 (física)</td></tr>
+                  <tr><th scope="row">Switch, punto de acceso</th><td>capa 2 (mira la MAC)</td></tr>
+                  <tr><th scope="row">Router</th><td>capa 3 (mira la IP y enruta)</td></tr>
+                  <tr><th scope="row">Cortafuegos</th><td>capa 3-4, y los modernos hasta la 7</td></tr>
+                  <tr><th scope="row">Proxy, WAF, balanceador L7</th><td>capa 7 (entienden la aplicación)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Por eso un switch «no ve» las IP y un router sí: cada uno lee hasta su capa. Más sobre esto en <a href="../seguridad/cortafuegos.html">Cortafuegos</a>.</p>
+          </div>
+        </section>
+        <!-- 8. Cómo recordarlo -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Cómo recordarlo</h2>
+          <div class="cuerpo">
+            <p class="txt">Reglas mnemotécnicas clásicas para las 7 capas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">De 1 a 7</th><td><strong>F</strong>ísica <strong>E</strong>nlace <strong>R</strong>ed <strong>T</strong>ransporte <strong>S</strong>esión <strong>P</strong>resentación <strong>A</strong>plicación</td></tr>
+                  <tr><th scope="row">En inglés</th><td>«<em>Please Do Not Throw Sausage Pizza Away</em>» (de la 1 a la 7)</td></tr>
+                  <tr><th scope="row">Truco</th><td>capas 1-4 «transportan», capas 5-7 «tratan» los datos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Asocia cada capa a su palabra clave: física=cable, enlace=MAC, red=IP, transporte=puerto, aplicación=programa. Con eso ubicas casi cualquier concepto.</p>
+          </div>
+        </section>
+        <!-- 9. OSI frente a TCP/IP -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>OSI frente a TCP/IP</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">7,6,5 Aplicación...</th><td>→ <strong>Aplicación</strong> (TCP/IP)</td></tr>
+                  <tr><th scope="row">4 Transporte</th><td>→ <strong>Transporte</strong></td></tr>
+                  <tr><th scope="row">3 Red</th><td>→ <strong>Internet</strong></td></tr>
+                  <tr><th scope="row">2,1 Enlace y Física</th><td>→ <strong>Acceso a la red</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">OSI</th><td>7 capas · teórico · de referencia</td></tr>
+                  <tr><th scope="row">TCP/IP</th><td>4 capas · práctico · el de internet</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Continúa en <a href="tcp-ip.html">Modelo TCP/IP</a>, con los protocolos concretos de cada capa y las herramientas para verlos.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="tcp-ip.html">Modelo TCP/IP →</a></nav>
+      <footer class="pie">El modelo OSI está definido en la norma ISO/IEC 7498-1.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

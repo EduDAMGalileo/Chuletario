@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modelo TCP/IP · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="redes">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Redes</a><span aria-hidden="true">›</span><span>Modelo TCP/IP</span></nav>
+          <h1>Modelo TCP/IP</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El modelo real de internet: 4 capas, los protocolos de cada una, los puertos habituales y cómo viaja un paquete.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Redes">
+      <div class="wrap"><a href="osi.html">Modelo OSI</a><a href="tcp-ip.html" aria-current="page">Modelo TCP/IP</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es TCP/IP</a><a href="#s2"><b>2</b>Las cuatro capas</a><a href="#s3"><b>3</b>Acceso a la red</a><a href="#s4"><b>4</b>Internet (IP)</a><a href="#s5"><b>5</b>Transporte (TCP y UDP)</a><a href="#s6"><b>6</b>Aplicación</a><a href="#s7"><b>7</b>Protocolos por capa</a><a href="#s8"><b>8</b>Puertos habituales</a><a href="#s9"><b>9</b>El viaje de un paquete</a><a href="#s10"><b>10</b>TCP frente a UDP</a><a href="#s11"><b>11</b>Herramientas para verlo</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">TCP/IP es el conjunto de protocolos sobre el que funciona internet. Agrupa las 7 capas de <a href="osi.html">OSI</a> en <strong>4</strong>, más pegadas a la realidad. Toma su nombre de sus dos protocolos estrella: <strong>TCP</strong> (transporte) e <strong>IP</strong> (internet).</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Las 4 capas</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Aplicación</th><td>HTTP, DNS, SSH...</td></tr>
+                  <tr><th scope="row">Transporte</th><td>TCP, UDP</td></tr>
+                  <tr><th scope="row">Internet</th><td>IP, ICMP</td></tr>
+                  <tr><th scope="row">Acceso a la red</th><td>Ethernet, Wi-Fi, ARP</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es TCP/IP -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es TCP/IP</h2>
+          <div class="cuerpo">
+            <p class="txt">Es la pila de protocolos que hace funcionar internet, anterior incluso al modelo OSI. En lugar de un modelo teórico, describe cómo se comunican de verdad los equipos: por eso a veces se le llama «modelo DoD» o «pila TCP/IP».</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Práctico</th><td>es lo que corre en tu equipo ahora mismo</td></tr>
+                  <tr><th scope="row">Por capas</th><td>igual que OSI, pero agrupadas en 4</td></tr>
+                  <tr><th scope="row">Abierto</th><td>estándares públicos (RFC), de cualquier fabricante</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">OSI se usa para <em>explicar</em> y diagnosticar; TCP/IP es lo que se <em>implementa</em>. Los dos conviven en el vocabulario del día a día.</p>
+          </div>
+        </section>
+        <!-- 2. Las cuatro capas -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Las cuatro capas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Aplicación</th><td>los servicios (equivale a OSI 5+6+7). Datos</td></tr>
+                  <tr><th scope="row">Transporte</th><td>puertos y fiabilidad (OSI 4). Segmentos/datagramas</td></tr>
+                  <tr><th scope="row">Internet</th><td>direcciones IP y rutas (OSI 3). Paquetes</td></tr>
+                  <tr><th scope="row">Acceso a la red</th><td>la red local y el medio (OSI 1+2). Tramas y bits</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Algunos libros llaman a la capa inferior «enlace» y separan a veces «física». Lo esencial es la correspondencia: cuatro capas TCP/IP cubren las siete de OSI.</p>
+          </div>
+        </section>
+        <!-- 3. Acceso a la red -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Acceso a la red</h2>
+          <div class="cuerpo">
+            <p class="txt">Mueve las tramas dentro de la <strong>red local</strong>, usando direcciones físicas (MAC). Cubre el cable, el wifi y la tarjeta de red.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ethernet</th><td>redes cableadas (802.3)</td></tr>
+                  <tr><th scope="row">Wi-Fi</th><td>redes inalámbricas (802.11)</td></tr>
+                  <tr><th scope="row">ARP</th><td>traduce una IP a su dirección MAC en la red local</td></tr>
+                  <tr><th scope="row">MAC</th><td>dirección física de la tarjeta (<code>a4:5e:60:...</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>ARP</code> es la «guía de teléfonos» local: cuando conoces la IP de un vecino de red pero no su MAC, ARP la resuelve. Míralo con <code>ip neigh</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Internet (IP) -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Internet (IP)</h2>
+          <div class="cuerpo">
+            <p class="txt">Lleva los paquetes <strong>de una red a otra</strong> por todo el mundo, eligiendo la ruta. Cada equipo tiene una dirección IP.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">IPv4</th><td>4 números: <code>192.168.1.10</code> (agotadas)</td></tr>
+                  <tr><th scope="row">IPv6</th><td>más largas: <code>2001:db8::1</code></td></tr>
+                  <tr><th scope="row">ICMP</th><td>mensajes de control y errores; lo usa <code>ping</code></td></tr>
+                  <tr><th scope="row">IP pública / privada</th><td>la de internet / la de tu red local (<code>192.168.x.x</code>...)</td></tr>
+                  <tr><th scope="row">NAT</th><td>varias IP privadas comparten una pública</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">IP no garantiza la entrega: solo intenta llevar cada paquete a su destino, quizá por rutas distintas. De la fiabilidad se encarga TCP, en la capa de arriba.</p>
+          </div>
+        </section>
+        <!-- 5. Transporte -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Transporte (TCP y UDP)</h2>
+          <div class="cuerpo">
+            <p class="txt">Comunica los <strong>programas</strong>, no solo los equipos. Cada servicio escucha en un <strong>puerto</strong>, y así el sistema sabe a qué aplicación entregar cada segmento.</p>
+            <h3>TCP: el establecimiento (3 pasos)</h3>
+            <figure class="codigo"><pre data-lang="text"><code>Cliente ──SYN──────────▶ Servidor
+Cliente ◀──SYN-ACK────── Servidor
+Cliente ──ACK──────────▶ Servidor   → conexión abierta</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">TCP</th><td>con conexión, fiable y ordenado; reenvía lo perdido</td></tr>
+                  <tr><th scope="row">UDP</th><td>sin conexión, rápido, sin garantías</td></tr>
+                  <tr><th scope="row">Puerto</th><td>identifica el servicio (0-65535)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6. Aplicación -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Aplicación</h2>
+          <div class="cuerpo">
+            <p class="txt">Los protocolos que usan directamente los programas. Se apoyan en TCP o en UDP según necesiten fiabilidad o velocidad.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">HTTP/HTTPS</th><td>web (sobre TCP)</td></tr>
+                  <tr><th scope="row">DNS</th><td>nombres → IP (UDP casi siempre)</td></tr>
+                  <tr><th scope="row">DHCP</th><td>reparte IP automáticamente (UDP)</td></tr>
+                  <tr><th scope="row">SSH</th><td>terminal remota segura (TCP)</td></tr>
+                  <tr><th scope="row">SMTP / IMAP</th><td>correo (TCP)</td></tr>
+                  <tr><th scope="row">FTP</th><td>transferencia de ficheros (TCP)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cuando escribes una web, DNS traduce el nombre a una IP (capa internet), TCP abre la conexión (transporte) y HTTP pide la página (aplicación): las capas colaboran en cada clic.</p>
+          </div>
+        </section>
+        <!-- 7. Protocolos por capa -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Protocolos por capa</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Aplicación</th><td>HTTP, HTTPS, DNS, DHCP, FTP, SSH, SMTP, IMAP, POP3, SNMP, NTP</td></tr>
+                  <tr><th scope="row">Transporte</th><td>TCP, UDP</td></tr>
+                  <tr><th scope="row">Internet</th><td>IP, ICMP, IGMP, IPsec, ARP*</td></tr>
+                  <tr><th scope="row">Acceso a la red</th><td>Ethernet, Wi-Fi, PPP, ARP*</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">* ARP se coloca entre la capa de acceso y la de internet, según el libro: relaciona una IP (internet) con una MAC (acceso).</p>
+          </div>
+        </section>
+        <!-- 8. Puertos habituales -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Puertos habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>20 / 21</code></th><td>FTP (datos / control)</td></tr>
+                  <tr><th scope="row"><code>22</code></th><td>SSH</td></tr>
+                  <tr><th scope="row"><code>23</code></th><td>Telnet (inseguro)</td></tr>
+                  <tr><th scope="row"><code>25</code></th><td>SMTP (correo saliente)</td></tr>
+                  <tr><th scope="row"><code>53</code></th><td>DNS</td></tr>
+                  <tr><th scope="row"><code>67 / 68</code></th><td>DHCP</td></tr>
+                  <tr><th scope="row"><code>80</code></th><td>HTTP</td></tr>
+                  <tr><th scope="row"><code>443</code></th><td>HTTPS</td></tr>
+                  <tr><th scope="row"><code>110 / 143</code></th><td>POP3 / IMAP</td></tr>
+                  <tr><th scope="row"><code>3306 / 5432</code></th><td>MySQL / PostgreSQL</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Del 0 al 1023 son puertos «bien conocidos» y suelen necesitar privilegios para abrirlos. Los ves con <code>ss -tulpn</code> (ver <a href="../sistemas/servicios.html#s8">Servicios</a>).</p>
+          </div>
+        </section>
+        <!-- 9. El viaje de un paquete -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>El viaje de un paquete</h2>
+          <div class="cuerpo">
+            <p class="txt">Cuando abres <code>https://ejemplo.com</code>:</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>DNS</b><small>nombre → IP</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>TCP</b><small>abrir conexión</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>TLS</b><small>cifrar</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>HTTP</b><small>pedir página</small></div>
+            </div>
+            <p class="txt">Cada capa añade su cabecera al bajar (encapsulación) y el equipo de destino las va quitando al subir. Por el camino, los routers solo miran la cabecera IP para decidir la ruta.</p>
+            <p class="nota">Si algo falla, pensar en capas ayuda: ¿resuelve el DNS? (aplicación) ¿hay IP y llega el ping? (internet) ¿responde el puerto? (transporte).</p>
+          </div>
+        </section>
+        <!-- 10. TCP frente a UDP -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>TCP frente a UDP</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Conexión</th><td>TCP la establece (SYN/ACK); UDP no</td></tr>
+                  <tr><th scope="row">Fiabilidad</th><td>TCP reenvía lo perdido; UDP no lo comprueba</td></tr>
+                  <tr><th scope="row">Orden</th><td>TCP ordena los segmentos; UDP no garantiza el orden</td></tr>
+                  <tr><th scope="row">Velocidad</th><td>UDP es más rápido y ligero</td></tr>
+                  <tr><th scope="row">Usos TCP</th><td>web, correo, SSH, transferencias</td></tr>
+                  <tr><th scope="row">Usos UDP</th><td>DNS, streaming, VoIP, juegos, DHCP</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Regla rápida: si perder un trozo arruina el resultado (una web, un fichero), TCP. Si es mejor llegar tarde que perfecto (una videollamada), UDP.</p>
+          </div>
+        </section>
+        <!-- 11. Herramientas para verlo -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Herramientas para verlo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ping</span> ejemplo.com          <span class="tok-coment"># ¿llega? (ICMP, capa internet)</span>
+<span class="tok-clave">traceroute</span> ejemplo.com    <span class="tok-coment"># por qué routers pasa</span>
+<span class="tok-clave">dig</span> ejemplo.com           <span class="tok-coment"># consulta DNS (aplicación)</span>
+<span class="tok-clave">ss</span> <span class="tok-atributo">-tulpn</span>                 <span class="tok-coment"># puertos a la escucha (transporte)</span>
+<span class="tok-clave">ip</span> addr                   <span class="tok-coment"># mis direcciones IP</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">tcpdump</span> <span class="tok-atributo">-i</span> eth0      <span class="tok-coment"># capturar paquetes en vivo</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ping</code></th><td>comprobar conectividad IP</td></tr>
+                  <tr><th scope="row"><code>traceroute</code></th><td>ver el camino (saltos) hasta un destino</td></tr>
+                  <tr><th scope="row"><code>dig</code> / <code>nslookup</code></th><td>resolver nombres DNS</td></tr>
+                  <tr><th scope="row"><code>tcpdump</code> / Wireshark</th><td>capturar y analizar tráfico real</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para configurar direcciones, rutas y DNS en Linux, sigue con <a href="red-linux.html">Configurar la red</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="osi.html">← Modelo OSI</a><a class="siguiente" href="red-linux.html">Configurar la red →</a></nav>
+      <footer class="pie">Los protocolos de TCP/IP se definen en documentos RFC, publicados por el IETF en <a href="https://www.rfc-editor.org/">rfc-editor.org</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
