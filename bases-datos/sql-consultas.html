@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL · Consultas · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><a href="sql.html">SQL</a><span aria-hidden="true">›</span><span>Consultas</span></nav>
+          <h1>SQL · Consultas (DQL)</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Consultar datos con SELECT: filtros, orden, funciones, agrupación, combinar tablas con JOIN y subconsultas. Sintaxis MySQL; <code>[ ]</code> indica una parte opcional.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Sublenguajes de SQL">
+      <div class="wrap"><a href="sql-ddl.html">DDL</a><a href="sql-dml.html">DML</a><a href="sql-consultas.html" aria-current="page">Consultas</a><a href="sql-dcl.html">DCL</a><a href="sql-tcl.html">TCL</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>La consulta SELECT</a><a href="#s2"><b>2</b>Filtros (WHERE)</a><a href="#s3"><b>3</b>Ordenar y limitar</a><a href="#s4"><b>4</b>Funciones</a><a href="#s5"><b>5</b>Agrupar (GROUP BY)</a><a href="#s6"><b>6</b>Combinar tablas (JOIN)</a><a href="#s7"><b>7</b>Subconsultas y UNION</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Orden lógico en que se ejecuta un SELECT (no es el orden en que se escribe)</p>
+        <div class="pasos">
+          <div class="paso"><span class="n">1</span><b>FROM / JOIN</b><small>tablas de origen</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">2</span><b>WHERE</b><small>filtra filas</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">3</span><b>GROUP BY</b><small>agrupa</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">4</span><b>HAVING</b><small>filtra grupos</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">5</span><b>SELECT</b><small>columnas y alias</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">6</span><b>ORDER BY</b><small>ordena</small></div>
+          <span class="separador" aria-hidden="true">▶</span>
+          <div class="paso"><span class="n">7</span><b>LIMIT</b><small>recorta</small></div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>La consulta SELECT</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> [<span class="tok-clave">DISTINCT</span>] columnas
+<span class="tok-clave">FROM</span> tabla
+[<span class="tok-clave">JOIN</span> otra <span class="tok-clave">ON</span> condición]
+[<span class="tok-clave">WHERE</span> condición]
+[<span class="tok-clave">GROUP</span> <span class="tok-clave">BY</span> columnas]
+[<span class="tok-clave">HAVING</span> condición]
+[<span class="tok-clave">ORDER</span> <span class="tok-clave">BY</span> col [<span class="tok-clave">ASC</span>|<span class="tok-clave">DESC</span>]]
+[<span class="tok-clave">LIMIT</span> n [<span class="tok-clave">OFFSET</span> m]];</code></pre></figure>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> nombre, nota <span class="tok-clave">AS</span> calificacion
+<span class="tok-clave">FROM</span> alumno
+<span class="tok-clave">WHERE</span> nota &gt;= <span class="tok-numero">5</span> <span class="tok-clave">AND</span> curso_id = <span class="tok-numero">1</span>
+<span class="tok-clave">ORDER</span> <span class="tok-clave">BY</span> nota <span class="tok-clave">DESC</span>, nombre
+<span class="tok-clave">LIMIT</span> <span class="tok-numero">10</span>;</code></pre></figure>
+            <p class="nota"><code>DISTINCT</code> quita filas duplicadas del resultado. <code>AS</code> pone un alias a una columna (o a una tabla). Recuerda: se <em>escribe</em> SELECT primero, pero se <em>ejecuta</em> casi al final (banda de arriba).</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Filtros (WHERE)</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>= &lt;&gt; &lt; &gt; &lt;= &gt;=</code></th><td>comparación (<code>&lt;&gt;</code> es «distinto»)</td></tr>
+                  <tr><th scope="row"><code>BETWEEN 5 AND 7</code></th><td>rango (incluye los extremos)</td></tr>
+                  <tr><th scope="row"><code>IN ('DAM', 'DAW')</code></th><td>está en la lista</td></tr>
+                  <tr><th scope="row"><code>LIKE 'A%'</code></th><td><code>%</code> cualquier texto, <code>_</code> un carácter</td></tr>
+                  <tr><th scope="row"><code>IS NULL / IS NOT NULL</code></th><td>nunca <code>= NULL</code></td></tr>
+                  <tr><th scope="row"><code>AND  OR  NOT</code></th><td>combina condiciones; usa paréntesis al mezclar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>NULL</code> no es un valor sino «desconocido»: cualquier comparación con <code>=</code> da desconocido, por eso se usa <code>IS NULL</code>. Ver más sobre nulos en el <a href="relacional.html#s4">modelo relacional</a>.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Ordenar y limitar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ORDER BY nota DESC</code></th><td>ordena de mayor a menor (<code>ASC</code> es lo normal)</td></tr>
+                  <tr><th scope="row"><code>ORDER BY curso_id, nota</code></th><td>por varias columnas, en cascada</td></tr>
+                  <tr><th scope="row"><code>LIMIT 10</code></th><td>solo las 10 primeras filas</td></tr>
+                  <tr><th scope="row"><code>LIMIT 10 OFFSET 20</code></th><td>salta 20 y coge 10 (paginación)</td></tr>
+                  <tr><th scope="row"><code>DISTINCT</code></th><td>elimina filas repetidas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La paginación de una web se hace con <code>LIMIT</code> y <code>OFFSET</code>: página 3 de 10 en 10 es <code>LIMIT 10 OFFSET 20</code>.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Funciones</h2>
+          <div class="cuerpo">
+            <h3>Agregadas (resumen de varias filas)</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>COUNT(*)</code></th><td>nº de filas</td></tr>
+                  <tr><th scope="row"><code>COUNT(col)</code></th><td>nº de valores no NULL</td></tr>
+                  <tr><th scope="row"><code>SUM  AVG  MIN  MAX</code></th><td>suma, media, mínimo, máximo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Escalares (fila a fila)</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>CONCAT(a, ' ', b)</code></th><td>une textos</td></tr>
+                  <tr><th scope="row" class="larga"><code>UPPER  LOWER  LENGTH  TRIM</code></th><td>mayúsc., minúsc., longitud, recortar</td></tr>
+                  <tr><th scope="row"><code>SUBSTRING(s, 1, 3)</code></th><td>subcadena (empieza en 1)</td></tr>
+                  <tr><th scope="row"><code>ROUND(x, 2)</code></th><td>redondea a 2 decimales</td></tr>
+                  <tr><th scope="row"><code>NOW()  CURDATE()</code></th><td>fecha y hora / solo fecha</td></tr>
+                  <tr><th scope="row"><code>YEAR(f)  MONTH(f)</code></th><td>partes de una fecha</td></tr>
+                  <tr><th scope="row"><code>DATEDIFF(f1, f2)</code></th><td>días entre fechas</td></tr>
+                  <tr><th scope="row"><code>COALESCE(a, b)</code></th><td>primer valor no NULL</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>CASE: columnas calculadas condicionales</figcaption><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> nombre,
+  <span class="tok-clave">CASE</span> <span class="tok-clave">WHEN</span> nota &gt;= <span class="tok-numero">5</span> <span class="tok-clave">THEN</span> <span class="tok-texto">'Aprobado'</span>
+       <span class="tok-clave">ELSE</span> <span class="tok-texto">'Suspenso'</span> <span class="tok-clave">END</span> <span class="tok-clave">AS</span> estado
+<span class="tok-clave">FROM</span> alumno;</code></pre></figure>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Agrupar (GROUP BY)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> curso_id,
+       <span class="tok-funcion">COUNT</span>(*)  <span class="tok-clave">AS</span> total,
+       <span class="tok-funcion">ROUND</span>(<span class="tok-funcion">AVG</span>(nota), <span class="tok-numero">2</span>) <span class="tok-clave">AS</span> media
+<span class="tok-clave">FROM</span> alumno
+<span class="tok-clave">WHERE</span> nota <span class="tok-clave">IS</span> <span class="tok-clave">NOT</span> <span class="tok-clave">NULL</span>
+<span class="tok-clave">GROUP</span> <span class="tok-clave">BY</span> curso_id
+<span class="tok-clave">HAVING</span> <span class="tok-funcion">COUNT</span>(*) &gt; <span class="tok-numero">10</span>
+<span class="tok-clave">ORDER</span> <span class="tok-clave">BY</span> media <span class="tok-clave">DESC</span>;</code></pre></figure>
+            <p class="nota"><b>WHERE</b> filtra filas <em>antes</em> de agrupar; <b>HAVING</b> filtra grupos <em>después</em>. Toda columna del SELECT debe estar en el <code>GROUP BY</code> o dentro de una función agregada.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Combinar tablas (JOIN)</h2>
+          <div class="cuerpo">
+            <div>
+              <div class="join-fila">
+                <svg width="42" height="26" viewbox="0 0 42 26" class="venn"><path d="M21,5 A10,10 0 0,1 21,21 A10,10 0 0,1 21,5 Z" fill="#7cc4d4"></path><circle cx="15" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><circle cx="27" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><text x="10" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">A</text><text x="29" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">B</text></svg>
+                <div><strong>INNER JOIN</strong><br><code>A JOIN B ON A.x = B.x</code><br><small>solo filas con pareja en ambas</small></div>
+              </div>
+              <div class="join-fila">
+                <svg width="42" height="26" viewbox="0 0 42 26" class="venn"><circle cx="15" cy="13" r="10" fill="#7cc4d4"></circle><circle cx="15" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><circle cx="27" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><text x="10" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">A</text><text x="29" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">B</text></svg>
+                <div><strong>LEFT JOIN</strong><br><code>A LEFT JOIN B ON …</code><br><small>todo A; lo de B o NULL si no hay pareja</small></div>
+              </div>
+              <div class="join-fila">
+                <svg width="42" height="26" viewbox="0 0 42 26" class="venn"><circle cx="27" cy="13" r="10" fill="#7cc4d4"></circle><circle cx="15" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><circle cx="27" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><text x="10" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">A</text><text x="29" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">B</text></svg>
+                <div><strong>RIGHT JOIN</strong><br><code>A RIGHT JOIN B ON …</code><br><small>todo B; lo de A o NULL</small></div>
+              </div>
+              <div class="join-fila">
+                <svg width="42" height="26" viewbox="0 0 42 26" class="venn"><path d="M21,5 A10,10 0 1,0 21,21 A10,10 0 0,1 21,5 Z" fill="#7cc4d4"></path><circle cx="15" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><circle cx="27" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="0.7"></circle><text x="10" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">A</text><text x="29" y="15" font-size="6" font-family="sans-serif" fill="currentColor" font-weight="bold">B</text></svg>
+                <div><strong>A sin pareja en B</strong><br><code>… LEFT JOIN … WHERE B.x IS NULL</code><br><small>p. ej. cursos sin alumnos</small></div>
+              </div>
+            </div>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> a.nombre, c.nombre <span class="tok-clave">AS</span> curso
+<span class="tok-clave">FROM</span> alumno a
+<span class="tok-clave">INNER</span> <span class="tok-clave">JOIN</span> curso c <span class="tok-clave">ON</span> a.curso_id = c.id;
+
+<span class="tok-coment">-- cursos sin ningún alumno</span>
+<span class="tok-clave">SELECT</span> c.nombre
+<span class="tok-clave">FROM</span> curso c
+<span class="tok-clave">LEFT</span> <span class="tok-clave">JOIN</span> alumno a <span class="tok-clave">ON</span> a.curso_id = c.id
+<span class="tok-clave">WHERE</span> a.id <span class="tok-clave">IS</span> <span class="tok-clave">NULL</span>;</code></pre></figure>
+            <p class="nota">MySQL no tiene <code>FULL OUTER JOIN</code>: se simula con <code>LEFT JOIN … UNION … RIGHT JOIN</code>. Los alias de tabla (<code>alumno a</code>) hacen la consulta más corta.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Subconsultas y UNION</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-coment">-- alumnos por encima de la media</span>
+<span class="tok-clave">SELECT</span> nombre <span class="tok-clave">FROM</span> alumno
+<span class="tok-clave">WHERE</span> nota &gt; (<span class="tok-clave">SELECT</span> <span class="tok-funcion">AVG</span>(nota) <span class="tok-clave">FROM</span> alumno);
+
+<span class="tok-coment">-- cursos con algún alumno</span>
+<span class="tok-clave">SELECT</span> nombre <span class="tok-clave">FROM</span> curso c
+<span class="tok-clave">WHERE</span> <span class="tok-clave">EXISTS</span> (<span class="tok-clave">SELECT</span> <span class="tok-numero">1</span> <span class="tok-clave">FROM</span> alumno a
+              <span class="tok-clave">WHERE</span> a.curso_id = c.id);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Subconsulta</th><td>un <code>SELECT</code> dentro de otro, entre paréntesis</td></tr>
+                  <tr><th scope="row"><code>IN (SELECT …)</code></th><td>está en el resultado de la subconsulta</td></tr>
+                  <tr><th scope="row"><code>EXISTS (SELECT …)</code></th><td>comprueba si la subconsulta devuelve algo</td></tr>
+                  <tr><th scope="row"><code>UNION</code></th><td>une resultados y quita duplicados</td></tr>
+                  <tr><th scope="row"><code>UNION ALL</code></th><td>une sin quitar duplicados (más rápido)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Muchas subconsultas se pueden reescribir como <a href="#s6">JOIN</a>, que suele ser más eficiente. <code>EXISTS</code> es cómodo para «¿hay al menos uno?».</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sql-dml.html">← DML</a><a class="siguiente" href="sql-dcl.html">DCL →</a></nav>
+      <footer class="pie">Parte de <a href="sql.html">SQL</a>. La base teórica de estas operaciones está en el <a href="relacional.html#s9">álgebra relacional</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

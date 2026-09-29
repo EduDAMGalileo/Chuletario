@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL · TCL · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><a href="sql.html">SQL</a><span aria-hidden="true">›</span><span>TCL</span></nav>
+          <h1>SQL · TCL</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Transaction Control Language: agrupar cambios en transacciones. COMMIT, ROLLBACK, SAVEPOINT, las propiedades ACID y los niveles de aislamiento.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Sublenguajes de SQL">
+      <div class="wrap"><a href="sql-ddl.html">DDL</a><a href="sql-dml.html">DML</a><a href="sql-consultas.html">Consultas</a><a href="sql-dcl.html">DCL</a><a href="sql-tcl.html" aria-current="page">TCL</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es una transacción</a><a href="#s2"><b>2</b>COMMIT y ROLLBACK</a><a href="#s3"><b>3</b>SAVEPOINT</a><a href="#s4"><b>4</b>ACID</a><a href="#s5"><b>5</b>Niveles de aislamiento</a><a href="#s6"><b>6</b>Autocommit</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Una <strong>transacción</strong> agrupa varias operaciones para que ocurran <em>todas o ninguna</em>. El ejemplo clásico: una transferencia resta de una cuenta y suma en otra; si falla a medias, no puede quedarse el dinero en el aire.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Las órdenes</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>START TRANSACTION</code></th><td>abrir (también <code>BEGIN</code>)</td></tr>
+                  <tr><th scope="row"><code>COMMIT</code></th><td>confirmar los cambios</td></tr>
+                  <tr><th scope="row"><code>ROLLBACK</code></th><td>deshacerlos</td></tr>
+                  <tr><th scope="row"><code>SAVEPOINT</code></th><td>punto intermedio</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es una transacción</h2>
+          <div class="cuerpo">
+            <p class="txt">Un bloque de operaciones <a href="sql-dml.html">DML</a> que se tratan como una unidad. Mientras la transacción está abierta, los cambios son provisionales; solo se hacen definitivos al confirmar (<code>COMMIT</code>).</p>
+            <figure class="codigo"><figcaption>Transferencia: las dos actualizaciones o ninguna</figcaption><pre data-lang="sql"><code><span class="tok-clave">START</span> <span class="tok-clave">TRANSACTION</span>;
+<span class="tok-clave">UPDATE</span> cuenta <span class="tok-clave">SET</span> saldo = saldo - <span class="tok-numero">100</span> <span class="tok-clave">WHERE</span> id = <span class="tok-numero">1</span>;
+<span class="tok-clave">UPDATE</span> cuenta <span class="tok-clave">SET</span> saldo = saldo + <span class="tok-numero">100</span> <span class="tok-clave">WHERE</span> id = <span class="tok-numero">2</span>;
+<span class="tok-clave">COMMIT</span>;   <span class="tok-coment">-- o ROLLBACK; para deshacerlo todo</span></code></pre></figure>
+            <p class="nota">Solo la <a href="sql-dml.html">DML</a> (INSERT/UPDATE/DELETE) es transaccional. En muchos gestores la <a href="sql-ddl.html">DDL</a> (CREATE/ALTER/DROP) confirma sola y no se puede deshacer con ROLLBACK.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>COMMIT y ROLLBACK</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>COMMIT</code></th><td>confirma: los cambios pasan a ser permanentes y visibles</td></tr>
+                  <tr><th scope="row"><code>ROLLBACK</code></th><td>cancela: deshace todo lo hecho desde el inicio</td></tr>
+                  <tr><th scope="row">Error a medias</th><td>si algo falla, se hace <code>ROLLBACK</code> para no dejar datos a medias</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Patrón habitual en código: abrir transacción, ejecutar las operaciones dentro de un <a href="../java/excepciones.html">try</a>, hacer <code>COMMIT</code> si todo va bien y <code>ROLLBACK</code> en el <code>catch</code>.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>SAVEPOINT</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>punto de guardado</strong> dentro de una transacción: permite deshacer <em>parte</em> de ella sin cancelarla entera.</p>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">START</span> <span class="tok-clave">TRANSACTION</span>;
+<span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> alumno (nombre) <span class="tok-clave">VALUES</span> (<span class="tok-texto">'Ana'</span>);
+<span class="tok-clave">SAVEPOINT</span> sp1;
+<span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> alumno (nombre) <span class="tok-clave">VALUES</span> (<span class="tok-texto">'Error'</span>);
+<span class="tok-clave">ROLLBACK</span> <span class="tok-clave">TO</span> sp1;      <span class="tok-coment">-- deshace solo el segundo INSERT</span>
+<span class="tok-clave">COMMIT</span>;               <span class="tok-coment">-- confirma el primero</span></code></pre></figure>
+            <p class="nota"><code>ROLLBACK TO sp1</code> vuelve a ese punto sin cerrar la transacción; el <code>COMMIT</code> final confirma lo que quede. Útil en procesos largos por pasos.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>ACID</h2>
+          <div class="cuerpo">
+            <p class="txt">Las cuatro garantías que ofrece una transacción en una base relacional:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Atomicidad</th><td>todo o nada; si algo falla, se deshace entero</td></tr>
+                  <tr><th scope="row">Consistencia</th><td>pasa de un estado válido a otro válido (respeta las restricciones)</td></tr>
+                  <tr><th scope="row">Aislamiento</th><td>las transacciones simultáneas no se interfieren</td></tr>
+                  <tr><th scope="row">Durabilidad</th><td>una vez confirmado, no se pierde aunque se caiga el sistema</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Es lo que hace fiable a una base relacional para datos críticos (banca, pedidos). Muchas <a href="introduccion.html#s6">NoSQL</a> relajan ACID a cambio de escala.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Niveles de aislamiento</h2>
+          <div class="cuerpo">
+            <p class="txt">Cuánto se aíslan entre sí las transacciones simultáneas. Más aislamiento evita más problemas, pero reduce la concurrencia.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">READ UNCOMMITTED</th><td>el más bajo; puede leer cambios sin confirmar (dirty read)</td></tr>
+                  <tr><th scope="row">READ COMMITTED</th><td>solo lee lo confirmado (por defecto en PostgreSQL)</td></tr>
+                  <tr><th scope="row">REPEATABLE READ</th><td>la misma lectura da igual dos veces (por defecto en MySQL/InnoDB)</td></tr>
+                  <tr><th scope="row">SERIALIZABLE</th><td>el más alto; como si fueran en fila, una tras otra</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SET</span> <span class="tok-clave">TRANSACTION</span> <span class="tok-clave">ISOLATION</span> <span class="tok-clave">LEVEL</span> <span class="tok-clave">READ</span> <span class="tok-clave">COMMITTED</span>;</code></pre></figure>
+            <p class="nota">Problemas que resuelven, de menor a mayor aislamiento: <em>dirty read</em> (leer sin confirmar), <em>non-repeatable read</em> (leer distinto dos veces) y <em>phantom read</em> (aparecen filas nuevas). Para la mayoría de apps, el nivel por defecto vale.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Autocommit</h2>
+          <div class="cuerpo">
+            <p class="txt">Por defecto, muchos gestores confirman cada orden al instante (<strong>autocommit</strong>): cada <code>INSERT</code> o <code>UPDATE</code> es su propia transacción. Al abrir una con <code>START TRANSACTION</code>, se suspende hasta el <code>COMMIT</code>.</p>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">SET</span> autocommit = <span class="tok-numero">0</span>;   <span class="tok-coment">-- desactivar: exige COMMIT manual</span>
+<span class="tok-clave">SET</span> autocommit = <span class="tok-numero">1</span>;   <span class="tok-coment">-- reactivar (por defecto)</span></code></pre></figure>
+            <p class="aviso">Cuidado con el autocommit al hacer pruebas: sin transacción explícita, un <a href="sql-dml.html">UPDATE</a> sin <code>WHERE</code> se confirma solo y no hay ROLLBACK que valga. Abre una transacción cuando toques datos importantes.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sql-dcl.html">← DCL</a><span></span></nav>
+      <footer class="pie">Parte de <a href="sql.html">SQL</a>. Las propiedades ACID se introducen también en la <a href="introduccion.html#s6">Introducción</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

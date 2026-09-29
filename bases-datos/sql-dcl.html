@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL · DCL · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><a href="sql.html">SQL</a><span aria-hidden="true">›</span><span>DCL</span></nav>
+          <h1>SQL · DCL</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Data Control Language: quién puede hacer qué. Crear usuarios, conceder y retirar privilegios con GRANT y REVOKE, y roles. Sintaxis MySQL.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Sublenguajes de SQL">
+      <div class="wrap"><a href="sql-ddl.html">DDL</a><a href="sql-dml.html">DML</a><a href="sql-consultas.html">Consultas</a><a href="sql-dcl.html" aria-current="page">DCL</a><a href="sql-tcl.html">TCL</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es DCL</a><a href="#s2"><b>2</b>Usuarios</a><a href="#s3"><b>3</b>GRANT</a><a href="#s4"><b>4</b>REVOKE y ver permisos</a><a href="#s5"><b>5</b>Roles</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Qué controla</p>
+            <p class="txt">El DCL gestiona los <strong>permisos</strong>: qué usuario puede leer, escribir o administrar cada base, tabla o columna. Es la seguridad dentro del gestor.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Las órdenes</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>GRANT</code></th><td>conceder privilegios</td></tr>
+                  <tr><th scope="row"><code>REVOKE</code></th><td>retirarlos</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es DCL</h2>
+          <div class="cuerpo">
+            <p class="txt">El <em>Data Control Language</em> controla el acceso a los datos. Aplica el principio de <strong>mínimo privilegio</strong>: cada cuenta debe tener solo los permisos que necesita, ni más.</p>
+            <p class="nota">Distinto de los <a href="../sistemas/comandos-usuarios.html">usuarios del sistema</a>: estos son usuarios <em>de la base de datos</em>, con sus propios permisos sobre tablas y bases.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Usuarios</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">USER</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span> <span class="tok-clave">IDENTIFIED</span> <span class="tok-clave">BY</span> <span class="tok-texto">'secreto'</span>;
+<span class="tok-clave">ALTER</span> <span class="tok-clave">USER</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span> <span class="tok-clave">IDENTIFIED</span> <span class="tok-clave">BY</span> <span class="tok-texto">'otra'</span>;  <span class="tok-coment">-- cambiar clave</span>
+<span class="tok-clave">DROP</span> <span class="tok-clave">USER</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span>;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>'dam'@'localhost'</code></th><td>usuario + desde dónde conecta (host)</td></tr>
+                  <tr><th scope="row"><code>'dam'@'%'</code></th><td>desde cualquier host</td></tr>
+                  <tr><th scope="row"><code>IDENTIFIED BY</code></th><td>fija la contraseña</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En MySQL un usuario es la pareja nombre + host: <code>'dam'@'localhost'</code> y <code>'dam'@'%'</code> son cuentas distintas. Cómo se guardan las contraseñas, en <a href="../seguridad/criptografia.html#s7">Criptografía</a>.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>GRANT</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-coment">-- permisos concretos sobre una base</span>
+<span class="tok-clave">GRANT</span> <span class="tok-clave">SELECT</span>, <span class="tok-clave">INSERT</span> <span class="tok-clave">ON</span> instituto.* <span class="tok-clave">TO</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span>;
+
+<span class="tok-coment">-- todos los permisos sobre una tabla</span>
+<span class="tok-clave">GRANT</span> <span class="tok-clave">ALL</span> <span class="tok-clave">PRIVILEGES</span> <span class="tok-clave">ON</span> instituto.alumno <span class="tok-clave">TO</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span>;
+
+<span class="tok-clave">FLUSH</span> <span class="tok-clave">PRIVILEGES</span>;   <span class="tok-coment">-- recargar los permisos</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>SELECT, INSERT, UPDATE, DELETE</code></th><td>permisos de datos habituales</td></tr>
+                  <tr><th scope="row"><code>CREATE, ALTER, DROP</code></th><td>permisos de estructura (DDL)</td></tr>
+                  <tr><th scope="row"><code>ALL PRIVILEGES</code></th><td>todos</td></tr>
+                  <tr><th scope="row"><code>ON base.*</code></th><td>toda la base; <code>ON base.tabla</code> una tabla</td></tr>
+                  <tr><th scope="row"><code>WITH GRANT OPTION</code></th><td>además, poder conceder esos permisos a otros</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Concede lo justo. Dar <code>ALL PRIVILEGES</code> «para que funcione» es el error típico que convierte una inyección SQL en un desastre total (ver <a href="../hacking/sqlmap.html">sqlmap</a>).</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>REVOKE y ver permisos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">REVOKE</span> <span class="tok-clave">INSERT</span> <span class="tok-clave">ON</span> instituto.* <span class="tok-clave">FROM</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span>;
+<span class="tok-clave">SHOW</span> <span class="tok-clave">GRANTS</span> <span class="tok-clave">FOR</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span>;   <span class="tok-coment">-- ver qué tiene</span></code></pre></figure>
+            <p class="nota"><code>REVOKE</code> es el espejo de <code>GRANT</code>: mismos permisos, quitados. <code>SHOW GRANTS</code> lista lo que tiene una cuenta.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Roles</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>rol</strong> es un conjunto de permisos con nombre. En vez de dárselos uno a uno a cada usuario, se los das al rol y asignas el rol a quien corresponda.</p>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">ROLE</span> lectura;
+<span class="tok-clave">GRANT</span> <span class="tok-clave">SELECT</span> <span class="tok-clave">ON</span> instituto.* <span class="tok-clave">TO</span> lectura;
+<span class="tok-clave">GRANT</span> lectura <span class="tok-clave">TO</span> <span class="tok-texto">'dam'</span>@<span class="tok-texto">'localhost'</span>;</code></pre></figure>
+            <p class="nota">Los roles simplifican la administración cuando hay muchos usuarios con el mismo perfil (lectores, editores, administradores). Disponibles en MySQL 8+, PostgreSQL, Oracle y SQL Server.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sql-consultas.html">← Consultas</a><a class="siguiente" href="sql-tcl.html">TCL →</a></nav>
+      <footer class="pie">Parte de <a href="sql.html">SQL</a>. El lado defensivo general, en <a href="../seguridad/index.html">Seguridad</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Métodos y recursividad · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Métodos y recursividad</span></nav>
+          <h1>Métodos y recursividad</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Agrupar código reutilizable en métodos: parámetros, devolución, sobrecarga, argumentos variables, ámbito y la técnica de la recursividad.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html" aria-current="page">Métodos y recursividad</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Definir un método</a><a href="#s2"><b>2</b>Parámetros y return</a><a href="#s3"><b>3</b>Sobrecarga</a><a href="#s4"><b>4</b>Argumentos variables</a><a href="#s5"><b>5</b>Paso por valor</a><a href="#s6"><b>6</b>Ámbito</a><a href="#s7"><b>7</b>Recursividad</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Un <strong>método</strong> es un bloque de código con nombre que se puede llamar cuando haga falta. Evita repetir, organiza el programa y da nombre a cada tarea.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Anatomía</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public static</span> <span class="tok-tipo">int</span> <span class="tok-funcion">sumar</span>(<span class="tok-tipo">int</span> a, <span class="tok-tipo">int</span> b)
+<span class="tok-coment">//  modific.   tipo  nombre  parámetros</span></code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Definir un método</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// modificadores  tipo    nombre(parámetros)</span>
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">double</span> calcularMedia(<span class="tok-tipo">double</span>[] notas) {
+    <span class="tok-tipo">double</span> suma = <span class="tok-numero">0</span>;
+    <span class="tok-clave">for</span> (<span class="tok-tipo">double</span> n : notas) {
+        suma += n;
+    }
+    <span class="tok-clave">return</span> suma / notas.length;
+}
+
+<span class="tok-coment">// void: no devuelve nada</span>
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-clave">void</span> saludar(<span class="tok-tipo">String</span> nombre) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Hola, "</span> + nombre);
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Modificadores</th><td><code>public</code>, <code>private</code>, <code>static</code>...</td></tr>
+                  <tr><th scope="row">Tipo de retorno</th><td>lo que devuelve, o <code>void</code> si nada</td></tr>
+                  <tr><th scope="row">Nombre</th><td>verbo en minúscula: <code>calcularMedia</code></td></tr>
+                  <tr><th scope="row">Parámetros</th><td>los datos que recibe, entre paréntesis</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>static</code> significa que el método pertenece a la clase, no a un objeto: se llama sin crear una instancia. Los métodos de objeto llegan con la <a href="poo.html">orientación a objetos</a>.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Parámetros y return</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Parámetro</th><td>la variable declarada en la definición</td></tr>
+                  <tr><th scope="row">Argumento</th><td>el valor concreto que pasas al llamar</td></tr>
+                  <tr><th scope="row"><code>return</code></th><td>devuelve un valor y termina el método</td></tr>
+                  <tr><th scope="row"><code>void</code></th><td>sin retorno; <code>return;</code> a secas sale antes</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">double</span> media = calcularMedia(notas);   <span class="tok-coment">// se recoge lo que devuelve</span>
+saludar(<span class="tok-texto">"Ana"</span>);                        <span class="tok-coment">// void: no se recoge nada</span></code></pre></figure>
+            <p class="nota">Un método puede tener varios <code>return</code> (por ejemplo, uno por rama de un <code>if</code>), pero todos deben devolver el tipo declarado.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Sobrecarga</h2>
+          <div class="cuerpo">
+            <p class="txt">Varios métodos con el <strong>mismo nombre</strong> pero distintos parámetros. Java elige el que encaja según los argumentos.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> sumar(<span class="tok-tipo">int</span> a, <span class="tok-tipo">int</span> b) { <span class="tok-clave">return</span> a + b; }
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">double</span> sumar(<span class="tok-tipo">double</span> a, <span class="tok-tipo">double</span> b) { <span class="tok-clave">return</span> a + b; }
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> sumar(<span class="tok-tipo">int</span> a, <span class="tok-tipo">int</span> b, <span class="tok-tipo">int</span> c) { <span class="tok-clave">return</span> a + b + c; }</code></pre></figure>
+            <p class="nota">Lo que distingue las versiones es la <strong>lista de parámetros</strong> (número o tipo), no el tipo de retorno: dos métodos que solo se diferencien en lo que devuelven no compilan.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Argumentos variables</h2>
+          <div class="cuerpo">
+            <p class="txt">Los <em>varargs</em> (<code>...</code>) permiten pasar un número indeterminado de argumentos; dentro del método se tratan como un array.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> sumarTodos(<span class="tok-tipo">int</span>... numeros) {
+    <span class="tok-tipo">int</span> total = <span class="tok-numero">0</span>;
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> n : numeros) total += n;
+    <span class="tok-clave">return</span> total;
+}
+sumarTodos(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">4</span>);   <span class="tok-coment">// 10</span>
+sumarTodos();                <span class="tok-coment">// 0, también vale sin argumentos</span></code></pre></figure>
+            <p class="nota">Solo puede haber un parámetro <code>...</code> y debe ser el último. Es lo que usa <code>System.out.printf</code> por dentro.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Paso por valor</h2>
+          <div class="cuerpo">
+            <p class="txt">Java pasa siempre <strong>una copia del valor</strong>. Con un primitivo, el método recibe una copia del número y no puede cambiar el original.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">static</span> <span class="tok-clave">void</span> intento(<span class="tok-tipo">int</span> x) { x = <span class="tok-numero">99</span>; }   <span class="tok-coment">// no afecta fuera</span>
+
+<span class="tok-tipo">int</span> a = <span class="tok-numero">5</span>;
+intento(a);
+<span class="tok-tipo">IO</span>.println(a);   <span class="tok-coment">// sigue siendo 5</span></code></pre></figure>
+            <p class="aviso"><strong>Matiz con objetos:</strong> la copia apunta al mismo objeto, así que puedes modificar su contenido (los elementos de un array, los campos de un objeto), pero no hacer que el original apunte a otro. La referencia también va por copia.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Ámbito</h2>
+          <div class="cuerpo">
+            <p class="txt">El <strong>ámbito</strong> (scope) es la zona donde una variable existe: desde donde se declara hasta el final de su bloque <code>{ }</code>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Variable local</th><td>declarada dentro de un método; solo vive ahí</td></tr>
+                  <tr><th scope="row">Parámetro</th><td>local al método</td></tr>
+                  <tr><th scope="row">De bloque</th><td>la declarada en un <code>if</code> o <code>for</code> muere al salir del bloque</td></tr>
+                  <tr><th scope="row">Atributo</th><td>declarado en la clase; visible en todos sus métodos (ver <a href="poo.html">POO</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las variables locales hay que inicializarlas antes de usarlas: Java no les da valor por defecto (a diferencia de los atributos de un objeto).</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Recursividad</h2>
+          <div class="cuerpo">
+            <p class="txt">Un método <strong>recursivo</strong> se llama a sí mismo para resolver una versión más pequeña del problema. Necesita siempre dos cosas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Caso base</th><td>cuándo parar (sin él, bucle infinito)</td></tr>
+                  <tr><th scope="row">Caso recursivo</th><td>la llamada a sí mismo, acercándose al caso base</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Factorial: n! = n · (n-1)!</figcaption><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">long</span> factorial(<span class="tok-tipo">int</span> n) {
+    <span class="tok-clave">if</span> (n &lt;= <span class="tok-numero">1</span>) <span class="tok-clave">return</span> <span class="tok-numero">1</span>;      <span class="tok-coment">// caso base</span>
+    <span class="tok-clave">return</span> n * factorial(n - <span class="tok-numero">1</span>);   <span class="tok-coment">// caso recursivo</span>
+}
+factorial(<span class="tok-numero">5</span>);   <span class="tok-coment">// 120</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> sin caso base, o si nunca se alcanza, la recursión no para y agota la pila: <code>StackOverflowError</code>. Toda rama recursiva debe acercarse al caso base.</p>
+            <p class="nota">Lo que se puede hacer con recursión también se puede hacer con un <a href="sintaxis.html#s5">bucle</a>. La recursión brilla en problemas naturalmente recursivos (árboles, «divide y vencerás»); el bucle suele ser más eficiente en memoria.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="strings.html">← Strings</a><a class="siguiente" href="poo.html">Orientación a objetos →</a></nav>
+      <footer class="pie">Los métodos que pertenecen a un objeto y su organización, en <a href="poo.html">Orientación a objetos</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

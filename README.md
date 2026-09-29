@@ -14,27 +14,30 @@ chuletario/
 │   ├── chuletas.css        estilos comunes (colores, rejilla, impresión)
 │   ├── chuletas.js         tema claro/oscuro y botón de copiar
 │   └── favicon.svg
-├── sistemas/               linux, vim, bash-script, servicios, tareas,
-│                           logs; comandos (terminal-linux = índice, y
-│                           comandos-archivos/-texto/-usuarios/-procesos/
-│                           -paquetes/-red)
-├── redes/                  osi, tcp-ip, http, red-linux, red-clasica
+├── sistemas/               linux, vim, vim-config, nano, bash-script,
+│                           servicios, tareas, logs; comandos
+│                           (terminal-linux = índice, y comandos-archivos/
+│                           -texto/-usuarios/-procesos/-paquetes/-red)
+├── redes/                  osi, tcp-ip, subnetting-ipv4, ipv6, http,
+│                           red-linux, red-clasica
 ├── hacking/                pentest, google-dorking, nmap, netcat, sqlmap,
 │                           fuerza-bruta, fuzzing, shells
 ├── seguridad/              introduccion, cortafuegos, iptables, nftables,
 │                           criptografia, firma-certificados, gpg
 ├── git/                    git, github
-├── virtualizacion/         fundamentos, docker, vagrant
+├── virtualizacion/         fundamentos, virtualbox, vagrant, docker
 ├── qa/                     fundamentos, unitarias, integracion,
 │                           sistema-e2e
 ├── programacion/           fundamentos, pseudocodigo, entornos, eclipse,
 │                           vscode, agile, cascada, y los lenguajes
-├── java/                   sintaxis, strings, poo, colecciones,
-│                           streams, excepciones, ficheros, maven, junit
+├── java/                   sintaxis, arrays, strings, metodos, poo,
+│                           excepciones, colecciones, streams, fechas,
+│                           ficheros, entrada-salida, procesos, maven, junit
 ├── python/                 sintaxis
 ├── kotlin/                 sintaxis
 ├── php/                    sintaxis, cookies-sesiones
-├── bases-datos/            introduccion, er-eer, sql, postgresql
+├── bases-datos/            introduccion, er-eer, relacional, postgresql;
+│                           sql (índice, y sql-ddl/-dml/-consultas/-dcl/-tcl)
 ├── web/                    html, css
 └── marcas/                 introduccion, dtd, xsd, xpath, xquery, json,
                             yaml, markdown

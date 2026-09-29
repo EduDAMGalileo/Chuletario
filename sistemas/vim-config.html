@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Configuración de Vim · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><a href="vim.html">Vim</a><span aria-hidden="true">›</span><span>Configuración</span></nav>
+          <h1>Configuración de Vim</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El fichero <code>.vimrc</code> a fondo: opciones por categoría, mapeos, la tecla líder, plugins y tres configuraciones predefinidas listas para copiar.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas">
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Comandos</a><a href="vim.html">Vim</a><a href="vim-config.html" aria-current="page">Config de Vim</a><a href="nano.html">Nano</a><a href="bash-script.html">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a><a href="logs.html">Logs</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>El fichero .vimrc</a><a href="#s2"><b>2</b>Interfaz</a><a href="#s3"><b>3</b>Indentación</a><a href="#s4"><b>4</b>Búsqueda</a><a href="#s5"><b>5</b>Comportamiento</a><a href="#s6"><b>6</b>Mapeos y tecla líder</a><a href="#s7"><b>7</b>Plugins</a><a href="#s8"><b>8</b>Configuraciones predefinidas</a><a href="#s9"><b>9</b>Neovim</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Vim se personaliza en un fichero de texto, <code>~/.vimrc</code>, que se lee al arrancar. Ahí van las opciones, los atajos propios y los plugins. Esta chuleta amplía la sección de configuración de <a href="vim.html#s11">Vim</a>.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Probar sin reiniciar</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>:set opción</code></th><td>probar una opción en caliente</td></tr>
+                  <tr><th scope="row"><code>:so ~/.vimrc</code></th><td>recargar el fichero (source)</td></tr>
+                  <tr><th scope="row"><code>:help opción</code></th><td>la ayuda de cada ajuste</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>El fichero .vimrc</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>~/.vimrc</code></th><td>tu configuración personal</td></tr>
+                  <tr><th scope="row"><code>/etc/vim/vimrc</code></th><td>configuración global del sistema</td></tr>
+                  <tr><th scope="row"><code>~/.vim/</code></th><td>carpeta de plugins, temas y datos</td></tr>
+                  <tr><th scope="row"><code>"</code> comentario</th><td>en <code>.vimrc</code>, todo lo que sigue a <code>"</code> se ignora</td></tr>
+                  <tr><th scope="row"><code>:echo $MYVIMRC</code></th><td>qué fichero está usando Vim</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">Cada línea es una orden del modo comando sin los dos puntos: lo que escribirías tras <code>:</code> va tal cual en el <code>.vimrc</code>.</p>
+            <p class="nota">Los ajustes booleanos se activan con <code>set opción</code> y se desactivan con <code>set noopción</code> (<code>set number</code> / <code>set nonumber</code>).</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Interfaz</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="vim"><code>syntax on              " resaltado de sintaxis
+set number             " números de línea
+set relativenumber     " numeración relativa (saltos con 5j, 3k…)
+set cursorline         " resalta la línea actual
+set showcmd            " muestra la orden a medio escribir
+set ruler              " posición del cursor abajo a la derecha
+set wrap linebreak     " parte las líneas largas por palabras
+set scrolloff=5        " deja 5 líneas de margen al desplazar
+set termguicolors      " colores de 24 bits
+colorscheme desert     " tema de color integrado</code></pre></figure>
+            <p class="nota">Combinar <code>number</code> y <code>relativenumber</code> da la «numeración híbrida»: la línea actual muestra su número real y el resto, la distancia, para saltar con <code>7j</code> o <code>4k</code>.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Indentación</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="vim"><code>set tabstop=4          " ancho visual de un tabulador
+set shiftwidth=4       " ancho de cada nivel de indentación
+set softtabstop=4      " cuántos espacios inserta el tabulador
+set expandtab          " tabuladores como espacios
+set autoindent         " hereda la indentación de la línea anterior
+set smartindent        " indentación según el código
+filetype plugin indent on   " reglas propias por tipo de fichero</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>tabstop</code></th><td>a cuántos espacios equivale un tabulador al mostrarlo</td></tr>
+                  <tr><th scope="row"><code>shiftwidth</code></th><td>lo que indentan <code>&gt;&gt;</code> y <code>&lt;&lt;</code></td></tr>
+                  <tr><th scope="row"><code>expandtab</code></th><td>usar espacios en vez de tabuladores</td></tr>
+                  <tr><th scope="row"><code>filetype ... on</code></th><td>Vim ajusta la indentación según el lenguaje</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para que un proyecto respete su estilo pese a tu <code>.vimrc</code>, se usa un plugin de <em>EditorConfig</em> o autocomandos por tipo de fichero.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Búsqueda</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="vim"><code>set incsearch          " busca mientras escribes
+set hlsearch           " resalta todas las coincidencias
+set ignorecase         " no distingue mayúsculas…
+set smartcase          " …salvo que escribas alguna mayúscula
+" quitar el resaltado con la tecla líder + espacio
+nnoremap &lt;leader&gt;&lt;space&gt; :nohlsearch&lt;CR&gt;</code></pre></figure>
+            <p class="nota">La pareja <code>ignorecase</code> + <code>smartcase</code> es la más cómoda: <code>/error</code> encuentra todo, pero <code>/Error</code> solo lo que lleva mayúscula.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Comportamiento</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="vim"><code>set mouse=a            " permite el ratón
+set clipboard=unnamedplus  " usar el portapapeles del sistema
+set hidden             " cambiar de buffer sin guardar
+set undofile           " deshacer persistente entre sesiones
+set backspace=indent,eol,start   " que el borrado funcione siempre
+set wildmenu           " menú de autocompletado en la línea de comandos
+set encoding=utf-8
+" sin ficheros de respaldo ni swap desperdigados
+set noswapfile nobackup</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>clipboard=unnamedplus</code></th><td>copiar/pegar con el resto del sistema (requiere Vim con <code>+clipboard</code>)</td></tr>
+                  <tr><th scope="row"><code>undofile</code></th><td>guarda el historial de deshacer aunque cierres</td></tr>
+                  <tr><th scope="row"><code>hidden</code></th><td>abrir otro fichero sin que te obligue a guardar</td></tr>
+                  <tr><th scope="row"><code>wildmenu</code></th><td>autocompletar rutas y órdenes con Tab</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Mapeos y tecla líder</h2>
+          <div class="cuerpo">
+            <p class="txt">Puedes crear tus propios atajos con <code>map</code>. La <strong>tecla líder</strong> (<code>&lt;leader&gt;</code>) es un prefijo libre para tus combinaciones; se suele poner la barra espaciadora o la coma.</p>
+            <figure class="codigo"><pre data-lang="vim"><code>let mapleader = " "        " la tecla líder es el espacio
+
+" guardar y salir rápido
+nnoremap &lt;leader&gt;w :w&lt;CR&gt;
+nnoremap &lt;leader&gt;q :q&lt;CR&gt;
+" moverse entre ventanas con Ctrl + h/j/k/l
+nnoremap &lt;C-h&gt; &lt;C-w&gt;h
+nnoremap &lt;C-l&gt; &lt;C-w&gt;l
+" salir del modo inserción con 'jk'
+inoremap jk &lt;Esc&gt;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>nnoremap</code></th><td>mapea solo en modo normal, sin recursión (el recomendado)</td></tr>
+                  <tr><th scope="row"><code>inoremap</code> / <code>vnoremap</code></th><td>en modo inserción / visual</td></tr>
+                  <tr><th scope="row"><code>&lt;CR&gt;</code></th><td>la tecla Enter</td></tr>
+                  <tr><th scope="row"><code>&lt;C-h&gt;</code> · <code>&lt;leader&gt;</code></th><td>Ctrl+h · la tecla líder</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Usa siempre las versiones <code>...noremap</code> (no recursivas): evitan bucles si el destino del mapeo está a su vez mapeado.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Plugins</h2>
+          <div class="cuerpo">
+            <p class="txt">Los plugins añaden funciones (explorador de ficheros, autocompletado, integración con <a href="../git/git.html">Git</a>). Se gestionan con un <em>gestor</em>; el más popular es <strong>vim-plug</strong>.</p>
+            <figure class="codigo"><figcaption>Bloque de plugins en el .vimrc (vim-plug)</figcaption><pre data-lang="vim"><code>call plug#begin('~/.vim/plugged')
+  Plug 'preservim/nerdtree'        " explorador de ficheros
+  Plug 'tpope/vim-fugitive'        " Git dentro de Vim
+  Plug 'tpope/vim-surround'        " editar comillas y paréntesis
+  Plug 'junegunn/fzf.vim'          " búsqueda difusa de ficheros
+  Plug 'itchyny/lightline.vim'     " barra de estado bonita
+call plug#end()</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>:PlugInstall</code></th><td>instalar los plugins de la lista</td></tr>
+                  <tr><th scope="row"><code>:PlugUpdate</code></th><td>actualizarlos</td></tr>
+                  <tr><th scope="row"><code>:PlugClean</code></th><td>borrar los que ya no están en la lista</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">No te llenes de plugins de golpe: cada uno ralentiza el arranque y cambia atajos. Añade uno, úsalo unos días y decide si se queda.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Configuraciones predefinidas</h2>
+          <div class="cuerpo">
+            <p class="txt">Tres <code>.vimrc</code> completos, según para qué uses Vim. Copia el que encaje y ajústalo.</p>
+            <h3>Mínima sensata (cualquier servidor)</h3>
+            <figure class="codigo"><pre data-lang="vim"><code>syntax on
+set number
+set incsearch hlsearch ignorecase smartcase
+set tabstop=4 shiftwidth=4 expandtab autoindent
+set mouse=a
+set wildmenu
+set backspace=indent,eol,start</code></pre></figure>
+            <h3>Programador</h3>
+            <figure class="codigo"><pre data-lang="vim"><code>syntax on
+filetype plugin indent on
+set number relativenumber cursorline
+set incsearch hlsearch ignorecase smartcase
+set tabstop=4 shiftwidth=4 softtabstop=4 expandtab smartindent
+set hidden undofile clipboard=unnamedplus
+set scrolloff=5 wildmenu termguicolors
+let mapleader = " "
+nnoremap &lt;leader&gt;w :w&lt;CR&gt;
+nnoremap &lt;leader&gt;&lt;space&gt; :nohlsearch&lt;CR&gt;
+
+call plug#begin('~/.vim/plugged')
+  Plug 'preservim/nerdtree'
+  Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-surround'
+  Plug 'junegunn/fzf.vim'
+call plug#end()</code></pre></figure>
+            <h3>Escritura (texto y Markdown)</h3>
+            <figure class="codigo"><pre data-lang="vim"><code>syntax on
+set number
+set wrap linebreak            " parte por palabras, no por letras
+set spell spelllang=es,en     " corrector ortográfico
+set textwidth=0               " sin cortar líneas al escribir
+set noexpandtab
+set scrolloff=8</code></pre></figure>
+            <p class="nota">Para la ortografía, <code>set spell</code> subraya lo dudoso; con <code>z=</code> ves sugerencias y con <code>]s</code>/<code>[s</code> saltas al siguiente error.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Neovim</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>Neovim</strong> es una versión moderna de Vim, muy usada, compatible con casi todo lo anterior. Cambia dónde vive la configuración.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Vim</th><td>configuración en <code>~/.vimrc</code></td></tr>
+                  <tr><th scope="row">Neovim</th><td>en <code>~/.config/nvim/init.vim</code> (o <code>init.lua</code>)</td></tr>
+                  <tr><th scope="row">Lua</th><td>Neovim permite configurarse en Lua, no solo en VimScript</td></tr>
+                  <tr><th scope="row">Compatibilidad</th><td>un <code>.vimrc</code> normal funciona casi igual en Neovim</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si empiezas de cero y quieres un IDE en la terminal, distribuciones como <em>LazyVim</em> o <em>NvChad</em> traen Neovim ya configurado. Vuelve a los <a href="vim.html">fundamentos de Vim</a> si necesitas repasar los comandos.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="vim.html">← Vim</a><a class="siguiente" href="nano.html">Nano →</a></nav>
+      <footer class="pie">Amplía la <a href="vim.html#s11">configuración</a> de la chuleta de Vim. Ayuda integrada: <code>:help vimrc</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

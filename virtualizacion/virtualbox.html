@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VirtualBox · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="virtualizacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Virtualización</a><span aria-hidden="true">›</span><span>VirtualBox</span></nav>
+          <h1>VirtualBox</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El hipervisor de escritorio de Oracle: crear máquinas virtuales, asignar discos, elegir el modo de red, snapshots y carpetas compartidas.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Virtualización">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="virtualbox.html" aria-current="page">VirtualBox</a><a href="vagrant.html">Vagrant</a><a href="docker.html">Docker</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es VirtualBox</a><a href="#s2"><b>2</b>Crear una máquina</a><a href="#s3"><b>3</b>Discos virtuales</a><a href="#s4"><b>4</b>Instalar el sistema</a><a href="#s5"><b>5</b>Guest Additions</a><a href="#s6"><b>6</b>Modos de red</a><a href="#s7"><b>7</b>Snapshots</a><a href="#s8"><b>8</b>Compartir y portar</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">VirtualBox es un <a href="fundamentos.html#s2">hipervisor de tipo 2</a>: corre como un programa dentro de tu sistema y crea máquinas virtuales completas. Gratuito, multiplataforma y el más usado para aprender y montar laboratorios.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Conceptos</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Anfitrión</th><td>tu equipo real</td></tr>
+                  <tr><th scope="row">Invitado (guest)</th><td>el sistema que corre en la VM</td></tr>
+                  <tr><th scope="row">Tecla Host</th><td>libera el ratón/teclado (por defecto <code>Ctrl</code> derecho)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es VirtualBox</h2>
+          <div class="cuerpo">
+            <p class="txt">Un software de virtualización que permite ejecutar varios sistemas operativos a la vez en un mismo equipo, cada uno en su máquina virtual aislada. Ideal para probar distribuciones, montar laboratorios de <a href="../hacking/pentest.html">pentest</a> o tener un entorno separado.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Multiplataforma</th><td>Windows, macOS, Linux como anfitrión</td></tr>
+                  <tr><th scope="row">Gratuito</th><td>libre; el Extension Pack añade USB 2/3 y más</td></tr>
+                  <tr><th scope="row">Alternativas</th><td>VMware, Hyper-V, KVM (ver <a href="fundamentos.html">Fundamentos</a>)</td></tr>
+                  <tr><th scope="row">Automatizable</th><td>con <a href="vagrant.html">Vagrant</a> o el comando <code>VBoxManage</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Crear una máquina</h2>
+          <div class="cuerpo">
+            <p class="txt">El asistente <em>Nueva</em> pide los datos básicos. Los que importan:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Nombre y tipo</th><td>si lo llamas «Ubuntu» detecta el tipo y versión solos</td></tr>
+                  <tr><th scope="row">Memoria (RAM)</th><td>2–4 GB para un escritorio; nunca pases de la mitad de tu RAM</td></tr>
+                  <tr><th scope="row">CPUs</th><td>1–2 núcleos; no asignes todos los del anfitrión</td></tr>
+                  <tr><th scope="row">Disco</th><td>crear uno virtual nuevo (sección 3)</td></tr>
+                  <tr><th scope="row">EFI</th><td>activar si el sistema invitado lo requiere</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">No sobreasignes: la RAM y las CPU que das a las VM se las quitas al anfitrión. Si repartes de más, todo va lento. Deja siempre margen para tu sistema real.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Discos virtuales</h2>
+          <div class="cuerpo">
+            <p class="txt">El disco de la VM es un fichero en tu equipo. Al crearlo eliges formato y tipo de reserva:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">VDI</th><td>formato propio de VirtualBox (el habitual)</td></tr>
+                  <tr><th scope="row">VMDK / VHD</th><td>formatos de VMware / Hyper-V, por compatibilidad</td></tr>
+                  <tr><th scope="row">Reservado dinámico</th><td>crece según se usa; ocupa poco al principio</td></tr>
+                  <tr><th scope="row">Tamaño fijo</th><td>reserva todo el espacio ya; algo más rápido</td></tr>
+                  <tr><th scope="row">Tamaño máximo</th><td>el límite hasta el que podrá crecer (p. ej. 25 GB)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para casi todo, <strong>VDI dinámico</strong>: pones un máximo generoso y solo ocupa lo que de verdad usa el invitado. Se pueden añadir más discos después desde la <em>Configuración › Almacenamiento</em>.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Instalar el sistema</h2>
+          <div class="cuerpo">
+            <p class="txt">La VM arranca vacía: hay que darle la ISO del sistema como si fuera un DVD.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Almacenamiento › óptico</th><td>montar el fichero <code>.iso</code> en la unidad virtual</td></tr>
+                  <tr><th scope="row">Arrancar</th><td>la VM inicia desde la ISO y lanza el instalador</td></tr>
+                  <tr><th scope="row">Orden de arranque</th><td>en <em>Sistema</em>; poner óptico antes que disco para instalar</td></tr>
+                  <tr><th scope="row">Quitar la ISO</th><td>tras instalar, desmóntala para arrancar del disco</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Muchas distros ofrecen una imagen ya preparada para VirtualBox (<code>.ova</code>): en ese caso no instalas, solo la importas (sección 8).</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Guest Additions</h2>
+          <div class="cuerpo">
+            <p class="txt">Los <strong>Guest Additions</strong> son controladores que se instalan <em>dentro</em> del invitado y mejoran mucho la integración.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Pantalla</th><td>resolución ajustable y modo pantalla completa</td></tr>
+                  <tr><th scope="row">Ratón</th><td>integración fluida (sin «capturar» el puntero)</td></tr>
+                  <tr><th scope="row">Portapapeles</th><td>copiar y pegar entre anfitrión e invitado</td></tr>
+                  <tr><th scope="row">Carpetas compartidas</th><td>necesarias para que funcionen (sección 8)</td></tr>
+                  <tr><th scope="row">Instalar</th><td>menú <em>Dispositivos › Insertar imagen de Guest Additions</em></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Sin los Guest Additions la VM funciona, pero incómoda: resolución fija, ratón capturado y sin copiar-pegar. Instálalos casi siempre.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Modos de red</h2>
+          <div class="cuerpo">
+            <p class="txt">El modo de red decide cómo se conecta la VM. Es lo que más se configura, sobre todo para laboratorios.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">NAT</th><td>por defecto; la VM sale a internet, pero no es accesible desde fuera. Aislada y cómoda</td></tr>
+                  <tr><th scope="row">Red NAT</th><td>como NAT pero varias VM se ven entre sí y comparten salida</td></tr>
+                  <tr><th scope="row">Adaptador puente (bridged)</th><td>la VM es un equipo más de tu red física, con su IP del router</td></tr>
+                  <tr><th scope="row">Solo anfitrión (host-only)</th><td>red privada entre el anfitrión y las VM; sin internet</td></tr>
+                  <tr><th scope="row">Red interna</th><td>solo entre VM, ni siquiera el anfitrión; laboratorio aislado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Quiero internet y nada más</th><td>NAT</td></tr>
+                  <tr><th scope="row">Varias VM que se comuniquen y con internet</th><td>Red NAT</td></tr>
+                  <tr><th scope="row">Que otros equipos vean la VM</th><td>Puente</td></tr>
+                  <tr><th scope="row">Laboratorio aislado de pentest</th><td>Red interna (o host-only)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Con <strong>NAT</strong> puedes redirigir puertos (<em>Configuración › Red › Avanzado › Reenvío de puertos</em>) para llegar a un servicio de la VM, por ejemplo el <code>2222</code> del anfitrión al <code>22</code> (SSH) del invitado.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Snapshots</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>snapshot</strong> guarda el estado exacto de la VM en un momento; puedes volver a él cuando quieras. Imprescindible para probar sin miedo.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tomar snapshot</th><td>guarda disco (y opcionalmente memoria) en ese instante</td></tr>
+                  <tr><th scope="row">Restaurar</th><td>vuelve al estado guardado, descartando lo posterior</td></tr>
+                  <tr><th scope="row">Árbol</th><td>puedes tener varios y ramificar desde cualquiera</td></tr>
+                  <tr><th scope="row">Uso típico</th><td>snapshot «limpio» antes de trastear; si algo rompe, restauras</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Los snapshots crecen y consumen disco: no acumules decenas. Para conservar una VM a largo plazo, mejor exportarla (sección 8) que dejar una cadena enorme de snapshots.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Compartir y portar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Carpetas compartidas</th><td>montar una carpeta del anfitrión dentro del invitado (requiere Guest Additions)</td></tr>
+                  <tr><th scope="row">Portapapeles / arrastrar</th><td>en <em>General › Avanzado</em>, bidireccional</td></tr>
+                  <tr><th scope="row">Exportar (.ova)</th><td>empaqueta la VM entera en un fichero para copiarla o compartirla</td></tr>
+                  <tr><th scope="row">Importar</th><td>abre un <code>.ova</code>/<code>.ovf</code> y crea la VM lista para usar</td></tr>
+                  <tr><th scope="row">Clonar</th><td>duplicar una VM (enlazada o completa)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>VBoxManage: la línea de comandos de VirtualBox</figcaption><pre data-lang="bash"><code><span class="tok-clave">VBoxManage</span> list vms              <span class="tok-coment"># listar máquinas</span>
+<span class="tok-clave">VBoxManage</span> startvm <span class="tok-texto">"Kali"</span> <span class="tok-atributo">--type</span> headless   <span class="tok-coment"># arrancar sin ventana</span>
+<span class="tok-clave">VBoxManage</span> controlvm <span class="tok-texto">"Kali"</span> poweroff
+<span class="tok-clave">VBoxManage</span> snapshot <span class="tok-texto">"Kali"</span> take limpio</code></pre></figure>
+            <p class="nota">Para crear y aprovisionar VMs de VirtualBox automáticamente desde un fichero de texto, ver <a href="vagrant.html">Vagrant</a>, que usa VirtualBox por debajo.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="fundamentos.html">← Fundamentos</a><a class="siguiente" href="vagrant.html">Vagrant →</a></nav>
+      <footer class="pie">Automatizar estas máquinas, en <a href="vagrant.html">Vagrant</a>. La teoría de la virtualización, en <a href="fundamentos.html">Fundamentos</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

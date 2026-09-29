@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Subnetting IPv4 · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="redes">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Redes</a><span aria-hidden="true">›</span><span>Subnetting IPv4</span></nav>
+          <h1>Subnetting IPv4</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Direcciones IPv4, la máscara de red y la notación CIDR, direcciones privadas y cómo calcular y dividir subredes.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Redes">
+      <div class="wrap"><a href="osi.html">Modelo OSI</a><a href="tcp-ip.html">Modelo TCP/IP</a><a href="subnetting-ipv4.html" aria-current="page">Subnetting IPv4</a><a href="ipv6.html">IPv6</a><a href="http.html">HTTP y HTTPS</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>La dirección IPv4</a><a href="#s2"><b>2</b>La máscara de red</a><a href="#s3"><b>3</b>Notación CIDR</a><a href="#s4"><b>4</b>Privadas y especiales</a><a href="#s5"><b>5</b>Anatomía de una subred</a><a href="#s6"><b>6</b>Calcular una subred</a><a href="#s7"><b>7</b>Dividir en subredes</a><a href="#s8"><b>8</b>Tabla CIDR</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Una dirección IPv4 tiene dos partes: la de <strong>red</strong> (identifica la subred) y la de <strong>host</strong> (identifica el equipo dentro de ella). La <strong>máscara</strong> es lo que dice dónde acaba una y empieza la otra.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">De un vistazo</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">32 bits</th><td>4 octetos (0-255) en decimal: <code>192.168.1.10</code></td></tr>
+                  <tr><th scope="row">Máscara</th><td>marca los bits de red: <code>255.255.255.0</code> = <code>/24</code></td></tr>
+                  <tr><th scope="row">Hosts</th><td><code>2^(bits de host) − 2</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>La dirección IPv4</h2>
+          <div class="cuerpo">
+            <p class="txt">32 bits divididos en 4 <strong>octetos</strong> de 8 bits, escritos en decimal separados por puntos. Cada octeto va de 0 a 255.</p>
+            <figure class="codigo"><pre data-lang="text"><code>  192   .   168   .    1    .   10
+11000000 . 10101000 . 00000001 . 00001010
+   └ cada octeto son 8 bits (2^8 = 256 valores: 0–255)</code></pre></figure>
+            <p class="nota">Todo el subnetting es más fácil de ver en binario: la frontera entre red y host cae en algún bit. Los valores de un octeto son potencias de 2: 128, 64, 32, 16, 8, 4, 2, 1.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>La máscara de red</h2>
+          <div class="cuerpo">
+            <p class="txt">La <strong>máscara</strong> tiene los bits de red a <code>1</code> y los de host a <code>0</code>. Comparándola con la IP se sabe qué parte es cada una.</p>
+            <figure class="codigo"><pre data-lang="text"><code>IP       192.168.1.10   = 11000000.10101000.00000001.00001010
+Máscara  255.255.255.0  = 11111111.11111111.11111111.00000000
+                          └──────── red ────────┘└─ host ─┘
+Red      192.168.1.0    (host a 0)
+Host     .10            (los últimos 8 bits)</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Bits a 1</th><td>parte de red (fija dentro de la subred)</td></tr>
+                  <tr><th scope="row">Bits a 0</th><td>parte de host (varía por equipo)</td></tr>
+                  <tr><th scope="row">255</th><td>octeto entero de red (11111111)</td></tr>
+                  <tr><th scope="row">0</th><td>octeto entero de host (00000000)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Notación CIDR</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>CIDR</strong> escribe la máscara como <code>/n</code>: el número de bits de red. Sustituye a las viejas clases y permite máscaras de cualquier tamaño.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/24</code></th><td><code>255.255.255.0</code> — 24 bits de red, 8 de host</td></tr>
+                  <tr><th scope="row"><code>/16</code></th><td><code>255.255.0.0</code></td></tr>
+                  <tr><th scope="row"><code>/8</code></th><td><code>255.0.0.0</code></td></tr>
+                  <tr><th scope="row"><code>/30</code></th><td><code>255.255.255.252</code> — solo 2 hosts (enlaces punto a punto)</td></tr>
+                  <tr><th scope="row"><code>192.168.1.0/24</code></th><td>así se escribe una subred entera</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La máscara no tiene por qué caer en un octeto entero: <code>/26</code> (255.255.255.192) parte el último octeto. Ahí es donde el subnetting se pone interesante.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Privadas y especiales</h2>
+          <div class="cuerpo">
+            <p class="txt">Ciertos rangos están reservados. Las <strong>direcciones privadas</strong> (RFC 1918) se usan en redes locales y no se enrutan por internet; salen mediante NAT.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>10.0.0.0/8</code></th><td>privada (grandes redes)</td></tr>
+                  <tr><th scope="row"><code>172.16.0.0/12</code></th><td>privada (172.16 – 172.31)</td></tr>
+                  <tr><th scope="row"><code>192.168.0.0/16</code></th><td>privada (la típica de casa)</td></tr>
+                  <tr><th scope="row"><code>127.0.0.0/8</code></th><td>loopback (<code>127.0.0.1</code> = localhost)</td></tr>
+                  <tr><th scope="row"><code>169.254.0.0/16</code></th><td>link-local (APIPA, cuando falla el DHCP)</td></tr>
+                  <tr><th scope="row"><code>255.255.255.255</code></th><td>broadcast general</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Por eso en casa ves <code>192.168.1.x</code>: es privada. El router hace <a href="#s4">NAT</a> para que toda la red comparta una IP pública. Configurar todo esto en Linux, en <a href="red-linux.html">Configurar la red</a>.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Anatomía de una subred</h2>
+          <div class="cuerpo">
+            <p class="txt">En cada subred hay dos direcciones que <strong>no</strong> se pueden asignar a equipos:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Dirección de red</th><td>todos los bits de host a 0; nombra la subred (<code>192.168.1.0</code>)</td></tr>
+                  <tr><th scope="row">Broadcast</th><td>todos los bits de host a 1; llega a todos (<code>192.168.1.255</code>)</td></tr>
+                  <tr><th scope="row">Rango útil</th><td>lo que hay entre ambas: los hosts asignables</td></tr>
+                  <tr><th scope="row">Gateway</th><td>la puerta de enlace; suele ser la primera útil (<code>.1</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Por eso el número de hosts es <code>2^h − 2</code>: se restan la de red y la de broadcast. Un <code>/24</code> tiene 256 direcciones pero 254 hosts útiles.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Calcular una subred</h2>
+          <div class="cuerpo">
+            <p class="txt">Dada una IP con máscara, sacar red, broadcast y rango. Ejemplo con <code>192.168.1.10/26</code>:</p>
+            <figure class="codigo"><pre data-lang="text"><code>/26  → máscara 255.255.255.192  (host = 6 bits)
+Salto de subred: 256 − 192 = 64  →  subredes cada 64
+Bloques del 4º octeto: 0, 64, 128, 192
+
+.10 cae en el bloque 0–63:
+  Red        192.168.1.0
+  1ª útil    192.168.1.1
+  última     192.168.1.62
+  Broadcast  192.168.1.63
+  Hosts      2^6 − 2 = 62</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Salto</th><td><code>256 − (octeto de máscara)</code> = tamaño de cada bloque</td></tr>
+                  <tr><th scope="row">Red</th><td>el múltiplo del salto justo por debajo de la IP</td></tr>
+                  <tr><th scope="row">Broadcast</th><td>la anterior a la siguiente red</td></tr>
+                  <tr><th scope="row">Hosts</th><td><code>2^(bits de host) − 2</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Dividir en subredes</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>Subnetting</strong> es coger una red y partirla en varias más pequeñas robando bits al host. Cada bit prestado <em>duplica</em> el número de subredes y <em>divide entre dos</em> los hosts.</p>
+            <figure class="codigo"><figcaption>Partir 192.168.1.0/24 en cuatro subredes /26</figcaption><pre data-lang="text"><code>/24 → /26  (2 bits prestados → 4 subredes de 62 hosts)
+  192.168.1.0/26     hosts .1  – .62
+  192.168.1.64/26    hosts .65 – .126
+  192.168.1.128/26   hosts .129 – .190
+  192.168.1.192/26   hosts .193 – .254</code></pre></figure>
+            <p class="nota"><strong>VLSM</strong> (máscara de longitud variable) permite subredes de distinto tamaño según lo que necesite cada una: un enlace entre routers con <code>/30</code> (2 hosts) y una LAN con <code>/24</code>. Se asigna de la más grande a la más pequeña.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Tabla CIDR</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/24</code></th><td>255.255.255.0 · 256 dir. · 254 hosts</td></tr>
+                  <tr><th scope="row"><code>/25</code></th><td>255.255.255.128 · 128 · 126</td></tr>
+                  <tr><th scope="row"><code>/26</code></th><td>255.255.255.192 · 64 · 62</td></tr>
+                  <tr><th scope="row"><code>/27</code></th><td>255.255.255.224 · 32 · 30</td></tr>
+                  <tr><th scope="row"><code>/28</code></th><td>255.255.255.240 · 16 · 14</td></tr>
+                  <tr><th scope="row"><code>/29</code></th><td>255.255.255.248 · 8 · 6</td></tr>
+                  <tr><th scope="row"><code>/30</code></th><td>255.255.255.252 · 4 · 2 (enlaces)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Comprueba con <code>ipcalc 192.168.1.10/26</code> en Linux: te da red, broadcast y rango al instante. La base teórica de las capas, en <a href="tcp-ip.html">Modelo TCP/IP</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="tcp-ip.html">← Modelo TCP/IP</a><a class="siguiente" href="ipv6.html">IPv6 →</a></nav>
+      <footer class="pie">El sucesor con 128 bits y sin NAT, en <a href="ipv6.html">IPv6</a>. Configurar direcciones en <a href="red-linux.html">Configurar la red</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

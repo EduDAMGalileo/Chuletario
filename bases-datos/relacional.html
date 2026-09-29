@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modelo relacional · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><span>Modelo relacional</span></nav>
+          <h1>Modelo relacional</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El modelo lógico entre el diagrama ER y las tablas SQL: relaciones, claves, integridad, el paso del ER a tablas y la normalización.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Bases de datos">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="er-eer.html">Modelo ER-EER</a><a href="relacional.html" aria-current="page">Modelo relacional</a><a href="sql.html">SQL</a><a href="postgresql.html">PostgreSQL</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es el modelo relacional</a><a href="#s2"><b>2</b>Terminología</a><a href="#s3"><b>3</b>Claves</a><a href="#s4"><b>4</b>Integridad</a><a href="#s5"><b>5</b>Del ER a tablas</a><a href="#s6"><b>6</b>Dependencias funcionales</a><a href="#s7"><b>7</b>Normalización</a><a href="#s8"><b>8</b>Desnormalizar</a><a href="#s9"><b>9</b>Álgebra relacional</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">El modelo relacional organiza los datos en <strong>tablas</strong> (relaciones) con base matemática. Es el paso <em>lógico</em>: traduce el <a href="er-eer.html">diagrama ER</a> conceptual a tablas concretas, listas para crear con <a href="sql.html">SQL</a>. Lo definió E. F. Codd en 1970.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Las tres capas</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Conceptual</th><td><a href="er-eer.html">ER-EER</a>: entidades y relaciones</td></tr>
+                  <tr><th scope="row">Lógico</th><td>relacional: tablas y claves (aquí)</td></tr>
+                  <tr><th scope="row">Físico</th><td><a href="sql.html">SQL</a> en un gestor</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es el modelo relacional</h2>
+          <div class="cuerpo">
+            <p class="txt">Representa toda la información como <strong>relaciones</strong>: tablas de filas y columnas. Cada tabla guarda datos de un tipo de cosa, y las tablas se conectan por los valores de sus columnas, no por punteros.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Base matemática</th><td>se apoya en la teoría de conjuntos y la lógica de predicados</td></tr>
+                  <tr><th scope="row">Sin orden</th><td>ni las filas ni las columnas tienen un orden inherente</td></tr>
+                  <tr><th scope="row">Valores atómicos</th><td>cada celda guarda un único valor indivisible</td></tr>
+                  <tr><th scope="row">Se consulta con</th><td>SQL, que se apoya en el álgebra relacional (sección 9)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Es el modelo de PostgreSQL, MySQL, Oracle y SQL Server. Entenderlo bien es lo que separa diseñar una base de datos de «hacer tablas a ojo».</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Terminología</h2>
+          <div class="cuerpo">
+            <p class="txt">La teoría tiene su vocabulario, con su equivalente práctico:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Relación</th><td>una <strong>tabla</strong></td></tr>
+                  <tr><th scope="row">Tupla</th><td>una <strong>fila</strong> o registro</td></tr>
+                  <tr><th scope="row">Atributo</th><td>una <strong>columna</strong> o campo</td></tr>
+                  <tr><th scope="row">Dominio</th><td>los valores válidos de un atributo (el tipo)</td></tr>
+                  <tr><th scope="row">Grado</th><td>número de atributos (columnas)</td></tr>
+                  <tr><th scope="row">Cardinalidad</th><td>número de tuplas (filas)</td></tr>
+                  <tr><th scope="row">Esquema</th><td>la definición: <code>ALUMNO(dni, nombre, curso_id)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En clase oirás «relación» y «tupla»; en la práctica, «tabla» y «fila». Son lo mismo. El <strong>esquema</strong> es la estructura; la <em>instancia</em> son los datos concretos en un momento dado.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Claves</h2>
+          <div class="cuerpo">
+            <p class="txt">Las <strong>claves</strong> identifican filas y conectan tablas. Son el corazón del modelo.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Superclave</th><td>cualquier conjunto de columnas que identifica una fila</td></tr>
+                  <tr><th scope="row">Clave candidata</th><td>una superclave mínima (sin columnas de sobra)</td></tr>
+                  <tr><th scope="row">Clave primaria</th><td>la candidata elegida para identificar; única y no nula</td></tr>
+                  <tr><th scope="row">Clave alternativa</th><td>las candidatas que no se eligieron como primaria</td></tr>
+                  <tr><th scope="row">Clave foránea</th><td>columna que referencia la clave primaria de otra tabla</td></tr>
+                  <tr><th scope="row">Clave compuesta</th><td>formada por varias columnas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Ejemplo: en <code>ALUMNO</code>, tanto <code>dni</code> como <code>email</code> podrían identificar (candidatas); se elige <code>dni</code> como primaria y <code>email</code> queda como alternativa. Un <code>curso_id</code> que apunta a <code>CURSO</code> es foránea.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Integridad</h2>
+          <div class="cuerpo">
+            <p class="txt">Las <strong>reglas de integridad</strong> impiden datos incoherentes. El gestor las hace cumplir.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">De entidad</th><td>la clave primaria no puede ser nula ni repetirse</td></tr>
+                  <tr><th scope="row">Referencial</th><td>una clave foránea debe apuntar a una fila que existe (o ser NULL)</td></tr>
+                  <tr><th scope="row">De dominio</th><td>cada valor respeta el tipo y las restricciones (<code>CHECK</code>)</td></tr>
+                  <tr><th scope="row">Definida por el usuario</th><td>reglas de negocio propias (una nota entre 0 y 10)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">La integridad referencial es la que evita «filas huérfanas»: no puedes matricular a un alumno en un curso que no existe. Al borrar, decides qué pasa con las hijas: <code>CASCADE</code>, <code>SET NULL</code> o <code>RESTRICT</code>.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Del ER a tablas</h2>
+          <div class="cuerpo">
+            <p class="txt">El paso del <a href="er-eer.html">diagrama ER</a> al modelo relacional sigue reglas mecánicas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Entidad</th><td>→ una tabla; su identificador, clave primaria</td></tr>
+                  <tr><th scope="row">Atributo</th><td>→ una columna</td></tr>
+                  <tr><th scope="row">Atributo multivaluado</th><td>→ una tabla aparte</td></tr>
+                  <tr><th scope="row">Relación 1:N</th><td>→ clave foránea en el lado «N»</td></tr>
+                  <tr><th scope="row">Relación N:M</th><td>→ tabla intermedia con las dos claves</td></tr>
+                  <tr><th scope="row">Relación 1:1</th><td>→ clave foránea en cualquiera de los lados</td></tr>
+                  <tr><th scope="row">Jerarquía (EER)</th><td>→ varias estrategias: una tabla, tabla por subclase...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Es la continuación natural del <a href="er-eer.html#s9">paso a tablas</a> que empezaba en la chuleta del ER. El resultado es un conjunto de esquemas listos para <a href="sql.html">SQL</a>.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Dependencias funcionales</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>dependencia funcional</strong> <code>A → B</code> significa que el valor de <code>A</code> determina el de <code>B</code>: si conoces el <code>dni</code>, conoces el <code>nombre</code>. Son la base para normalizar.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>A → B</code></th><td>A determina B (dni → nombre)</td></tr>
+                  <tr><th scope="row">Total</th><td>B depende de <em>toda</em> la clave compuesta, no de una parte</td></tr>
+                  <tr><th scope="row">Parcial</th><td>B depende solo de parte de la clave (problema en 2FN)</td></tr>
+                  <tr><th scope="row">Transitiva</th><td>A → B y B → C, luego A → C (problema en 3FN)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Detectar qué depende de qué es lo que dice cómo repartir las columnas en tablas para no repetir datos. Eso es normalizar.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Normalización</h2>
+          <div class="cuerpo">
+            <p class="txt">Normalizar es organizar las columnas en tablas para <strong>eliminar redundancia</strong> y evitar anomalías al insertar, actualizar o borrar. Se avanza por formas normales:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">1FN</th><td>valores atómicos; nada de listas ni grupos repetidos en una celda</td></tr>
+                  <tr><th scope="row">2FN</th><td>1FN + sin dependencias parciales de la clave</td></tr>
+                  <tr><th scope="row">3FN</th><td>2FN + sin dependencias transitivas entre columnas no clave</td></tr>
+                  <tr><th scope="row">BCNF</th><td>una 3FN más estricta; todo determinante es clave candidata</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Anomalías que evita: guardar el nombre del curso en cada alumno (redundancia), no poder registrar un curso sin alumnos (inserción), o dejar datos incoherentes al actualizar solo algunas filas.</p>
+            <p class="nota">Regla práctica: en la mayoría de los casos, llegar a la <strong>3FN</strong> es suficiente y es el objetivo habitual de un diseño limpio.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Desnormalizar</h2>
+          <div class="cuerpo">
+            <p class="txt">A veces se rompe la normalización a propósito: se duplica algún dato para ganar velocidad de lectura, evitando <a href="sql.html">JOIN</a> costosos.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Normalizar</th><td>menos redundancia, integridad fácil; más JOIN al consultar</td></tr>
+                  <tr><th scope="row">Desnormalizar</th><td>lecturas más rápidas; riesgo de datos incoherentes</td></tr>
+                  <tr><th scope="row">Cuándo</th><td>solo con un problema de rendimiento medido, no «por si acaso»</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Primero normaliza bien; desnormaliza después y con motivo. Es más fácil optimizar un diseño limpio que arreglar uno redundante desde el principio.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Álgebra relacional</h2>
+          <div class="cuerpo">
+            <p class="txt">El fundamento teórico de las consultas: un conjunto de operaciones que toman tablas y devuelven tablas. SQL es su versión práctica.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Selección (σ)</th><td>elige filas que cumplen una condición → <code>WHERE</code></td></tr>
+                  <tr><th scope="row">Proyección (π)</th><td>elige columnas → la lista del <code>SELECT</code></td></tr>
+                  <tr><th scope="row">Producto y join (⋈)</th><td>combina tablas → <code>JOIN</code></td></tr>
+                  <tr><th scope="row">Unión (∪)</th><td>junta filas de dos tablas → <code>UNION</code></td></tr>
+                  <tr><th scope="row">Diferencia (−)</th><td>filas de una que no están en otra → <code>EXCEPT</code></td></tr>
+                  <tr><th scope="row">Intersección (∩)</th><td>filas comunes → <code>INTERSECT</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">No hace falta dominar la notación matemática, pero ver que cada cláusula de <a href="sql.html">SQL</a> corresponde a una operación ayuda a entender qué hace una consulta por dentro.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="er-eer.html">← Modelo ER-EER</a><a class="siguiente" href="sql.html">SQL →</a></nav>
+      <footer class="pie">El puente entre el <a href="er-eer.html">diseño ER</a> y las tablas de <a href="sql.html">SQL</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IPv6 · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="redes">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Redes</a><span aria-hidden="true">›</span><span>IPv6</span></nav>
+          <h1>IPv6</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El direccionamiento de 128 bits: notación y abreviación, el prefijo, los tipos de dirección, la autoconfiguración y las diferencias con IPv4.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Redes">
+      <div class="wrap"><a href="osi.html">Modelo OSI</a><a href="tcp-ip.html">Modelo TCP/IP</a><a href="subnetting-ipv4.html">Subnetting IPv4</a><a href="ipv6.html" aria-current="page">IPv6</a><a href="http.html">HTTP y HTTPS</a><a href="red-linux.html">Configurar la red</a><a href="red-clasica.html">Red: método clásico</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es IPv6</a><a href="#s2"><b>2</b>Notación</a><a href="#s3"><b>3</b>Abreviar</a><a href="#s4"><b>4</b>El prefijo</a><a href="#s5"><b>5</b>Tipos de dirección</a><a href="#s6"><b>6</b>Autoconfiguración</a><a href="#s7"><b>7</b>IPv4 frente a IPv6</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">IPv6 nació porque las direcciones IPv4 (unos 4300 millones) se agotaron. Usa <strong>128 bits</strong>: un espacio prácticamente inagotable, con autoconfiguración y sin necesidad de NAT.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">De un vistazo</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">128 bits</th><td>8 grupos de 16 bits en hexadecimal</td></tr>
+                  <tr><th scope="row">Separador</th><td>dos puntos <code>:</code> (no el punto de IPv4)</td></tr>
+                  <tr><th scope="row">Prefijo</th><td>casi siempre <code>/64</code> para una red</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es IPv6</h2>
+          <div class="cuerpo">
+            <p class="txt">La versión 6 del protocolo IP. Mantiene la idea de <a href="tcp-ip.html">IP</a> (identificar equipos y enrutar paquetes) pero amplía el direccionamiento de 32 a 128 bits y simplifica varias cosas del diseño.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">128 bits</th><td>2^128 direcciones (~340 sextillones)</td></tr>
+                  <tr><th scope="row">Sin agotamiento</th><td>de sobra para cada dispositivo, sin NAT</td></tr>
+                  <tr><th scope="row">Autoconfiguración</th><td>un equipo puede darse dirección solo (SLAAC)</td></tr>
+                  <tr><th scope="row">Sin broadcast</th><td>usa multicast en su lugar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">IPv4 e IPv6 conviven: la mayoría de sistemas usan «doble pila» (dual stack), con las dos a la vez. IPv6 no es opcional a largo plazo, pero la transición es lenta.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Notación</h2>
+          <div class="cuerpo">
+            <p class="txt">Ocho grupos de cuatro dígitos hexadecimales (16 bits cada uno), separados por dos puntos:</p>
+            <figure class="codigo"><pre data-lang="text"><code>2001:0db8:85a3:0000:0000:8a2e:0370:7334
+└────── prefijo de red (64 bits) ──────┘└─ id de interfaz ─┘
+  cada grupo = 16 bits = 4 dígitos hex (0–ffff)</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Hexadecimal</th><td>dígitos 0–9 y a–f (no distingue mayúsculas)</td></tr>
+                  <tr><th scope="row">8 grupos</th><td>8 × 16 = 128 bits</td></tr>
+                  <tr><th scope="row">En URL</th><td>entre corchetes: <code>http://[2001:db8::1]:8080</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Abreviar</h2>
+          <div class="cuerpo">
+            <p class="txt">Escribir 32 dígitos es incómodo, así que hay dos reglas para acortar:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ceros a la izquierda</th><td>se quitan de cada grupo: <code>0db8</code> → <code>db8</code></td></tr>
+                  <tr><th scope="row"><code>::</code></th><td>sustituye uno o más grupos consecutivos de ceros</td></tr>
+                  <tr><th scope="row">Solo una vez</th><td><code>::</code> puede aparecer una sola vez en la dirección</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="text"><code>2001:0db8:85a3:0000:0000:8a2e:0370:7334
+2001:db8:85a3::8a2e:370:7334        (abreviada)
+
+::1          =  0000:...:0001   (loopback, el localhost de IPv6)
+::           =  todo ceros       (dirección sin especificar)
+fe80::1      =  fe80:0:0:0:0:0:0:1</code></pre></figure>
+            <p class="aviso">El <code>::</code> solo puede usarse una vez: si hubiera dos, no se sabría cuántos grupos de ceros representa cada uno. Si hay varios tramos de ceros, se abrevia el más largo.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>El prefijo</h2>
+          <div class="cuerpo">
+            <p class="txt">Como el CIDR de <a href="subnetting-ipv4.html">IPv4</a>: <code>/n</code> indica cuántos bits son de red. En IPv6 lo habitual es <code>/64</code>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/64</code></th><td>una subred estándar; 64 bits de red + 64 de interfaz</td></tr>
+                  <tr><th scope="row"><code>/48</code></th><td>bloque típico que un ISP asigna a un sitio</td></tr>
+                  <tr><th scope="row"><code>/128</code></th><td>una sola dirección (un host concreto)</td></tr>
+                  <tr><th scope="row">Id de interfaz</th><td>los últimos 64 bits identifican al equipo en la subred</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Con 64 bits de host, una sola subred IPv6 tiene más direcciones que todo internet IPv4. El «subnetting» aquí casi no consiste en ahorrar, sino en organizar (se juega con los bits entre <code>/48</code> y <code>/64</code>).</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Tipos de dirección</h2>
+          <div class="cuerpo">
+            <p class="txt">Se reconocen por cómo empiezan:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Global unicast</th><td><code>2000::/3</code> — pública, enrutable en internet</td></tr>
+                  <tr><th scope="row">Link-local</th><td><code>fe80::/10</code> — solo en el enlace local; siempre presente</td></tr>
+                  <tr><th scope="row">Unique local (ULA)</th><td><code>fc00::/7</code> (<code>fd00::/8</code>) — privada, como las de IPv4</td></tr>
+                  <tr><th scope="row">Multicast</th><td><code>ff00::/8</code> — a un grupo de equipos (sustituye al broadcast)</td></tr>
+                  <tr><th scope="row">Loopback</th><td><code>::1</code> — el propio equipo (localhost)</td></tr>
+                  <tr><th scope="row">Sin especificar</th><td><code>::</code> — «cualquiera / ninguna»</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La <strong>link-local</strong> (<code>fe80::</code>) la tiene toda interfaz IPv6 y sirve para hablar con los vecinos del mismo enlace (por ejemplo, para encontrar el router). Las ULA (<code>fd00::</code>) son el equivalente a <code>192.168.x.x</code>.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Autoconfiguración</h2>
+          <div class="cuerpo">
+            <p class="txt">Un equipo IPv6 puede obtener dirección sin servidor DHCP, mediante <strong>SLAAC</strong>: escucha al router (que anuncia el prefijo) y se completa el id de interfaz.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">SLAAC</th><td>autoconfiguración sin estado: prefijo del router + id propio</td></tr>
+                  <tr><th scope="row">Router Advertisement</th><td>el router anuncia el prefijo de la subred (protocolo NDP)</td></tr>
+                  <tr><th scope="row">EUI-64</th><td>id de interfaz derivado de la MAC</td></tr>
+                  <tr><th scope="row">Privacy extensions</th><td>id aleatorio por privacidad (para no exponer la MAC)</td></tr>
+                  <tr><th scope="row">DHCPv6</th><td>alternativa con servidor, cuando se quiere control central</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Un equipo suele tener <em>varias</em> direcciones IPv6 a la vez: la link-local, una global por SLAAC y quizá una temporal de privacidad. Es normal.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>IPv4 frente a IPv6</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tamaño</th><td>IPv4: 32 bits · IPv6: 128 bits</td></tr>
+                  <tr><th scope="row">Notación</th><td>decimal con puntos · hexadecimal con dos puntos</td></tr>
+                  <tr><th scope="row">NAT</th><td>necesario en IPv4 · innecesario en IPv6</td></tr>
+                  <tr><th scope="row">Configuración</th><td>DHCP · SLAAC o DHCPv6</td></tr>
+                  <tr><th scope="row">Broadcast</th><td>sí · no (usa multicast)</td></tr>
+                  <tr><th scope="row">Privadas</th><td><code>192.168/16</code>… · ULA <code>fd00::/8</code></td></tr>
+                  <tr><th scope="row">Loopback</th><td><code>127.0.0.1</code> · <code>::1</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Comprobar la IPv6 en Linux: <code>ip -6 addr</code>. La configuración general de red, en <a href="red-linux.html">Configurar la red</a>; el subnetting de IPv4, en <a href="subnetting-ipv4.html">Subnetting IPv4</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="subnetting-ipv4.html">← Subnetting IPv4</a><a class="siguiente" href="http.html">HTTP y HTTPS →</a></nav>
+      <footer class="pie">El direccionamiento IPv4, en <a href="subnetting-ipv4.html">Subnetting IPv4</a>. La base de IP y las capas, en <a href="tcp-ip.html">Modelo TCP/IP</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

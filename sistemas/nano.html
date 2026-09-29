@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nano · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><span>Nano</span></nav>
+          <h1>Nano</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El editor de terminal sencillo: se escribe como en cualquier sitio y los atajos están siempre a la vista. Perfecto para editar un fichero de configuración sin complicarse.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Sistemas">
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Comandos</a><a href="vim.html">Vim</a><a href="vim-config.html">Config de Vim</a><a href="nano.html" aria-current="page">Nano</a><a href="bash-script.html">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a><a href="logs.html">Logs</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es nano</a><a href="#s2"><b>2</b>Abrir y guardar</a><a href="#s3"><b>3</b>Leer los atajos</a><a href="#s4"><b>4</b>Moverse</a><a href="#s5"><b>5</b>Cortar, copiar y pegar</a><a href="#s6"><b>6</b>Buscar y reemplazar</a><a href="#s7"><b>7</b>Configuración (.nanorc)</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">A diferencia de <a href="vim.html">Vim</a>, en nano escribes directamente: no hay modos. Las órdenes se dan con <strong>Ctrl</strong> (o Alt), y las más útiles se ven siempre en las dos filas de abajo.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">La notación</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>^</code></th><td>la tecla <strong>Ctrl</strong> (<code>^O</code> = Ctrl+O)</td></tr>
+                  <tr><th scope="row"><code>M-</code></th><td>la tecla <strong>Alt</strong>/Meta (<code>M-U</code> = Alt+U)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es nano</h2>
+          <div class="cuerpo">
+            <p class="txt">Un editor de texto de consola pensado para ser fácil. Viene de serie en casi todas las distribuciones y es la opción cómoda cuando solo quieres tocar un fichero de configuración y salir.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Sin modos</th><td>escribes desde el primer momento, como en el Bloc de notas</td></tr>
+                  <tr><th scope="row">Atajos a la vista</th><td>las dos filas de abajo recuerdan las órdenes más usadas</td></tr>
+                  <tr><th scope="row">Ligero</th><td>arranca al instante; ideal para ediciones rápidas</td></tr>
+                  <tr><th scope="row">Cuándo Vim</th><td>para editar mucho y rápido, <a href="vim.html">Vim</a> rinde más; para un retoque, nano</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Abrir y guardar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">nano</span> fichero.txt          <span class="tok-coment"># abrir (o crear) un fichero</span>
+<span class="tok-clave">nano</span> <span class="tok-atributo">+42</span> fichero.txt      <span class="tok-coment"># abrir en la línea 42</span>
+<span class="tok-clave">sudo</span> nano /etc/hosts      <span class="tok-coment"># editar un fichero del sistema</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>^O</code></th><td>guardar (te pregunta el nombre; Enter confirma)</td></tr>
+                  <tr><th scope="row"><code>^X</code></th><td>salir (si hay cambios, pregunta si guardar)</td></tr>
+                  <tr><th scope="row"><code>^S</code></th><td>guardar directo (versiones recientes)</td></tr>
+                  <tr><th scope="row"><code>M-&gt;</code> / <code>M-&lt;</code></th><td>cambiar el formato de fin de línea al guardar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">«WriteOut» en el menú es <em>guardar</em> (viene de escribir el fichero a disco). Al guardar puedes cambiar el nombre para hacer una copia.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Leer los atajos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Las dos filas inferiores de nano</figcaption><pre data-lang="text"><code>^G Ayuda    ^O Guardar  ^W Buscar   ^K Cortar   ^T Ortografía
+^X Salir    ^R Leer fich ^\ Reempl.  ^U Pegar    ^C Posición</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>^G</code></th><td>ayuda completa con todos los atajos</td></tr>
+                  <tr><th scope="row"><code>^C</code></th><td>muestra la posición (línea y columna) actual</td></tr>
+                  <tr><th scope="row"><code>M-3</code></th><td>comentar / descomentar la línea (según el lenguaje)</td></tr>
+                  <tr><th scope="row"><code>^_</code> (Ctrl+_)</th><td>ir a una línea y columna concretas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Nano no obliga a memorizar: todo lo importante está en pantalla. <code>^G</code> abre la ayuda con la lista entera.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Moverse</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Flechas</th><td>mover el cursor (también funcionan)</td></tr>
+                  <tr><th scope="row"><code>^A  ^E</code></th><td>inicio / final de la línea</td></tr>
+                  <tr><th scope="row"><code>^Y  ^V</code></th><td>página anterior / siguiente</td></tr>
+                  <tr><th scope="row"><code>M-\</code> / <code>M-/</code></th><td>principio / final del fichero</td></tr>
+                  <tr><th scope="row"><code>^_</code></th><td>ir a una línea concreta</td></tr>
+                  <tr><th scope="row"><code>M-U  M-E</code></th><td>deshacer / rehacer</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Muchos atajos de nano coinciden con los de la terminal (<code>^A</code> inicio, <code>^E</code> final), así que ya te sonarán de la <a href="terminal-linux.html">línea de comandos</a>.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Cortar, copiar y pegar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>^K</code></th><td>cortar la línea entera (repite para varias)</td></tr>
+                  <tr><th scope="row"><code>^U</code></th><td>pegar lo último cortado</td></tr>
+                  <tr><th scope="row"><code>M-6</code></th><td>copiar la línea sin cortarla</td></tr>
+                  <tr><th scope="row"><code>^6</code> (o <code>M-A</code>)</th><td>marcar: mueve el cursor para seleccionar</td></tr>
+                  <tr><th scope="row"><code>^K</code> tras marcar</th><td>corta justo lo seleccionado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para copiar un bloque: pon la marca con <code>^6</code>, muévete para seleccionar, y usa <code>M-6</code> (copiar) o <code>^K</code> (cortar). Luego <code>^U</code> pega.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Buscar y reemplazar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>^W</code></th><td>buscar (Enter repite la última búsqueda)</td></tr>
+                  <tr><th scope="row"><code>M-W</code></th><td>buscar la siguiente coincidencia</td></tr>
+                  <tr><th scope="row"><code>^\</code> (Ctrl+\)</th><td>buscar y reemplazar</td></tr>
+                  <tr><th scope="row">En reemplazo</th><td><code>Y</code> sustituye una, <code>A</code> todas, <code>N</code> salta</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Durante la búsqueda, <code>M-C</code> distingue mayúsculas y <code>M-R</code> activa expresiones regulares.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Configuración (.nanorc)</h2>
+          <div class="cuerpo">
+            <p class="txt">Los ajustes van en <code>~/.nanorc</code> (o en <code>/etc/nanorc</code> para todo el sistema). Un punto de partida cómodo:</p>
+            <figure class="codigo"><figcaption>~/.nanorc</figcaption><pre data-lang="text"><code>set linenumbers        # números de línea
+set tabsize 4          # ancho de tabulación
+set tabstospaces       # tabuladores como espacios
+set autoindent         # mantener la indentación
+set constantshow       # mostrar siempre la posición del cursor
+set mouse              # permitir el ratón
+include "/usr/share/nano/*.nanorc"   # resaltado de sintaxis</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>set linenumbers</code></th><td>numerar las líneas</td></tr>
+                  <tr><th scope="row"><code>set tabstospaces</code></th><td>convertir tabuladores en espacios</td></tr>
+                  <tr><th scope="row"><code>set autoindent</code></th><td>heredar la indentación de la línea anterior</td></tr>
+                  <tr><th scope="row"><code>include ".../*.nanorc"</code></th><td>cargar el resaltado de sintaxis</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El resaltado de sintaxis viene con nano; basta con incluir los ficheros de <code>/usr/share/nano/</code>. Para editar mucho y a fondo, da el salto a <a href="vim.html">Vim</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="vim-config.html">← Config de Vim</a><a class="siguiente" href="bash-script.html">Shell script →</a></nav>
+      <footer class="pie">Ayuda dentro del editor: <code>^G</code>. Manual: <a href="https://www.nano-editor.org/docs.php">nano-editor.org/docs</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

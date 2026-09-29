@@ -16,7 +16,7 @@
           <h1>Java</h1>
         </div>
         <div class="apoyo">
-          <p class="sub">Sintaxis, orientación a objetos, colecciones y entrada/salida.</p>
+          <p class="sub">Lenguaje orientado a objetos sobre la JVM. De la sintaxis básica a la orientación a objetos, las colecciones, la entrada/salida y las herramientas.</p>
           <div class="herramientas">
       <button type="button" data-accion="tema">Tema oscuro</button>
       <button type="button" data-accion="imprimir">Imprimir</button>
@@ -25,10 +25,41 @@
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de Java">
-      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="strings.html">Strings</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
     </nav>
     <main class="wrap">
-      <div class="fichas"><a class="ficha" href="sintaxis.html" style="--color-tema: #E76F00"><span class="nombre">Sintaxis básica</span><span class="desc">Tipos, variables, operadores, control de flujo y arrays.</span></a><a class="ficha" href="strings.html" style="--color-tema: #E76F00"><span class="nombre">Strings</span><span class="desc">Métodos de String, formato de texto, bloques de texto y StringBuilder.</span></a><a class="ficha" href="poo.html" style="--color-tema: #E76F00"><span class="nombre">Orientación a objetos</span><span class="desc">Clases, herencia, interfaces, records, enums y pattern matching.</span></a><a class="ficha" href="excepciones.html" style="--color-tema: #E76F00"><span class="nombre">Excepciones</span><span class="desc">try-catch, excepciones comprobadas, recursos y errores propios.</span></a><a class="ficha" href="colecciones.html" style="--color-tema: #E76F00"><span class="nombre">Colecciones</span><span class="desc">List, Set, Map, recorridos, ordenación y utilidades.</span></a><a class="ficha" href="streams.html" style="--color-tema: #E76F00"><span class="nombre">Lambdas y streams</span><span class="desc">Expresiones lambda, interfaces funcionales, streams y Optional.</span></a><a class="ficha" href="fechas.html" style="--color-tema: #E76F00"><span class="nombre">Fechas y horas</span><span class="desc">LocalDate, LocalDateTime, Duration, Period, formato y cálculos con fechas.</span></a><a class="ficha" href="ficheros.html" style="--color-tema: #E76F00"><span class="nombre">Ficheros y entrada/salida</span><span class="desc">Leer y escribir ficheros, rutas y entrada por teclado.</span></a><a class="ficha" href="entrada-salida.html" style="--color-tema: #E76F00"><span class="nombre">Clases de entrada/salida</span><span class="desc">Jerarquía de flujos de bytes y caracteres, y los métodos de cada clase.</span></a><a class="ficha" href="maven.html" style="--color-tema: #E76F00"><span class="nombre">Maven</span><span class="desc">Compilar, gestionar dependencias y empaquetar proyectos Java.</span></a><a class="ficha" href="junit.html" style="--color-tema: #E76F00"><span class="nombre">JUnit</span><span class="desc">Pruebas unitarias: aserciones, ciclo de vida, parametrizadas y mocks con Mockito.</span></a></div>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt"><strong>Java</strong> es un lenguaje compilado a bytecode que corre en la máquina virtual (JVM), lo que lo hace multiplataforma. Es fuertemente tipado y orientado a objetos. Estas chuletas van de lo básico a lo avanzado.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Por dónde empezar</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Empezar</th><td><a href="sintaxis.html">Sintaxis básica</a></td></tr>
+                  <tr><th scope="row">Estructurar</th><td><a href="poo.html">Orientación a objetos</a></td></tr>
+                  <tr><th scope="row">Manejar datos</th><td><a href="colecciones.html">Colecciones</a> y <a href="streams.html">streams</a></td></tr>
+                  <tr><th scope="row">Compilar y probar</th><td><a href="maven.html">Maven</a> y <a href="junit.html">JUnit</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="intro">Las chuletas de Java, agrupadas por temas. Empieza por los <strong>fundamentos</strong> y avanza hacia la orientación a objetos, el manejo de datos y las herramientas de desarrollo.</p>
+      <h3 class="lenguaje">Java básico</h3>
+      <div class="fichas"><a class="ficha" href="sintaxis.html" style="--color-tema: #E76F00"><span class="nombre">Sintaxis básica</span><span class="desc">Tipos, variables, operadores, control de flujo, condicionales y bucles.</span></a><a class="ficha" href="arrays.html" style="--color-tema: #E76F00"><span class="nombre">Arrays y matrices</span><span class="desc">Colecciones de tamaño fijo de una y dos dimensiones, y la clase Arrays.</span></a><a class="ficha" href="strings.html" style="--color-tema: #E76F00"><span class="nombre">Strings</span><span class="desc">Métodos de String, formato de texto, bloques de texto y StringBuilder.</span></a><a class="ficha" href="metodos.html" style="--color-tema: #E76F00"><span class="nombre">Métodos y recursividad</span><span class="desc">Parámetros, devolución, sobrecarga, varargs, ámbito y recursividad.</span></a></div>
+      <h3 class="lenguaje">Orientación a objetos</h3>
+      <div class="fichas"><a class="ficha" href="poo.html" style="--color-tema: #E76F00"><span class="nombre">Orientación a objetos</span><span class="desc">Clases, herencia, interfaces, records, enums y pattern matching.</span></a><a class="ficha" href="excepciones.html" style="--color-tema: #E76F00"><span class="nombre">Excepciones</span><span class="desc">try-catch, excepciones comprobadas, recursos y errores propios.</span></a></div>
+      <h3 class="lenguaje">Datos y colecciones</h3>
+      <div class="fichas"><a class="ficha" href="colecciones.html" style="--color-tema: #E76F00"><span class="nombre">Colecciones</span><span class="desc">List, Set, Map, recorridos, ordenación y utilidades.</span></a><a class="ficha" href="streams.html" style="--color-tema: #E76F00"><span class="nombre">Lambdas y streams</span><span class="desc">Expresiones lambda, interfaces funcionales, streams y Optional.</span></a><a class="ficha" href="fechas.html" style="--color-tema: #E76F00"><span class="nombre">Fechas y horas</span><span class="desc">LocalDate, LocalDateTime, Duration, Period, formato y cálculos.</span></a></div>
+      <h3 class="lenguaje">Entrada/salida y sistema</h3>
+      <div class="fichas"><a class="ficha" href="ficheros.html" style="--color-tema: #E76F00"><span class="nombre">Ficheros y entrada/salida</span><span class="desc">Leer y escribir ficheros, rutas y entrada por teclado.</span></a><a class="ficha" href="entrada-salida.html" style="--color-tema: #E76F00"><span class="nombre">Clases de entrada/salida</span><span class="desc">Jerarquía de flujos de bytes y caracteres, y los métodos de cada clase.</span></a><a class="ficha" href="procesos.html" style="--color-tema: #E76F00"><span class="nombre">Procesos</span><span class="desc">Lanzar programas del sistema con ProcessBuilder, y Windows frente a Linux.</span></a></div>
+      <h3 class="lenguaje">Herramientas</h3>
+      <div class="fichas"><a class="ficha" href="maven.html" style="--color-tema: #E76F00"><span class="nombre">Maven</span><span class="desc">Compilar, gestionar dependencias y empaquetar proyectos Java.</span></a><a class="ficha" href="junit.html" style="--color-tema: #E76F00"><span class="nombre">JUnit</span><span class="desc">Pruebas unitarias: aserciones, ciclo de vida, parametrizadas y mocks con Mockito.</span></a></div>
       <footer class="pie"><a href="../programacion/index.html">← Todos los lenguajes</a></footer>
     </main>
     <script src="../assets/chuletas.js" defer></script>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL · DDL · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><a href="sql.html">SQL</a><span aria-hidden="true">›</span><span>DDL</span></nav>
+          <h1>SQL · DDL</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Data Definition Language: definir la estructura de la base de datos. CREATE, ALTER, DROP, TRUNCATE, restricciones, índices y vistas. Sintaxis MySQL.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Sublenguajes de SQL">
+      <div class="wrap"><a href="sql-ddl.html" aria-current="page">DDL</a><a href="sql-dml.html">DML</a><a href="sql-consultas.html">Consultas</a><a href="sql-dcl.html">DCL</a><a href="sql-tcl.html">TCL</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es DDL</a><a href="#s2"><b>2</b>Crear base y tablas</a><a href="#s3"><b>3</b>Tipos de datos</a><a href="#s4"><b>4</b>Restricciones</a><a href="#s5"><b>5</b>ALTER TABLE</a><a href="#s6"><b>6</b>DROP y TRUNCATE</a><a href="#s7"><b>7</b>Índices</a><a href="#s8"><b>8</b>Vistas</a><a href="#s9"><b>9</b>Explorar el esquema</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Qué define</p>
+            <p class="txt">El DDL crea y modifica el <strong>esqueleto</strong> de la base de datos: qué tablas hay, qué columnas y de qué tipo, y las reglas que deben cumplir los datos. Es el resultado directo del <a href="relacional.html">modelo relacional</a>.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Órdenes DDL</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>CREATE</code></th><td>crear base, tabla, índice, vista</td></tr>
+                  <tr><th scope="row"><code>ALTER</code></th><td>modificar una estructura existente</td></tr>
+                  <tr><th scope="row"><code>DROP</code></th><td>eliminarla</td></tr>
+                  <tr><th scope="row"><code>TRUNCATE</code></th><td>vaciar una tabla</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es DDL</h2>
+          <div class="cuerpo">
+            <p class="txt">El <em>Data Definition Language</em> es la parte de SQL que define y modifica la estructura de los datos, no su contenido. Con él creas la base, las tablas y sus reglas.</p>
+            <p class="nota">Los ejemplos usan las tablas <code>curso(id, nombre, horas)</code> y <code>alumno(id, nombre, email, nota, fecha_nac, curso_id)</code>. En muchos gestores, las órdenes DDL confirman la transacción automáticamente (no se pueden deshacer con <a href="sql-tcl.html">ROLLBACK</a>).</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Crear base y tablas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">DATABASE</span> <span class="tok-clave">IF</span> <span class="tok-clave">NOT</span> <span class="tok-clave">EXISTS</span> instituto;
+<span class="tok-clave">USE</span> instituto;
+
+<span class="tok-clave">CREATE</span> <span class="tok-clave">TABLE</span> curso (
+  id     <span class="tok-tipo">INT</span> <span class="tok-clave">AUTO_INCREMENT</span> <span class="tok-clave">PRIMARY</span> <span class="tok-clave">KEY</span>,
+  nombre <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">100</span>) <span class="tok-clave">NOT</span> <span class="tok-clave">NULL</span> <span class="tok-clave">UNIQUE</span>,
+  horas  <span class="tok-tipo">INT</span> <span class="tok-clave">CHECK</span> (horas &gt; <span class="tok-numero">0</span>)
+);
+
+<span class="tok-clave">CREATE</span> <span class="tok-clave">TABLE</span> alumno (
+  id        <span class="tok-tipo">INT</span> <span class="tok-clave">AUTO_INCREMENT</span> <span class="tok-clave">PRIMARY</span> <span class="tok-clave">KEY</span>,
+  nombre    <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">80</span>) <span class="tok-clave">NOT</span> <span class="tok-clave">NULL</span>,
+  email     <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">120</span>) <span class="tok-clave">UNIQUE</span>,
+  nota      <span class="tok-tipo">DECIMAL</span>(<span class="tok-numero">4</span>,<span class="tok-numero">2</span>) <span class="tok-clave">DEFAULT</span> <span class="tok-numero">0</span>,
+  fecha_nac <span class="tok-tipo">DATE</span>,
+  curso_id  <span class="tok-tipo">INT</span>,
+  <span class="tok-clave">FOREIGN</span> <span class="tok-clave">KEY</span> (curso_id) <span class="tok-clave">REFERENCES</span> curso(id)
+    <span class="tok-clave">ON</span> <span class="tok-clave">DELETE</span> <span class="tok-clave">SET</span> <span class="tok-clave">NULL</span>
+);</code></pre></figure>
+            <p class="nota"><code>AUTO_INCREMENT</code> (MySQL) genera el id solo. En PostgreSQL es <code>SERIAL</code> o <code>GENERATED AS IDENTITY</code>; ver <a href="postgresql.html">PostgreSQL</a>.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Tipos de datos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>INT / BIGINT</code></th><td>enteros</td></tr>
+                  <tr><th scope="row"><code>DECIMAL(p,s)</code></th><td>exacto: dinero, notas (p dígitos, s decimales)</td></tr>
+                  <tr><th scope="row"><code>FLOAT / DOUBLE</code></th><td>coma flotante (aproximado)</td></tr>
+                  <tr><th scope="row"><code>VARCHAR(n) / TEXT</code></th><td>texto corto / largo</td></tr>
+                  <tr><th scope="row"><code>CHAR(n)</code></th><td>texto de longitud fija</td></tr>
+                  <tr><th scope="row"><code>DATE / DATETIME</code></th><td><code>'2026-09-16'</code> / con hora</td></tr>
+                  <tr><th scope="row"><code>TIME / TIMESTAMP</code></th><td>hora / marca de tiempo</td></tr>
+                  <tr><th scope="row"><code>BOOLEAN</code></th><td>en MySQL es <code>TINYINT(1)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para dinero y notas usa siempre <code>DECIMAL</code>, nunca <code>FLOAT</code>: la coma flotante arrastra errores de redondeo. Ver <a href="../java/fechas.html">fechas</a> para el manejo desde el código.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Restricciones</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>PRIMARY KEY</code></th><td>identifica la fila; única y no nula</td></tr>
+                  <tr><th scope="row"><code>FOREIGN KEY … REFERENCES</code></th><td>enlaza con la clave de otra tabla</td></tr>
+                  <tr><th scope="row"><code>NOT NULL</code></th><td>obligatorio</td></tr>
+                  <tr><th scope="row"><code>UNIQUE</code></th><td>sin valores repetidos</td></tr>
+                  <tr><th scope="row"><code>DEFAULT valor</code></th><td>valor por defecto si no se indica</td></tr>
+                  <tr><th scope="row"><code>CHECK (condición)</code></th><td>valida el dato al insertar/actualizar</td></tr>
+                  <tr><th scope="row"><code>ON DELETE CASCADE</code></th><td>al borrar la padre, borra las hijas</td></tr>
+                  <tr><th scope="row"><code>ON DELETE SET NULL</code></th><td>al borrar la padre, pone la FK a NULL</td></tr>
+                  <tr><th scope="row"><code>ON DELETE RESTRICT</code></th><td>impide borrar si hay hijas (por defecto)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las restricciones son la <a href="relacional.html#s4">integridad</a> del modelo relacional puesta en práctica: el gestor rechaza los datos que las incumplen. Puedes nombrarlas con <code>CONSTRAINT nombre …</code> para referirte a ellas después.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>ALTER TABLE</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno <span class="tok-clave">ADD</span> telefono <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">15</span>);
+<span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno <span class="tok-clave">MODIFY</span> nombre <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">100</span>);
+<span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno <span class="tok-clave">RENAME</span> <span class="tok-clave">COLUMN</span> nota <span class="tok-clave">TO</span> media;
+<span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno <span class="tok-clave">DROP</span> <span class="tok-clave">COLUMN</span> telefono;
+<span class="tok-clave">ALTER</span> <span class="tok-clave">TABLE</span> alumno
+  <span class="tok-clave">ADD</span> <span class="tok-clave">CONSTRAINT</span> fk_curso <span class="tok-clave">FOREIGN</span> <span class="tok-clave">KEY</span> (curso_id) <span class="tok-clave">REFERENCES</span> curso(id);</code></pre></figure>
+            <p class="nota"><code>ALTER</code> cambia la estructura ya creada: añadir o quitar columnas, cambiar tipos, añadir restricciones. La sintaxis exacta (<code>MODIFY</code> en MySQL, <code>ALTER COLUMN</code> en PostgreSQL) varía entre gestores.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>DROP y TRUNCATE</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">TRUNCATE</span> <span class="tok-clave">TABLE</span> alumno;          <span class="tok-coment">-- vacía la tabla, conserva la estructura</span>
+<span class="tok-clave">DROP</span> <span class="tok-clave">TABLE</span> <span class="tok-clave">IF</span> <span class="tok-clave">EXISTS</span> alumno;    <span class="tok-coment">-- elimina la tabla entera</span>
+<span class="tok-clave">DROP</span> <span class="tok-clave">DATABASE</span> instituto;         <span class="tok-coment">-- elimina toda la base</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>DELETE</code> (DML)</th><td>borra filas concretas; se puede deshacer en transacción</td></tr>
+                  <tr><th scope="row"><code>TRUNCATE</code> (DDL)</th><td>vacía toda la tabla, rápido, reinicia el contador</td></tr>
+                  <tr><th scope="row"><code>DROP</code> (DDL)</th><td>elimina la tabla y su estructura</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>TRUNCATE</code> y <code>DROP</code> no piden confirmación ni suelen poder deshacerse. Para borrar filas seleccionadas usa <a href="sql-dml.html">DELETE</a> con <code>WHERE</code>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Índices</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>índice</strong> acelera las búsquedas por una columna, como el índice de un libro. Se paga con algo más de espacio y escrituras más lentas.</p>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">INDEX</span> idx_alumno_nombre <span class="tok-clave">ON</span> alumno(nombre);
+<span class="tok-clave">CREATE</span> <span class="tok-clave">UNIQUE</span> <span class="tok-clave">INDEX</span> idx_email <span class="tok-clave">ON</span> alumno(email);
+<span class="tok-clave">DROP</span> <span class="tok-clave">INDEX</span> idx_alumno_nombre <span class="tok-clave">ON</span> alumno;</code></pre></figure>
+            <p class="nota">Las claves <code>PRIMARY KEY</code> y <code>UNIQUE</code> ya crean un índice automáticamente. Indexa las columnas por las que filtras o unes (<code>WHERE</code>, <code>JOIN</code>) a menudo, no todas.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Vistas</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>vista</strong> es una consulta guardada con nombre: se usa como si fuera una tabla, pero no almacena datos, los calcula al consultarla.</p>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE</span> <span class="tok-clave">VIEW</span> v_aprobados <span class="tok-clave">AS</span>
+  <span class="tok-clave">SELECT</span> nombre, nota <span class="tok-clave">FROM</span> alumno
+  <span class="tok-clave">WHERE</span> nota &gt;= <span class="tok-numero">5</span>;
+
+<span class="tok-clave">SELECT</span> * <span class="tok-clave">FROM</span> v_aprobados;   <span class="tok-coment">-- se consulta como una tabla</span>
+<span class="tok-clave">DROP</span> <span class="tok-clave">VIEW</span> v_aprobados;</code></pre></figure>
+            <p class="nota">Sirven para simplificar consultas complejas, reutilizarlas y dar acceso solo a ciertas columnas (útil con <a href="sql-dcl.html">permisos</a>).</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Explorar el esquema</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>SHOW DATABASES;</code></th><td>lista las bases de datos</td></tr>
+                  <tr><th scope="row"><code>SHOW TABLES;</code></th><td>tablas de la base actual</td></tr>
+                  <tr><th scope="row"><code>DESCRIBE alumno;</code></th><td>columnas, tipos y claves</td></tr>
+                  <tr><th scope="row" class="larga"><code>SHOW CREATE TABLE alumno;</code></th><td>el DDL completo que la creó</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Son órdenes de MySQL. En PostgreSQL se usan los metacomandos de <code>psql</code> (<code>\l</code>, <code>\dt</code>, <code>\d alumno</code>); ver <a href="postgresql.html">PostgreSQL</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sql.html">← SQL</a><a class="siguiente" href="sql-dml.html">DML →</a></nav>
+      <footer class="pie">Parte de <a href="sql.html">SQL</a>. Continúa con <a href="sql-dml.html">DML</a> para meter datos en estas tablas.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

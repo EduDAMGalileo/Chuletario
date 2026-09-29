@@ -22,11 +22,11 @@
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de Java">
-      <div class="wrap"><a href="sintaxis.html" aria-current="page">Sintaxis básica</a><a href="strings.html">Strings</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+      <div class="wrap"><a href="sintaxis.html" aria-current="page">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
     </nav>
     <main class="wrap">
       <!-- Índice de secciones -->
-      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Tipos primitivos y variables</a><a href="#s2"><b>2</b>Operadores</a><a href="#s3"><b>3</b>Mostrar y leer por consola</a><a href="#s4"><b>4</b>Condicionales</a><a href="#s5"><b>5</b>Bucles</a><a href="#s6"><b>6</b>Arrays</a><a href="#s7"><b>7</b>Métodos</a><a href="#s8"><b>8</b>Convenios y despistes habituales</a></nav>
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Tipos primitivos y variables</a><a href="#s2"><b>2</b>Operadores</a><a href="#s3"><b>3</b>Mostrar y leer por consola</a><a href="#s4"><b>4</b>Condicionales</a><a href="#s5"><b>5</b>Bucles</a><a href="#s6"><b>6</b>Convenios y despistes habituales</a></nav>
       <!-- Banda destacada -->
       <div class="banda">
         <p class="banda-titulo">Un programa mínimo</p>
@@ -228,76 +228,12 @@ sc.nextLine();          <span class="tok-coment">// consume el salto de línea p
     }
     <span class="tok-tipo">IO</span>.println(<span class="tok-texto">""</span>);
 }</code></pre></figure>
+            <p class="nota">Para trabajar con varios valores a la vez, ver <a href="arrays.html">Arrays y matrices</a>. Y para agrupar código reutilizable, <a href="metodos.html">Métodos y recursividad</a>.</p>
           </div>
         </section>
-        <!-- 6. Arrays -->
+        <!-- 6. Convenios y despistes habituales -->
         <section id="s6" class="tarjeta">
-          <h2><span class="num">6</span>Arrays</h2>
-          <div class="cuerpo">
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">int</span>[] numeros = <span class="tok-clave">new</span> <span class="tok-tipo">int</span>[<span class="tok-numero">5</span>];        <span class="tok-coment">// 5 posiciones, todas a 0</span>
-<span class="tok-tipo">int</span>[] primos = {<span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">5</span>, <span class="tok-numero">7</span>, <span class="tok-numero">11</span>};   <span class="tok-coment">// creado con valores</span>
-<span class="tok-tipo">String</span>[] dias = <span class="tok-clave">new</span> <span class="tok-tipo">String</span>[<span class="tok-numero">7</span>];     <span class="tok-coment">// los objetos empiezan a null</span>
-
-primos[<span class="tok-numero">0</span>] = <span class="tok-numero">1</span>;                     <span class="tok-coment">// la primera posición es la 0</span>
-<span class="tok-tipo">int</span> ultimo = primos[primos.length - <span class="tok-numero">1</span>];
-<span class="tok-tipo">IO</span>.println(primos.length);         <span class="tok-coment">// longitud: atributo, sin paréntesis</span>
-
-<span class="tok-coment">// de dos dimensiones</span>
-<span class="tok-tipo">int</span>[][] matriz = <span class="tok-clave">new</span> <span class="tok-tipo">int</span>[<span class="tok-numero">3</span>][<span class="tok-numero">4</span>];    <span class="tok-coment">// 3 filas, 4 columnas</span>
-matriz[<span class="tok-numero">1</span>][<span class="tok-numero">2</span>] = <span class="tok-numero">7</span>;
-<span class="tok-tipo">int</span>[][] tabla = {{<span class="tok-numero">1</span>, <span class="tok-numero">2</span>}, {<span class="tok-numero">3</span>, <span class="tok-numero">4</span>}};</code></pre></figure>
-            <h3>Utilidades de la clase Arrays</h3>
-            <div class="tabla-scroll">
-              <table class="ref ">
-                <tbody>
-                  <tr><th scope="row"><code>Arrays.toString(a)</code></th><td>lo convierte en texto legible</td></tr>
-                  <tr><th scope="row"><code>Arrays.deepToString(m)</code></th><td>igual, para arrays de dos dimensiones</td></tr>
-                  <tr><th scope="row"><code>Arrays.sort(a)</code></th><td>ordena</td></tr>
-                  <tr><th scope="row"><code>Arrays.fill(a, 0)</code></th><td>rellena con un valor</td></tr>
-                  <tr><th scope="row"><code>Arrays.copyOf(a, 10)</code></th><td>copia con otro tamaño</td></tr>
-                  <tr><th scope="row"><code>Arrays.equals(a, b)</code></th><td>compara contenido (<code>==</code> compararía referencias)</td></tr>
-                  <tr><th scope="row" class="larga"><code>Arrays.binarySearch(a, x)</code></th><td>busca en un array ya ordenado</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="aviso"><strong>Cuidado:</strong> acceder a una posición que no existe lanza <code>ArrayIndexOutOfBoundsException</code>. El tamaño de un array no se puede cambiar: si lo necesitas, usa una <code>List</code>.</p>
-          </div>
-        </section>
-        <!-- 7. Métodos -->
-        <section id="s7" class="tarjeta">
-          <h2><span class="num">7</span>Métodos</h2>
-          <div class="cuerpo">
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// modificadores  tipo    nombre(parámetros)</span>
-<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">double</span> calcularMedia(<span class="tok-tipo">double</span>[] notas) {
-    <span class="tok-tipo">double</span> suma = <span class="tok-numero">0</span>;
-    <span class="tok-clave">for</span> (<span class="tok-tipo">double</span> n : notas) {
-        suma += n;
-    }
-    <span class="tok-clave">return</span> suma / notas.length;
-}
-
-<span class="tok-coment">// void: no devuelve nada</span>
-<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-clave">void</span> saludar(<span class="tok-tipo">String</span> nombre) {
-    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Hola, "</span> + nombre);
-}
-
-<span class="tok-coment">// sobrecarga: mismo nombre, distintos parámetros</span>
-<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> sumar(<span class="tok-tipo">int</span> a, <span class="tok-tipo">int</span> b) { <span class="tok-clave">return</span> a + b; }
-<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">double</span> sumar(<span class="tok-tipo">double</span> a, <span class="tok-tipo">double</span> b) { <span class="tok-clave">return</span> a + b; }
-
-<span class="tok-coment">// número variable de argumentos</span>
-<span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> sumarTodos(<span class="tok-tipo">int</span>... numeros) {
-    <span class="tok-tipo">int</span> total = <span class="tok-numero">0</span>;
-    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> n : numeros) total += n;
-    <span class="tok-clave">return</span> total;
-}
-sumarTodos(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">4</span>);</code></pre></figure>
-            <p class="nota">Java pasa siempre <strong>una copia del valor</strong>. Si el parámetro es un objeto, la copia apunta al mismo objeto: puedes modificar su contenido, pero no hacer que el original apunte a otro.</p>
-          </div>
-        </section>
-        <!-- 8. Convenios y despistes habituales -->
-        <section id="s8" class="tarjeta">
-          <h2><span class="num">8</span>Convenios y despistes habituales</h2>
+          <h2><span class="num">6</span>Convenios y despistes habituales</h2>
           <div class="cuerpo">
             <div class="tabla-scroll">
               <table class="ref ">
@@ -324,7 +260,7 @@ sumarTodos(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>,
           </div>
         </section>
       </div>
-      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="strings.html">Strings →</a></nav>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="index.html">← Java</a><a class="siguiente" href="arrays.html">Arrays y matrices →</a></nav>
       <footer class="pie">Documentación oficial: <a href="https://docs.oracle.com/en/java/javase/25/">docs.oracle.com/en/java/javase/25</a>.</footer>
     </main>
     <script src="../assets/chuletas.js" defer></script>

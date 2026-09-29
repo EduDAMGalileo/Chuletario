@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Procesos · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Procesos</span></nav>
+          <h1>Procesos</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Lanzar y controlar programas del sistema desde Java con ProcessBuilder y la API Process: leer su salida, esperar, y las diferencias entre Windows y Linux.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="procesos.html" aria-current="page">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Proceso, no hilo</a><a href="#s2"><b>2</b>ProcessBuilder</a><a href="#s3"><b>3</b>Leer la salida</a><a href="#s4"><b>4</b>Esperar y código de salida</a><a href="#s5"><b>5</b>Runtime.exec</a><a href="#s6"><b>6</b>La API Process</a><a href="#s7"><b>7</b>Windows vs Linux</a><a href="#s8"><b>8</b>Buenas prácticas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Java puede lanzar otros programas del sistema operativo (un comando, un script, otro ejecutable) y comunicarse con ellos. La herramienta recomendada es <strong>ProcessBuilder</strong>; cada programa lanzado es un objeto <code>Process</code>.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Las piezas</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ProcessBuilder</code></th><td>configura y arranca el proceso</td></tr>
+                  <tr><th scope="row"><code>Process</code></th><td>el proceso ya en marcha</td></tr>
+                  <tr><th scope="row"><code>Runtime.exec</code></th><td>la forma antigua, más limitada</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Proceso, no hilo</h2>
+          <div class="cuerpo">
+            <p class="txt">Conviene no confundirlos: un <strong>proceso</strong> es un programa independiente del sistema operativo; un <strong>hilo</strong> es una línea de ejecución dentro de tu propio programa.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Proceso</th><td>otro programa (un <code>.exe</code>, un comando); memoria separada</td></tr>
+                  <tr><th scope="row">Hilo</th><td>ejecución concurrente dentro de tu JVM; memoria compartida</td></tr>
+                  <tr><th scope="row">Esta chuleta</th><td>lanzar <em>procesos</em> externos desde Java</td></tr>
+                  <tr><th scope="row">Paquete</th><td><code>java.lang</code> (Process y ProcessBuilder no necesitan import)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Lanzar procesos sirve para invocar herramientas del sistema (git, ffmpeg, un script) desde una aplicación Java, cuando no hay una librería que lo haga directamente.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>ProcessBuilder</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada argumento va por separado (no una cadena única): así se evitan problemas con espacios y comillas.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">ProcessBuilder</span> pb = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"ls"</span>, <span class="tok-texto">"-l"</span>, <span class="tok-texto">"/tmp"</span>);
+pb.<span class="tok-funcion">directory</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"/home/ana"</span>));   <span class="tok-coment">// carpeta de trabajo</span>
+pb.<span class="tok-funcion">redirectErrorStream</span>(<span class="tok-clave">true</span>);          <span class="tok-coment">// mezcla error con salida</span>
+<span class="tok-tipo">Process</span> p = pb.<span class="tok-funcion">start</span>();                     <span class="tok-coment">// arranca el proceso</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>new ProcessBuilder(cmd, arg...)</code></th><td>el comando y sus argumentos, uno por uno</td></tr>
+                  <tr><th scope="row"><code>directory(File)</code></th><td>carpeta desde la que se ejecuta</td></tr>
+                  <tr><th scope="row"><code>environment()</code></th><td>Map con las variables de entorno (editable)</td></tr>
+                  <tr><th scope="row"><code>redirectErrorStream(true)</code></th><td>junta la salida de error con la normal</td></tr>
+                  <tr><th scope="row"><code>inheritIO()</code></th><td>usa la consola del programa padre</td></tr>
+                  <tr><th scope="row"><code>start()</code></th><td>lanza y devuelve el <code>Process</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Pasar los argumentos separados es más seguro que montar una sola cadena: no hay que preocuparse de escapar espacios ni caracteres especiales del shell.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Leer la salida</h2>
+          <div class="cuerpo">
+            <p class="txt">La salida del proceso se lee desde su <em>input stream</em> (lo que el proceso escribe, tu programa lo lee como entrada).</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Process</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"git"</span>, <span class="tok-texto">"status"</span>).<span class="tok-funcion">start</span>();
+<span class="tok-clave">try</span> (<span class="tok-tipo">var</span> br = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(
+        <span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(p.<span class="tok-funcion">getInputStream</span>()))) {
+    <span class="tok-tipo">String</span> linea;
+    <span class="tok-clave">while</span> ((linea = br.<span class="tok-funcion">readLine</span>()) != <span class="tok-clave">null</span>) {
+        <span class="tok-tipo">System</span>.out.<span class="tok-funcion">println</span>(linea);
+    }
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>getInputStream()</code></th><td>lo que el proceso escribe en su salida estándar</td></tr>
+                  <tr><th scope="row"><code>getErrorStream()</code></th><td>su salida de error</td></tr>
+                  <tr><th scope="row"><code>getOutputStream()</code></th><td>para <em>enviarle</em> entrada al proceso</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Ojo al nombre:</strong> <code>getInputStream()</code> es lo que <em>lees</em> del proceso (su salida), no lo que le mandas. Se llama así desde el punto de vista de tu programa. Ver <a href="entrada-salida.html">clases de entrada/salida</a>.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Esperar y código de salida</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">int</span> codigo = p.<span class="tok-funcion">waitFor</span>();          <span class="tok-coment">// espera a que termine</span>
+<span class="tok-clave">if</span> (codigo == <span class="tok-numero">0</span>) {
+    <span class="tok-tipo">System</span>.out.<span class="tok-funcion">println</span>(<span class="tok-texto">"Todo bien"</span>);
+}
+<span class="tok-coment">// con límite de tiempo</span>
+<span class="tok-clave">boolean</span> aTiempo = p.<span class="tok-funcion">waitFor</span>(<span class="tok-numero">5</span>, <span class="tok-tipo">TimeUnit</span>.SECONDS);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>waitFor()</code></th><td>bloquea hasta que termina; devuelve el código de salida</td></tr>
+                  <tr><th scope="row"><code>waitFor(t, unidad)</code></th><td>espera como mucho ese tiempo; <code>true</code> si terminó</td></tr>
+                  <tr><th scope="row"><code>exitValue()</code></th><td>el código de salida (si ya terminó)</td></tr>
+                  <tr><th scope="row">Código 0</th><td>convenio: éxito; distinto de 0, algún error</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Interbloqueo clásico:</strong> si el proceso genera mucha salida y no la vas leyendo, su buffer se llena y se queda parado, y tu <code>waitFor()</code> nunca vuelve. Lee la salida (sección 3) <em>antes o a la vez</em> que esperas.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Runtime.exec</h2>
+          <div class="cuerpo">
+            <p class="txt">La forma clásica, anterior a ProcessBuilder. Funciona, pero es más propensa a errores (parte la cadena por espacios).</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Process</span> p = <span class="tok-tipo">Runtime</span>.<span class="tok-funcion">getRuntime</span>().<span class="tok-funcion">exec</span>(<span class="tok-clave">new</span> <span class="tok-tipo">String</span>[]{<span class="tok-texto">"ls"</span>, <span class="tok-texto">"-l"</span>});</code></pre></figure>
+            <p class="nota">Prefiere <code>ProcessBuilder</code>: da más control (carpeta, entorno, redirección) y evita el problema de <code>exec("mi programa")</code>, que parte mal las rutas con espacios. Pásale siempre un array de argumentos, no una cadena.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>La API Process</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>isAlive()</code></th><td>¿sigue en marcha?</td></tr>
+                  <tr><th scope="row"><code>pid()</code></th><td>el identificador de proceso del sistema</td></tr>
+                  <tr><th scope="row"><code>destroy()</code></th><td>pide que termine (suave)</td></tr>
+                  <tr><th scope="row"><code>destroyForcibly()</code></th><td>lo mata a la fuerza</td></tr>
+                  <tr><th scope="row"><code>onExit()</code></th><td>un <code>CompletableFuture</code> que completa al terminar</td></tr>
+                  <tr><th scope="row"><code>info()</code></th><td>datos del proceso (comando, inicio, usuario)</td></tr>
+                  <tr><th scope="row"><code>ProcessHandle.current()</code></th><td>el propio proceso Java; <code>allProcesses()</code> lista todos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>onExit()</code> permite reaccionar cuando el proceso acaba sin bloquear el hilo: <code>p.onExit().thenRun(() -&gt; ...)</code>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Windows vs Linux</h2>
+          <div class="cuerpo">
+            <p class="txt">El mayor escollo al lanzar procesos es que el comando cambia según el sistema. Java corre en ambos, pero el <em>programa que invocas</em> no.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Intérprete</th><td>Windows: <code>cmd.exe /c</code> · Linux/Mac: <code>/bin/sh -c</code></td></tr>
+                  <tr><th scope="row">Ejecutables</th><td>Windows: <code>.exe</code>, <code>.bat</code> · Linux: sin extensión, con permiso <code>+x</code></td></tr>
+                  <tr><th scope="row">Rutas</th><td>Windows: <code>C:\ruta</code> (barra invertida) · Linux: <code>/ruta</code></td></tr>
+                  <tr><th scope="row">Separadores</th><td><code>File.separator</code> y <code>File.pathSeparator</code> según el SO</td></tr>
+                  <tr><th scope="row">Fin de línea</th><td>Windows: <code>\r\n</code> · Linux: <code>\n</code> (<code>System.lineSeparator()</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Detectar el sistema y elegir el intérprete</figcaption><pre data-lang="java"><code><span class="tok-tipo">String</span> so = <span class="tok-tipo">System</span>.<span class="tok-funcion">getProperty</span>(<span class="tok-texto">"os.name"</span>).<span class="tok-funcion">toLowerCase</span>();
+<span class="tok-tipo">ProcessBuilder</span> pb = so.<span class="tok-funcion">contains</span>(<span class="tok-texto">"win"</span>)
+    ? <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"cmd.exe"</span>, <span class="tok-texto">"/c"</span>, <span class="tok-texto">"dir"</span>)
+    : <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"/bin/sh"</span>, <span class="tok-texto">"-c"</span>, <span class="tok-texto">"ls -l"</span>);</code></pre></figure>
+            <p class="nota">Necesitas el intérprete (<code>cmd /c</code>, <code>sh -c</code>) cuando quieres tuberías, redirecciones o comandos internos del shell; para un ejecutable suelto, llámalo directamente. Comandos de cada sistema en <a href="../sistemas/terminal-linux.html">Comandos de Linux</a>.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Buenas prácticas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Argumentos separados</th><td>nunca montes una sola cadena con datos del usuario (inyección de comandos)</td></tr>
+                  <tr><th scope="row">Lee la salida</th><td>consume los streams para no bloquear el proceso</td></tr>
+                  <tr><th scope="row">Pon un timeout</th><td><code>waitFor(t, unidad)</code> y <code>destroyForcibly()</code> si se pasa</td></tr>
+                  <tr><th scope="row">Comprueba el código</th><td>un <code>exitValue()</code> distinto de 0 es un fallo</td></tr>
+                  <tr><th scope="row">Cierra los streams</th><td>usa try-with-resources (ver <a href="excepciones.html">Excepciones</a>)</td></tr>
+                  <tr><th scope="row">No asumas el SO</th><td>detecta <code>os.name</code> o usa librerías multiplataforma</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Inyección de comandos:</strong> si construyes el comando concatenando texto del usuario y lo pasas a un shell, pueden colar órdenes propias. Pasa siempre los argumentos por separado y evita el intérprete si no lo necesitas. Relacionado: <a href="../hacking/shells.html">shells</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="entrada-salida.html">← Clases de entrada/salida</a><a class="siguiente" href="maven.html">Maven →</a></nav>
+      <footer class="pie">Los flujos que se leen y escriben están en <a href="entrada-salida.html">Clases de entrada/salida</a>. Documentación: <code>java.lang.ProcessBuilder</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

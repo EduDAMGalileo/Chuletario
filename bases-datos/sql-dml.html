@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL · DML · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><a href="sql.html">SQL</a><span aria-hidden="true">›</span><span>DML</span></nav>
+          <h1>SQL · DML</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Data Manipulation Language: meter, cambiar y borrar datos. INSERT, UPDATE, DELETE e inserción/actualización combinada (UPSERT). Sintaxis MySQL.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Sublenguajes de SQL">
+      <div class="wrap"><a href="sql-ddl.html">DDL</a><a href="sql-dml.html" aria-current="page">DML</a><a href="sql-consultas.html">Consultas</a><a href="sql-dcl.html">DCL</a><a href="sql-tcl.html">TCL</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es DML</a><a href="#s2"><b>2</b>INSERT</a><a href="#s3"><b>3</b>UPDATE</a><a href="#s4"><b>4</b>DELETE</a><a href="#s5"><b>5</b>UPSERT</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Qué manipula</p>
+            <p class="txt">El DML trabaja con el <strong>contenido</strong> de las tablas: añade filas, las modifica y las borra. La estructura la define el <a href="sql-ddl.html">DDL</a>; consultar es cosa de las <a href="sql-consultas.html">consultas</a>.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Las tres órdenes</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>INSERT</code></th><td>añadir filas</td></tr>
+                  <tr><th scope="row"><code>UPDATE</code></th><td>modificar filas existentes</td></tr>
+                  <tr><th scope="row"><code>DELETE</code></th><td>borrar filas</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es DML</h2>
+          <div class="cuerpo">
+            <p class="txt">El <em>Data Manipulation Language</em> es la parte de SQL que cambia los datos guardados. A diferencia del <a href="sql-ddl.html">DDL</a>, sus cambios se pueden agrupar y deshacer con <a href="sql-tcl.html">transacciones</a>.</p>
+            <p class="aviso"><strong>Regla de oro:</strong> <code>UPDATE</code> y <code>DELETE</code> sin <code>WHERE</code> afectan a <b>toda</b> la tabla. Prueba antes el <code>WHERE</code> con un <code>SELECT</code>, o trabaja dentro de una transacción.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>INSERT</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-coment">-- una fila</span>
+<span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> curso (nombre, horas) <span class="tok-clave">VALUES</span> (<span class="tok-texto">'DAM'</span>, <span class="tok-numero">2000</span>);
+
+<span class="tok-coment">-- varias filas de golpe</span>
+<span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> curso (nombre, horas)
+<span class="tok-clave">VALUES</span> (<span class="tok-texto">'DAW'</span>, <span class="tok-numero">2000</span>), (<span class="tok-texto">'ASIR'</span>, <span class="tok-numero">2000</span>);
+
+<span class="tok-coment">-- a partir de un SELECT</span>
+<span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> curso_backup (nombre, horas)
+<span class="tok-clave">SELECT</span> nombre, horas <span class="tok-clave">FROM</span> curso;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Columnas listadas</th><td>solo rellenas esas; el resto toma su <code>DEFAULT</code></td></tr>
+                  <tr><th scope="row">Sin lista de columnas</th><td>hay que dar un valor por cada columna, en orden</td></tr>
+                  <tr><th scope="row"><code>INSERT … SELECT</code></th><td>copia filas de otra consulta</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las columnas <code>AUTO_INCREMENT</code> no se indican: el gestor pone el id. Los textos y fechas van entre comillas simples.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>UPDATE</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-coment">-- subir un punto la nota del alumno 3</span>
+<span class="tok-clave">UPDATE</span> alumno <span class="tok-clave">SET</span> nota = nota + <span class="tok-numero">1</span>
+<span class="tok-clave">WHERE</span> id = <span class="tok-numero">3</span>;
+
+<span class="tok-coment">-- varias columnas a la vez</span>
+<span class="tok-clave">UPDATE</span> alumno
+<span class="tok-clave">SET</span> nota = <span class="tok-numero">10</span>, curso_id = <span class="tok-numero">2</span>
+<span class="tok-clave">WHERE</span> email = <span class="tok-texto">'ana@ejemplo.com'</span>;</code></pre></figure>
+            <p class="nota">El <code>SET</code> puede usar el valor actual de la columna (<code>nota = nota + 1</code>). El <code>WHERE</code> decide qué filas se cambian; sin él, todas.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>DELETE</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">DELETE</span> <span class="tok-clave">FROM</span> alumno <span class="tok-clave">WHERE</span> curso_id <span class="tok-clave">IS</span> <span class="tok-clave">NULL</span>;
+<span class="tok-clave">DELETE</span> <span class="tok-clave">FROM</span> alumno <span class="tok-clave">WHERE</span> nota &lt; <span class="tok-numero">5</span>;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>DELETE … WHERE</code></th><td>borra las filas que cumplen la condición</td></tr>
+                  <tr><th scope="row"><code>DELETE</code> sin WHERE</th><td>borra todas las filas (mejor <a href="sql-ddl.html#s6">TRUNCATE</a>)</td></tr>
+                  <tr><th scope="row">Con clave foránea</th><td>puede fallar o propagarse según <code>ON DELETE</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Si otras tablas apuntan a esta con una <a href="sql-ddl.html#s4">clave foránea</a>, el borrado depende de <code>ON DELETE</code>: <code>RESTRICT</code> lo impide, <code>CASCADE</code> borra también las hijas, <code>SET NULL</code> las desvincula.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>UPSERT</h2>
+          <div class="cuerpo">
+            <p class="txt">Insertar y, si la fila ya existe (choca con una clave), actualizarla en vez de fallar. La sintaxis cambia según el gestor.</p>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-coment">-- MySQL</span>
+<span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> curso (id, nombre, horas) <span class="tok-clave">VALUES</span> (<span class="tok-numero">1</span>, <span class="tok-texto">'DAM'</span>, <span class="tok-numero">2100</span>)
+<span class="tok-clave">ON</span> <span class="tok-clave">DUPLICATE</span> <span class="tok-clave">KEY</span> <span class="tok-clave">UPDATE</span> horas = <span class="tok-clave">VALUES</span>(horas);
+
+<span class="tok-coment">-- PostgreSQL / SQLite</span>
+<span class="tok-clave">INSERT</span> <span class="tok-clave">INTO</span> curso (id, nombre, horas) <span class="tok-clave">VALUES</span> (<span class="tok-numero">1</span>, <span class="tok-texto">'DAM'</span>, <span class="tok-numero">2100</span>)
+<span class="tok-clave">ON</span> <span class="tok-clave">CONFLICT</span> (id) <span class="tok-clave">DO</span> <span class="tok-clave">UPDATE</span> <span class="tok-clave">SET</span> horas = <span class="tok-clave">EXCLUDED</span>.horas;</code></pre></figure>
+            <p class="nota">Útil para «crear o actualizar» sin comprobar antes si existe. En PostgreSQL, <code>EXCLUDED</code> es la fila que se intentaba insertar. Ver <a href="postgresql.html">PostgreSQL</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sql-ddl.html">← DDL</a><a class="siguiente" href="sql-consultas.html">Consultas →</a></nav>
+      <footer class="pie">Parte de <a href="sql.html">SQL</a>. Agrupa varios cambios en una <a href="sql-tcl.html">transacción</a> para poder deshacerlos.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
