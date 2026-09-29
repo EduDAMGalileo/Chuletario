@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Archivos y navegación · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><a href="terminal-linux.html">Comandos</a><span aria-hidden="true">›</span><span>Archivos y navegación</span></nav>
+          <h1>Archivos y navegación</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Moverse por el sistema de ficheros y trabajar con archivos y carpetas: cd, ls, mkdir, cp, mv, rm y la jerarquía de directorios.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Comandos">
+      <div class="wrap"><a href="comandos-archivos.html" aria-current="page">Archivos y navegación</a><a href="comandos-texto.html">Buscar y texto</a><a href="comandos-usuarios.html">Usuarios y permisos</a><a href="comandos-procesos.html">Procesos y sistema</a><a href="comandos-paquetes.html">Paquetes y compresión</a><a href="comandos-red.html">Red y acceso remoto</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Moverse por el sistema</a><a href="#s2"><b>2</b>Ficheros y carpetas</a><a href="#s3"><b>3</b>Ver y editar ficheros</a><a href="#s4"><b>4</b>Carpetas del sistema</a></nav>
+      <div class="rejilla">
+        <!-- 1. Moverse por el sistema -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Moverse por el sistema</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>pwd</code></th><td>carpeta actual</td></tr>
+                  <tr><th scope="row"><code>ls</code></th><td>lista el contenido</td></tr>
+                  <tr><th scope="row"><code>ls -la</code></th><td>en detalle e incluyendo ocultos (empiezan por <code>.</code>)</td></tr>
+                  <tr><th scope="row"><code>ls -lh</code></th><td>tamaños legibles: K, M, G</td></tr>
+                  <tr><th scope="row"><code>ls -lt</code></th><td>ordenado por fecha, lo más reciente primero</td></tr>
+                  <tr><th scope="row"><code>cd carpeta</code></th><td>entrar en una carpeta</td></tr>
+                  <tr><th scope="row"><code>cd ..</code></th><td>subir un nivel</td></tr>
+                  <tr><th scope="row"><code>cd  (o cd ~)</code></th><td>ir a tu carpeta personal</td></tr>
+                  <tr><th scope="row"><code>cd -</code></th><td>volver a la carpeta anterior</td></tr>
+                  <tr><th scope="row"><code>cd /</code></th><td>ir a la raíz del sistema</td></tr>
+                  <tr><th scope="row"><code>tree -L 2</code></th><td>árbol de carpetas (<code>sudo apt install tree</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Ruta <strong>absoluta</strong>: empieza por <code>/</code> (<code>/home/ana/docs</code>). Ruta <strong>relativa</strong>: parte de donde estás (<code>docs/notas.txt</code>, <code>../img</code>). <code>~</code> es tu home.</p>
+          </div>
+        </section>
+        <!-- 2. Ficheros y carpetas -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Ficheros y carpetas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>touch notas.txt</code></th><td>crea un fichero vacío (o actualiza su fecha)</td></tr>
+                  <tr><th scope="row"><code>mkdir fotos</code></th><td>crea una carpeta</td></tr>
+                  <tr><th scope="row"><code>mkdir -p a/b/c</code></th><td>crea también las carpetas intermedias</td></tr>
+                  <tr><th scope="row"><code>cp origen destino</code></th><td>copia un fichero</td></tr>
+                  <tr><th scope="row"><code>cp -r carpeta copia</code></th><td>copia una carpeta entera</td></tr>
+                  <tr><th scope="row"><code>cp -i  -v</code></th><td>pide confirmación / muestra lo que hace</td></tr>
+                  <tr><th scope="row"><code>mv viejo.txt nuevo.txt</code></th><td>renombra</td></tr>
+                  <tr><th scope="row"><code>mv fichero carpeta/</code></th><td>mueve</td></tr>
+                  <tr><th scope="row"><code>rm fichero</code></th><td>borra un fichero (no hay papelera)</td></tr>
+                  <tr><th scope="row"><code>rm -r carpeta</code></th><td>borra una carpeta y su contenido</td></tr>
+                  <tr><th scope="row"><code>rmdir carpeta</code></th><td>borra una carpeta vacía</td></tr>
+                  <tr><th scope="row"><code>ln -s /ruta/real enlace</code></th><td>crea un enlace simbólico (acceso directo)</td></tr>
+                  <tr><th scope="row"><code>file foto.png</code></th><td>qué tipo de fichero es realmente</td></tr>
+                  <tr><th scope="row"><code>stat fichero</code></th><td>tamaño, permisos y fechas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Comodines y expansión</figcaption><pre data-lang="bash"><code><span class="tok-clave">cp</span> *.java copia/          <span class="tok-coment"># * cualquier texto</span>
+<span class="tok-clave">ls</span> informe_202?.pdf       <span class="tok-coment"># ? un carácter</span>
+<span class="tok-clave">mkdir</span> tema{1..5}          <span class="tok-coment"># tema1 tema2 … tema5</span>
+<span class="tok-clave">cp</span> config.yml{,.bak}      <span class="tok-coment"># copia config.yml a config.yml.bak</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>rm -rf</code> borra sin preguntar y sin vuelta atrás. Nunca lo ejecutes con <code>sudo</code> sobre una ruta que no hayas revisado dos veces.</p>
+          </div>
+        </section>
+        <!-- 3. Ver y editar ficheros -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Ver y editar ficheros</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>cat fichero</code></th><td>muestra todo el contenido</td></tr>
+                  <tr><th scope="row"><code>less fichero</code></th><td>paginado: espacio avanza, <code>/</code> busca, <code>q</code> sale</td></tr>
+                  <tr><th scope="row"><code>head -n 20 fichero</code></th><td>primeras 20 líneas</td></tr>
+                  <tr><th scope="row"><code>tail -n 20 fichero</code></th><td>últimas 20 líneas</td></tr>
+                  <tr><th scope="row"><code>tail -f /var/log/syslog</code></th><td>sigue el fichero en tiempo real (ver <a href="logs.html">Logs</a>)</td></tr>
+                  <tr><th scope="row"><code>wc -l fichero</code></th><td>cuenta líneas (<code>-w</code> palabras, <code>-c</code> bytes)</td></tr>
+                  <tr><th scope="row"><code>diff a.txt b.txt</code></th><td>diferencias entre ficheros</td></tr>
+                  <tr><th scope="row"><code>nano fichero</code></th><td>editor sencillo</td></tr>
+                  <tr><th scope="row"><code>vim fichero</code></th><td>editor avanzado (ver <a href="vim.html">Vim</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>nano</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Ctrl+O</code></th><td>guardar</td></tr>
+                  <tr><th scope="row"><code>Ctrl+X</code></th><td>salir</td></tr>
+                  <tr><th scope="row"><code>Ctrl+W</code></th><td>buscar</td></tr>
+                  <tr><th scope="row"><code>Ctrl+K  Ctrl+U</code></th><td>cortar línea / pegar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>vim</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>i</code></th><td>modo inserción (para escribir)</td></tr>
+                  <tr><th scope="row"><code>Esc</code></th><td>volver al modo normal</td></tr>
+                  <tr><th scope="row"><code>:w  :q  :wq</code></th><td>guardar / salir / guardar y salir</td></tr>
+                  <tr><th scope="row"><code>:q!</code></th><td>salir sin guardar</td></tr>
+                  <tr><th scope="row"><code>/texto</code></th><td>buscar; <code>n</code> siguiente</td></tr>
+                  <tr><th scope="row"><code>dd  u</code></th><td>borrar línea / deshacer</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para ir a fondo con el editor modal, la chuleta de <a href="vim.html">Vim</a>. Para leer y analizar registros, <a href="logs.html">Logs</a>.</p>
+          </div>
+        </section>
+        <!-- 4. Carpetas del sistema -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Carpetas del sistema</h2>
+          <div class="cuerpo">
+            <p class="txt">La jerarquía estándar de Linux (FHS). Saber qué hay en cada sitio ayuda a no perderse:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/</code></th><td>raíz de todo el sistema</td></tr>
+                  <tr><th scope="row"><code>/home</code></th><td>carpetas personales de los usuarios</td></tr>
+                  <tr><th scope="row"><code>/root</code></th><td>carpeta personal de root</td></tr>
+                  <tr><th scope="row"><code>/etc</code></th><td>ficheros de configuración</td></tr>
+                  <tr><th scope="row"><code>/var/log</code></th><td>registros del sistema y servicios</td></tr>
+                  <tr><th scope="row"><code>/var/www</code></th><td>webs servidas por Apache o Nginx</td></tr>
+                  <tr><th scope="row"><code>/tmp</code></th><td>temporales; se vacía al reiniciar</td></tr>
+                  <tr><th scope="row"><code>/usr/bin</code></th><td>programas instalados</td></tr>
+                  <tr><th scope="row"><code>/usr/share</code></th><td>datos compartidos (en Kali, <code>/usr/share/wordlists</code>)</td></tr>
+                  <tr><th scope="row"><code>/opt</code></th><td>software instalado a mano</td></tr>
+                  <tr><th scope="row"><code>/dev</code></th><td>dispositivos (<code>/dev/sda</code>, <code>/dev/null</code>)</td></tr>
+                  <tr><th scope="row"><code>/proc</code></th><td>información del kernel y procesos en tiempo real</td></tr>
+                  <tr><th scope="row"><code>/mnt  /media</code></th><td>puntos de montaje; USB en <code>/media/usuario</code></td></tr>
+                  <tr><th scope="row"><code>/boot</code></th><td>kernel y arranque</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="terminal-linux.html">← Comandos</a><a class="siguiente" href="comandos-texto.html">Buscar y texto →</a></nav>
+      <footer class="pie">Parte de los <a href="terminal-linux.html">Comandos de Linux</a>. Para cualquier orden: <code>man comando</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

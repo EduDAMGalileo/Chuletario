@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fundamentos de virtualización · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="virtualizacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Virtualización</a><span aria-hidden="true">›</span><span>Fundamentos</span></nav>
+          <h1>Fundamentos de virtualización</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Qué es virtualizar, los tipos de hipervisor, la diferencia con los contenedores y las tecnologías más usadas.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Virtualización">
+      <div class="wrap"><a href="fundamentos.html" aria-current="page">Fundamentos</a><a href="docker.html">Docker</a><a href="vagrant.html">Vagrant</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es la virtualización</a><a href="#s2"><b>2</b>Tipos de hipervisor</a><a href="#s3"><b>3</b>Virtualización o contenedores</a><a href="#s4"><b>4</b>Para qué sirve</a><a href="#s5"><b>5</b>Hipervisores</a><a href="#s6"><b>6</b>Contenedores</a><a href="#s7"><b>7</b>Aprovisionamiento</a><a href="#s8"><b>8</b>La nube</a><a href="#s9"><b>9</b>Qué usar</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Virtualizar es ejecutar sistemas o aplicaciones «dentro» de otro equipo, aislados y compartiendo el hardware real. Una sola máquina física puede alojar muchas máquinas virtuales o contenedores.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Máquina virtual vs contenedor</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Máquina virtual</th><td>emula un equipo completo, con su propio sistema operativo</td></tr>
+                  <tr><th scope="row">Contenedor</th><td>empaqueta una app y comparte el núcleo del anfitrión</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es la virtualización</h2>
+          <div class="cuerpo">
+            <p class="txt">La virtualización crea versiones «virtuales» de recursos (un servidor, un sistema operativo, una red) sobre hardware físico. Una capa de software reparte la CPU, la memoria y el disco reales entre varias máquinas virtuales que creen tener su propio equipo.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Anfitrión (host)</th><td>la máquina física real</td></tr>
+                  <tr><th scope="row">Invitado (guest)</th><td>cada sistema que corre virtualizado</td></tr>
+                  <tr><th scope="row">Hipervisor</th><td>el software que crea y gestiona las máquinas virtuales</td></tr>
+                  <tr><th scope="row">Imagen</th><td>el disco o la plantilla de una máquina virtual</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Tipos de hipervisor</h2>
+          <div class="cuerpo">
+            <p class="txt">El hipervisor es la pieza clave. Hay dos tipos según dónde se ejecuta:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tipo 1 (bare-metal)</th><td>corre directamente sobre el hardware, sin sistema operativo debajo. Rápido y para servidores</td></tr>
+                  <tr><th scope="row">Tipo 2 (hosted)</th><td>corre como un programa dentro de tu sistema operativo. Cómodo para el escritorio</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tipo 1</th><td>VMware ESXi, Microsoft Hyper-V, KVM, Xen, Proxmox</td></tr>
+                  <tr><th scope="row">Tipo 2</th><td>VirtualBox, VMware Workstation/Player, VMware Fusion</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Regla rápida: tipo 1 en centros de datos (máximo rendimiento); tipo 2 en tu portátil para probar sistemas, como con <a href="vagrant.html">Vagrant</a> sobre VirtualBox.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Virtualización o contenedores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Máquina virtual</th><td>incluye un SO completo; aísla del todo; pesada (GB); arranca en minutos</td></tr>
+                  <tr><th scope="row">Contenedor</th><td>comparte el núcleo del anfitrión; ligero (MB); arranca en segundos</td></tr>
+                  <tr><th scope="row">Aislamiento</th><td>mayor en la VM; menor en el contenedor</td></tr>
+                  <tr><th scope="row">Uso típico</th><td>VM: sistemas enteros y kernels distintos · contenedor: empaquetar apps</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">No compiten tanto como parece: a veces los contenedores corren <em>dentro</em> de máquinas virtuales. Ver <a href="docker.html">Docker</a> (contenedores) y <a href="vagrant.html">Vagrant</a> (VMs).</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Para qué sirve</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Aprovechar el hardware</th><td>muchos servidores lógicos en una sola máquina física</td></tr>
+                  <tr><th scope="row">Aislar</th><td>si una VM falla o la atacan, no afecta a las demás</td></tr>
+                  <tr><th scope="row">Probar sin riesgo</th><td>montar y destruir entornos a voluntad</td></tr>
+                  <tr><th scope="row">Reproducir</th><td>el mismo entorno en desarrollo y producción</td></tr>
+                  <tr><th scope="row">Snapshots</th><td>guardar un estado y volver a él</td></tr>
+                  <tr><th scope="row">Laboratorios</th><td>redes aisladas para practicar (ver <a href="../hacking/pentest.html">Pentest</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Hipervisores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">VirtualBox</th><td>tipo 2, gratuito y multiplataforma; el más usado para aprender</td></tr>
+                  <tr><th scope="row">VMware</th><td>Workstation/Player (tipo 2) y ESXi (tipo 1)</td></tr>
+                  <tr><th scope="row">Hyper-V</th><td>el de Windows (tipo 1, integrado)</td></tr>
+                  <tr><th scope="row">KVM</th><td>virtualización nativa del núcleo Linux (tipo 1)</td></tr>
+                  <tr><th scope="row">Proxmox VE</th><td>plataforma de virtualización sobre KVM y LXC</td></tr>
+                  <tr><th scope="row">QEMU</th><td>emulador que acompaña a KVM</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Contenedores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><a href="docker.html">Docker</a></th><td>el estándar de facto de contenedores</td></tr>
+                  <tr><th scope="row">Podman</th><td>alternativa a Docker sin demonio y sin root</td></tr>
+                  <tr><th scope="row">LXC / LXD</th><td>contenedores de sistema (más parecidos a una VM ligera)</td></tr>
+                  <tr><th scope="row">containerd</th><td>el motor de contenedores por debajo de Docker</td></tr>
+                  <tr><th scope="row">Kubernetes</th><td>orquestador: gestiona muchos contenedores en varios equipos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cuando hay muchos contenedores en producción, un <strong>orquestador</strong> como Kubernetes decide dónde y cuántos ejecutar, y los reinicia si caen.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Aprovisionamiento</h2>
+          <div class="cuerpo">
+            <p class="txt">Herramientas que crean y configuran estos entornos automáticamente, desde ficheros de texto versionables («infraestructura como código»):</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><a href="vagrant.html">Vagrant</a></th><td>crea y configura máquinas virtuales</td></tr>
+                  <tr><th scope="row">Terraform</th><td>define infraestructura (también en la nube) como código</td></tr>
+                  <tr><th scope="row">Ansible</th><td>configura y aprovisiona máquinas</td></tr>
+                  <tr><th scope="row">Packer</th><td>construye imágenes de VM y contenedor</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>La nube</h2>
+          <div class="cuerpo">
+            <p class="txt">La nube pública es virtualización a gran escala: alquilas máquinas virtuales y contenedores en los centros de datos de un proveedor.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">IaaS</th><td>infraestructura: máquinas virtuales (AWS EC2, Azure VM, Google Compute)</td></tr>
+                  <tr><th scope="row">PaaS</th><td>plataforma: despliegas la app sin gestionar el servidor</td></tr>
+                  <tr><th scope="row">SaaS</th><td>software ya listo, por suscripción</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cuanto más «as a service», menos gestionas tú y más el proveedor. La virtualización es lo que hace posible todo esto.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Qué usar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Probar un sistema entero</th><td>una máquina virtual (VirtualBox + <a href="vagrant.html">Vagrant</a>)</td></tr>
+                  <tr><th scope="row">Empaquetar una app</th><td>un contenedor (<a href="docker.html">Docker</a>)</td></tr>
+                  <tr><th scope="row">Laboratorio aislado</th><td>varias VMs en red interna</td></tr>
+                  <tr><th scope="row">Muchos servicios</th><td>contenedores + orquestador</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Sigue con <a href="docker.html">Docker</a> para contenedores y <a href="vagrant.html">Vagrant</a> para máquinas virtuales.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="docker.html">Docker →</a></nav>
+      <footer class="pie">Sección de entornos aislados y reproducibles. Contenedores en <a href="docker.html">Docker</a>; máquinas virtuales en <a href="vagrant.html">Vagrant</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

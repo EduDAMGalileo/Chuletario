@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>YAML · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="xml">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Lenguajes de marcas</a><span aria-hidden="true">›</span><span>YAML</span></nav>
+          <h1>YAML</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El formato de configuración legible por humanos. Se basa en la indentación. El de Docker Compose, Kubernetes, CI/CD y Ansible.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Lenguajes de marcas">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="dtd.html">DTD</a><a href="xsd.html">XML Schema</a><a href="xpath.html">XPath</a><a href="xquery.html">XQuery</a><a href="json.html">JSON</a><a href="yaml.html" aria-current="page">YAML</a><a href="markdown.html">Markdown</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es YAML</a><a href="#s2"><b>2</b>Escalares y tipos</a><a href="#s3"><b>3</b>Mapas y listas</a><a href="#s4"><b>4</b>La indentación</a><a href="#s5"><b>5</b>Textos multilínea</a><a href="#s6"><b>6</b>Ejemplo completo</a><a href="#s7"><b>7</b>YAML frente a JSON</a><a href="#s8"><b>8</b>Anclas y documentos</a><a href="#s9"><b>9</b>Errores comunes</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Un vistazo</p>
+            <figure class="codigo"><pre data-lang="yaml"><code><span class="tok-atributo">nombre</span>: Ana
+<span class="tok-atributo">edad</span>: <span class="tok-numero">30</span>
+<span class="tok-atributo">activo</span>: <span class="tok-clave">true</span>
+<span class="tok-atributo">aficiones</span>:
+  - leer
+  - correr</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">YAML (<em>YAML Ain't Markup Language</em>) guarda los mismos datos que JSON, pero pensado para que lo escriban y lean personas: sin llaves ni comillas, usando la <strong>indentación</strong> para la estructura.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es YAML -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es YAML</h2>
+          <div class="cuerpo">
+            <p class="txt">Un formato de serialización de datos centrado en la legibilidad. Se usa sobre todo para <strong>configuración</strong>: Docker Compose, Kubernetes, GitHub Actions, Ansible, etc.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Legible</th><td>casi como texto normal; sin llaves ni comas</td></tr>
+                  <tr><th scope="row">Indentado</th><td>la jerarquía se marca con espacios</td></tr>
+                  <tr><th scope="row">Superconjunto de JSON</th><td>todo JSON válido es YAML válido</td></tr>
+                  <tr><th scope="row">Extensión</th><td><code>.yaml</code> o <code>.yml</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Escalares y tipos -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Escalares y tipos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="yaml"><code><span class="tok-atributo">cadena</span>: hola mundo         <span class="tok-coment"># las comillas suelen ser opcionales</span>
+<span class="tok-atributo">comillas</span>: <span class="tok-texto">"con: dos puntos"  </span><span class="tok-coment"># necesarias si hay caracteres especiales</span>
+<span class="tok-atributo">entero</span>: <span class="tok-numero">42</span>
+<span class="tok-atributo">decimal</span>: <span class="tok-numero">3.14</span>
+<span class="tok-atributo">booleano</span>: true             <span class="tok-coment"># true/false, yes/no, on/off</span>
+<span class="tok-atributo">nulo</span>: null                 <span class="tok-coment"># o ~</span>
+<span class="tok-atributo">fecha</span>: 2024-01-15          <span class="tok-coment"># YAML entiende fechas</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Texto</th><td>sin comillas normalmente; con <code>"</code> o <code>'</code> si hace falta</td></tr>
+                  <tr><th scope="row">Números</th><td><code>42</code>, <code>3.14</code> — sin comillas</td></tr>
+                  <tr><th scope="row">Booleanos</th><td><code>true</code>/<code>false</code>, también <code>yes</code>/<code>no</code></td></tr>
+                  <tr><th scope="row">Nulo</th><td><code>null</code> o <code>~</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> valores como <code>no</code>, <code>on</code> o <code>yes</code> se interpretan como booleanos. Si quieres el texto literal (p. ej. el país «NO» de Noruega), ponlo entre comillas: <code>"NO"</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Mapas y listas -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Mapas y listas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Mapa (clave: valor) y lista (guiones)</figcaption><pre data-lang="yaml"><code><span class="tok-atributo">persona</span>:            <span class="tok-coment"># un mapa anidado</span>
+  <span class="tok-atributo">nombre</span>: Ana
+  <span class="tok-atributo">edad</span>: <span class="tok-numero">30</span>
+
+<span class="tok-atributo">colores</span>:            <span class="tok-coment"># una lista</span>
+  - rojo
+  - verde
+  - azul
+
+<span class="tok-atributo">usuarios</span>:           <span class="tok-coment"># lista de mapas</span>
+  - <span class="tok-atributo">nombre</span>: Ana
+    <span class="tok-atributo">rol</span>: admin
+  - <span class="tok-atributo">nombre</span>: Luis
+    <span class="tok-atributo">rol</span>: lector</code></pre></figure>
+            <figure class="codigo"><figcaption>Estilo de flujo (como JSON, en una línea)</figcaption><pre data-lang="yaml"><code><span class="tok-atributo">colores</span>: [rojo, verde, azul]
+<span class="tok-atributo">persona</span>: {nombre: Ana, edad: 30}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. La indentación -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>La indentación</h2>
+          <div class="cuerpo">
+            <p class="txt">La indentación <strong>es</strong> la estructura, como en Python. Marca qué está dentro de qué.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Solo espacios</th><td>nunca tabuladores; rompen el fichero</td></tr>
+                  <tr><th scope="row">Consistente</th><td>2 espacios por nivel es lo habitual</td></tr>
+                  <tr><th scope="row">Alineación</th><td>los elementos del mismo nivel, a la misma columna</td></tr>
+                  <tr><th scope="row">Espacio tras <code>:</code></th><td><code>clave: valor</code>, con el espacio</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>El error nº1 de YAML:</strong> mezclar espacios y tabuladores, o indentar de forma desigual. Configura tu editor para mostrar los espacios y usar solo espacios.</p>
+          </div>
+        </section>
+        <!-- 5. Textos multilínea -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Textos multilínea</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="yaml"><code><span class="tok-atributo">literal</span>: |
+  Esto conserva
+  los saltos de línea
+  tal cual.
+
+<span class="tok-atributo">plegado</span>: &gt;
+  Esto une las líneas
+  en un solo párrafo
+  con espacios.</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>|</code></th><td>literal: mantiene los saltos de línea</td></tr>
+                  <tr><th scope="row"><code>&gt;</code></th><td>plegado: convierte los saltos en espacios</td></tr>
+                  <tr><th scope="row"><code>|-</code> · <code>&gt;-</code></th><td>quitan el salto final</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6. Ejemplo completo -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Ejemplo completo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Un compose.yaml (Docker)</figcaption><pre data-lang="yaml"><code><span class="tok-coment"># servicios de la aplicación</span>
+<span class="tok-atributo">services</span>:
+  <span class="tok-atributo">web</span>:
+    <span class="tok-atributo">image</span>: nginx:1.27
+    <span class="tok-atributo">ports</span>:
+      - <span class="tok-texto">"8080:80"</span>
+    <span class="tok-atributo">environment</span>:
+      <span class="tok-atributo">TZ</span>: Europe/Madrid
+  <span class="tok-atributo">db</span>:
+    <span class="tok-atributo">image</span>: postgres:16
+    <span class="tok-atributo">volumes</span>:
+      - <span class="tok-atributo">datos</span>:/var/lib/postgresql/data
+
+<span class="tok-atributo">volumes</span>:
+  <span class="tok-atributo">datos</span>:</code></pre></figure>
+            <p class="nota">Este mismo fichero en <a href="../virtualizacion/docker.html#s11">Docker Compose</a>. Fíjate en cómo la indentación marca qué pertenece a cada servicio.</p>
+          </div>
+        </section>
+        <!-- 7. YAML frente a JSON -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>YAML frente a JSON</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Legibilidad</th><td>YAML gana para editar a mano</td></tr>
+                  <tr><th scope="row">Comentarios</th><td>YAML sí (<code>#</code>); JSON no</td></tr>
+                  <tr><th scope="row">Comas y llaves</th><td>YAML no las necesita; JSON sí</td></tr>
+                  <tr><th scope="row">Intercambio</th><td>JSON gana en APIs y entre programas</td></tr>
+                  <tr><th scope="row">Compatibilidad</th><td>todo JSON es YAML válido</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Regla práctica: <strong>YAML para configurar</strong> (lo editas tú), <strong>JSON para intercambiar</strong> (lo generan y consumen programas).</p>
+          </div>
+        </section>
+        <!-- 8. Anclas y documentos -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Anclas y documentos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Anclas: definir una vez y reutilizar</figcaption><pre data-lang="yaml"><code><span class="tok-atributo">por_defecto</span>: &amp;comun
+  <span class="tok-atributo">reintentos</span>: <span class="tok-numero">3</span>
+  <span class="tok-atributo">timeout</span>: <span class="tok-numero">30</span>
+
+<span class="tok-atributo">produccion</span>:
+  &lt;&lt;: *comun        <span class="tok-coment"># hereda lo de "comun"</span>
+  <span class="tok-atributo">timeout</span>: 60       <span class="tok-coment"># y sobrescribe</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Varios documentos en un fichero</figcaption><pre data-lang="yaml"><code>---
+<span class="tok-atributo">nombre</span>: primero
+---
+<span class="tok-atributo">nombre</span>: segundo
+...</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>&amp;nombre</code></th><td>ancla: define un bloque reutilizable</td></tr>
+                  <tr><th scope="row"><code>*nombre</code></th><td>referencia: reutiliza ese bloque</td></tr>
+                  <tr><th scope="row"><code>---</code></th><td>separa documentos dentro del mismo fichero</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 9. Errores comunes -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Errores comunes</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tabuladores</th><td>usa solo espacios; los tabuladores rompen el YAML</td></tr>
+                  <tr><th scope="row">Falta el espacio</th><td><code>clave:valor</code> está mal; es <code>clave: valor</code></td></tr>
+                  <tr><th scope="row">Booleanos sorpresa</th><td><code>no</code>, <code>yes</code>, <code>on</code> son booleanos: entrecomilla si es texto</td></tr>
+                  <tr><th scope="row">Indentación desigual</th><td>los hermanos deben alinearse exactamente</td></tr>
+                  <tr><th scope="row">Dos puntos en el valor</th><td>entrecomilla: <code>hora: "10:30"</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Valida un YAML con <code>yamllint fichero.yml</code> o pegándolo en un validador en línea. Muchos editores avisan de los errores al vuelo.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="json.html">← JSON</a><a class="siguiente" href="markdown.html">Markdown →</a></nav>
+      <footer class="pie">Especificación en <a href="https://yaml.org/">yaml.org</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

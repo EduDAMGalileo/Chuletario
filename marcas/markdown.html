@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Markdown · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="xml">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Lenguajes de marcas</a><span aria-hidden="true">›</span><span>Markdown</span></nav>
+          <h1>Markdown</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Texto con formato usando marcas sencillas. El lenguaje de los README, la documentación y las notas.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Lenguajes de marcas">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="dtd.html">DTD</a><a href="xsd.html">XML Schema</a><a href="xpath.html">XPath</a><a href="xquery.html">XQuery</a><a href="json.html">JSON</a><a href="yaml.html">YAML</a><a href="markdown.html" aria-current="page">Markdown</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es Markdown</a><a href="#s2"><b>2</b>Encabezados y párrafos</a><a href="#s3"><b>3</b>Énfasis</a><a href="#s4"><b>4</b>Listas</a><a href="#s5"><b>5</b>Enlaces e imágenes</a><a href="#s6"><b>6</b>Código</a><a href="#s7"><b>7</b>Citas y separadores</a><a href="#s8"><b>8</b>Tablas</a><a href="#s9"><b>9</b>Markdown en GitHub</a><a href="#s10"><b>10</b>Dónde se usa</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Markdown convierte marcas sencillas de texto en HTML con formato. Escribes <code># Título</code> o <code>**negrita**</code> y se transforma en un encabezado o en texto en negrita. Legible incluso sin renderizar.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Ejemplo</p>
+            <figure class="codigo"><pre data-lang="markdown"><code># Mi proyecto
+
+Una descripción **breve** con un [enlace](https://ejemplo.com).
+
+- Primer punto
+- Segundo punto</code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es Markdown -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es Markdown</h2>
+          <div class="cuerpo">
+            <p class="txt">Un lenguaje de marcado ligero creado en 2004 para escribir con formato sin apartar las manos del teclado. Se escribe en texto plano y una herramienta lo convierte a HTML.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Legible en crudo</th><td>se entiende aunque no se renderice</td></tr>
+                  <tr><th scope="row">A HTML</th><td>cada marca equivale a una etiqueta HTML</td></tr>
+                  <tr><th scope="row">Extensión</th><td><code>.md</code> o <code>.markdown</code></td></tr>
+                  <tr><th scope="row">Variantes</th><td>CommonMark (estándar), GFM (GitHub)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Encabezados y párrafos -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Encabezados y párrafos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="markdown"><code># Título de nivel 1
+## Nivel 2
+### Nivel 3
+###### Nivel 6
+
+Un párrafo normal. Para separar párrafos,
+se deja una línea en blanco entre ellos.
+
+Un salto de línea forzado se hace con dos
+espacios al final de la línea.</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>#</code> … <code>######</code></th><td>encabezados de nivel 1 a 6 (equivalen a <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>)</td></tr>
+                  <tr><th scope="row">Línea en blanco</th><td>separa párrafos</td></tr>
+                  <tr><th scope="row">Dos espacios finales</th><td>salto de línea dentro del párrafo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Deja un espacio tras el <code>#</code>: <code># Título</code>, no <code>#Título</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Énfasis -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Énfasis</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="markdown"><code>*cursiva* o _cursiva_
+**negrita** o __negrita__
+***negrita y cursiva***
+~~tachado~~</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>*texto*</code></th><td>cursiva</td></tr>
+                  <tr><th scope="row"><code>**texto**</code></th><td>negrita</td></tr>
+                  <tr><th scope="row"><code>***texto***</code></th><td>negrita y cursiva</td></tr>
+                  <tr><th scope="row"><code>~~texto~~</code></th><td>tachado (GitHub)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 4. Listas -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Listas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="markdown"><code>- Sin ordenar (también * o +)
+- Segundo elemento
+  - Anidado con dos espacios
+
+1. Ordenada
+2. Segundo
+3. Tercero
+
+- [x] Tarea hecha
+- [ ] Tarea pendiente</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-</code> · <code>*</code> · <code>+</code></th><td>lista sin ordenar</td></tr>
+                  <tr><th scope="row"><code>1.</code> <code>2.</code></th><td>lista ordenada</td></tr>
+                  <tr><th scope="row">Sangrar</th><td>anida sublistas (2 o 4 espacios)</td></tr>
+                  <tr><th scope="row"><code>- [ ]</code> · <code>- [x]</code></th><td>casillas de tarea (GitHub)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Enlaces e imágenes -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Enlaces e imágenes</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="markdown"><code>[texto del enlace](https://ejemplo.com)
+[con título](https://ejemplo.com "aparece al pasar el ratón")
+&lt;https://ejemplo.com&gt;        # enlace automático
+
+![texto alternativo](imagen.png)
+[![imagen enlazada](logo.png)](https://ejemplo.com)</code></pre></figure>
+            <p class="nota">La imagen es igual que un enlace, pero con <code>!</code> delante. El texto entre corchetes de la imagen es el texto alternativo (accesibilidad).</p>
+          </div>
+        </section>
+        <!-- 6. Código -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Código</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="markdown"><code>Código en línea con `comillas invertidas`.
+
+```python
+# bloque de código con lenguaje
+def hola():
+    print("Hola")
+```
+
+    Bloque indentado con 4 espacios
+    (alternativa a las vallas ```).</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>`código`</code></th><td>código en línea</td></tr>
+                  <tr><th scope="row">``` … ```</th><td>bloque de código (valla)</td></tr>
+                  <tr><th scope="row">```lenguaje</th><td>resaltado de sintaxis según el lenguaje</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Citas y separadores -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Citas y separadores</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="markdown"><code>&gt; Esto es una cita.
+&gt; Puede tener varias líneas.
+&gt;&gt; Y anidarse.
+
+---            # línea horizontal (también *** o ___)</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>&gt;</code></th><td>cita (blockquote)</td></tr>
+                  <tr><th scope="row"><code>---</code></th><td>línea horizontal separadora</td></tr>
+                  <tr><th scope="row"><code>\</code></th><td>escapar una marca: <code>\*</code> muestra un asterisco literal</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8. Tablas -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Tablas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="markdown"><code>| Nombre | Edad | Ciudad   |
+|--------|:----:|---------:|
+| Ana    |  30  | Sevilla  |
+| Luis   |  25  | Madrid   |</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>|</code></th><td>separa las celdas</td></tr>
+                  <tr><th scope="row"><code>---</code></th><td>fila que separa la cabecera del cuerpo</td></tr>
+                  <tr><th scope="row"><code>:---</code> · <code>:--:</code> · <code>--:</code></th><td>alinear a izquierda / centro / derecha</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las tablas son de GitHub Flavored Markdown; no están en el Markdown original, pero las admiten casi todas las plataformas.</p>
+          </div>
+        </section>
+        <!-- 9. Markdown en GitHub -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Markdown en GitHub</h2>
+          <div class="cuerpo">
+            <p class="txt">GitHub Flavored Markdown (GFM) añade extensiones muy usadas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tareas</th><td><code>- [ ]</code> y <code>- [x]</code></td></tr>
+                  <tr><th scope="row">Tachado</th><td><code>~~texto~~</code></td></tr>
+                  <tr><th scope="row">Tablas</th><td>con <code>|</code></td></tr>
+                  <tr><th scope="row">Menciones</th><td><code>@usuario</code>, <code>#42</code> (issue), <code>SHA</code></td></tr>
+                  <tr><th scope="row">Enlaces automáticos</th><td>las URL se enlazan solas</td></tr>
+                  <tr><th scope="row">Emoji</th><td><code>:rocket:</code> → 🚀</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El <code>README.md</code> de un repositorio se escribe en GFM. Ver la chuleta de <a href="../git/github.html">GitHub</a>.</p>
+          </div>
+        </section>
+        <!-- 10. Dónde se usa -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Dónde se usa</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">README y docs</th><td>documentación de proyectos</td></tr>
+                  <tr><th scope="row">Foros y chats</th><td>GitHub, Reddit, Discord, Stack Overflow</td></tr>
+                  <tr><th scope="row">Notas</th><td>Obsidian, Notion, Joplin</td></tr>
+                  <tr><th scope="row">Publicación</th><td>blogs y sitios estáticos (Jekyll, Hugo, MkDocs)</td></tr>
+                  <tr><th scope="row">Presentaciones</th><td>Marp, reveal.js</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Convierte Markdown a otros formatos (PDF, HTML, DOCX) con <a href="https://pandoc.org/">Pandoc</a>. Muchos editores muestran la vista previa en vivo.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="yaml.html">← YAML</a><span></span></nav>
+      <footer class="pie">Referencia de CommonMark en <a href="https://commonmark.org/help/">commonmark.org/help</a> y de GFM en <a href="https://github.github.com/gfm/">github.github.com/gfm</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modelo ER-EER · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><span>Modelo ER-EER</span></nav>
+          <h1>Modelo ER-EER</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El modelo entidad-relación de Peter Chen: entidades, atributos, relaciones y cardinalidades, su paso a tablas y las extensiones del EER.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Bases de datos">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="er-eer.html" aria-current="page">Modelo ER-EER</a><a href="sql.html">SQL</a><a href="postgresql.html">PostgreSQL</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es el modelo ER</a><a href="#s2"><b>2</b>Los elementos</a><a href="#s3"><b>3</b>Entidades</a><a href="#s4"><b>4</b>Atributos</a><a href="#s5"><b>5</b>Relaciones y grado</a><a href="#s6"><b>6</b>Cardinalidad</a><a href="#s7"><b>7</b>Participación</a><a href="#s8"><b>8</b>Ejemplo completo</a><a href="#s9"><b>9</b>Del ER a tablas</a><a href="#s10"><b>10</b>EER: jerarquías</a><a href="#s11"><b>11</b>Notaciones</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">El modelo entidad-relación (ER) es un <strong>diagrama conceptual</strong>: dibuja qué datos guarda un sistema y cómo se relacionan, <em>antes</em> de crear ninguna tabla. Lo propuso Peter Chen en 1976 y sigue siendo la forma estándar de diseñar una base de datos.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Tres formas, tres conceptos</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Rectángulo</th><td>entidad (una «cosa»)</td></tr>
+                  <tr><th scope="row">Rombo</th><td>relación (un vínculo)</td></tr>
+                  <tr><th scope="row">Elipse</th><td>atributo (un dato)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es el modelo ER</h2>
+          <div class="cuerpo">
+            <p class="txt">Una herramienta de diseño <strong>conceptual</strong>: representa la realidad que queremos almacenar sin atarse todavía a un gestor concreto. Del diagrama ER se deriva luego el modelo relacional (las tablas) de forma casi mecánica.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Conceptual</th><td>el diagrama ER: qué hay y cómo se relaciona (esta chuleta)</td></tr>
+                  <tr><th scope="row">Lógico</th><td>el modelo relacional: tablas, claves (ver sección 9)</td></tr>
+                  <tr><th scope="row">Físico</th><td>la implementación en un gestor (<a href="postgresql.html">PostgreSQL</a>, MySQL...)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Notación de Chen: es la más didáctica (formas separadas para cada concepto) y la que verás en clase. En la industria también se usa mucho la de «pata de gallo» (sección 11).</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Los elementos</h2>
+          <div class="cuerpo">
+            <p class="txt">Todo diagrama ER se construye con tres formas básicas, unidas por líneas:</p>
+            <figure class="er-fig">
+              <svg viewBox="0 0 560 96" role="img" aria-label="Los tres símbolos: rectángulo para entidad, rombo para relación y elipse para atributo">
+                <rect class="er-ent" x="20" y="18" width="130" height="46" rx="2"/>
+                <text class="er-txt" x="85" y="41">ENTIDAD</text>
+                <text class="er-txt-a" x="85" y="82">entidad</text>
+                <polygon class="er-rel" points="280,16 344,44 280,72 216,44"/>
+                <text class="er-txt" x="280" y="44">relación</text>
+                <text class="er-txt-a" x="280" y="82">relación</text>
+                <ellipse class="er-attr" cx="470" cy="44" rx="62" ry="26"/>
+                <text class="er-txt-a" x="470" y="44">atributo</text>
+                <text class="er-txt-a" x="470" y="82">atributo</text>
+              </svg>
+            </figure>
+            <p class="nota">A esto se suman variantes (entidad débil, atributo clave, relación con atributos...) que son las mismas formas con un matiz: doble borde, subrayado, línea discontinua.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Entidades</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>entidad</strong> es un objeto del que se guardan datos: un alumno, un libro, un pedido. Cada ejemplar concreto es una <em>instancia</em>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Entidad fuerte</th><td>existe por sí misma; tiene clave propia (rectángulo simple)</td></tr>
+                  <tr><th scope="row">Entidad débil</th><td>depende de otra para identificarse (rectángulo de doble borde)</td></tr>
+                  <tr><th scope="row">Instancia</th><td>un ejemplar concreto: «el alumno con DNI 123»</td></tr>
+                  <tr><th scope="row">Nombre</th><td>en singular y en mayúsculas por convención: ALUMNO</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Ejemplo de entidad débil: una LÍNEA de una factura no tiene sentido sin su FACTURA; se identifica por la factura más su número de línea.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Atributos</h2>
+          <div class="cuerpo">
+            <p class="txt">Los <strong>atributos</strong> son los datos de una entidad. Se dibujan como elipses unidas a ella. El atributo <em>clave</em> va subrayado.</p>
+            <figure class="er-fig">
+              <svg viewBox="0 0 560 290" role="img" aria-label="La entidad ALUMNO con sus atributos: dni como clave subrayada, nombre, teléfono multivaluado y edad derivada">
+                <!-- líneas -->
+                <line class="er-line" x1="95" y1="78" x2="235" y2="128"/>
+                <line class="er-line" x1="280" y1="70" x2="280" y2="123"/>
+                <line class="er-line" x1="465" y1="82" x2="325" y2="128"/>
+                <line class="er-line" x1="280" y1="177" x2="280" y2="232"/>
+                <!-- entidad -->
+                <rect class="er-ent" x="212" y="123" width="136" height="54" rx="2"/>
+                <text class="er-txt" x="280" y="150">ALUMNO</text>
+                <!-- atributos -->
+                <ellipse class="er-attr" cx="95" cy="52" rx="58" ry="24"/>
+                <text class="er-txt-a er-key" x="95" y="52">dni</text>
+                <ellipse class="er-attr" cx="280" cy="46" rx="58" ry="24"/>
+                <text class="er-txt-a" x="280" y="46">nombre</text>
+                <!-- multivaluado: doble elipse -->
+                <ellipse class="er-attr" cx="465" cy="52" rx="64" ry="27"/>
+                <ellipse class="er-attr" cx="465" cy="52" rx="56" ry="20"/>
+                <text class="er-txt-a" x="465" y="52">teléfono</text>
+                <!-- derivado: discontinuo -->
+                <ellipse class="er-attr" cx="280" cy="256" rx="58" ry="24" stroke-dasharray="5 4"/>
+                <text class="er-txt-a" x="280" y="256">edad</text>
+              </svg>
+            </figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Clave (identificador)</th><td>distingue cada instancia; se <span class="er-key">subraya</span> (dni)</td></tr>
+                  <tr><th scope="row">Simple</th><td>un solo valor atómico (nombre)</td></tr>
+                  <tr><th scope="row">Compuesto</th><td>se divide en partes (dirección → calle, número, CP)</td></tr>
+                  <tr><th scope="row">Multivaluado</th><td>admite varios valores; doble elipse (teléfono)</td></tr>
+                  <tr><th scope="row">Derivado</th><td>se calcula de otro; elipse discontinua (edad, de la fecha de nacimiento)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Relaciones y grado</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>relación</strong> (rombo) vincula entidades: un ALUMNO <em>cursa</em> una ASIGNATURA. El <strong>grado</strong> es cuántas entidades participan.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Binaria</th><td>dos entidades; la más común (ALUMNO–ASIGNATURA)</td></tr>
+                  <tr><th scope="row">Unaria (reflexiva)</th><td>una entidad consigo misma (EMPLEADO «jefe de» EMPLEADO)</td></tr>
+                  <tr><th scope="row">Ternaria</th><td>tres entidades a la vez</td></tr>
+                  <tr><th scope="row">Con atributos</th><td>la relación puede tener datos propios (la <em>nota</em> de cursar)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El nombre de la relación suele ser un verbo: <em>cursa</em>, <em>imparte</em>, <em>pertenece a</em>. Se lee como una frase: ALUMNO cursa ASIGNATURA.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Cardinalidad</h2>
+          <div class="cuerpo">
+            <p class="txt">La <strong>cardinalidad</strong> dice cuántas instancias de una entidad se relacionan con la otra. Es lo más importante del diagrama.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Uno a uno (1:1)</th><td>una PERSONA tiene un DNI y viceversa</td></tr>
+                  <tr><th scope="row">Uno a muchos (1:N)</th><td>un DEPARTAMENTO tiene muchos EMPLEADOS; cada empleado, un departamento</td></tr>
+                  <tr><th scope="row">Muchos a muchos (N:M)</th><td>un ALUMNO cursa muchas ASIGNATURAS y cada una tiene muchos alumnos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En notación de Chen la cardinalidad se escribe sobre la línea (<code>1</code>, <code>N</code>, <code>M</code>). Cuidado: se marca «al revés» de lo intuitivo; la <code>N</code> va en el lado que admite muchos. La N:M es la que obliga a crear una tabla intermedia (sección 9).</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Participación</h2>
+          <div class="cuerpo">
+            <p class="txt">La <strong>participación</strong> indica si una entidad <em>debe</em> participar en la relación o puede no hacerlo.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Total (obligatoria)</th><td>toda instancia participa; línea doble. Un PEDIDO debe tener un CLIENTE</td></tr>
+                  <tr><th scope="row">Parcial (opcional)</th><td>puede no participar; línea simple. Un CLIENTE puede no tener pedidos</td></tr>
+                  <tr><th scope="row">Notación (min, max)</th><td>alternativa: par de números por lado, p. ej. <code>(1,N)</code>, <code>(0,1)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La notación <code>(mín, máx)</code> es más precisa que la de Chen simple: <code>(0,N)</code> = opcional y muchos; <code>(1,1)</code> = obligatorio y exactamente uno.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Ejemplo completo</h2>
+          <div class="cuerpo">
+            <p class="txt">Todo junto: dos entidades con sus claves, una relación N:M con un atributo propio.</p>
+            <figure class="er-fig">
+              <svg viewBox="0 0 660 300" role="img" aria-label="ALUMNO se relaciona mediante cursa (muchos a muchos) con ASIGNATURA; la relación cursa tiene el atributo nota">
+                <!-- líneas entidad-relación -->
+                <line class="er-line" x1="150" y1="160" x2="252" y2="160"/>
+                <line class="er-line" x1="388" y1="160" x2="480" y2="160"/>
+                <text class="er-card" x="200" y="146">N</text>
+                <text class="er-card" x="434" y="146">M</text>
+                <!-- líneas atributo-entidad -->
+                <line class="er-line" x1="60" y1="78" x2="78" y2="135"/>
+                <line class="er-line" x1="150" y1="72" x2="120" y2="135"/>
+                <line class="er-line" x1="515" y1="77" x2="525" y2="135"/>
+                <line class="er-line" x1="610" y1="73" x2="590" y2="135"/>
+                <!-- línea atributo relación -->
+                <line class="er-line" x1="320" y1="196" x2="320" y2="236"/>
+                <!-- entidades -->
+                <rect class="er-ent" x="20" y="135" width="130" height="50" rx="2"/>
+                <text class="er-txt" x="85" y="160">ALUMNO</text>
+                <rect class="er-ent" x="480" y="135" width="150" height="50" rx="2"/>
+                <text class="er-txt" x="555" y="160">ASIGNATURA</text>
+                <!-- relación -->
+                <polygon class="er-rel" points="320,122 388,160 320,198 252,160"/>
+                <text class="er-txt" x="320" y="160">cursa</text>
+                <!-- atributos ALUMNO -->
+                <ellipse class="er-attr" cx="60" cy="54" rx="50" ry="23"/>
+                <text class="er-txt-a er-key" x="60" y="54">dni</text>
+                <ellipse class="er-attr" cx="160" cy="48" rx="54" ry="23"/>
+                <text class="er-txt-a" x="160" y="48">nombre</text>
+                <!-- atributos ASIGNATURA -->
+                <ellipse class="er-attr" cx="515" cy="54" rx="48" ry="23"/>
+                <text class="er-txt-a er-key" x="515" y="54">código</text>
+                <ellipse class="er-attr" cx="610" cy="48" rx="46" ry="23"/>
+                <text class="er-txt-a" x="610" y="48">título</text>
+                <!-- atributo de la relación -->
+                <ellipse class="er-attr" cx="320" cy="258" rx="50" ry="23"/>
+                <text class="er-txt-a" x="320" y="258">nota</text>
+              </svg>
+            </figure>
+            <p class="nota">Se lee: «un ALUMNO (identificado por <span class="er-key">dni</span>) cursa muchas ASIGNATURAS y cada ASIGNATURA es cursada por muchos alumnos; de cada matrícula guardamos la nota».</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Del ER a tablas</h2>
+          <div class="cuerpo">
+            <p class="txt">El diagrama se traduce al <a href="introduccion.html#s2">modelo relacional</a> con unas reglas casi mecánicas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Entidad</th><td>→ una tabla; sus atributos, columnas; la clave, clave primaria</td></tr>
+                  <tr><th scope="row">Relación 1:N</th><td>→ la clave del lado «1» se añade como clave foránea en el lado «N»</td></tr>
+                  <tr><th scope="row">Relación N:M</th><td>→ una <strong>tabla intermedia</strong> con las claves de ambas y los atributos de la relación</td></tr>
+                  <tr><th scope="row">Relación 1:1</th><td>→ clave foránea en cualquiera de los dos lados</td></tr>
+                  <tr><th scope="row">Multivaluado</th><td>→ una tabla aparte</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>El ejemplo N:M anterior, ya como tablas SQL</figcaption><pre data-lang="sql"><code><span class="tok-clave">CREATE TABLE</span> alumno (
+  dni     <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">9</span>) <span class="tok-clave">PRIMARY KEY</span>,
+  nombre  <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">100</span>)
+);
+<span class="tok-clave">CREATE TABLE</span> asignatura (
+  codigo  <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">10</span>) <span class="tok-clave">PRIMARY KEY</span>,
+  titulo  <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">100</span>)
+);
+<span class="tok-coment">-- tabla intermedia de la relación N:M, con el atributo nota</span>
+<span class="tok-clave">CREATE TABLE</span> cursa (
+  dni     <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">9</span>)  <span class="tok-clave">REFERENCES</span> alumno(dni),
+  codigo  <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">10</span>) <span class="tok-clave">REFERENCES</span> asignatura(codigo),
+  nota    <span class="tok-tipo">NUMERIC</span>(<span class="tok-numero">4</span>,<span class="tok-numero">2</span>),
+  <span class="tok-clave">PRIMARY KEY</span> (dni, codigo)
+);</code></pre></figure>
+            <p class="nota">Regla de oro: toda relación N:M se convierte en una tabla propia. Ver la sintaxis completa en <a href="sql.html">SQL</a>.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>EER: jerarquías</h2>
+          <div class="cuerpo">
+            <p class="txt">El <strong>EER</strong> (ER extendido) añade la <em>especialización</em>: una superentidad con subentidades que heredan sus atributos, como la herencia en <a href="../java/poo.html">POO</a>.</p>
+            <figure class="er-fig">
+              <svg viewBox="0 0 560 250" role="img" aria-label="EMPLEADO se especializa, mediante un triángulo ISA, en las subentidades FIJO y TEMPORAL">
+                <!-- líneas -->
+                <line class="er-line" x1="280" y1="70" x2="280" y2="96"/>
+                <line class="er-line" x1="280" y1="140" x2="150" y2="182"/>
+                <line class="er-line" x1="280" y1="140" x2="430" y2="182"/>
+                <!-- superentidad -->
+                <rect class="er-ent" x="205" y="22" width="150" height="48" rx="2"/>
+                <text class="er-txt" x="280" y="46">EMPLEADO</text>
+                <!-- triángulo ISA -->
+                <polygon class="er-rel" points="240,98 320,98 280,140"/>
+                <text class="er-txt-a" x="280" y="112">ISA</text>
+                <!-- subentidades -->
+                <rect class="er-ent" x="85" y="182" width="130" height="46" rx="2"/>
+                <text class="er-txt" x="150" y="205">FIJO</text>
+                <rect class="er-ent" x="355" y="182" width="150" height="46" rx="2"/>
+                <text class="er-txt" x="430" y="205">TEMPORAL</text>
+              </svg>
+            </figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Especialización</th><td>dividir una entidad en subtipos (EMPLEADO → FIJO, TEMPORAL)</td></tr>
+                  <tr><th scope="row">Generalización</th><td>el camino inverso: unir varias en una superentidad</td></tr>
+                  <tr><th scope="row">Herencia</th><td>las subentidades heredan los atributos de la superior</td></tr>
+                  <tr><th scope="row">Disjunta (d)</th><td>cada instancia es de un solo subtipo</td></tr>
+                  <tr><th scope="row">Solapada (o)</th><td>puede ser de varios a la vez</td></tr>
+                  <tr><th scope="row">Total / parcial</th><td>si toda instancia debe ser de algún subtipo o no</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 11 -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Notaciones</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Chen</th><td>la de esta chuleta: formas separadas. Muy clara para aprender</td></tr>
+                  <tr><th scope="row">Pata de gallo (crow's foot)</th><td>la más usada en herramientas; la cardinalidad son «patitas» en los extremos</td></tr>
+                  <tr><th scope="row">UML</th><td>diagrama de clases; habitual en ingeniería del software</td></tr>
+                  <tr><th scope="row">Herramientas</th><td>draw.io, dbdiagram.io, MySQL Workbench, Mermaid (ver <a href="../programacion/pseudocodigo.html">diagramas</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Da igual la notación: los conceptos (entidad, relación, cardinalidad) son los mismos. Una vez diseñado el ER, pásalo a <a href="sql.html">SQL</a> y créalo en <a href="postgresql.html">PostgreSQL</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="introduccion.html">← Introducción</a><a class="siguiente" href="sql.html">SQL →</a></nav>
+      <footer class="pie">Diseño conceptual antes de las tablas. Continúa en <a href="sql.html">SQL</a> y <a href="postgresql.html">PostgreSQL</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

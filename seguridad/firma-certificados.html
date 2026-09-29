@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Firma digital y certificados · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="seguridad">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Seguridad</a><span aria-hidden="true">›</span><span>Firma y certificados</span></nav>
+          <h1>Firma digital y certificados</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Cómo se prueba quién firma y de quién es una clave pública: firma digital, certificados X.509, autoridades de certificación, PKI y TLS/HTTPS.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Seguridad">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="cortafuegos.html">Cortafuegos</a><a href="iptables.html">iptables</a><a href="nftables.html">nftables</a><a href="criptografia.html">Criptografía</a><a href="firma-certificados.html" aria-current="page">Firma y certificados</a><a href="gpg.html">GPG</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es la firma digital</a><a href="#s2"><b>2</b>Cómo funciona</a><a href="#s3"><b>3</b>Qué garantiza</a><a href="#s4"><b>4</b>El problema de la confianza</a><a href="#s5"><b>5</b>Certificados X.509</a><a href="#s6"><b>6</b>Autoridades y cadena</a><a href="#s7"><b>7</b>PKI</a><a href="#s8"><b>8</b>TLS y HTTPS</a><a href="#s9"><b>9</b>Formatos y herramientas</a><a href="#s10"><b>10</b>Buenas prácticas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">El <a href="criptografia.html#s4">cifrado asimétrico</a> usado «al revés»: si firmo con mi clave <em>privada</em>, cualquiera lo verifica con mi <em>pública</em>. Eso prueba que fui yo y que nada se ha alterado.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Cifrar vs firmar</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cifrar</th><td>con la clave <em>pública</em> del destinatario</td></tr>
+                  <tr><th scope="row">Firmar</th><td>con <em>mi</em> clave privada</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es la firma digital</h2>
+          <div class="cuerpo">
+            <p class="txt">Un mecanismo criptográfico que asocia un documento con la identidad de quien lo firma, de forma que se pueda comprobar que lo firmó esa persona y que no se ha modificado después.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">No es una imagen</th><td>no es un escaneo de tu firma manuscrita</td></tr>
+                  <tr><th scope="row">Usa clave privada</th><td>solo tú puedes generarla; todos pueden verificarla</td></tr>
+                  <tr><th scope="row">Va ligada al contenido</th><td>si cambia el documento, la firma deja de valer</td></tr>
+                  <tr><th scope="row">Base legal</th><td>la firma electrónica cualificada equivale a la manuscrita</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Es la operación inversa del <a href="criptografia.html#s4">cifrado asimétrico</a>: allí ciframos con la pública y desciframos con la privada; aquí firmamos con la privada y verificamos con la pública.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Cómo funciona</h2>
+          <div class="cuerpo">
+            <p class="txt">No se cifra todo el documento (sería lento): se firma su <a href="criptografia.html#s6">hash</a>. El proceso, paso a paso:</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Hash</b><small>del documento</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Cifrar</b><small>el hash con la privada</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Adjuntar</b><small>la firma</small></div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Firmar</th><td>se calcula el hash del documento y se cifra con la clave privada del firmante</td></tr>
+                  <tr><th scope="row">Verificar</th><td>se descifra la firma con su clave pública y se compara con el hash recalculado</td></tr>
+                  <tr><th scope="row">Coinciden</th><td>firma válida: es de esa persona y el documento está intacto</td></tr>
+                  <tr><th scope="row">No coinciden</th><td>o lo modificaron, o no lo firmó esa clave</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Firmar el hash y no el documento entero hace la firma rápida y de tamaño fijo, sea el fichero un tuit o un vídeo.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Qué garantiza</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Integridad</th><td>el documento no se ha alterado desde que se firmó</td></tr>
+                  <tr><th scope="row">Autenticidad</th><td>lo firmó quien posee esa clave privada</td></tr>
+                  <tr><th scope="row">No repudio</th><td>no puede negar que lo firmó (solo él tiene la privada)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Lo que NO da: confidencialidad.</strong> Un documento firmado sigue siendo legible por todos; la firma no lo oculta. Si además quieres que sea secreto, hay que cifrarlo aparte. Firmar y cifrar son cosas distintas.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>El problema de la confianza</h2>
+          <div class="cuerpo">
+            <p class="txt">La firma prueba que un documento se firmó con «la clave privada asociada a esta pública». Pero queda una pregunta: <strong>¿de quién es realmente esta clave pública?</strong></p>
+            <p class="txt">Nada impide a un atacante publicar una clave diciendo «soy tu banco». Necesitamos que alguien de confianza <em>certifique</em> que una clave pública pertenece de verdad a quien dice. Ahí entran los certificados.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Sin certificar</th><td>tienes una clave pública, pero no sabes de quién es</td></tr>
+                  <tr><th scope="row">Certificado</th><td>un tercero de confianza garantiza «esta clave es de Fulano»</td></tr>
+                  <tr><th scope="row">Alternativa (GPG)</th><td>la <em>red de confianza</em>: los usuarios se firman entre sí (ver <a href="gpg.html">GPG</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Certificados X.509</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>certificado digital</strong> es un documento que vincula una identidad con una clave pública, firmado por una autoridad de confianza. El formato estándar es <strong>X.509</strong> (el de la web).</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Sujeto</th><td>a quién pertenece (dominio, empresa, persona)</td></tr>
+                  <tr><th scope="row">Clave pública</th><td>la clave que se certifica</td></tr>
+                  <tr><th scope="row">Emisor</th><td>la autoridad (CA) que lo expide</td></tr>
+                  <tr><th scope="row">Validez</th><td>fechas de inicio y caducidad</td></tr>
+                  <tr><th scope="row">Firma de la CA</th><td>la CA firma todo lo anterior; eso es lo que le da valor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El certificado es, en el fondo, «una clave pública + una identidad, firmada por alguien en quien confías». Verificar su firma es aplicar lo de la sección 2.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Autoridades y cadena</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>Autoridad de Certificación (CA)</strong> es una entidad de confianza que emite certificados. La confianza se organiza en cadena, hasta una raíz.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">CA raíz</th><td>la cúspide; su certificado viene preinstalado en el sistema y el navegador</td></tr>
+                  <tr><th scope="row">CA intermedia</th><td>la raíz firma a intermedias, que emiten los certificados finales</td></tr>
+                  <tr><th scope="row">Certificado de servidor</th><td>el de una web concreta, firmado por una intermedia</td></tr>
+                  <tr><th scope="row">Cadena de confianza</th><td>servidor → intermedia → raíz; si toda la cadena valida, confías</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Tu navegador trae una lista de CA raíz de confianza. Cuando visitas una web HTTPS, comprueba que su certificado encadena hasta una de esas raíces. Si no, muestra la advertencia de «sitio no seguro».</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>PKI</h2>
+          <div class="cuerpo">
+            <p class="txt">La <strong>PKI</strong> (infraestructura de clave pública) es todo el conjunto de piezas, roles y procesos que hacen funcionar los certificados a gran escala.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">CA</th><td>emite y firma los certificados</td></tr>
+                  <tr><th scope="row">RA</th><td>autoridad de registro: verifica la identidad antes de emitir</td></tr>
+                  <tr><th scope="row">CRL</th><td>lista de certificados revocados (anulados antes de caducar)</td></tr>
+                  <tr><th scope="row">OCSP</th><td>consulta en línea del estado de un certificado</td></tr>
+                  <tr><th scope="row">Almacén de confianza</th><td>las CA raíz en las que el sistema confía</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Revocar importa: si roban la clave privada de un servidor, su certificado debe invalidarse antes de su caducidad. Para eso están las CRL y OCSP.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>TLS y HTTPS</h2>
+          <div class="cuerpo">
+            <p class="txt">HTTPS es <a href="../redes/http.html">HTTP</a> sobre <strong>TLS</strong>. Junta todo lo anterior: certificados para autenticar el servidor y <a href="criptografia.html#s5">cifrado híbrido</a> para proteger el tráfico.</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Certificado</b><small>el servidor lo envía</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Verificar</b><small>la cadena de confianza</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Clave de sesión</b><small>acordada</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>Cifrado</b><small>simétrico</small></div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Autenticación</th><td>el certificado prueba que hablas con el servidor real, no un impostor</td></tr>
+                  <tr><th scope="row">Intercambio de clave</th><td>con asimétrico/Diffie-Hellman se acuerda una clave de sesión</td></tr>
+                  <tr><th scope="row">Cifrado del tráfico</th><td>a partir de ahí, todo va cifrado con la clave simétrica de sesión</td></tr>
+                  <tr><th scope="row">El candado</th><td>indica TLS válido; no que el sitio sea «bueno», solo que el canal es seguro</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Formatos y herramientas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">PEM</th><td>texto en Base64 (<code>-----BEGIN CERTIFICATE-----</code>); el más común</td></tr>
+                  <tr><th scope="row">DER</th><td>el mismo contenido en binario</td></tr>
+                  <tr><th scope="row"><code>.crt</code> / <code>.cer</code></th><td>el certificado (clave pública + identidad)</td></tr>
+                  <tr><th scope="row"><code>.key</code></th><td>la clave privada (guárdala a buen recaudo)</td></tr>
+                  <tr><th scope="row">openssl</th><td>la navaja suiza: generar claves, CSR, ver e inspeccionar certificados</td></tr>
+                  <tr><th scope="row">Let's Encrypt</th><td>CA gratuita y automatizada (certbot) para HTTPS</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Inspeccionar un certificado con openssl</figcaption><pre data-lang="bash"><code><span class="tok-clave">openssl</span> x509 <span class="tok-atributo">-in</span> cert.pem <span class="tok-atributo">-text</span> <span class="tok-atributo">-noout</span>   <span class="tok-coment"># ver el contenido</span>
+<span class="tok-clave">openssl</span> s_client <span class="tok-atributo">-connect</span> ejemplo.com:443    <span class="tok-coment"># ver el certificado de una web</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Buenas prácticas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Protege la clave privada</th><td>si se filtra, revoca el certificado de inmediato</td></tr>
+                  <tr><th scope="row">Vigila la caducidad</th><td>un certificado caducado rompe el sitio; automatiza la renovación</td></tr>
+                  <tr><th scope="row">Autofirmados con cuidado</th><td>valen para pruebas internas, no para cara al público</td></tr>
+                  <tr><th scope="row">Cadena completa</th><td>sirve el certificado con sus intermedias, o algunos clientes fallarán</td></tr>
+                  <tr><th scope="row">Algoritmos actuales</th><td>claves RSA ≥ 2048 o ECC; nada de SHA-1</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para firmar y cifrar tú mismo desde la terminal, con tu propio par de claves y la red de confianza en vez de CA, sigue con <a href="gpg.html">GPG</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="criptografia.html">← Criptografía</a><a class="siguiente" href="gpg.html">GPG →</a></nav>
+      <footer class="pie">Cómo se prueba la identidad en la práctica. HTTPS se apoya en <a href="../redes/http.html">HTTP</a> y en la <a href="criptografia.html">criptografía</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JSON · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="xml">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Lenguajes de marcas</a><span aria-hidden="true">›</span><span>JSON</span></nav>
+          <h1>JSON</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El formato de intercambio de datos más usado en la web y las APIs. Ligero, legible y nativo de JavaScript.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Lenguajes de marcas">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="dtd.html">DTD</a><a href="xsd.html">XML Schema</a><a href="xpath.html">XPath</a><a href="xquery.html">XQuery</a><a href="json.html" aria-current="page">JSON</a><a href="yaml.html">YAML</a><a href="markdown.html">Markdown</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es JSON</a><a href="#s2"><b>2</b>Tipos de valores</a><a href="#s3"><b>3</b>Objetos y arrays</a><a href="#s4"><b>4</b>Ejemplo completo</a><a href="#s5"><b>5</b>Reglas estrictas</a><a href="#s6"><b>6</b>JSON frente a XML</a><a href="#s7"><b>7</b>Trabajar con JSON</a><a href="#s8"><b>8</b>Validación</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Un vistazo</p>
+            <figure class="codigo"><pre data-lang="json"><code>{
+  <span class="tok-atributo">"nombre"</span>: <span class="tok-texto">"Ana"</span>,
+  <span class="tok-atributo">"edad"</span>: <span class="tok-numero">30</span>,
+  <span class="tok-atributo">"activo"</span>: <span class="tok-clave">true</span>,
+  <span class="tok-atributo">"aficiones"</span>: [<span class="tok-texto">"leer"</span>, <span class="tok-texto">"correr"</span>]
+}</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">JSON (<em>JavaScript Object Notation</em>) representa datos como pares <strong>clave: valor</strong> y listas. Es texto plano, lo entiende cualquier lenguaje y es el estándar de facto de las APIs web.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es JSON -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es JSON</h2>
+          <div class="cuerpo">
+            <p class="txt">Un formato de texto para intercambiar datos estructurados. Nació de JavaScript, pero hoy es independiente del lenguaje: se usa en APIs, ficheros de configuración (<code>package.json</code>), bases de datos NoSQL y más.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ligero</th><td>poco texto de más, fácil de leer y escribir</td></tr>
+                  <tr><th scope="row">Universal</th><td>todos los lenguajes lo leen y lo generan</td></tr>
+                  <tr><th scope="row">Jerárquico</th><td>objetos y listas se anidan sin límite</td></tr>
+                  <tr><th scope="row">Extensión</th><td><code>.json</code>, tipo MIME <code>application/json</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Tipos de valores -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Tipos de valores</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cadena</th><td><code>"texto"</code> — siempre con comillas dobles</td></tr>
+                  <tr><th scope="row">Número</th><td><code>42</code>, <code>-3.14</code>, <code>1.5e3</code> — sin comillas</td></tr>
+                  <tr><th scope="row">Booleano</th><td><code>true</code> / <code>false</code></td></tr>
+                  <tr><th scope="row">Nulo</th><td><code>null</code></td></tr>
+                  <tr><th scope="row">Objeto</th><td><code>{ }</code> — pares clave:valor</td></tr>
+                  <tr><th scope="row">Array</th><td><code>[ ]</code> — lista ordenada</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Solo estos seis tipos. No hay fechas (se guardan como texto), ni comentarios, ni funciones.</p>
+          </div>
+        </section>
+        <!-- 3. Objetos y arrays -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Objetos y arrays</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Objeto: pares clave-valor entre llaves</figcaption><pre data-lang="json"><code>{
+  <span class="tok-atributo">"id"</span>: <span class="tok-numero">1</span>,
+  <span class="tok-atributo">"titulo"</span>: <span class="tok-texto">"Introducción"</span>,
+  <span class="tok-atributo">"publicado"</span>: <span class="tok-clave">false</span>
+}</code></pre></figure>
+            <figure class="codigo"><figcaption>Array: lista entre corchetes</figcaption><pre data-lang="json"><code>[<span class="tok-texto">"rojo"</span>, <span class="tok-texto">"verde"</span>, <span class="tok-texto">"azul"</span>]</code></pre></figure>
+            <figure class="codigo"><figcaption>Se anidan libremente</figcaption><pre data-lang="json"><code>{
+  <span class="tok-atributo">"usuarios"</span>: [
+    { <span class="tok-atributo">"nombre"</span>: <span class="tok-texto">"Ana"</span>, <span class="tok-atributo">"roles"</span>: [<span class="tok-texto">"admin"</span>, <span class="tok-texto">"editor"</span>] },
+    { <span class="tok-atributo">"nombre"</span>: <span class="tok-texto">"Luis"</span>, <span class="tok-atributo">"roles"</span>: [<span class="tok-texto">"lector"</span>] }
+  ]
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Ejemplo completo -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Ejemplo completo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="json"><code>{
+  <span class="tok-atributo">"producto"</span>: <span class="tok-texto">"Portátil"</span>,
+  <span class="tok-atributo">"precio"</span>: <span class="tok-numero">899.99</span>,
+  <span class="tok-atributo">"enStock"</span>: <span class="tok-clave">true</span>,
+  <span class="tok-atributo">"etiquetas"</span>: [<span class="tok-texto">"oferta"</span>, <span class="tok-texto">"novedad"</span>],
+  <span class="tok-atributo">"dimensiones"</span>: {
+    <span class="tok-atributo">"alto"</span>: <span class="tok-numero">1.8</span>,
+    <span class="tok-atributo">"ancho"</span>: <span class="tok-numero">32.5</span>
+  },
+  <span class="tok-atributo">"descuento"</span>: <span class="tok-clave">null</span>
+}</code></pre></figure>
+            <p class="nota">Fíjate: llaves para objetos, corchetes para listas, comillas dobles en todas las claves y en las cadenas, y comas entre elementos (nunca tras el último).</p>
+          </div>
+        </section>
+        <!-- 5. Reglas estrictas -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Reglas estrictas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Comillas dobles</th><td>obligatorias en claves y cadenas; nada de <code>'</code></td></tr>
+                  <tr><th scope="row">Sin coma final</th><td><code>[1, 2, 3,]</code> es un error</td></tr>
+                  <tr><th scope="row">Sin comentarios</th><td>JSON no admite <code>//</code> ni <code>/* */</code></td></tr>
+                  <tr><th scope="row">Claves entre comillas</th><td><code>{"edad": 30}</code>, no <code>{edad: 30}</code></td></tr>
+                  <tr><th scope="row">Un solo valor raíz</th><td>normalmente un objeto o un array</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> los dos fallos más habituales son la <strong>coma sobrante</strong> tras el último elemento y usar <strong>comillas simples</strong>. Ambos rompen el JSON.</p>
+          </div>
+        </section>
+        <!-- 6. JSON frente a XML -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>JSON frente a XML</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-fila"><div class="cmp-a"><code>&lt;usuario&gt;&lt;nombre&gt;Ana&lt;/nombre&gt;&lt;/usuario&gt;</code></div><div class="cmp-b"><code>{"usuario": {"nombre": "Ana"}}</code></div></div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">JSON</th><td>más compacto, ideal para datos y APIs</td></tr>
+                  <tr><th scope="row">XML</th><td>más verboso, con atributos, comentarios y validación por esquema</td></tr>
+                  <tr><th scope="row">JSON no tiene</th><td>comentarios, atributos ni namespaces</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para APIs y configuración, hoy manda JSON. XML sigue en documentos, configuraciones heredadas y donde hace falta validación estricta (ver <a href="xsd.html">XML Schema</a>).</p>
+          </div>
+        </section>
+        <!-- 7. Trabajar con JSON -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Trabajar con JSON</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>jq: filtrar JSON en la terminal</figcaption><pre data-lang="bash"><code><span class="tok-clave">cat</span> datos.json | <span class="tok-clave">jq</span> .              <span class="tok-coment"># formatear e imprimir</span>
+<span class="tok-clave">jq</span> <span class="tok-texto">'.usuarios[0].nombre'</span> datos.json
+<span class="tok-clave">curl</span> <span class="tok-atributo">-s</span> https://api.ejemplo.com | <span class="tok-clave">jq</span> <span class="tok-texto">'.items[].id'</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Python</figcaption><pre data-lang="python"><code><span class="tok-clave">import</span> json
+
+datos = json.<span class="tok-funcion">loads</span>(<span class="tok-texto">'{"nombre": "Ana"}'</span>)   <span class="tok-coment"># texto → dict</span>
+<span class="tok-funcion">print</span>(datos[<span class="tok-texto">"nombre"</span>])
+texto = json.<span class="tok-funcion">dumps</span>(datos, indent=<span class="tok-numero">2</span>)        <span class="tok-coment"># dict → texto</span></code></pre></figure>
+            <p class="nota"><code>jq</code> es la navaja suiza para JSON en la terminal (<code>sudo apt install jq</code>). En Python, el módulo <code>json</code>; en JavaScript, <code>JSON.parse()</code> y <code>JSON.stringify()</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Validación -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Validación</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>JSON Schema</strong> describe la estructura que debe cumplir un JSON, igual que <a href="xsd.html">XML Schema</a> hace con XML.</p>
+            <figure class="codigo"><pre data-lang="json"><code>{
+  <span class="tok-atributo">"type"</span>: <span class="tok-texto">"object"</span>,
+  <span class="tok-atributo">"properties"</span>: {
+    <span class="tok-atributo">"nombre"</span>: { <span class="tok-atributo">"type"</span>: <span class="tok-texto">"string"</span> },
+    <span class="tok-atributo">"edad"</span>: { <span class="tok-atributo">"type"</span>: <span class="tok-texto">"integer"</span>, <span class="tok-atributo">"minimum"</span>: <span class="tok-numero">0</span> }
+  },
+  <span class="tok-atributo">"required"</span>: [<span class="tok-texto">"nombre"</span>]
+}</code></pre></figure>
+            <p class="nota">Para comprobar a mano si un JSON es válido: <code>jq . fichero.json</code> falla si hay un error de sintaxis, o pega el texto en un validador en línea.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="xquery.html">← XQuery</a><a class="siguiente" href="yaml.html">YAML →</a></nav>
+      <footer class="pie">Especificación en <a href="https://www.json.org/json-es.html">json.org</a> (con explicación en español).</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

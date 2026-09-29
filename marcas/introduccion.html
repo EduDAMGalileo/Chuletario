@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Introducción a XML · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="xml">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Lenguajes de marcas</a><span aria-hidden="true">›</span><span>Introducción a XML</span></nav>
+          <h1>Introducción a XML</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Qué es XML, cómo se escribe y el mapa de tecnologías de su familia: DTD, XML Schema, XPath, XQuery y XSLT. La página que da sentido a las demás.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Lenguajes de marcas">
+      <div class="wrap"><a href="introduccion.html" aria-current="page">Introducción</a><a href="dtd.html">DTD</a><a href="xsd.html">XML Schema</a><a href="xpath.html">XPath</a><a href="xquery.html">XQuery</a><a href="json.html">JSON</a><a href="yaml.html">YAML</a><a href="markdown.html">Markdown</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es XML</a><a href="#s2"><b>2</b>Anatomía de un documento</a><a href="#s3"><b>3</b>Documento bien formado</a><a href="#s4"><b>4</b>Bien formado o válido</a><a href="#s5"><b>5</b>Espacios de nombres</a><a href="#s6"><b>6</b>La familia XML</a><a href="#s7"><b>7</b>Validar</a><a href="#s8"><b>8</b>Consultar y transformar</a><a href="#s9"><b>9</b>XML, JSON o YAML</a><a href="#s10"><b>10</b>Dónde se usa</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt"><strong>XML</strong> (eXtensible Markup Language) es un formato de texto para estructurar datos con etiquetas que tú defines. No «hace» nada por sí mismo: describe información para que las máquinas la intercambien y validen.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Marcas, como HTML</p>
+            <p class="txt">Como <a href="../web/html.html">HTML</a>, usa etiquetas <code>&lt;asi&gt;</code>. La diferencia: en HTML las etiquetas están fijadas y sirven para <em>mostrar</em> páginas; en XML te las inventas para <em>describir</em> cualquier tipo de dato.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es XML</h2>
+          <div class="cuerpo">
+            <p class="txt">Un metalenguaje de marcas: un conjunto de reglas para crear tus propios lenguajes de etiquetas. Es texto plano, legible por personas y máquinas, e independiente de la plataforma.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Extensible</th><td>defines tus propias etiquetas, no hay un juego fijo</td></tr>
+                  <tr><th scope="row">Estructurado</th><td>los datos se anidan en forma de árbol</td></tr>
+                  <tr><th scope="row">Autodescriptivo</th><td>las etiquetas explican qué es cada dato</td></tr>
+                  <tr><th scope="row">Portable</th><td>texto plano: cualquier sistema lo lee</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">De XML derivan formatos que usas a diario: <a href="../web/html.html">XHTML</a>, SVG (imágenes), RSS (noticias), los <code>.docx</code>/<code>.xlsx</code> de Office o los ficheros de configuración de muchos programas.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Anatomía de un documento</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Un documento XML sencillo</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-etiqueta">?&gt;</span>
+<span class="tok-coment">&lt;!-- un catálogo de libros --&gt;</span>
+<span class="tok-etiqueta">&lt;catalogo&gt;</span>
+  <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"1"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;titulo&gt;</span>El Quijote<span class="tok-etiqueta">&lt;/titulo&gt;</span>
+    <span class="tok-etiqueta">&lt;autor&gt;</span>Cervantes<span class="tok-etiqueta">&lt;/autor&gt;</span>
+  <span class="tok-etiqueta">&lt;/libro&gt;</span>
+<span class="tok-etiqueta">&lt;/catalogo&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Prólogo</th><td>la línea <code>&lt;?xml ... ?&gt;</code>: versión y codificación</td></tr>
+                  <tr><th scope="row">Elemento</th><td>una etiqueta de apertura y cierre: <code>&lt;titulo&gt;...&lt;/titulo&gt;</code></td></tr>
+                  <tr><th scope="row">Elemento raíz</th><td>el que envuelve a todos (<code>&lt;catalogo&gt;</code>)</td></tr>
+                  <tr><th scope="row">Atributo</th><td>dato dentro de la etiqueta: <code>id="1"</code></td></tr>
+                  <tr><th scope="row">Contenido</th><td>el texto o los elementos hijos</td></tr>
+                  <tr><th scope="row">Vacío</th><td><code>&lt;salto/&gt;</code> se cierra en sí mismo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Documento bien formado</h2>
+          <div class="cuerpo">
+            <p class="txt">Un XML está <strong>bien formado</strong> si respeta las reglas de sintaxis. Son estrictas (más que HTML):</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Una sola raíz</th><td>todo cuelga de un único elemento</td></tr>
+                  <tr><th scope="row">Todo se cierra</th><td>cada etiqueta abierta se cierra (o es vacía <code>/&gt;</code>)</td></tr>
+                  <tr><th scope="row">Bien anidado</th><td>se cierran en orden inverso al que se abrieron</td></tr>
+                  <tr><th scope="row">Distingue mayúsculas</th><td><code>&lt;Libro&gt;</code> ≠ <code>&lt;libro&gt;</code></td></tr>
+                  <tr><th scope="row">Atributos entre comillas</th><td><code>id="1"</code>, nunca <code>id=1</code></td></tr>
+                  <tr><th scope="row">Caracteres especiales</th><td><code>&amp;lt;</code> <code>&amp;gt;</code> <code>&amp;amp;</code> para <code>&lt; &gt; &amp;</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Si un XML no está bien formado, el analizador (parser) lo rechaza entero: no es tolerante como los navegadores con el HTML. Un <code>&amp;</code> suelto o una etiqueta sin cerrar y falla todo.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Bien formado o válido</h2>
+          <div class="cuerpo">
+            <p class="txt">Dos niveles distintos de corrección que conviene no confundir:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Bien formado</th><td>cumple la sintaxis de XML (sección 3). Obligatorio siempre</td></tr>
+                  <tr><th scope="row">Válido</th><td>además, respeta una estructura definida en un esquema (qué elementos, en qué orden, de qué tipo)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La estructura permitida se define con una gramática: una <a href="dtd.html">DTD</a> o, mejor, un <a href="xsd.html">XML Schema</a>. Validar comprueba que el documento encaja en ella. Un XML puede estar bien formado pero no ser válido (le falta un elemento obligatorio, por ejemplo).</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Espacios de nombres</h2>
+          <div class="cuerpo">
+            <p class="txt">Los <strong>namespaces</strong> evitan choques de nombres cuando se mezclan vocabularios: si dos esquemas usan <code>&lt;titulo&gt;</code> con sentidos distintos, un prefijo los distingue.</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;lib:catalogo</span> <span class="tok-atributo">xmlns:lib</span>=<span class="tok-texto">"http://ejemplo.com/libros"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;lib:titulo&gt;</span>El Quijote<span class="tok-etiqueta">&lt;/lib:titulo&gt;</span>
+<span class="tok-etiqueta">&lt;/lib:catalogo&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>xmlns</code></th><td>declara un espacio de nombres</td></tr>
+                  <tr><th scope="row">URI</th><td>identifica el vocabulario (no es una web que se visite)</td></tr>
+                  <tr><th scope="row">Prefijo</th><td><code>lib:</code> abrevia el namespace en cada etiqueta</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los verás por todas partes en XSD, SVG o los ficheros de Office. El URI es solo un identificador único; no hace falta que apunte a nada real.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>La familia XML</h2>
+          <div class="cuerpo">
+            <p class="txt">XML es el centro de un ecosistema de tecnologías, cada una con su papel. Este es el mapa:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><a href="dtd.html">DTD</a></th><td>definir la estructura permitida (la gramática clásica)</td></tr>
+                  <tr><th scope="row"><a href="xsd.html">XML Schema (XSD)</a></th><td>definir la estructura con tipos de datos; sucesor de la DTD</td></tr>
+                  <tr><th scope="row"><a href="xpath.html">XPath</a></th><td>navegar y seleccionar partes del documento por rutas</td></tr>
+                  <tr><th scope="row"><a href="xquery.html">XQuery</a></th><td>consultar y generar XML (el «SQL del XML»)</td></tr>
+                  <tr><th scope="row">XSLT</th><td>transformar un XML en otro formato (HTML, texto, otro XML)</td></tr>
+                  <tr><th scope="row">XSL-FO</th><td>dar formato para impresión y PDF</td></tr>
+                  <tr><th scope="row">XLink / XPointer</th><td>enlaces entre documentos y a partes concretas</td></tr>
+                  <tr><th scope="row">DOM / SAX</th><td>las dos formas de leer XML desde un programa (en árbol o al vuelo)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">XPath es transversal: lo usan XQuery, XSLT y también <a href="../hacking/nmap.html">otras herramientas</a> para exprimir su salida XML. Aprenderlo rinde en muchos sitios.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Validar</h2>
+          <div class="cuerpo">
+            <p class="txt">Definir qué es un documento «correcto» para tu caso y comprobarlo. Dos tecnologías:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><a href="dtd.html">DTD</a></th><td>sencilla y veterana; sin tipos de datos ni namespaces</td></tr>
+                  <tr><th scope="row"><a href="xsd.html">XML Schema</a></th><td>potente: tipos (número, fecha), restricciones, namespaces. El estándar hoy</td></tr>
+                  <tr><th scope="row">RELAX NG</th><td>alternativa más simple a XSD, menos extendida</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para algo serio, XML Schema; la DTD se ve sobre todo por herencia y en documentos antiguos. Ambas definen qué elementos y atributos son válidos y en qué orden.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Consultar y transformar</h2>
+          <div class="cuerpo">
+            <p class="txt">Una vez tienes el XML, quieres sacar datos de él o convertirlo en otra cosa:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><a href="xpath.html">XPath</a></th><td>seleccionar nodos: «todos los títulos», «el libro con id=1»</td></tr>
+                  <tr><th scope="row"><a href="xquery.html">XQuery</a></th><td>consultas completas con FLWOR, agrupar, construir XML nuevo</td></tr>
+                  <tr><th scope="row">XSLT</th><td>transformar: de XML a HTML para mostrarlo en web, por ejemplo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Símil con bases de datos: XPath es como señalar celdas, XQuery es el <a href="../bases-datos/sql.html">SQL</a> del XML, y XSLT es la plantilla que da forma al resultado.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>XML, JSON o YAML</h2>
+          <div class="cuerpo">
+            <p class="txt">XML ya no es la única opción para estructurar datos. Cuándo encaja cada uno:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">XML</th><td>documentos complejos, validación estricta, formatos veteranos (Office, SVG)</td></tr>
+                  <tr><th scope="row"><a href="json.html">JSON</a></th><td>APIs y web: ligero, directo, nativo en JavaScript</td></tr>
+                  <tr><th scope="row"><a href="yaml.html">YAML</a></th><td>configuración legible por personas (Docker, CI/CD)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para intercambio de datos en la web ha ganado JSON, más simple. XML sigue reinando donde importan la validación potente, los namespaces y los documentos con estructura rica.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Dónde se usa</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Documentos de oficina</th><td><code>.docx</code>, <code>.xlsx</code>, <code>.odt</code> son XML comprimido</td></tr>
+                  <tr><th scope="row">Gráficos</th><td>SVG es XML para imágenes vectoriales</td></tr>
+                  <tr><th scope="row">Web y noticias</th><td>RSS y Atom, XHTML, sitemaps</td></tr>
+                  <tr><th scope="row">Configuración</th><td>Maven (<code>pom.xml</code>), Android, muchos servidores Java</td></tr>
+                  <tr><th scope="row">Intercambio</th><td>SOAP, facturación electrónica, sanidad, banca</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Empieza por definir la estructura con <a href="dtd.html">DTD</a> o <a href="xsd.html">XML Schema</a>, y luego consulta y transforma con <a href="xpath.html">XPath</a> y <a href="xquery.html">XQuery</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="dtd.html">DTD →</a></nav>
+      <footer class="pie">La puerta de entrada a la familia XML. Especificación oficial: <a href="https://www.w3.org/TR/xml/">W3C XML 1.0</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

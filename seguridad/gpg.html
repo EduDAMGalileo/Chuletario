@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GPG · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="seguridad">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Seguridad</a><span aria-hidden="true">›</span><span>GPG</span></nav>
+          <h1>GPG</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Chuletario de comandos de GnuPG: generar y gestionar claves, cifrar, descifrar, firmar y verificar desde la terminal.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Seguridad">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="cortafuegos.html">Cortafuegos</a><a href="iptables.html">iptables</a><a href="nftables.html">nftables</a><a href="criptografia.html">Criptografía</a><a href="firma-certificados.html">Firma y certificados</a><a href="gpg.html" aria-current="page">GPG</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es GPG</a><a href="#s2"><b>2</b>Generar claves</a><a href="#s3"><b>3</b>Listar y ver claves</a><a href="#s4"><b>4</b>Exportar e importar</a><a href="#s5"><b>5</b>Cifrar y descifrar</a><a href="#s6"><b>6</b>Cifrado simétrico</a><a href="#s7"><b>7</b>Firmar y verificar</a><a href="#s8"><b>8</b>Confianza y huellas</a><a href="#s9"><b>9</b>Revocar y caducidad</a><a href="#s10"><b>10</b>Recetas</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="txt">GPG (GnuPG) es la implementación libre del estándar <strong>OpenPGP</strong>. Usa <a href="criptografia.html#s4">criptografía asimétrica</a>: cifras con la clave pública del destinatario y firmas con tu privada. En Kali y la mayoría de Linux ya viene instalado (<code>gpg --version</code>).</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Cifrar vs firmar</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cifrar</th><td>con la pública del <em>destinatario</em></td></tr>
+                  <tr><th scope="row">Firmar</th><td>con <em>tu</em> clave privada</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <p class="banda-titulo">Identificar una clave</p>
+            <p class="txt">Puedes referirte a una clave por el correo (<code>ana@ejemplo.com</code>), el ID o su huella. Los ejemplos usan el correo por comodidad.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es GPG</h2>
+          <div class="cuerpo">
+            <p class="txt">Una herramienta de línea de comandos para cifrar y firmar datos y gestionar claves OpenPGP. Se usa para correo cifrado, firmar paquetes de software, cifrar ficheros y verificar descargas.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">GnuPG / GPG</th><td>el programa (<code>gpg</code>)</td></tr>
+                  <tr><th scope="row">OpenPGP</th><td>el estándar que implementa</td></tr>
+                  <tr><th scope="row">Llavero (keyring)</th><td>tu almacén de claves, en <code>~/.gnupg/</code></td></tr>
+                  <tr><th scope="row">Par de claves</th><td>tu pública (se reparte) y tu privada (secreta)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Conviene tener claros antes los conceptos de <a href="criptografia.html">criptografía</a> y <a href="firma-certificados.html">firma digital</a>: GPG es su puesta en práctica.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Generar claves</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">gpg</span> <span class="tok-atributo">--full-generate-key</span>   <span class="tok-coment"># asistente completo (tipo, tamaño, caducidad)</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--gen-key</span>             <span class="tok-coment"># versión rápida (nombre y correo)</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tipo</th><td>RSA o ECC (Ed25519/curvas); RSA 4096 es una elección segura clásica</td></tr>
+                  <tr><th scope="row">Caducidad</th><td>pon una (p. ej. 2 años); siempre se puede extender</td></tr>
+                  <tr><th scope="row">Identidad</th><td>tu nombre y correo, que quedan en la clave</td></tr>
+                  <tr><th scope="row">Passphrase</th><td>protege tu clave privada; sin ella, quien copie el fichero te suplanta</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">La <strong>passphrase</strong> de la clave privada es tu última línea de defensa: elígela fuerte. Si alguien roba <code>~/.gnupg</code> sin la passphrase, no puede usar tu clave.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Listar y ver claves</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">gpg</span> <span class="tok-atributo">--list-keys</span>              <span class="tok-coment"># claves públicas del llavero</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--list-secret-keys</span>       <span class="tok-coment"># tus claves privadas</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--fingerprint</span> ana@ejemplo.com  <span class="tok-coment"># la huella de una clave</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">ID de clave</th><td>los últimos dígitos de la huella; identifica la clave</td></tr>
+                  <tr><th scope="row">Huella (fingerprint)</th><td>el identificador completo; se usa para verificar en persona</td></tr>
+                  <tr><th scope="row"><code>pub</code> / <code>sec</code></th><td>clave pública / secreta (privada)</td></tr>
+                  <tr><th scope="row">UID</th><td>la identidad (nombre y correo) asociada</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Exportar e importar</h2>
+          <div class="cuerpo">
+            <p class="txt">Para que te escriban cifrado, otros necesitan tu clave <em>pública</em>. Y tú necesitas la suya.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># exportar TU pública (en texto, con --armor) para compartirla</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--armor</span> <span class="tok-atributo">--export</span> ana@ejemplo.com &gt; ana-pub.asc
+
+<span class="tok-coment"># importar la clave pública de otra persona</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--import</span> bob-pub.asc
+
+<span class="tok-coment"># servidores de claves</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--send-keys</span> ID <span class="tok-atributo">--keyserver</span> keys.openpgp.org
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--search-keys</span> bob@ejemplo.com</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--armor</code> (<code>-a</code>)</th><td>salida en texto ASCII (<code>.asc</code>) en vez de binario</td></tr>
+                  <tr><th scope="row"><code>--export-secret-keys</code></th><td>exportar la privada (solo para copia de seguridad)</td></tr>
+                  <tr><th scope="row">Servidor de claves</th><td>directorio público donde subir y buscar claves</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">No compartas nunca la clave <em>privada</em>. <code>--export</code> exporta la pública; <code>--export-secret-keys</code> saca la privada y es solo para tu copia de seguridad cifrada.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Cifrar y descifrar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># cifrar un fichero para un destinatario (su clave pública)</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--encrypt</span> <span class="tok-atributo">--recipient</span> bob@ejemplo.com informe.pdf
+<span class="tok-clave">gpg</span> <span class="tok-atributo">-e</span> <span class="tok-atributo">-r</span> bob@ejemplo.com informe.pdf   <span class="tok-coment"># forma corta → informe.pdf.gpg</span>
+
+<span class="tok-coment"># cifrar y firmar a la vez, en texto ASCII</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">-e</span> <span class="tok-atributo">-s</span> <span class="tok-atributo">-a</span> <span class="tok-atributo">-r</span> bob@ejemplo.com informe.pdf
+
+<span class="tok-coment"># descifrar (usa tu clave privada; pedirá la passphrase)</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--decrypt</span> informe.pdf.gpg &gt; informe.pdf
+<span class="tok-clave">gpg</span> <span class="tok-atributo">-d</span> informe.pdf.gpg</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-e</code> / <code>--encrypt</code></th><td>cifrar</td></tr>
+                  <tr><th scope="row"><code>-r</code> / <code>--recipient</code></th><td>para quién (su clave pública)</td></tr>
+                  <tr><th scope="row"><code>-d</code> / <code>--decrypt</code></th><td>descifrar</td></tr>
+                  <tr><th scope="row">Varios <code>-r</code></th><td>cifrar para varios destinatarios a la vez</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Solo el poseedor de la clave privada correspondiente podrá descifrarlo. Si lo ciframos para Bob, ni siquiera nosotros podremos leerlo luego (salvo que nos añadamos como destinatario).</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Cifrado simétrico</h2>
+          <div class="cuerpo">
+            <p class="txt">Sin claves: cifrado <a href="criptografia.html#s3">simétrico</a> con una contraseña. Útil para proteger un fichero propio o compartir por un canal donde acordar la clave aparte.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">gpg</span> <span class="tok-atributo">--symmetric</span> secreto.txt       <span class="tok-coment"># pide una contraseña → secreto.txt.gpg</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">-c</span> secreto.txt                <span class="tok-coment"># forma corta</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">-d</span> secreto.txt.gpg             <span class="tok-coment"># descifrar (pide la misma contraseña)</span></code></pre></figure>
+            <p class="nota">Aquí no hay par de claves: quien tenga la contraseña descifra. Reaparece el <a href="criptografia.html#s3">problema del reparto</a>: hay que hacerle llegar la contraseña al otro de forma segura.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Firmar y verificar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># firma separada (.sig aparte, no toca el original) — lo más usado</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--detach-sign</span> <span class="tok-atributo">-a</span> programa.tar.gz   <span class="tok-coment"># genera programa.tar.gz.asc</span>
+
+<span class="tok-coment"># firma en claro (texto legible + firma) para un mensaje</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--clear-sign</span> mensaje.txt
+
+<span class="tok-coment"># verificar (necesitas la clave pública del firmante)</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--verify</span> programa.tar.gz.asc programa.tar.gz</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--sign</code> (<code>-s</code>)</th><td>firma y comprime el fichero en uno solo</td></tr>
+                  <tr><th scope="row"><code>--detach-sign</code></th><td>firma en un fichero aparte (<code>.sig</code>/<code>.asc</code>)</td></tr>
+                  <tr><th scope="row"><code>--clear-sign</code></th><td>deja el texto legible con la firma alrededor</td></tr>
+                  <tr><th scope="row"><code>--verify</code></th><td>comprobar una firma</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La firma separada es la típica al distribuir software: publicas <code>programa.tar.gz</code> y <code>programa.tar.gz.asc</code>, y quien descarga verifica que no se ha manipulado. Ver <a href="firma-certificados.html">firma digital</a>.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Confianza y huellas</h2>
+          <div class="cuerpo">
+            <p class="txt">GPG no usa <a href="firma-certificados.html#s6">autoridades de certificación</a>: usa la <strong>red de confianza</strong>. Tú decides de qué claves te fías, y firmas las que has verificado.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">gpg</span> <span class="tok-atributo">--fingerprint</span> bob@ejemplo.com   <span class="tok-coment"># compara la huella con Bob por otro canal</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--sign-key</span> bob@ejemplo.com     <span class="tok-coment"># firmas su clave: declaras que confías</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--edit-key</span> bob@ejemplo.com     <span class="tok-coment"># menú: trust, sign, expire...</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Verificar la huella</th><td>contrástala con el dueño por un canal seguro (en persona, teléfono)</td></tr>
+                  <tr><th scope="row">Firmar la clave</th><td>una vez verificada, la firmas para dejar constancia</td></tr>
+                  <tr><th scope="row">Red de confianza</th><td>si te fías de alguien, puedes fiarte de las claves que él ha firmado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">No confíes en una clave solo porque venga con un nombre bonito: cualquiera puede poner el correo que quiera al generarla. Verifica siempre la <em>huella</em> por un canal aparte antes de fiarte.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Revocar y caducidad</h2>
+          <div class="cuerpo">
+            <p class="txt">Si pierdes la clave privada o crees que está comprometida, hay que <strong>revocarla</strong> para avisar a todos de que ya no vale.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># genera el certificado de revocación NADA MÁS crear la clave</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--gen-revoke</span> <span class="tok-atributo">-a</span> <span class="tok-atributo">-o</span> revoke.asc ana@ejemplo.com
+
+<span class="tok-coment"># cuando toque, impórtalo para revocar y súbelo al servidor</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--import</span> revoke.asc
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--edit-key</span> ana@ejemplo.com    <span class="tok-coment"># dentro: expire para cambiar caducidad</span></code></pre></figure>
+            <p class="nota">Genera el certificado de revocación <em>al crear la clave</em> y guárdalo a salvo: si algún día pierdes el acceso a la privada, seguirás pudiendo revocarla con ese certificado.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Recetas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Casos habituales</figcaption><pre data-lang="bash"><code><span class="tok-coment"># cifrar un fichero solo para mí (copia de seguridad personal)</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">-e</span> <span class="tok-atributo">-r</span> ana@ejemplo.com copia.tar
+
+<span class="tok-coment"># proteger un fichero con contraseña (sin claves)</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">-c</span> notas.txt
+
+<span class="tok-coment"># verificar la firma de una descarga (distros, software)</span>
+<span class="tok-clave">gpg</span> <span class="tok-atributo">--verify</span> distro.iso.sig distro.iso
+
+<span class="tok-coment"># comprobar la integridad con un hash (complementa a GPG)</span>
+<span class="tok-clave">sha256sum</span> <span class="tok-atributo">-c</span> distro.iso.sha256</code></pre></figure>
+            <p class="nota">Verificar descargas es el uso más cotidiano: muchas distros publican una firma GPG del ISO. Comprobarla asegura que el fichero es el original y no una versión manipulada. Ver <a href="criptografia.html#s6">funciones hash</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="firma-certificados.html">← Firma y certificados</a><span></span></nav>
+      <footer class="pie">Manual: <a href="https://www.gnupg.org/documentation/">gnupg.org/documentation</a>. Pon en práctica la <a href="criptografia.html">criptografía</a> y la <a href="firma-certificados.html">firma digital</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

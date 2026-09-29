@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Red y acceso remoto · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><a href="terminal-linux.html">Comandos</a><span aria-hidden="true">›</span><span>Red y acceso remoto</span></nav>
+          <h1>Red y acceso remoto</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Ver la configuración de red, conectarse por SSH y copiar ficheros, y el cortafuegos sencillo de Ubuntu: ip, ping, ss, ssh, scp, rsync y ufw.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Comandos">
+      <div class="wrap"><a href="comandos-archivos.html">Archivos y navegación</a><a href="comandos-texto.html">Buscar y texto</a><a href="comandos-usuarios.html">Usuarios y permisos</a><a href="comandos-procesos.html">Procesos y sistema</a><a href="comandos-paquetes.html">Paquetes y compresión</a><a href="comandos-red.html" aria-current="page">Red y acceso remoto</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Red</a><a href="#s2"><b>2</b>SSH y copia remota</a><a href="#s3"><b>3</b>Cortafuegos (ufw)</a></nav>
+      <div class="rejilla">
+        <!-- 1. Red -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Red</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ip a</code></th><td>interfaces y direcciones IP</td></tr>
+                  <tr><th scope="row"><code>ip r</code></th><td>tabla de rutas y puerta de enlace</td></tr>
+                  <tr><th scope="row"><code>hostname -I</code></th><td>solo las IP del equipo</td></tr>
+                  <tr><th scope="row"><code>ping -c 4 google.com</code></th><td>comprobar conectividad (4 paquetes)</td></tr>
+                  <tr><th scope="row"><code>ss -tulpn</code></th><td>puertos a la escucha y qué proceso los usa</td></tr>
+                  <tr><th scope="row"><code>curl https://ejemplo.com</code></th><td>descarga y muestra una página</td></tr>
+                  <tr><th scope="row" class="larga"><code>curl -I https://ejemplo.com</code></th><td>solo las cabeceras HTTP</td></tr>
+                  <tr><th scope="row" class="larga"><code>wget https://ejemplo.com/f.zip</code></th><td>descarga un fichero</td></tr>
+                  <tr><th scope="row"><code>dig ejemplo.com</code></th><td>consulta DNS (<code>nslookup</code> también vale)</td></tr>
+                  <tr><th scope="row"><code>traceroute ejemplo.com</code></th><td>saltos hasta un destino</td></tr>
+                  <tr><th scope="row"><code>nmcli device status</code></th><td>estado de la red (NetworkManager)</td></tr>
+                  <tr><th scope="row"><code>cat /etc/hosts</code></th><td>nombres resueltos localmente</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>ifconfig</code> y <code>netstat</code> son las herramientas antiguas (paquete <code>net-tools</code>). Siguen en Kali, pero lo actual es <code>ip</code> y <code>ss</code>. Configuración de red en detalle en <a href="../redes/red-linux.html">Redes</a>.</p>
+          </div>
+        </section>
+        <!-- 2. SSH y copia remota -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>SSH y copia remota</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ssh</span> ana@192.168.1.20                 <span class="tok-coment"># conectarse</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-p</span> 2222 ana@servidor             <span class="tok-coment"># otro puerto</span>
+
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-t</span> ed25519                <span class="tok-coment"># crear un par de claves</span>
+<span class="tok-clave">ssh-copy-id</span> ana@192.168.1.20         <span class="tok-coment"># entrar sin contraseña a partir de ahora</span>
+
+<span class="tok-clave">scp</span> informe.pdf ana@servidor:/home/ana/          <span class="tok-coment"># subir</span>
+<span class="tok-clave">scp</span> ana@servidor:/var/log/syslog .               <span class="tok-coment"># bajar</span>
+<span class="tok-clave">scp</span> <span class="tok-atributo">-r</span> proyecto/ ana@servidor:~/                 <span class="tok-coment"># carpeta entera</span>
+
+<span class="tok-clave">rsync</span> <span class="tok-atributo">-avz</span> <span class="tok-atributo">--progress</span> proyecto/ ana@servidor:~/proyecto/   <span class="tok-coment"># sincroniza solo cambios</span></code></pre></figure>
+            <p class="nota">Para aceptar conexiones hay que instalar el servidor: <code>sudo apt install openssh-server</code>. Las claves SSH usan <a href="../seguridad/criptografia.html#s4">criptografía asimétrica</a>.</p>
+          </div>
+        </section>
+        <!-- 3. Cortafuegos (ufw) -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Cortafuegos (ufw)</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>ufw</strong> (<em>Uncomplicated Firewall</em>) es la interfaz sencilla del cortafuegos de Ubuntu, por encima de <a href="../seguridad/iptables.html">iptables</a>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sudo ufw status verbose</code></th><td>estado y reglas</td></tr>
+                  <tr><th scope="row"><code>sudo ufw allow ssh</code></th><td>permite SSH (hazlo antes de activarlo en remoto)</td></tr>
+                  <tr><th scope="row"><code>sudo ufw allow 8080/tcp</code></th><td>permite un puerto</td></tr>
+                  <tr><th scope="row"><code>sudo ufw deny 3306</code></th><td>bloquea un puerto</td></tr>
+                  <tr><th scope="row"><code>sudo ufw enable</code></th><td>activa el cortafuegos</td></tr>
+                  <tr><th scope="row"><code>sudo ufw status numbered</code></th><td>reglas numeradas</td></tr>
+                  <tr><th scope="row"><code>sudo ufw delete 2</code></th><td>borra la regla 2</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En Kali no viene instalado: <code>sudo apt install ufw</code>. Para el cortafuegos a fondo, ver <a href="../seguridad/cortafuegos.html">Cortafuegos</a>, <a href="../seguridad/iptables.html">iptables</a> y <a href="../seguridad/nftables.html">nftables</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="comandos-paquetes.html">← Paquetes y compresión</a><span></span></nav>
+      <footer class="pie">Parte de los <a href="terminal-linux.html">Comandos de Linux</a>. Para cualquier orden: <code>man comando</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

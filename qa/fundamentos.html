@@ -21,7 +21,7 @@
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de QA">
-      <div class="wrap"><a href="fundamentos.html" aria-current="page">Fundamentos</a></div>
+      <div class="wrap"><a href="fundamentos.html" aria-current="page">Fundamentos</a><a href="unitarias.html">Pruebas unitarias</a><a href="integracion.html">Pruebas de integración</a><a href="sistema-e2e.html">Sistema y E2E</a></div>
     </nav>
     <main class="wrap">
       <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es QA</a><a href="#s2"><b>2</b>QA, QC y testing</a><a href="#s3"><b>3</b>Las ramas de QA</a><a href="#s4"><b>4</b>Niveles de prueba</a><a href="#s5"><b>5</b>Tipos de prueba</a><a href="#s6"><b>6</b>Caja negra y caja blanca</a><a href="#s7"><b>7</b>Roles</a><a href="#s8"><b>8</b>El proceso</a><a href="#s9"><b>9</b>Casos de prueba y defectos</a><a href="#s10"><b>10</b>Automatización y CI/CD</a></nav>
@@ -104,7 +104,7 @@
                 </tbody>
               </table>
             </div>
-            <p class="nota"><strong>Pirámide de pruebas:</strong> muchas unitarias (base), menos de integración y pocas de sistema (cima). Las de arriba son más lentas y frágiles.</p>
+            <p class="nota"><strong>Pirámide de pruebas:</strong> muchas <a href="unitarias.html">unitarias</a> (base), menos de <a href="integracion.html">integración</a> y pocas de <a href="sistema-e2e.html">sistema</a> (cima). Las de arriba son más lentas y frágiles.</p>
           </div>
         </section>
         <!-- 5 -->
@@ -215,7 +215,7 @@
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row">Unitarias</th><td>JUnit (Java), pytest (Python)</td></tr>
+                  <tr><th scope="row">Unitarias</th><td><a href="../java/junit.html">JUnit</a> (Java), pytest (Python)</td></tr>
                   <tr><th scope="row">Web (E2E)</th><td>Selenium, Cypress, Playwright</td></tr>
                   <tr><th scope="row">API</th><td>Postman, REST Assured</td></tr>
                   <tr><th scope="row">Carga</th><td>JMeter, k6</td></tr>
@@ -223,11 +223,12 @@
                 </tbody>
               </table>
             </div>
-            <p class="nota">Aquí iremos añadiendo chuletas de cada tecnología. Para el flujo automatizado, ver <a href="../git/github.html#s12">GitHub Actions</a>.</p>
+            <p class="nota">Cada nivel en detalle, con sus tecnologías, en <a href="unitarias.html">unitarias</a>, <a href="integracion.html">integración</a> y <a href="sistema-e2e.html">sistema y E2E</a>. Para el flujo automatizado, ver <a href="../git/github.html#s12">GitHub Actions</a>.</p>
           </div>
         </section>
       </div>
-      <footer class="pie">Sección en construcción: iremos añadiendo herramientas (JUnit, Selenium, Postman...) y tipos de prueba en detalle.</footer>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="unitarias.html">Pruebas unitarias →</a></nav>
+      <footer class="pie">Continúa con los niveles en detalle: <a href="unitarias.html">unitarias</a>, <a href="integracion.html">integración</a> y <a href="sistema-e2e.html">sistema y E2E</a>.</footer>
     </main>
     <script src="../assets/chuletas.js" defer></script>
   </body>

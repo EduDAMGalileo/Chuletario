@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Criptografía · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="seguridad">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Seguridad</a><span aria-hidden="true">›</span><span>Criptografía</span></nav>
+          <h1>Criptografía</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Los cimientos: cifrado simétrico y asimétrico, funciones hash y para qué sirve cada uno. La base antes de la firma digital y GPG.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Seguridad">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="cortafuegos.html">Cortafuegos</a><a href="iptables.html">iptables</a><a href="nftables.html">nftables</a><a href="criptografia.html" aria-current="page">Criptografía</a><a href="firma-certificados.html">Firma y certificados</a><a href="gpg.html">GPG</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es la criptografía</a><a href="#s2"><b>2</b>Para qué sirve</a><a href="#s3"><b>3</b>Cifrado simétrico</a><a href="#s4"><b>4</b>Cifrado asimétrico</a><a href="#s5"><b>5</b>Simétrico vs asimétrico</a><a href="#s6"><b>6</b>Funciones hash</a><a href="#s7"><b>7</b>Hash de contraseñas</a><a href="#s8"><b>8</b>HMAC</a><a href="#s9"><b>9</b>Algoritmos de un vistazo</a><a href="#s10"><b>10</b>Buenas prácticas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">La criptografía transforma información para que solo quien deba pueda leerla o para demostrar que no se ha alterado. Es la base técnica de la <a href="introduccion.html">seguridad</a>: contraseñas, HTTPS, firmas y mensajería cifrada.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Vocabulario</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Texto plano</th><td>el mensaje original, legible</td></tr>
+                  <tr><th scope="row">Texto cifrado</th><td>el resultado ilegible</td></tr>
+                  <tr><th scope="row">Clave</th><td>el secreto que cifra y/o descifra</td></tr>
+                  <tr><th scope="row">Algoritmo</th><td>el método (AES, RSA...); es público</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es la criptografía</h2>
+          <div class="cuerpo">
+            <p class="txt">La ciencia de proteger información mediante transformaciones matemáticas. Cifrar convierte el texto plano en texto cifrado con una clave; descifrar hace el camino inverso.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cifrar</th><td>texto plano + clave → texto cifrado</td></tr>
+                  <tr><th scope="row">Descifrar</th><td>texto cifrado + clave → texto plano</td></tr>
+                  <tr><th scope="row">Criptoanálisis</th><td>el arte de romper el cifrado sin la clave</td></tr>
+                  <tr><th scope="row">Codificar ≠ cifrar</th><td>Base64 codifica (reversible sin secreto), no protege nada</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><strong>Principio de Kerckhoffs:</strong> la seguridad debe residir solo en la clave, nunca en mantener secreto el algoritmo. Por eso los algoritmos buenos son públicos y muy revisados.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Para qué sirve</h2>
+          <div class="cuerpo">
+            <p class="txt">No es solo «ocultar». La criptografía sostiene cuatro garantías (los pilares que veías en la <a href="introduccion.html">Introducción</a>):</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Confidencialidad</th><td>que solo el destinatario lo lea · <em>cifrado</em></td></tr>
+                  <tr><th scope="row">Integridad</th><td>que no se haya alterado · <em>hash</em></td></tr>
+                  <tr><th scope="row">Autenticidad</th><td>que venga de quien dice · <em>firma, HMAC</em></td></tr>
+                  <tr><th scope="row">No repudio</th><td>que no pueda negar haberlo enviado · <em><a href="firma-certificados.html">firma digital</a></em></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cada herramienta cubre una garantía distinta: cifrar da confidencialidad pero no integridad; un hash da integridad pero no confidencialidad. A menudo se combinan.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Cifrado simétrico</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>única clave</strong> cifra y descifra. Emisor y receptor comparten el mismo secreto. Es rápido y sirve para grandes volúmenes de datos.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Clave única</th><td>la misma para cifrar y para descifrar</td></tr>
+                  <tr><th scope="row">Rápido</th><td>ideal para discos, ficheros, tráfico masivo</td></tr>
+                  <tr><th scope="row">AES</th><td>el estándar actual (128/256 bits)</td></tr>
+                  <tr><th scope="row">ChaCha20</th><td>alternativa moderna, rápida en móvil</td></tr>
+                  <tr><th scope="row">Obsoletos</th><td>DES y 3DES: ya no se consideran seguros</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>El problema del reparto de clave:</strong> ¿cómo le haces llegar la clave secreta al otro sin que la intercepten? Si pudieras enviarla de forma segura, no necesitarías cifrar. Eso lo resuelve el cifrado asimétrico.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Cifrado asimétrico</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada persona tiene un <strong>par de claves</strong>: una <em>pública</em> (se reparte) y una <em>privada</em> (secreta). Lo que cifra una, solo lo descifra la otra.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Clave pública</th><td>se puede publicar; con ella te cifran mensajes</td></tr>
+                  <tr><th scope="row">Clave privada</th><td>secreta; con ella descifras lo que te enviaron</td></tr>
+                  <tr><th scope="row">Para cifrar</th><td>ciframos con la <em>pública</em> del destinatario</td></tr>
+                  <tr><th scope="row">Para firmar</th><td>firmamos con <em>nuestra privada</em> (ver <a href="firma-certificados.html">firma</a>)</td></tr>
+                  <tr><th scope="row">Algoritmos</th><td>RSA (el clásico) y ECC / curvas elípticas (moderno, claves más cortas)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Resuelve el reparto de clave: para escribirte cifrado, me basta tu clave <em>pública</em>, que puede ser conocida por todos. Solo tú, con tu privada, podrás leerlo. A cambio, es mucho más lento que el simétrico.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Simétrico vs asimétrico</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Claves</th><td>simétrico: una compartida · asimétrico: par pública/privada</td></tr>
+                  <tr><th scope="row">Velocidad</th><td>simétrico: rápido · asimétrico: lento</td></tr>
+                  <tr><th scope="row">Reparto de clave</th><td>simétrico: problemático · asimétrico: resuelto</td></tr>
+                  <tr><th scope="row">Uso típico</th><td>simétrico: cifrar datos · asimétrico: intercambiar la clave y firmar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><strong>Cifrado híbrido:</strong> lo mejor de ambos. Se usa el asimétrico (lento) solo para intercambiar una clave simétrica de sesión, y luego se cifra todo el tráfico con la simétrica (rápida). Así funciona <a href="firma-certificados.html#s8">TLS/HTTPS</a>.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Funciones hash</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>hash</strong> convierte cualquier dato en una huella de tamaño fijo. No es cifrado: es de <em>ida</em>, no se puede volver atrás. Sirve para comprobar integridad.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Unidireccional</th><td>del hash no se recupera el original</td></tr>
+                  <tr><th scope="row">Determinista</th><td>la misma entrada da siempre el mismo hash</td></tr>
+                  <tr><th scope="row">Efecto avalancha</th><td>un cambio mínimo cambia el hash por completo</td></tr>
+                  <tr><th scope="row">Resistente a colisiones</th><td>difícil hallar dos entradas con el mismo hash</td></tr>
+                  <tr><th scope="row">SHA-256, SHA-3</th><td>los recomendados hoy</td></tr>
+                  <tr><th scope="row">MD5, SHA-1</th><td>rotos: no usar para seguridad</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Usos: verificar que una descarga no se ha corrompido (comparar el hash), guardar contraseñas (sección 7) y ser la pieza que se firma en una <a href="firma-certificados.html">firma digital</a>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Hash de contraseñas</h2>
+          <div class="cuerpo">
+            <p class="txt">Las contraseñas nunca se guardan en claro: se guarda su hash. Pero un hash normal (SHA-256) es demasiado rápido, y eso ayuda al atacante. Para claves se usan hashes <em>lentos</em> y con sal.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Salt (sal)</th><td>un valor aleatorio por contraseña; evita las <a href="../hacking/fuerza-bruta.html">rainbow tables</a></td></tr>
+                  <tr><th scope="row">Lento a propósito</th><td>bcrypt, scrypt, Argon2: cuestan tiempo, frenan la fuerza bruta</td></tr>
+                  <tr><th scope="row">Pepper</th><td>secreto extra del servidor, aparte de la sal</td></tr>
+                  <tr><th scope="row">Nunca</th><td>MD5/SHA-1 «pelados» para contraseñas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Un volcado de contraseñas con MD5 sin sal se rompe en segundos con <a href="../hacking/fuerza-bruta.html">John the Ripper</a>; el mismo volcado con bcrypt y sal resiste muchísimo. La diferencia la marca el algoritmo elegido.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>HMAC</h2>
+          <div class="cuerpo">
+            <p class="txt">Un hash a secas da integridad, pero cualquiera puede recalcularlo. El <strong>HMAC</strong> combina el hash con una clave secreta: además de integridad, prueba que viene de quien conoce la clave (autenticidad).</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Hash solo</th><td>integridad: ¿ha cambiado el dato?</td></tr>
+                  <tr><th scope="row">HMAC</th><td>integridad + autenticidad, con clave compartida (simétrica)</td></tr>
+                  <tr><th scope="row">Firma digital</th><td>integridad + autenticidad + no repudio, con clave asimétrica</td></tr>
+                  <tr><th scope="row">Usos de HMAC</th><td>tokens (JWT), webhooks, APIs que firman peticiones</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Diferencia clave con la firma: el HMAC usa una clave <em>compartida</em>, así que ambos lados podrían haber generado el mensaje (no hay no repudio). La <a href="firma-certificados.html">firma digital</a> usa clave privada y sí identifica a una sola persona.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Algoritmos de un vistazo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Simétricos</th><td>AES, ChaCha20 · (obsoletos: DES, 3DES, RC4)</td></tr>
+                  <tr><th scope="row">Asimétricos</th><td>RSA, ECC (Ed25519, ECDSA), Diffie-Hellman (intercambio de clave)</td></tr>
+                  <tr><th scope="row">Hash</th><td>SHA-256, SHA-3, BLAKE2 · (rotos: MD5, SHA-1)</td></tr>
+                  <tr><th scope="row">Hash de claves</th><td>bcrypt, scrypt, Argon2</td></tr>
+                  <tr><th scope="row">MAC</th><td>HMAC-SHA256</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Diffie-Hellman merece mención: permite a dos partes acordar una clave secreta compartida hablando por un canal público, sin enviarla nunca. Es el corazón del intercambio de claves en TLS.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Buenas prácticas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">No inventes cripto</th><td>usa librerías revisadas (libsodium, la del lenguaje), nunca la tuya</td></tr>
+                  <tr><th scope="row">Algoritmos actuales</th><td>AES-GCM, SHA-256, Argon2; huye de MD5, SHA-1, DES, RC4</td></tr>
+                  <tr><th scope="row">Claves largas y aleatorias</th><td>generadas con un generador criptográfico, no con <code>rand()</code></td></tr>
+                  <tr><th scope="row">Protege la clave privada</th><td>si se filtra, se acabó; cífrala con passphrase</td></tr>
+                  <tr><th scope="row">Cifra y autentica</th><td>usa modos que dan las dos (AES-GCM), no solo cifrado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Sigue con la <a href="firma-certificados.html">firma digital y los certificados</a> (cómo se prueba la identidad) y con <a href="gpg.html">GPG</a> para cifrar y firmar en la práctica desde la terminal.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="nftables.html">← nftables</a><a class="siguiente" href="firma-certificados.html">Firma y certificados →</a></nav>
+      <footer class="pie">Los cimientos del cifrado. Continúa en <a href="firma-certificados.html">Firma y certificados</a> y <a href="gpg.html">GPG</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

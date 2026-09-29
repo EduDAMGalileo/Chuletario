@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pruebas de integración · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="qa">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">QA</a><span aria-hidden="true">›</span><span>Pruebas de integración</span></nav>
+          <h1>Pruebas de integración</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Comprobar que varias piezas funcionan juntas: módulos, base de datos y APIs externas. Estrategias, cuándo usar dobles o servicios reales, y las herramientas.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de QA">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="unitarias.html">Pruebas unitarias</a><a href="integracion.html" aria-current="page">Pruebas de integración</a><a href="sistema-e2e.html">Sistema y E2E</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es la integración</a><a href="#s2"><b>2</b>Frente a las unitarias</a><a href="#s3"><b>3</b>Qué se integra</a><a href="#s4"><b>4</b>Estrategias</a><a href="#s5"><b>5</b>Dobles o servicios reales</a><a href="#s6"><b>6</b>Base de datos</a><a href="#s7"><b>7</b>APIs y contratos</a><a href="#s8"><b>8</b>Herramientas</a><a href="#s9"><b>9</b>Buenas prácticas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Una unidad puede funcionar sola y romperse al conectarla con otra. Las pruebas de integración comprueban justo eso: que las piezas <strong>encajan</strong> —los módulos entre sí, con la base de datos o con servicios externos.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">El nivel intermedio</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Por debajo</th><td><a href="unitarias.html">unitarias</a>: cada pieza aislada</td></tr>
+                  <tr><th scope="row">Aquí</th><td>integración: las piezas conectadas</td></tr>
+                  <tr><th scope="row">Por encima</th><td><a href="sistema-e2e.html">sistema</a>: la aplicación entera</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es la integración</h2>
+          <div class="cuerpo">
+            <p class="txt">Prueba la interacción entre dos o más componentes que ya se probaron por separado. El objetivo son las <strong>costuras</strong>: las interfaces por donde se comunican, donde suelen esconderse los fallos.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Qué caza</th><td>datos con formato distinto, contratos mal entendidos, configuración</td></tr>
+                  <tr><th scope="row">Qué NO caza</th><td>la lógica interna de cada pieza (para eso están las unitarias)</td></tr>
+                  <tr><th scope="row">Velocidad</th><td>más lentas que las unitarias: tocan recursos reales</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Ejemplo típico: la unidad «Servicio» y la unidad «Repositorio» pasan sus tests, pero al unirlas la consulta SQL no devuelve lo que el servicio espera. Eso solo lo ve una prueba de integración.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Frente a las unitarias</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Alcance</th><td>unitaria: una pieza · integración: varias juntas</td></tr>
+                  <tr><th scope="row">Dependencias</th><td>unitaria: sustituidas por dobles · integración: reales (BD, API)</td></tr>
+                  <tr><th scope="row">Velocidad</th><td>unitaria: milisegundos · integración: décimas o segundos</td></tr>
+                  <tr><th scope="row">Al fallar</th><td>unitaria: sabes la pieza · integración: hay que investigar la costura</td></tr>
+                  <tr><th scope="row">Cantidad</th><td>muchas unitarias, bastantes menos de integración</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En la <a href="fundamentos.html#s4">pirámide de pruebas</a>, la integración es la franja del medio: menos numerosa que la base unitaria, más que la cima de sistema.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Qué se integra</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Módulo con módulo</th><td>dos partes de tu propio código que colaboran</td></tr>
+                  <tr><th scope="row">Con la base de datos</th><td>que las consultas y el mapeo (ORM) funcionan de verdad</td></tr>
+                  <tr><th scope="row">Con una API externa</th><td>que hablas bien con un servicio de terceros</td></tr>
+                  <tr><th scope="row">Con el sistema de ficheros</th><td>leer, escribir, permisos, rutas</td></tr>
+                  <tr><th scope="row">Con una cola o caché</th><td>Kafka, RabbitMQ, Redis...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La integración más habitual y valiosa es con la base de datos: es donde el código se encuentra con datos reales y donde más sorpresas aparecen.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Estrategias</h2>
+          <div class="cuerpo">
+            <p class="txt">Formas de ir juntando los módulos. Cuando falta una pieza, se sustituye temporalmente:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Big bang</th><td>montar todo de golpe y probar. Simple, pero difícil de depurar</td></tr>
+                  <tr><th scope="row">Top-down</th><td>de los módulos de arriba hacia abajo; los de abajo que faltan se simulan con <em>stubs</em></td></tr>
+                  <tr><th scope="row">Bottom-up</th><td>de abajo hacia arriba; los de arriba que faltan se simulan con <em>drivers</em></td></tr>
+                  <tr><th scope="row">Sándwich</th><td>combinación de las dos anteriores a la vez</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Stub</th><td>simula un módulo <em>inferior</em> que aún no existe</td></tr>
+                  <tr><th scope="row">Driver</th><td>simula un módulo <em>superior</em> que llamaría al que pruebas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Incremental (top-down o bottom-up) es lo habitual: añadir módulos poco a poco hace que, cuando algo falla, sepas que ha sido lo último que conectaste.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Dobles o servicios reales</h2>
+          <div class="cuerpo">
+            <p class="txt">La gran decisión: ¿usar la dependencia de verdad o un doble? Cada opción tiene su precio.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Servicio real</th><td>máxima fidelidad, pero lento, frágil y a veces con coste (una API de pago)</td></tr>
+                  <tr><th scope="row">Doble / mock</th><td>rápido y controlado, pero puede no reflejar el comportamiento real</td></tr>
+                  <tr><th scope="row">Fake local</th><td>equilibrio: una versión ligera y real (BD en memoria, servidor simulado)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Cuidado con mockear la dependencia que precisamente quieres integrar: si sustituyes la base de datos por un mock, ya no estás probando la integración con la base de datos, solo tu código. Para la BD, usa una BD de verdad (sección 6).</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Base de datos</h2>
+          <div class="cuerpo">
+            <p class="txt">Para probar contra una base de datos sin ensuciar la de producción, hay tres enfoques:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">BD en memoria</th><td>H2, SQLite: rapidísima, pero puede diferir del motor real</td></tr>
+                  <tr><th scope="row">Testcontainers</th><td>levanta el motor <em>real</em> (PostgreSQL, MySQL) en un contenedor Docker para el test</td></tr>
+                  <tr><th scope="row">BD dedicada</th><td>una instancia solo para pruebas, que se limpia entre ellas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Testcontainers es hoy la opción preferida: prueba contra el mismo motor que usarás en producción (ver <a href="../virtualizacion/docker.html">Docker</a>), evitando las diferencias de sintaxis SQL entre gestores. Deja el estado limpio: cada test parte de datos conocidos y no depende de lo que dejó el anterior.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>APIs y contratos</h2>
+          <div class="cuerpo">
+            <p class="txt">Al integrar con una API (propia o de terceros) se prueba que la petición y la respuesta encajan. Y para no depender de un servicio ajeno en cada test, se simula.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Servidor simulado</th><td>WireMock, MockServer: fingen la API externa con respuestas fijas</td></tr>
+                  <tr><th scope="row">Pruebas de API</th><td>REST Assured (Java), Postman/Newman: lanzan peticiones y validan la respuesta</td></tr>
+                  <tr><th scope="row">Pruebas de contrato</th><td>Pact: verifican que quien consume y quien provee comparten el mismo «contrato»</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las <em>pruebas de contrato</em> resuelven un problema típico de microservicios: que un equipo cambie su API y rompa a otro sin enterarse. El contrato pactado se comprueba en el CI de ambos.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Herramientas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Java / Spring</th><td><code>@SpringBootTest</code> levanta el contexto; <a href="../java/junit.html">JUnit</a> como base</td></tr>
+                  <tr><th scope="row">Testcontainers</th><td>dependencias reales en Docker (multi-lenguaje)</td></tr>
+                  <tr><th scope="row">REST Assured</th><td>probar APIs REST desde Java de forma fluida</td></tr>
+                  <tr><th scope="row">Postman / Newman</th><td>colecciones de peticiones; Newman las lanza en el CI</td></tr>
+                  <tr><th scope="row">WireMock</th><td>simular servicios HTTP externos</td></tr>
+                  <tr><th scope="row">pytest / TestNG</th><td>marcos que también sirven para integración</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">A menudo se usa el mismo framework que en las unitarias (JUnit, pytest) pero con dependencias reales y marcando los tests como «de integración» para poder ejecutarlos por separado (más lentos).</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Buenas prácticas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Sepáralas de las unitarias</th><td>etiquétalas: son lentas y no deben frenar el ciclo rápido</td></tr>
+                  <tr><th scope="row">Estado limpio</th><td>cada test prepara y limpia sus datos; nunca dependas del anterior</td></tr>
+                  <tr><th scope="row">Entorno reproducible</th><td>Testcontainers o Docker para que funcione igual en cualquier máquina</td></tr>
+                  <tr><th scope="row">Pocas y valiosas</th><td>cubre los caminos críticos, no todas las combinaciones</td></tr>
+                  <tr><th scope="row">También en CI</th><td>en un paso aparte del pipeline (ver <a href="../git/github.html#s12">GitHub Actions</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Siguiente nivel: cuando los módulos ya se integran bien, se prueba la aplicación completa desde el punto de vista del usuario. Eso son las <a href="sistema-e2e.html">pruebas de sistema y E2E</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="unitarias.html">← Pruebas unitarias</a><a class="siguiente" href="sistema-e2e.html">Sistema y E2E →</a></nav>
+      <footer class="pie">Nivel intermedio de la <a href="fundamentos.html#s4">pirámide de pruebas</a>. Entornos reproducibles con <a href="../virtualizacion/docker.html">Docker</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

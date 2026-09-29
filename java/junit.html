@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JUnit · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>JUnit</span></nav>
+          <h1>JUnit</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Pruebas unitarias en Java con JUnit 5: aserciones, ciclo de vida, anotaciones, pruebas parametrizadas y mocks con Mockito.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="strings.html">Strings</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="maven.html">Maven</a><a href="junit.html" aria-current="page">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es JUnit</a><a href="#s2"><b>2</b>Preparar el proyecto</a><a href="#s3"><b>3</b>El primer test</a><a href="#s4"><b>4</b>Aserciones</a><a href="#s5"><b>5</b>Ciclo de vida</a><a href="#s6"><b>6</b>Anotaciones útiles</a><a href="#s7"><b>7</b>Pruebas parametrizadas</a><a href="#s8"><b>8</b>Excepciones y tiempo</a><a href="#s9"><b>9</b>Suposiciones</a><a href="#s10"><b>10</b>Mocks con Mockito</a><a href="#s11"><b>11</b>Ejecutar y buenas prácticas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">JUnit ejecuta trozos de código que comprueban que tu programa hace lo que debe. Cada prueba llama a un método y <em>afirma</em> (assert) que el resultado es el esperado. Si no lo es, la prueba falla y sabes que algo se ha roto.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">El patrón AAA</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Arrange</th><td>preparar los datos y el objeto a probar</td></tr>
+                  <tr><th scope="row">Act</th><td>ejecutar el método que se prueba</td></tr>
+                  <tr><th scope="row">Assert</th><td>comprobar que el resultado es el esperado</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es JUnit</h2>
+          <div class="cuerpo">
+            <p class="txt">Es el framework estándar de pruebas de Java. La versión actual, <strong>JUnit 5</strong> (JUnit Jupiter), reescribió la 4 y es la que se usa hoy. Sirve sobre todo para <a href="../qa/unitarias.html">pruebas unitarias</a>: probar una clase o método de forma aislada.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">JUnit Platform</th><td>el motor que descubre y lanza las pruebas</td></tr>
+                  <tr><th scope="row">JUnit Jupiter</th><td>el modelo de escritura moderno (anotaciones y aserciones de JUnit 5)</td></tr>
+                  <tr><th scope="row">JUnit Vintage</th><td>compatibilidad para seguir ejecutando tests de JUnit 4</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Lo que importa al escribir tests es Jupiter: el paquete <code>org.junit.jupiter.api</code>. Cuidado al copiar ejemplos de internet: los de JUnit 4 (<code>org.junit.Test</code>) tienen anotaciones parecidas pero incompatibles.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Preparar el proyecto</h2>
+          <div class="cuerpo">
+            <p class="txt">Con <a href="maven.html">Maven</a>, JUnit 5 entra con una sola dependencia (el <em>starter</em> que arrastra todo lo necesario):</p>
+            <figure class="codigo"><figcaption>pom.xml</figcaption><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;dependency&gt;</span>
+  <span class="tok-etiqueta">&lt;groupId&gt;</span>org.junit.jupiter<span class="tok-etiqueta">&lt;/groupId&gt;</span>
+  <span class="tok-etiqueta">&lt;artifactId&gt;</span>junit-jupiter<span class="tok-etiqueta">&lt;/artifactId&gt;</span>
+  <span class="tok-etiqueta">&lt;version&gt;</span>5.11.0<span class="tok-etiqueta">&lt;/version&gt;</span>
+  <span class="tok-etiqueta">&lt;scope&gt;</span>test<span class="tok-etiqueta">&lt;/scope&gt;</span>
+<span class="tok-etiqueta">&lt;/dependency&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>src/main/java</code></th><td>el código de la aplicación</td></tr>
+                  <tr><th scope="row"><code>src/test/java</code></th><td>los tests, en el mismo paquete que la clase que prueban</td></tr>
+                  <tr><th scope="row"><code>scope test</code></th><td>la dependencia solo existe al probar, no en producción</td></tr>
+                  <tr><th scope="row">Convención</th><td>la prueba de <code>Calculadora</code> se llama <code>CalculadoraTest</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los IDEs (IntelliJ, Eclipse) traen JUnit 5 integrado: puedes crear y lanzar tests sin tocar el <code>pom.xml</code>, aunque para <code>mvn test</code> la dependencia sí hace falta.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>El primer test</h2>
+          <div class="cuerpo">
+            <p class="txt">Un método anotado con <code>@Test</code> dentro de una clase de test. Sigue el patrón AAA:</p>
+            <figure class="codigo"><figcaption>CalculadoraTest.java</figcaption><pre data-lang="java"><code><span class="tok-clave">import</span> <span class="tok-tipo">org.junit.jupiter.api.Test</span>;
+<span class="tok-clave">import static</span> <span class="tok-tipo">org.junit.jupiter.api.Assertions</span>.*;
+
+<span class="tok-clave">class</span> <span class="tok-tipo">CalculadoraTest</span> {
+
+    <span class="tok-atributo">@Test</span>
+    <span class="tok-clave">void</span> <span class="tok-funcion">suma_dosPositivos_devuelveElTotal</span>() {
+        <span class="tok-tipo">Calculadora</span> calc = <span class="tok-clave">new</span> <span class="tok-tipo">Calculadora</span>();   <span class="tok-coment">// Arrange</span>
+        <span class="tok-clave">int</span> resultado = calc.<span class="tok-funcion">suma</span>(<span class="tok-numero">2</span>, <span class="tok-numero">3</span>);        <span class="tok-coment">// Act</span>
+        <span class="tok-funcion">assertEquals</span>(<span class="tok-numero">5</span>, resultado);              <span class="tok-coment">// Assert</span>
+    }
+}</code></pre></figure>
+            <p class="nota">El <code>import static</code> de <code>Assertions.*</code> permite escribir <code>assertEquals(...)</code> en vez de <code>Assertions.assertEquals(...)</code>. Y un nombre descriptivo del test (qué se prueba, con qué, qué se espera) documenta mejor que un comentario.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Aserciones</h2>
+          <div class="cuerpo">
+            <p class="txt">Las comprobaciones. Todas están en <code>Assertions</code>. El valor esperado va <em>primero</em>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>assertEquals(esp, real)</code></th><td>son iguales (usa <code>equals</code>)</td></tr>
+                  <tr><th scope="row"><code>assertTrue(cond)</code> / <code>assertFalse</code></th><td>la condición es verdadera / falsa</td></tr>
+                  <tr><th scope="row"><code>assertNull(x)</code> / <code>assertNotNull</code></th><td>es nulo / no lo es</td></tr>
+                  <tr><th scope="row"><code>assertSame(a, b)</code></th><td>son el <em>mismo</em> objeto (<code>==</code>), no solo iguales</td></tr>
+                  <tr><th scope="row"><code>assertArrayEquals(a, b)</code></th><td>los arrays coinciden elemento a elemento</td></tr>
+                  <tr><th scope="row"><code>assertThrows(Ex.class, ...)</code></th><td>el código lanza esa excepción</td></tr>
+                  <tr><th scope="row"><code>assertAll(...)</code></th><td>agrupa varias aserciones; las evalúa todas</td></tr>
+                  <tr><th scope="row"><code>fail("mensaje")</code></th><td>forzar el fallo (para caminos que no deberían ocurrir)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-funcion">assertEquals</span>(<span class="tok-numero">5</span>, calc.<span class="tok-funcion">suma</span>(<span class="tok-numero">2</span>, <span class="tok-numero">3</span>), <span class="tok-texto">"la suma falla"</span>); <span class="tok-coment">// mensaje opcional al final</span>
+
+<span class="tok-funcion">assertAll</span>(<span class="tok-texto">"punto"</span>,
+    () -&gt; <span class="tok-funcion">assertEquals</span>(<span class="tok-numero">2</span>, p.<span class="tok-funcion">getX</span>()),
+    () -&gt; <span class="tok-funcion">assertEquals</span>(<span class="tok-numero">3</span>, p.<span class="tok-funcion">getY</span>()));</code></pre></figure>
+            <p class="aviso">Con decimales (<code>double</code>) no uses <code>assertEquals</code> a secas: usa la versión con tolerancia, <code>assertEquals(0.3, x, 0.0001)</code>, porque los <code>double</code> arrastran errores de redondeo.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Ciclo de vida</h2>
+          <div class="cuerpo">
+            <p class="txt">Métodos que se ejecutan alrededor de los tests para preparar y limpiar. Evitan repetir el <em>Arrange</em> en cada prueba.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>@BeforeEach</code></th><td>antes de <em>cada</em> test (preparar un objeto limpio)</td></tr>
+                  <tr><th scope="row"><code>@AfterEach</code></th><td>después de cada test (cerrar recursos)</td></tr>
+                  <tr><th scope="row"><code>@BeforeAll</code></th><td>una vez, antes de todos (debe ser <code>static</code>)</td></tr>
+                  <tr><th scope="row"><code>@AfterAll</code></th><td>una vez, al final (debe ser <code>static</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">private</span> <span class="tok-tipo">Calculadora</span> calc;
+
+<span class="tok-atributo">@BeforeEach</span>
+<span class="tok-clave">void</span> <span class="tok-funcion">iniciar</span>() {
+    calc = <span class="tok-clave">new</span> <span class="tok-tipo">Calculadora</span>();   <span class="tok-coment">// cada test parte de uno nuevo</span>
+}</code></pre></figure>
+            <p class="nota">Cada test debe ser independiente: por eso <code>@BeforeEach</code> crea un objeto nuevo. Si compartes estado entre tests, el orden pasa a importar y aparecen fallos fantasma.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Anotaciones útiles</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>@DisplayName("...")</code></th><td>nombre legible del test en el informe</td></tr>
+                  <tr><th scope="row"><code>@Disabled("motivo")</code></th><td>saltar un test temporalmente</td></tr>
+                  <tr><th scope="row"><code>@Nested</code></th><td>agrupar tests relacionados en una clase interna</td></tr>
+                  <tr><th scope="row"><code>@Tag("lento")</code></th><td>etiquetar para filtrar qué se ejecuta</td></tr>
+                  <tr><th scope="row"><code>@RepeatedTest(5)</code></th><td>repetir el mismo test varias veces</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-atributo">@Test</span>
+<span class="tok-atributo">@DisplayName</span>(<span class="tok-texto">"Dividir entre cero lanza excepción"</span>)
+<span class="tok-clave">void</span> <span class="tok-funcion">dividirEntreCero</span>() { <span class="tok-coment">/* ... */</span> }</code></pre></figure>
+            <p class="nota"><code>@Nested</code> ayuda a organizar: una clase interna «Cuando la cuenta está vacía» con sus tests dentro se lee casi como una frase en el informe.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Pruebas parametrizadas</h2>
+          <div class="cuerpo">
+            <p class="txt">Ejecutar el mismo test con varios juegos de datos, sin copiarlo. Se usa <code>@ParameterizedTest</code> en vez de <code>@Test</code> y una fuente de datos.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-atributo">@ParameterizedTest</span>
+<span class="tok-atributo">@ValueSource</span>(ints = {<span class="tok-numero">2</span>, <span class="tok-numero">4</span>, <span class="tok-numero">6</span>, <span class="tok-numero">100</span>})
+<span class="tok-clave">void</span> <span class="tok-funcion">esPar</span>(<span class="tok-clave">int</span> n) {
+    <span class="tok-funcion">assertTrue</span>(n % <span class="tok-numero">2</span> == <span class="tok-numero">0</span>);
+}
+
+<span class="tok-atributo">@ParameterizedTest</span>
+<span class="tok-atributo">@CsvSource</span>({<span class="tok-texto">"2, 3, 5"</span>, <span class="tok-texto">"0, 0, 0"</span>, <span class="tok-texto">"-1, 1, 0"</span>})
+<span class="tok-clave">void</span> <span class="tok-funcion">suma</span>(<span class="tok-clave">int</span> a, <span class="tok-clave">int</span> b, <span class="tok-clave">int</span> esperado) {
+    <span class="tok-funcion">assertEquals</span>(esperado, calc.<span class="tok-funcion">suma</span>(a, b));
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>@ValueSource</code></th><td>una lista de valores simples (ints, strings...)</td></tr>
+                  <tr><th scope="row"><code>@CsvSource</code></th><td>varias filas con varios argumentos cada una</td></tr>
+                  <tr><th scope="row"><code>@MethodSource</code></th><td>los datos los genera un método (casos complejos)</td></tr>
+                  <tr><th scope="row"><code>@EnumSource</code></th><td>un valor por cada constante de un enum</td></tr>
+                  <tr><th scope="row"><code>@NullAndEmptySource</code></th><td>prueba con <code>null</code> y con vacío</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Excepciones y tiempo</h2>
+          <div class="cuerpo">
+            <p class="txt">Comprobar que un método lanza la excepción correcta es tan importante como comprobar el resultado feliz. <code>assertThrows</code> devuelve la excepción para inspeccionarla.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">ArithmeticException</span> ex = <span class="tok-funcion">assertThrows</span>(
+    <span class="tok-tipo">ArithmeticException</span>.<span class="tok-clave">class</span>,
+    () -&gt; calc.<span class="tok-funcion">dividir</span>(<span class="tok-numero">1</span>, <span class="tok-numero">0</span>));
+
+<span class="tok-funcion">assertEquals</span>(<span class="tok-texto">"/ by zero"</span>, ex.<span class="tok-funcion">getMessage</span>());
+
+<span class="tok-funcion">assertTimeout</span>(<span class="tok-tipo">Duration</span>.<span class="tok-funcion">ofSeconds</span>(<span class="tok-numero">1</span>), () -&gt; tarea.<span class="tok-funcion">run</span>());</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>assertThrows</code></th><td>afirma que se lanza esa excepción (o subclase)</td></tr>
+                  <tr><th scope="row"><code>assertDoesNotThrow</code></th><td>afirma que <em>no</em> lanza ninguna</td></tr>
+                  <tr><th scope="row"><code>assertTimeout</code></th><td>el código termina dentro del tiempo dado</td></tr>
+                  <tr><th scope="row"><code>@Timeout(2)</code></th><td>lo mismo como anotación (segundos)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El código que debe fallar va dentro de una lambda (<code>() -&gt; ...</code>): así JUnit lo ejecuta él y captura la excepción, en vez de que reviente el test antes de tiempo. Ver <a href="excepciones.html">Excepciones</a>.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Suposiciones</h2>
+          <div class="cuerpo">
+            <p class="txt">Las <em>assumptions</em> permiten <strong>saltar</strong> un test si no se cumple una condición, en vez de fallarlo. Útil para pruebas que solo tienen sentido en cierto entorno.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import static</span> <span class="tok-tipo">org.junit.jupiter.api.Assumptions</span>.*;
+
+<span class="tok-atributo">@Test</span>
+<span class="tok-clave">void</span> <span class="tok-funcion">soloEnCI</span>() {
+    <span class="tok-funcion">assumeTrue</span>(<span class="tok-texto">"CI"</span>.<span class="tok-funcion">equals</span>(<span class="tok-tipo">System</span>.<span class="tok-funcion">getenv</span>(<span class="tok-texto">"ENTORNO"</span>)));
+    <span class="tok-coment">// si no estamos en CI, el test se marca omitido, no fallido</span>
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>assumeTrue(cond)</code></th><td>seguir solo si se cumple; si no, se omite</td></tr>
+                  <tr><th scope="row"><code>assumeFalse(cond)</code></th><td>al revés</td></tr>
+                  <tr><th scope="row"><code>@EnabledOnOs(...)</code></th><td>habilitar según el sistema operativo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Diferencia clave: una aserción fallida marca el test en <strong>rojo</strong> (hay un bug); una suposición no cumplida lo deja <strong>omitido</strong> (no aplicaba).</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Mocks con Mockito</h2>
+          <div class="cuerpo">
+            <p class="txt">Para probar una clase de forma aislada hay que sustituir sus dependencias (una base de datos, un servicio) por dobles falsos. La librería estándar es <strong>Mockito</strong>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import static</span> <span class="tok-tipo">org.mockito.Mockito</span>.*;
+
+<span class="tok-tipo">Repositorio</span> repo = <span class="tok-funcion">mock</span>(<span class="tok-tipo">Repositorio</span>.<span class="tok-clave">class</span>);   <span class="tok-coment">// doble falso</span>
+<span class="tok-funcion">when</span>(repo.<span class="tok-funcion">buscar</span>(<span class="tok-numero">1</span>)).<span class="tok-funcion">thenReturn</span>(<span class="tok-clave">new</span> <span class="tok-tipo">Usuario</span>(<span class="tok-texto">"Ana"</span>)); <span class="tok-coment">// programar respuesta</span>
+
+<span class="tok-tipo">Servicio</span> s = <span class="tok-clave">new</span> <span class="tok-tipo">Servicio</span>(repo);
+<span class="tok-funcion">assertEquals</span>(<span class="tok-texto">"Ana"</span>, s.<span class="tok-funcion">nombreDe</span>(<span class="tok-numero">1</span>));
+
+<span class="tok-funcion">verify</span>(repo).<span class="tok-funcion">buscar</span>(<span class="tok-numero">1</span>);   <span class="tok-coment">// comprobar que se llamó</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>mock(Clase.class)</code></th><td>crea un doble que no hace nada por defecto</td></tr>
+                  <tr><th scope="row"><code>when(...).thenReturn(...)</code></th><td>programa qué devuelve una llamada</td></tr>
+                  <tr><th scope="row"><code>verify(mock).metodo()</code></th><td>afirma que se llamó (y cuántas veces)</td></tr>
+                  <tr><th scope="row"><code>@Mock</code> / <code>@InjectMocks</code></th><td>crear e inyectar mocks por anotación</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Un <em>mock</em> es un doble de prueba; ver los tipos (stub, fake, spy) en <a href="../qa/unitarias.html">Pruebas unitarias</a>. Mockito es una dependencia aparte del <code>pom.xml</code>.</p>
+          </div>
+        </section>
+        <!-- 11 -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Ejecutar y buenas prácticas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">mvn</span> test                    <span class="tok-coment"># ejecutar todas las pruebas</span>
+<span class="tok-clave">mvn</span> <span class="tok-atributo">-Dtest</span>=CalculadoraTest test  <span class="tok-coment"># solo una clase</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Rápidas e independientes</th><td>sin red ni disco; cualquier orden debe funcionar</td></tr>
+                  <tr><th scope="row">Una cosa por test</th><td>un test que falla debe señalar un solo motivo</td></tr>
+                  <tr><th scope="row">Nombres que explican</th><td><code>metodo_situacion_resultadoEsperado</code></td></tr>
+                  <tr><th scope="row">Probar también los bordes</th><td>nulos, vacíos, cero, negativos, el límite</td></tr>
+                  <tr><th scope="row">Se ejecutan en CI</th><td>en cada push (ver <a href="../git/github.html#s12">GitHub Actions</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">JUnit es la base de la <a href="../qa/unitarias.html">pirámide de pruebas</a> de <a href="../qa/index.html">QA</a>. Escribir el test <em>antes</em> que el código (TDD) es una técnica muy ligada a esta herramienta.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="maven.html">← Maven</a><span></span></nav>
+      <footer class="pie">Guía de usuario: <a href="https://junit.org/junit5/docs/current/user-guide/">junit.org/junit5</a>. Mockito: <a href="https://site.mockito.org/">site.mockito.org</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

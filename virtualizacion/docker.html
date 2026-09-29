@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Docker · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="virtualizacion">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Virtualización</a><span aria-hidden="true">›</span><span>Docker</span></nav>
+          <h1>Docker</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Contenedores: empaquetar una aplicación con todo lo que necesita y ejecutarla igual en cualquier sitio. Imágenes, contenedores, Dockerfile y Compose.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Virtualización">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="docker.html" aria-current="page">Docker</a><a href="vagrant.html">Vagrant</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es Docker</a><a href="#s2"><b>2</b>Primer contenedor</a><a href="#s3"><b>3</b>Imágenes</a><a href="#s4"><b>4</b>Contenedores</a><a href="#s5"><b>5</b>Opciones de run</a><a href="#s6"><b>6</b>Entrar, logs e inspección</a><a href="#s7"><b>7</b>Dockerfile</a><a href="#s8"><b>8</b>Construir imágenes</a><a href="#s9"><b>9</b>Volúmenes y datos</a><a href="#s10"><b>10</b>Redes y puertos</a><a href="#s11"><b>11</b>Docker Compose</a><a href="#s12"><b>12</b>Limpieza y buenas prácticas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Imagen frente a contenedor</p>
+            <p class="txt">Una <strong>imagen</strong> es la plantilla de solo lectura (como una clase); un <strong>contenedor</strong> es una instancia en ejecución de esa imagen (como un objeto). De una imagen salen muchos contenedores.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Contenedor frente a máquina virtual</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Contenedor</th><td>comparte el núcleo del sistema; ligero, arranca en segundos</td></tr>
+                  <tr><th scope="row">Máquina virtual</th><td>emula un sistema entero; pesada, arranca en minutos</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es Docker -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es Docker</h2>
+          <div class="cuerpo">
+            <p class="txt">Docker empaqueta una aplicación y sus dependencias en un <strong>contenedor</strong>: una unidad aislada que se ejecuta igual en tu portátil, en un servidor o en la nube. Acaba con el «en mi máquina funciona».</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Imagen</th><td>plantilla de solo lectura con la app y su entorno</td></tr>
+                  <tr><th scope="row">Contenedor</th><td>una imagen en ejecución</td></tr>
+                  <tr><th scope="row">Dockerfile</th><td>receta de texto para construir una imagen</td></tr>
+                  <tr><th scope="row">Registro</th><td>almacén de imágenes (Docker Hub)</td></tr>
+                  <tr><th scope="row">Volumen</th><td>almacenamiento persistente fuera del contenedor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Un contenedor comparte el núcleo de Linux del anfitrión, por eso es tan ligero. Para probar Linux o Docker en sí, mira <a href="../sistemas/linux.html#s9">Linux</a>.</p>
+          </div>
+        </section>
+        <!-- 2. Primer contenedor -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Primer contenedor</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">apt</span> install docker.io      <span class="tok-coment"># o seguir la guía oficial</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">systemctl</span> enable <span class="tok-atributo">--now</span> docker
+<span class="tok-clave">docker</span> <span class="tok-atributo">--version</span>
+<span class="tok-clave">sudo</span> <span class="tok-clave">usermod</span> <span class="tok-atributo">-aG</span> docker <span class="tok-variable">$USER</span>   <span class="tok-coment"># usar docker sin sudo (reinicia sesión)</span>
+
+<span class="tok-clave">docker</span> run hello-world          <span class="tok-coment"># descarga y ejecuta una imagen de prueba</span>
+<span class="tok-clave">docker</span> run <span class="tok-atributo">-it</span> ubuntu bash      <span class="tok-coment"># un Ubuntu de usar y tirar, interactivo</span></code></pre></figure>
+            <p class="nota"><code>docker run</code> hace tres cosas si hace falta: descarga la imagen, crea el contenedor y lo arranca. La primera vez baja la imagen; después ya está en caché.</p>
+          </div>
+        </section>
+        <!-- 3. Imágenes -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Imágenes</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">docker</span> pull nginx:1.27      <span class="tok-coment"># descargar una imagen (etiqueta 1.27)</span>
+<span class="tok-clave">docker</span> images               <span class="tok-coment"># listar las imágenes locales</span>
+<span class="tok-clave">docker</span> rmi nginx:1.27       <span class="tok-coment"># borrar una imagen</span>
+<span class="tok-clave">docker</span> tag miapp miapp:1.0  <span class="tok-coment"># poner otra etiqueta</span>
+<span class="tok-clave">docker</span> search postgres      <span class="tok-coment"># buscar en Docker Hub</span>
+<span class="tok-clave">docker</span> history nginx        <span class="tok-coment"># ver las capas de una imagen</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>nombre:etiqueta</code></th><td><code>nginx:1.27</code>; sin etiqueta, se usa <code>latest</code></td></tr>
+                  <tr><th scope="row">Capas</th><td>una imagen son capas apiladas; se reutilizan entre imágenes</td></tr>
+                  <tr><th scope="row">Docker Hub</th><td>el registro público por defecto (<code>hub.docker.com</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>latest</code> no significa «la última»: es solo la etiqueta por defecto y puede quedarse anticuada. En producción, fija una versión concreta.</p>
+          </div>
+        </section>
+        <!-- 4. Contenedores -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Contenedores</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">docker</span> ps                   <span class="tok-coment"># contenedores en marcha</span>
+<span class="tok-clave">docker</span> ps <span class="tok-atributo">-a</span>                <span class="tok-coment"># todos, incluidos los parados</span>
+<span class="tok-clave">docker</span> stop web             <span class="tok-coment"># parar (por nombre o id)</span>
+<span class="tok-clave">docker</span> start web            <span class="tok-coment"># arrancar uno parado</span>
+<span class="tok-clave">docker</span> restart web
+<span class="tok-clave">docker</span> rm web               <span class="tok-coment"># borrar un contenedor parado</span>
+<span class="tok-clave">docker</span> rm <span class="tok-atributo">-f</span> web            <span class="tok-coment"># forzar el borrado aunque esté en marcha</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ps</code></th><td>listar contenedores activos</td></tr>
+                  <tr><th scope="row"><code>ps -a</code></th><td>incluir los detenidos</td></tr>
+                  <tr><th scope="row"><code>stop</code> / <code>start</code></th><td>parar / arrancar</td></tr>
+                  <tr><th scope="row"><code>rm</code></th><td>eliminar (usa el nombre o los primeros caracteres del id)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Opciones de run -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Opciones de run</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-d</code></th><td>en segundo plano (detached)</td></tr>
+                  <tr><th scope="row"><code>-p 8080:80</code></th><td>publicar puerto: anfitrión 8080 → contenedor 80</td></tr>
+                  <tr><th scope="row"><code>-v datos:/var/lib</code></th><td>montar un volumen</td></tr>
+                  <tr><th scope="row"><code>-e VAR=valor</code></th><td>variable de entorno</td></tr>
+                  <tr><th scope="row"><code>--name web</code></th><td>ponerle nombre</td></tr>
+                  <tr><th scope="row"><code>-it</code></th><td>interactivo con terminal</td></tr>
+                  <tr><th scope="row"><code>--rm</code></th><td>borrar el contenedor al salir</td></tr>
+                  <tr><th scope="row"><code>--restart unless-stopped</code></th><td>reiniciar solo si no lo paraste tú</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># un nginx en segundo plano, accesible en http://localhost:8080</span>
+<span class="tok-clave">docker</span> run <span class="tok-atributo">-d</span> <span class="tok-atributo">--name</span> web <span class="tok-atributo">-p</span> <span class="tok-numero">8080</span>:<span class="tok-numero">80</span> nginx
+
+<span class="tok-coment"># una base de datos con contraseña y datos persistentes</span>
+<span class="tok-clave">docker</span> run <span class="tok-atributo">-d</span> <span class="tok-atributo">--name</span> db \
+  <span class="tok-atributo">-e</span> POSTGRES_PASSWORD=secreto \
+  <span class="tok-atributo">-v</span> pgdata:/var/lib/postgresql/data \
+  <span class="tok-atributo">-p</span> <span class="tok-numero">5432</span>:<span class="tok-numero">5432</span> postgres:<span class="tok-numero">16</span></code></pre></figure>
+            <p class="nota">En <code>-p anfitrión:contenedor</code>, el primero es el puerto de tu máquina y el segundo el que expone el programa dentro del contenedor.</p>
+          </div>
+        </section>
+        <!-- 6. Entrar, logs e inspección -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Entrar, logs e inspección</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">docker</span> exec <span class="tok-atributo">-it</span> web bash    <span class="tok-coment"># abrir una shell dentro del contenedor</span>
+<span class="tok-clave">docker</span> logs web             <span class="tok-coment"># ver su salida</span>
+<span class="tok-clave">docker</span> logs <span class="tok-atributo">-f</span> web          <span class="tok-coment"># seguirla en vivo</span>
+<span class="tok-clave">docker</span> inspect web          <span class="tok-coment"># toda su configuración (JSON)</span>
+<span class="tok-clave">docker</span> stats                <span class="tok-coment"># uso de CPU y memoria en vivo</span>
+<span class="tok-clave">docker</span> cp web:/etc/nginx/nginx.conf .   <span class="tok-coment"># copiar un fichero fuera</span></code></pre></figure>
+            <p class="nota"><code>docker exec -it &lt;nombre&gt; bash</code> (o <code>sh</code> si no hay bash) es la forma de «entrar» a mirar qué pasa dentro. El contenedor debe estar en marcha.</p>
+          </div>
+        </section>
+        <!-- 7. Dockerfile -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Dockerfile</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <code>Dockerfile</code> es la receta para construir tu propia imagen, instrucción a instrucción.</p>
+            <figure class="codigo"><figcaption>Dockerfile de una app de Node</figcaption><pre data-lang="dockerfile"><code><span class="tok-clave">FROM</span> node:20-alpine
+<span class="tok-clave">WORKDIR</span> /app
+<span class="tok-clave">COPY</span> package*.json ./
+<span class="tok-clave">RUN</span> npm install
+<span class="tok-clave">COPY</span> . .
+<span class="tok-clave">EXPOSE</span> 3000
+<span class="tok-clave">CMD</span> ["node", "server.js"]</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>FROM</code></th><td>imagen base de la que se parte</td></tr>
+                  <tr><th scope="row"><code>WORKDIR</code></th><td>carpeta de trabajo dentro de la imagen</td></tr>
+                  <tr><th scope="row"><code>COPY</code></th><td>copiar ficheros del proyecto a la imagen</td></tr>
+                  <tr><th scope="row"><code>RUN</code></th><td>ejecutar una orden al construir (instalar cosas)</td></tr>
+                  <tr><th scope="row"><code>ENV</code></th><td>variable de entorno</td></tr>
+                  <tr><th scope="row"><code>EXPOSE</code></th><td>documentar el puerto que usa</td></tr>
+                  <tr><th scope="row"><code>CMD</code></th><td>orden por defecto al arrancar el contenedor</td></tr>
+                  <tr><th scope="row"><code>ENTRYPOINT</code></th><td>ejecutable fijo del contenedor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Copia primero <code>package.json</code> e instala, y luego el resto del código: así Docker reutiliza la capa de dependencias mientras no cambien, y reconstruye mucho más rápido.</p>
+          </div>
+        </section>
+        <!-- 8. Construir imágenes -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Construir imágenes</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">docker</span> build <span class="tok-atributo">-t</span> miapp:1.0 .     <span class="tok-coment"># construir desde el Dockerfile de esta carpeta</span>
+<span class="tok-clave">docker</span> run <span class="tok-atributo">-d</span> <span class="tok-atributo">-p</span> <span class="tok-numero">3000</span>:<span class="tok-numero">3000</span> miapp:1.0
+<span class="tok-clave">docker</span> build <span class="tok-atributo">-t</span> miapp .          <span class="tok-coment"># sin versión: etiqueta latest</span></code></pre></figure>
+            <figure class="codigo"><figcaption>.dockerignore: qué no meter en la imagen</figcaption><pre data-lang="text"><code>node_modules
+.git
+*.log
+.env</code></pre></figure>
+            <p class="nota">El <code>.</code> final es el «contexto»: la carpeta que se envía a Docker para construir. Un <code>.dockerignore</code> evita copiar lo que no hace falta y acelera la construcción.</p>
+          </div>
+        </section>
+        <!-- 9. Volúmenes y datos -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Volúmenes y datos</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo que se escribe dentro de un contenedor <strong>se pierde al borrarlo</strong>. Para conservar datos hay dos formas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Volumen</th><td>gestionado por Docker: <code>-v nombre:/ruta</code>. Para datos (bases de datos)</td></tr>
+                  <tr><th scope="row">Bind mount</th><td>una carpeta tuya: <code>-v /ruta/host:/ruta</code>. Para desarrollo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">docker</span> volume create datos
+<span class="tok-clave">docker</span> volume ls
+<span class="tok-clave">docker</span> run <span class="tok-atributo">-v</span> datos:/var/lib/mysql mysql       <span class="tok-coment"># volumen con nombre</span>
+<span class="tok-clave">docker</span> run <span class="tok-atributo">-v</span> $(pwd):/app node                 <span class="tok-coment"># carpeta actual dentro</span>
+<span class="tok-clave">docker</span> volume rm datos</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Redes y puertos -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Redes y puertos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">docker</span> network ls
+<span class="tok-clave">docker</span> network create miredes
+<span class="tok-clave">docker</span> run <span class="tok-atributo">-d</span> <span class="tok-atributo">--name</span> db <span class="tok-atributo">--network</span> miredes postgres
+<span class="tok-clave">docker</span> run <span class="tok-atributo">-d</span> <span class="tok-atributo">--name</span> web <span class="tok-atributo">--network</span> miredes miapp</code></pre></figure>
+            <p class="txt">Los contenedores de una misma red se ven entre sí <strong>por su nombre</strong>: <code>web</code> puede conectar a <code>db</code> usando <code>db</code> como nombre de host, sin saber su IP.</p>
+            <p class="nota">Para exponer un servicio fuera del anfitrión, publícalo con <code>-p</code>. Para que dos contenedores hablen entre ellos, basta con ponerlos en la misma red. Repaso de puertos en <a href="../redes/tcp-ip.html#s8">TCP/IP</a>.</p>
+          </div>
+        </section>
+        <!-- 11. Docker Compose -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Docker Compose</h2>
+          <div class="cuerpo">
+            <p class="txt">Compose define varios contenedores en un fichero <code>compose.yaml</code> y los levanta juntos con una orden. Ideal para una app con su base de datos.</p>
+            <figure class="codigo"><figcaption>compose.yaml</figcaption><pre data-lang="yaml"><code><span class="tok-atributo">services</span>:
+  <span class="tok-atributo">web</span>:
+    <span class="tok-atributo">build</span>: .
+    <span class="tok-atributo">ports</span>:
+      - <span class="tok-texto">"8080:3000"</span>
+    <span class="tok-atributo">depends_on</span>:
+      - db
+  <span class="tok-atributo">db</span>:
+    <span class="tok-atributo">image</span>: postgres:16
+    <span class="tok-atributo">environment</span>:
+      <span class="tok-atributo">POSTGRES_PASSWORD</span>: secreto
+    <span class="tok-atributo">volumes</span>:
+      - <span class="tok-atributo">pgdata</span>:/var/lib/postgresql/data
+
+<span class="tok-atributo">volumes</span>:
+  <span class="tok-atributo">pgdata</span>:</code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">docker</span> compose up <span class="tok-atributo">-d</span>        <span class="tok-coment"># levantar todo en segundo plano</span>
+<span class="tok-clave">docker</span> compose ps           <span class="tok-coment"># estado de los servicios</span>
+<span class="tok-clave">docker</span> compose logs <span class="tok-atributo">-f</span>      <span class="tok-coment"># ver los registros</span>
+<span class="tok-clave">docker</span> compose down         <span class="tok-coment"># parar y borrar (los volúmenes se mantienen)</span>
+<span class="tok-clave">docker</span> compose down <span class="tok-atributo">-v</span>      <span class="tok-coment"># ...y borrar también los volúmenes</span></code></pre></figure>
+            <p class="nota">Compose usa <a href="../marcas/yaml.html">YAML</a>: cuidado con la indentación (siempre espacios). Cada servicio es un contenedor con su configuración.</p>
+          </div>
+        </section>
+        <!-- 12. Limpieza y buenas prácticas -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Limpieza y buenas prácticas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">docker</span> system df            <span class="tok-coment"># cuánto ocupa Docker</span>
+<span class="tok-clave">docker</span> system prune         <span class="tok-coment"># borrar lo que no se usa (contenedores parados, redes)</span>
+<span class="tok-clave">docker</span> system prune <span class="tok-atributo">-a</span>      <span class="tok-coment"># ...también imágenes sin usar</span>
+<span class="tok-clave">docker</span> image prune          <span class="tok-coment"># solo imágenes huérfanas</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Imágenes pequeñas</th><td>parte de bases <code>-alpine</code> o <code>-slim</code></td></tr>
+                  <tr><th scope="row">Una cosa por contenedor</th><td>un proceso por contenedor, no varios servicios juntos</td></tr>
+                  <tr><th scope="row">No como root</th><td>crea un usuario en el Dockerfile (<code>USER</code>)</td></tr>
+                  <tr><th scope="row">No secretos en la imagen</th><td>pásalos por variables o volúmenes, nunca en el Dockerfile</td></tr>
+                  <tr><th scope="row">Aprovecha la caché</th><td>ordena el Dockerfile de lo que menos cambia a lo que más</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>docker system prune -a</code> borra todas las imágenes que no tengan un contenedor en marcha. Muy útil para liberar espacio, pero asegúrate de que no borras algo que tardaste en construir.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="fundamentos.html">← Fundamentos</a><a class="siguiente" href="vagrant.html">Vagrant →</a></nav>
+      <footer class="pie">Documentación oficial en <a href="https://docs.docker.com/">docs.docker.com</a>. Imágenes públicas en <a href="https://hub.docker.com/">hub.docker.com</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

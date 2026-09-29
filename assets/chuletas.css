@@ -119,7 +119,7 @@ body[data-tema="hacking"]     { --acento: #2E7D32; }
 body[data-tema="qa"]          { --acento: #B0710B; }
 body[data-tema="seguridad"]   { --acento: #3E5C76; }
 body[data-tema="git"]         { --acento: #E4572E; }
-body[data-tema="docker"]      { --acento: #1B9A8B; }
+body[data-tema="virtualizacion"] { --acento: #1B9A8B; }
 body[data-tema="programacion"] { --acento: #2F5CD6; }
 body[data-tema="java"]        { --acento: #E76F00; }
 body[data-tema="php"]         { --acento: #4F5B93; }
@@ -531,9 +531,48 @@ figure.codigo:hover .copiar,
 }
 .grupo > h2 a { color: #fff; text-decoration: none; }
 .grupo > h2 a:hover { text-decoration: underline; text-underline-offset: 3px; }
-.lenguaje { background: none; border: 0; padding: 0; margin: 16px 0 8px; font-size: 14px; font-weight: 650; color: var(--apagado); }
+.lenguaje {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--color-tema, var(--acento));
+}
+.lenguaje::before {
+  content: "";
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 3px;
+  min-height: 1.1em;
+  border-radius: 2px;
+  background: var(--color-tema, var(--acento));
+}
+.lenguaje::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--linea);
+}
 .lenguaje a { text-decoration: none; color: inherit; }
 .lenguaje a:hover { text-decoration: underline; }
+
+/* ---------- Diagramas entidad-relación (notación de Chen) ------------- */
+.er-fig { margin: 6px 0 4px; }
+.er-fig svg { display: block; width: 100%; height: auto; max-width: 560px; margin: 0 auto; }
+.er-fig figcaption { color: var(--apagado); font-size: 13px; text-align: center; margin-top: 6px; }
+.er-ent  { fill: var(--tarjeta); stroke: var(--texto);   stroke-width: 2; }
+.er-weak { fill: none;           stroke: var(--texto);   stroke-width: 1.5; }
+.er-rel  { fill: var(--tarjeta); stroke: var(--acento);  stroke-width: 2; }
+.er-attr { fill: var(--tarjeta); stroke: var(--apagado); stroke-width: 1.5; }
+.er-line { stroke: var(--apagado); stroke-width: 1.5; fill: none; }
+.er-txt   { fill: var(--texto); font-family: var(--sans); font-size: 15px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+.er-txt-a { fill: var(--texto); font-family: var(--sans); font-size: 12.5px; text-anchor: middle; dominant-baseline: central; }
+.er-key   { text-decoration: underline; }
+.er-card  { fill: var(--acento); font-family: var(--mono); font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
 .grupo .desc-tema { color: var(--apagado); font-size: 14.5px; margin: 0 0 14px; }
 
 /* Menú de secciones de la portada */

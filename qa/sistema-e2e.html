@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pruebas de sistema y E2E · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="qa">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">QA</a><span aria-hidden="true">›</span><span>Sistema y E2E</span></nav>
+          <h1>Pruebas de sistema y E2E</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">La cima de la pirámide: probar la aplicación completa como lo haría un usuario. Sistema, aceptación y E2E, lo funcional y lo no funcional, y herramientas como Selenium, Cypress o Playwright.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de QA">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="unitarias.html">Pruebas unitarias</a><a href="integracion.html">Pruebas de integración</a><a href="sistema-e2e.html" aria-current="page">Sistema y E2E</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es la prueba de sistema</a><a href="#s2"><b>2</b>Sistema, aceptación y E2E</a><a href="#s3"><b>3</b>Funcional y no funcional</a><a href="#s4"><b>4</b>Automatizar la web</a><a href="#s5"><b>5</b>Localizar elementos</a><a href="#s6"><b>6</b>Pruebas de API</a><a href="#s7"><b>7</b>No funcionales</a><a href="#s8"><b>8</b>BDD y aceptación</a><a href="#s9"><b>9</b>La cima de la pirámide</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">La prueba de sistema comprueba la aplicación <strong>completa</strong>, integrada y desplegada, desde fuera y sin conocer el código. Cuando recorre un flujo entero de usuario —de la primera pantalla a la última— se llama de extremo a extremo (E2E).</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Desde los ojos del usuario</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Unitaria</th><td>«esta función suma bien»</td></tr>
+                  <tr><th scope="row">Integración</th><td>«el servicio guarda en la BD»</td></tr>
+                  <tr><th scope="row">Sistema / E2E</th><td>«el usuario compra y recibe el correo»</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es la prueba de sistema</h2>
+          <div class="cuerpo">
+            <p class="txt">Valida el sistema entero contra los requisitos, tratándolo como una caja negra: se interactúa por la interfaz real (web, API, app) sin mirar dentro. Es lo más parecido a lo que vive el usuario final.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Entorno</th><td>la app desplegada y configurada como en producción</td></tr>
+                  <tr><th scope="row">Perspectiva</th><td><a href="fundamentos.html#s6">caja negra</a>: entradas y salidas, sin ver el código</td></tr>
+                  <tr><th scope="row">Alcance</th><td>flujos completos que cruzan todos los módulos</td></tr>
+                  <tr><th scope="row">Coste</th><td>las más lentas, caras y frágiles de mantener</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Aquí ya no se prueban piezas (eso fue en <a href="unitarias.html">unitarias</a> e <a href="integracion.html">integración</a>): se prueba que el conjunto cumple lo que el cliente pidió.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Sistema, aceptación y E2E</h2>
+          <div class="cuerpo">
+            <p class="txt">Tres términos muy cercanos que conviene distinguir:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">De sistema</th><td>¿el software cumple sus requisitos? La hace el equipo de QA</td></tr>
+                  <tr><th scope="row">De aceptación (UAT)</th><td>¿es lo que el cliente pedía? La valida el cliente o negocio</td></tr>
+                  <tr><th scope="row">E2E (extremo a extremo)</th><td>recorre un flujo completo de principio a fin; es la técnica con la que se ejecutan las dos anteriores</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En la práctica se solapan: una prueba E2E automatizada de «registrarse, comprar y pagar» sirve a la vez como prueba de sistema y como base de la de aceptación.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Funcional y no funcional</h2>
+          <div class="cuerpo">
+            <p class="txt">A nivel de sistema se prueban dos grandes familias. Lo <strong>funcional</strong> es un tipo transversal (se prueba en todos los niveles), pero es aquí donde se cierra de cara al usuario.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Funcional</th><td><em>qué</em> hace: que cada caso de uso cumple lo esperado</td></tr>
+                  <tr><th scope="row">No funcional</th><td><em>cómo</em> lo hace: rendimiento, seguridad, usabilidad, compatibilidad</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Recordatorio de <a href="fundamentos.html#s5">Fundamentos</a>: «funcional» no es un nivel sino un tipo de prueba. Cruza la pirámide entera, pero su validación final ocurre a nivel de sistema, sobre la app completa.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Automatizar la web</h2>
+          <div class="cuerpo">
+            <p class="txt">Las pruebas E2E de una web se automatizan con un navegador controlado por código. Las tres herramientas dominantes:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Selenium</th><td>el veterano; multi-lenguaje y multi-navegador (WebDriver). Muy extendido</td></tr>
+                  <tr><th scope="row">Cypress</th><td>moderno, en JavaScript; muy cómodo para depurar, centrado en el navegador</td></tr>
+                  <tr><th scope="row">Playwright</th><td>de Microsoft; rápido, multi-navegador, con esperas automáticas. En auge</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Un test E2E con Playwright (JavaScript)</figcaption><pre data-lang="javascript"><code><span class="tok-funcion">test</span>(<span class="tok-texto">'iniciar sesión'</span>, <span class="tok-clave">async</span> ({ page }) => {
+  <span class="tok-clave">await</span> page.<span class="tok-funcion">goto</span>(<span class="tok-texto">'https://sitio.local/login'</span>);
+  <span class="tok-clave">await</span> page.<span class="tok-funcion">fill</span>(<span class="tok-texto">'#usuario'</span>, <span class="tok-texto">'ana'</span>);
+  <span class="tok-clave">await</span> page.<span class="tok-funcion">fill</span>(<span class="tok-texto">'#clave'</span>, <span class="tok-texto">'1234'</span>);
+  <span class="tok-clave">await</span> page.<span class="tok-funcion">click</span>(<span class="tok-texto">'button[type=submit]'</span>);
+  <span class="tok-clave">await</span> <span class="tok-funcion">expect</span>(page).<span class="tok-funcion">toHaveURL</span>(<span class="tok-texto">/dashboard/</span>);
+});</code></pre></figure>
+            <p class="nota">Cypress y Playwright traen esperas automáticas (esperan a que el elemento aparezca), lo que evita gran parte de la fragilidad clásica de Selenium con los <code>sleep</code> a mano.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Localizar elementos</h2>
+          <div class="cuerpo">
+            <p class="txt">El test necesita «encontrar» los botones y campos de la página. Cómo los localizas decide lo frágil que será.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Por id</th><td><code>#usuario</code>: estable y rápido, el preferido</td></tr>
+                  <tr><th scope="row">Atributo de test</th><td><code>[data-testid=login]</code>: puesto a propósito para las pruebas; muy robusto</td></tr>
+                  <tr><th scope="row">Por texto / rol</th><td>«el botón que dice Entrar»: legible y cercano al usuario</td></tr>
+                  <tr><th scope="row">CSS / XPath</th><td>selectores de ruta; potentes pero se rompen si cambia el diseño</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Evita los selectores atados al diseño (clases CSS de estilo, rutas XPath largas): un retoque visual inofensivo rompe la prueba. Un <code>data-testid</code> puesto por el equipo de desarrollo sobrevive a los cambios de aspecto.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Pruebas de API</h2>
+          <div class="cuerpo">
+            <p class="txt">No todo sistema tiene interfaz web. Muchas pruebas de sistema atacan directamente la API: son más rápidas y estables que las de navegador.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Postman</th><td>colecciones de peticiones con validaciones; <em>Newman</em> las lanza en el CI</td></tr>
+                  <tr><th scope="row">REST Assured</th><td>probar APIs REST desde Java, junto a <a href="../java/junit.html">JUnit</a></td></tr>
+                  <tr><th scope="row">Comprobaciones</th><td>código de estado, cuerpo de la respuesta, cabeceras, tiempo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Prueba a nivel de API lo que puedas y reserva el navegador (más lento y frágil) para los flujos que de verdad necesitan interfaz. Ver la base de HTTP en <a href="../redes/http.html">HTTP</a>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>No funcionales</h2>
+          <div class="cuerpo">
+            <p class="txt">Se comprueban sobre el sistema completo, porque miden propiedades del conjunto:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Rendimiento / carga</th><td>cómo aguanta bajo demanda · JMeter, k6, Gatling</td></tr>
+                  <tr><th scope="row">Estrés</th><td>hasta dónde resiste antes de romperse</td></tr>
+                  <tr><th scope="row">Seguridad</th><td>que resiste ataques (ver <a href="../hacking/pentest.html">Pentest</a>)</td></tr>
+                  <tr><th scope="row">Usabilidad</th><td>que es fácil de usar (a menudo manual)</td></tr>
+                  <tr><th scope="row">Compatibilidad</th><td>distintos navegadores, dispositivos y sistemas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las de carga (JMeter, k6) simulan cientos o miles de usuarios a la vez para ver tiempos de respuesta y el punto en que el sistema empieza a degradarse.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>BDD y aceptación</h2>
+          <div class="cuerpo">
+            <p class="txt">El desarrollo guiado por comportamiento (<strong>BDD</strong>) escribe las pruebas de aceptación en lenguaje casi natural, para que negocio y desarrollo las entiendan igual. El formato es <em>Gherkin</em>:</p>
+            <figure class="codigo"><figcaption>Un escenario en Gherkin (Given-When-Then)</figcaption><pre data-lang="text"><code><span class="tok-clave">Característica:</span> Inicio de sesión
+  <span class="tok-clave">Escenario:</span> credenciales correctas
+    <span class="tok-clave">Dado</span> que estoy en la página de login
+    <span class="tok-clave">Cuando</span> introduzco un usuario y clave válidos
+    <span class="tok-clave">Entonces</span> veo mi panel de inicio</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cucumber</th><td>ejecuta los <code>.feature</code> de Gherkin (Java, Ruby...)</td></tr>
+                  <tr><th scope="row">Behave / SpecFlow</th><td>equivalentes en Python y .NET</td></tr>
+                  <tr><th scope="row">Given-When-Then</th><td>el mismo AAA de las <a href="unitarias.html#s2">unitarias</a>, en lenguaje de negocio</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cada línea Gherkin se conecta con un trozo de código (un <em>step</em>) que la ejecuta, normalmente automatizando el navegador o la API por debajo.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>La cima de la pirámide</h2>
+          <div class="cuerpo">
+            <p class="txt">Las pruebas de sistema y E2E son la punta de la <a href="fundamentos.html#s4">pirámide</a>: las más realistas, pero también las más caras. Por eso son pocas.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Pocas y críticas</th><td>solo los flujos clave (registro, compra, pago), no cada detalle</td></tr>
+                  <tr><th scope="row">El detalle, abajo</th><td>los casos borde se cubren en <a href="unitarias.html">unitarias</a>, que son baratas</td></tr>
+                  <tr><th scope="row">Combatir la fragilidad</th><td>buenos selectores, esperas automáticas, datos controlados</td></tr>
+                  <tr><th scope="row">Lentas: en su hueco del CI</th><td>no en cada commit; sí antes de una entrega (ver <a href="../git/github.html#s12">GitHub Actions</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">El antipatrón es el «cono de helado»: muchas pruebas E2E y pocas unitarias. Resultado: una suite lenta, frágil y que nadie se fía de mantener. Invierte la proporción.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="integracion.html">← Pruebas de integración</a><span></span></nav>
+      <footer class="pie">Cima de la <a href="fundamentos.html#s4">pirámide de pruebas</a>. Seguridad a nivel de sistema en <a href="../hacking/pentest.html">Pentest</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Introducción a las bases de datos · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="bases-datos">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Bases de datos</a><span aria-hidden="true">›</span><span>Introducción</span></nav>
+          <h1>Introducción a las bases de datos</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Qué es una base de datos, el modelo relacional, los tipos que existen (SQL y NoSQL), para qué sirve cada uno y cómo elegir.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Bases de datos">
+      <div class="wrap"><a href="introduccion.html" aria-current="page">Introducción</a><a href="er-eer.html">Modelo ER-EER</a><a href="sql.html">SQL</a><a href="postgresql.html">PostgreSQL</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es una base de datos</a><a href="#s2"><b>2</b>El modelo relacional</a><a href="#s3"><b>3</b>SQL: el lenguaje</a><a href="#s4"><b>4</b>Relacional o NoSQL</a><a href="#s5"><b>5</b>Tipos de base de datos</a><a href="#s6"><b>6</b>ACID y transacciones</a><a href="#s7"><b>7</b>Tecnologías más usadas</a><a href="#s8"><b>8</b>Para qué se usan</a><a href="#s9"><b>9</b>Cerca de la base</a><a href="#s10"><b>10</b>Qué usar</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Una base de datos guarda información de forma organizada para poder consultarla, modificarla y protegerla sin perderla. En vez de leer y escribir ficheros a mano, hablas con un programa (el gestor) que se encarga de todo.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Base de datos vs gestor</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Base de datos</th><td>el conjunto de datos organizados</td></tr>
+                  <tr><th scope="row">SGBD (DBMS)</th><td>el programa que la gestiona: MySQL, PostgreSQL, MongoDB...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es una base de datos</h2>
+          <div class="cuerpo">
+            <p class="txt">Es una colección de datos organizada para que muchas aplicaciones y personas la usen a la vez, sin duplicarla ni corromperla. El <strong>gestor</strong> (SGBD) es quien la administra: guarda, busca, controla los accesos y garantiza que los datos queden bien aunque falle la luz.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Persistencia</th><td>los datos siguen ahí cuando apagas el programa</td></tr>
+                  <tr><th scope="row">Concurrencia</th><td>muchos usuarios a la vez sin pisarse</td></tr>
+                  <tr><th scope="row">Integridad</th><td>reglas que impiden datos incoherentes</td></tr>
+                  <tr><th scope="row">Consultas</th><td>preguntar por los datos de mil maneras distintas</td></tr>
+                  <tr><th scope="row">Seguridad</th><td>quién puede ver o cambiar qué</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">¿Por qué no un simple fichero? Con dos usuarios a la vez, millones de filas o la necesidad de no perder nada, un fichero se queda corto enseguida. Para eso está el gestor.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>El modelo relacional</h2>
+          <div class="cuerpo">
+            <p class="txt">El modelo dominante desde hace décadas. Los datos se guardan en <strong>tablas</strong> (filas y columnas) que se relacionan entre sí. Es la base de MySQL, PostgreSQL, Oracle, SQL Server...</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tabla</th><td>un conjunto de datos del mismo tipo (p. ej. <code>clientes</code>)</td></tr>
+                  <tr><th scope="row">Fila (registro)</th><td>un elemento: un cliente concreto</td></tr>
+                  <tr><th scope="row">Columna (campo)</th><td>un dato de cada fila: nombre, email...</td></tr>
+                  <tr><th scope="row">Clave primaria</th><td>identifica cada fila de forma única (un <code>id</code>)</td></tr>
+                  <tr><th scope="row">Clave foránea</th><td>apunta a la clave de otra tabla y las relaciona</td></tr>
+                  <tr><th scope="row">Esquema</th><td>la estructura definida de antemano (qué tablas y columnas hay)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La gracia es no repetir datos: en vez de copiar el cliente en cada pedido, el pedido guarda el <em>id</em> del cliente. Esto se llama normalizar y las tablas se recomponen con <a href="sql.html">JOIN</a>.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>SQL: el lenguaje</h2>
+          <div class="cuerpo">
+            <p class="txt">SQL (<em>Structured Query Language</em>) es el lenguaje estándar para hablar con las bases relacionales. Se organiza en familias de instrucciones:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">DDL</th><td>definir la estructura: <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code></td></tr>
+                  <tr><th scope="row">DML</th><td>manejar datos: <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code></td></tr>
+                  <tr><th scope="row">DQL</th><td>consultar: <code>SELECT</code></td></tr>
+                  <tr><th scope="row">DCL</th><td>permisos: <code>GRANT</code>, <code>REVOKE</code></td></tr>
+                  <tr><th scope="row">TCL</th><td>transacciones: <code>COMMIT</code>, <code>ROLLBACK</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Una consulta típica</figcaption><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> nombre, email <span class="tok-clave">FROM</span> clientes
+<span class="tok-clave">WHERE</span> ciudad = <span class="tok-texto">'Madrid'</span>
+<span class="tok-clave">ORDER BY</span> nombre;</code></pre></figure>
+            <p class="nota">El estándar SQL es común, pero cada gestor añade lo suyo: por eso hay chuletas separadas de <a href="sql.html">SQL</a> (con sintaxis MySQL) y de <a href="postgresql.html">PostgreSQL</a>.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Relacional o NoSQL</h2>
+          <div class="cuerpo">
+            <p class="txt">«NoSQL» agrupa las bases que <em>no</em> siguen el modelo relacional de tablas. No son mejores ni peores: resuelven otros problemas.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Relacional (SQL)</th><td>esquema fijo, datos muy relacionados, consultas complejas, máxima consistencia</td></tr>
+                  <tr><th scope="row">NoSQL</th><td>esquema flexible, muchísimos datos, escalado horizontal, velocidad</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Elige SQL si...</th><td>los datos tienen estructura clara y relaciones (banca, facturas, inventario)</td></tr>
+                  <tr><th scope="row">Elige NoSQL si...</th><td>el formato varía, priorizas escala y rapidez sobre relaciones (logs, catálogos, caché)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En la práctica se combinan: una app puede usar PostgreSQL para los pedidos y Redis para la caché de sesiones. No es «o uno o el otro».</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Tipos de base de datos</h2>
+          <div class="cuerpo">
+            <p class="txt">El panorama completo, con un ejemplo de cada familia:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Relacional</th><td>tablas relacionadas · PostgreSQL, MySQL, Oracle, SQL Server, SQLite</td></tr>
+                  <tr><th scope="row">Documental</th><td>documentos JSON flexibles · MongoDB, CouchDB</td></tr>
+                  <tr><th scope="row">Clave-valor</th><td>un valor por clave, rapidísimo · Redis, DynamoDB</td></tr>
+                  <tr><th scope="row">Columnar</th><td>orientada a columnas, para analítica masiva · Cassandra, HBase</td></tr>
+                  <tr><th scope="row">De grafos</th><td>nodos y relaciones · Neo4j (redes sociales, rutas)</td></tr>
+                  <tr><th scope="row">De series temporales</th><td>medidas en el tiempo · InfluxDB, TimescaleDB (sensores, métricas)</td></tr>
+                  <tr><th scope="row">Motor de búsqueda</th><td>texto e índices · Elasticsearch</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las cuatro primeras familias NoSQL clásicas son documental, clave-valor, columnar y de grafos. Las demás son especializadas para un tipo de dato concreto.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>ACID y transacciones</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>transacción</strong> es un grupo de operaciones que deben ocurrir todas o ninguna (transferir dinero: restar de una cuenta y sumar en otra). Las bases relacionales garantizan las propiedades <strong>ACID</strong>:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Atomicidad</th><td>todo o nada; si algo falla, se deshace entero</td></tr>
+                  <tr><th scope="row">Consistencia</th><td>la base pasa de un estado válido a otro válido</td></tr>
+                  <tr><th scope="row">Aislamiento</th><td>las transacciones simultáneas no se interfieren</td></tr>
+                  <tr><th scope="row">Durabilidad</th><td>una vez confirmado, no se pierde aunque se caiga el sistema</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Muchas NoSQL relajan ACID a cambio de escala y velocidad (modelo «BASE», consistencia «eventual»): los datos se sincronizan al poco, no al instante. Bien para un «me gusta»; mal para un saldo bancario.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Tecnologías más usadas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">PostgreSQL</th><td>relacional avanzada, libre; la favorita actual. Ver <a href="postgresql.html">chuleta</a></td></tr>
+                  <tr><th scope="row">MySQL / MariaDB</th><td>relacional libre, muy extendida en la web</td></tr>
+                  <tr><th scope="row">SQLite</th><td>relacional en un solo fichero, sin servidor; móviles y apps de escritorio</td></tr>
+                  <tr><th scope="row">Oracle / SQL Server</th><td>relacionales de empresa, de pago</td></tr>
+                  <tr><th scope="row">MongoDB</th><td>documental, la NoSQL más popular</td></tr>
+                  <tr><th scope="row">Redis</th><td>clave-valor en memoria; caché y colas</td></tr>
+                  <tr><th scope="row">Elasticsearch</th><td>búsqueda de texto y analítica de logs</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para aprender, SQLite (cero instalación) o PostgreSQL (potente y gratis) son las mejores puertas de entrada al mundo relacional.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Para qué se usan</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Aplicaciones web</th><td>usuarios, pedidos, contenidos (casi siempre una relacional)</td></tr>
+                  <tr><th scope="row">Analítica</th><td>informes sobre grandes volúmenes (columnar, data warehouse)</td></tr>
+                  <tr><th scope="row">Caché y sesiones</th><td>datos temporales a toda velocidad (clave-valor)</td></tr>
+                  <tr><th scope="row">Catálogos flexibles</th><td>fichas con campos que cambian (documental)</td></tr>
+                  <tr><th scope="row">Recomendaciones</th><td>«amigos de amigos», rutas (grafos)</td></tr>
+                  <tr><th scope="row">Monitorización</th><td>métricas de sensores y servidores (series temporales)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Cerca de la base</h2>
+          <div class="cuerpo">
+            <p class="txt">Conceptos que aparecen enseguida al trabajar con una base de datos:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Índice</th><td>estructura que acelera las búsquedas (como el índice de un libro)</td></tr>
+                  <tr><th scope="row">Modelo E-R</th><td>diagrama de entidades y relaciones para diseñar el esquema</td></tr>
+                  <tr><th scope="row">Normalización</th><td>organizar las tablas para no repetir datos</td></tr>
+                  <tr><th scope="row">ORM</th><td>capa que traduce entre objetos del código y tablas (Hibernate, Prisma)</td></tr>
+                  <tr><th scope="row">Copia de seguridad</th><td>volcar la base a un fichero para poder restaurarla</td></tr>
+                  <tr><th scope="row">Inyección SQL</th><td>el ataque a evitar al construir consultas; ver <a href="../hacking/sqlmap.html">sqlmap</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Qué usar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Datos con relaciones claras</th><td>una relacional: <a href="postgresql.html">PostgreSQL</a> o MySQL</td></tr>
+                  <tr><th scope="row">App pequeña o local</th><td>SQLite, sin servidor</td></tr>
+                  <tr><th scope="row">Formato variable, mucha escala</th><td>documental: MongoDB</td></tr>
+                  <tr><th scope="row">Caché o datos volátiles</th><td>clave-valor: Redis</td></tr>
+                  <tr><th scope="row">Cuando dudes</th><td>empieza por una relacional: es la opción segura para casi todo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Sigue con <a href="sql.html">SQL</a> para aprender a consultar, y con <a href="postgresql.html">PostgreSQL</a> para las particularidades de ese gestor.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><span></span><a class="siguiente" href="er-eer.html">Modelo ER-EER →</a></nav>
+      <footer class="pie">Puerta de entrada al tema. Consultas en <a href="sql.html">SQL</a>; gestor concreto en <a href="postgresql.html">PostgreSQL</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

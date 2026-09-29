@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Procesos y sistema · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><a href="terminal-linux.html">Comandos</a><span aria-hidden="true">›</span><span>Procesos y sistema</span></nav>
+          <h1>Procesos y sistema</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Ver y controlar procesos, y conocer el estado del equipo: ps, top, kill, jobs, uname, df, du y free.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Comandos">
+      <div class="wrap"><a href="comandos-archivos.html">Archivos y navegación</a><a href="comandos-texto.html">Buscar y texto</a><a href="comandos-usuarios.html">Usuarios y permisos</a><a href="comandos-procesos.html" aria-current="page">Procesos y sistema</a><a href="comandos-paquetes.html">Paquetes y compresión</a><a href="comandos-red.html">Red y acceso remoto</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Procesos</a><a href="#s2"><b>2</b>Información del sistema</a></nav>
+      <div class="rejilla">
+        <!-- 1. Procesos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Procesos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ps aux</code></th><td>todos los procesos</td></tr>
+                  <tr><th scope="row"><code>ps aux | grep firefox</code></th><td>buscar un proceso</td></tr>
+                  <tr><th scope="row"><code>pgrep -a java</code></th><td>PID y orden de los procesos que coinciden</td></tr>
+                  <tr><th scope="row"><code>top</code></th><td>monitor en tiempo real (<code>q</code> salir)</td></tr>
+                  <tr><th scope="row"><code>htop</code></th><td>monitor más cómodo (<code>sudo apt install htop</code>)</td></tr>
+                  <tr><th scope="row"><code>kill 1234</code></th><td>pide al proceso 1234 que termine</td></tr>
+                  <tr><th scope="row"><code>kill -9 1234</code></th><td>lo termina a la fuerza</td></tr>
+                  <tr><th scope="row"><code>pkill firefox</code></th><td>termina procesos por nombre</td></tr>
+                  <tr><th scope="row"><code>orden &amp;</code></th><td>ejecuta en segundo plano</td></tr>
+                  <tr><th scope="row"><code>jobs</code></th><td>tareas de esta terminal</td></tr>
+                  <tr><th scope="row"><code>fg  bg</code></th><td>traer al primer plano / continuar en segundo plano</td></tr>
+                  <tr><th scope="row"><code>nohup orden &amp;</code></th><td>sigue ejecutándose al cerrar la terminal</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los procesos que se ejecutan en segundo plano y arrancan con el sistema son los <strong>servicios</strong>: se gestionan con <code>systemctl</code>. Ver la chuleta de <a href="servicios.html">Servicios y demonios</a>.</p>
+          </div>
+        </section>
+        <!-- 2. Información del sistema -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Información del sistema</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>cat /etc/os-release</code></th><td>distribución y versión</td></tr>
+                  <tr><th scope="row"><code>uname -a</code></th><td>versión del kernel</td></tr>
+                  <tr><th scope="row"><code>hostnamectl</code></th><td>nombre del equipo, SO y kernel</td></tr>
+                  <tr><th scope="row"><code>uptime</code></th><td>tiempo encendido y carga</td></tr>
+                  <tr><th scope="row"><code>free -h</code></th><td>memoria RAM y swap</td></tr>
+                  <tr><th scope="row"><code>df -h</code></th><td>espacio libre en los discos</td></tr>
+                  <tr><th scope="row"><code>du -sh carpeta</code></th><td>lo que ocupa una carpeta</td></tr>
+                  <tr><th scope="row"><code>lsblk</code></th><td>discos y particiones</td></tr>
+                  <tr><th scope="row"><code>lscpu</code></th><td>procesador</td></tr>
+                  <tr><th scope="row"><code>lsusb  lspci</code></th><td>dispositivos USB y PCI</td></tr>
+                  <tr><th scope="row"><code>sudo dmesg | tail</code></th><td>mensajes recientes del kernel</td></tr>
+                  <tr><th scope="row"><code>date</code></th><td>fecha y hora</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo mount /dev/sdb1 /mnt</code></th><td>montar una partición</td></tr>
+                  <tr><th scope="row"><code>sudo umount /mnt</code></th><td>desmontar</td></tr>
+                  <tr><th scope="row"><code>sudo reboot</code></th><td>reiniciar</td></tr>
+                  <tr><th scope="row"><code>sudo shutdown -h now</code></th><td>apagar ahora (<code>+10</code> en 10 minutos)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los mensajes del kernel y de los servicios se consultan mejor con <code>journalctl</code>: ver <a href="logs.html">Logs</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="comandos-usuarios.html">← Usuarios y permisos</a><a class="siguiente" href="comandos-paquetes.html">Paquetes y compresión →</a></nav>
+      <footer class="pie">Parte de los <a href="terminal-linux.html">Comandos de Linux</a>. Para cualquier orden: <code>man comando</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

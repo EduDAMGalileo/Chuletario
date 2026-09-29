@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fuzzing · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="hacking">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Hacking</a><span aria-hidden="true">›</span><span>Fuzzing</span></nav>
+          <h1>Fuzzing</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Descubrir rutas, ficheros, parámetros y subdominios ocultos probando miles de nombres de un diccionario, con ffuf y gobuster. Para entornos propios o de laboratorio con autorización.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Hacking">
+      <div class="wrap"><a href="pentest.html">Pentest</a><a href="google-dorking.html">Google dorking</a><a href="nmap.html">Nmap</a><a href="netcat.html">Netcat</a><a href="sqlmap.html">sqlmap</a><a href="fuerza-bruta.html">Fuerza bruta</a><a href="fuzzing.html" aria-current="page">Fuzzing</a><a href="shells.html">Shells</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es el fuzzing</a><a href="#s2"><b>2</b>Tipos de fuzzing</a><a href="#s3"><b>3</b>Diccionarios</a><a href="#s4"><b>4</b>ffuf: lo básico</a><a href="#s5"><b>5</b>ffuf: filtrar el ruido</a><a href="#s6"><b>6</b>gobuster</a><a href="#s7"><b>7</b>Parámetros y vhosts</a><a href="#s8"><b>8</b>Otras herramientas</a><a href="#s9"><b>9</b>Rendimiento y cuidado</a><a href="#s10"><b>10</b>Defensa y normas</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="aviso"><strong>Solo con autorización.</strong> El fuzzing lanza miles de peticiones contra un servidor: se nota, queda en los logs y puede tumbar un sitio débil. Úsalo contra máquinas tuyas, laboratorios (DVWA, HTB, VulnHub) o auditorías con permiso por escrito y alcance definido.</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Fuzzing es probar muchísimas entradas automáticamente para ver qué responde el objetivo. En web, sirve para encontrar lo que no está enlazado: paneles de admin, copias de seguridad, APIs, parámetros olvidados.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">La palabra clave <code>FUZZ</code></p>
+            <p class="txt">Las herramientas ponen cada palabra del diccionario donde tú marcas un hueco. En ffuf ese hueco se llama <code>FUZZ</code>; se coloca en la URL, una cabecera o el cuerpo.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es el fuzzing</h2>
+          <div class="cuerpo">
+            <p class="txt">Enviar entradas automáticas y masivas a un programa o servicio para observar cómo responde. En un pentest web es la fase de <em>enumeración</em>: descubrir contenido y puntos de entrada que no aparecen a simple vista.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Diccionario</th><td>lista de nombres candidatos (rutas, parámetros...) que se prueban</td></tr>
+                  <tr><th scope="row">Marcador</th><td>el hueco donde va cada palabra (<code>FUZZ</code> en ffuf)</td></tr>
+                  <tr><th scope="row">Respuesta</th><td>código HTTP, tamaño, número de palabras/líneas: lo que delata un acierto</td></tr>
+                  <tr><th scope="row">Filtro</th><td>descartar respuestas «vacías» para quedarte con lo interesante</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">No confundir con la fuerza bruta de contraseñas (ver <a href="fuerza-bruta.html">Fuerza bruta</a>): aquí no se adivinan credenciales, se descubren recursos. La técnica de probar-y-observar es la misma.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Tipos de fuzzing</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Directorios y ficheros</th><td>el más común: buscar rutas ocultas (<code>/admin</code>, <code>/backup.zip</code>)</td></tr>
+                  <tr><th scope="row">Parámetros</th><td>descubrir parámetros GET/POST que la app acepta pero no muestra</td></tr>
+                  <tr><th scope="row">Subdominios (DNS)</th><td>encontrar <code>dev.sitio.com</code>, <code>api.sitio.com</code>...</td></tr>
+                  <tr><th scope="row">Virtual hosts</th><td>varios sitios en una misma IP, según la cabecera <code>Host</code></td></tr>
+                  <tr><th scope="row">Valores</th><td>probar IDs, usuarios o extensiones</td></tr>
+                  <tr><th scope="row">Mutación (inputs)</th><td>enviar datos malformados a un programa para provocar fallos (fuzzing clásico de seguridad)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los cuatro primeros son fuzzing <em>web</em> y es lo que hacen ffuf y gobuster. El último, mutar entradas de un binario para encontrar cuelgues, es otro mundo (AFL, libFuzzer) que no se cubre aquí.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Diccionarios</h2>
+          <div class="cuerpo">
+            <p class="txt">La calidad del diccionario decide lo que encuentras. La referencia es <strong>SecLists</strong>, en Kali bajo <code>/usr/share/seclists/</code>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Discovery/Web-Content/common.txt</code></th><td>rutas habituales; un buen punto de partida</td></tr>
+                  <tr><th scope="row"><code>.../directory-list-2.3-medium.txt</code></th><td>listado grande y muy usado (dirbuster)</td></tr>
+                  <tr><th scope="row"><code>.../raft-*-directories.txt</code></th><td>rutas reales recopiladas; muy efectivos</td></tr>
+                  <tr><th scope="row"><code>Discovery/DNS/subdomains-top1million-5000.txt</code></th><td>subdominios comunes</td></tr>
+                  <tr><th scope="row"><code>.../burp-parameter-names.txt</code></th><td>nombres de parámetros</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Empieza por un diccionario pequeño (<code>common.txt</code>) para una pasada rápida, y solo tira de los grandes si hace falta. Un diccionario a medida del objetivo (con <code>cewl</code>) suele acertar más que uno gigante genérico.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>ffuf: lo básico</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>ffuf</strong> (<em>Fuzz Faster U Fool</em>) es rapidísimo y flexible. Marcas el hueco con <code>FUZZ</code> y le das un diccionario con <code>-w</code>.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># descubrir directorios y ficheros</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> lista.txt <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/FUZZ"</span>
+
+<span class="tok-coment"># buscar ficheros con una extensión concreta</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> lista.txt <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/FUZZ.php"</span>
+
+<span class="tok-coment"># probar varias extensiones de golpe</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> lista.txt <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/FUZZ"</span> <span class="tok-atributo">-e</span> .php,.html,.txt,.bak</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-w FICH</code></th><td>diccionario (puedes dar varios con <code>:CLAVE</code> para nombrarlos)</td></tr>
+                  <tr><th scope="row"><code>-u URL</code></th><td>la URL con el marcador <code>FUZZ</code></td></tr>
+                  <tr><th scope="row"><code>-e .php,.bak</code></th><td>extensiones a añadir a cada palabra</td></tr>
+                  <tr><th scope="row"><code>-X POST</code></th><td>método HTTP</td></tr>
+                  <tr><th scope="row"><code>-recursion</code></th><td>entrar en las carpetas que encuentre</td></tr>
+                  <tr><th scope="row"><code>-o salida.json</code></th><td>guardar resultados</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>ffuf: filtrar el ruido</h2>
+          <div class="cuerpo">
+            <p class="txt">La clave del fuzzing web: descartar las respuestas «de relleno». Si un sitio devuelve la misma página de 404 para todo, filtras por su tamaño y solo ves lo distinto.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># solo respuestas 200, 301 y 302</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> lista.txt <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/FUZZ"</span> <span class="tok-atributo">-mc</span> 200,301,302
+
+<span class="tok-coment"># ocultar el 404 y descartar respuestas de 1234 bytes (la página de error)</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> lista.txt <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/FUZZ"</span> <span class="tok-atributo">-fc</span> 404 <span class="tok-atributo">-fs</span> 1234
+
+<span class="tok-coment"># filtrado automático: ffuf calibra solo qué respuesta es "vacía"</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> lista.txt <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/FUZZ"</span> <span class="tok-atributo">-ac</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-mc CÓDIGOS</code></th><td><em>match</em>: mostrar solo estos códigos HTTP</td></tr>
+                  <tr><th scope="row"><code>-fc CÓDIGOS</code></th><td><em>filter</em>: ocultar estos códigos</td></tr>
+                  <tr><th scope="row"><code>-fs TAMAÑO</code></th><td>ocultar por tamaño en bytes (<code>-ms</code> para mostrar)</td></tr>
+                  <tr><th scope="row"><code>-fw N</code></th><td>filtrar por número de palabras</td></tr>
+                  <tr><th scope="row"><code>-fl N</code></th><td>filtrar por número de líneas</td></tr>
+                  <tr><th scope="row"><code>-ac</code></th><td>auto-calibrado: detecta y filtra el «falso positivo» solo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Estrategia: lanza sin filtros, mira qué código/tamaño se repite en las respuestas basura y añádelo a <code>-fc</code> o <code>-fs</code>. En un par de pasadas te quedas solo con lo real.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>gobuster</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>gobuster</strong> hace lo mismo con una sintaxis por <em>modos</em>. El primer argumento dice qué buscar.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># dir: directorios y ficheros</span>
+<span class="tok-clave">gobuster</span> dir <span class="tok-atributo">-u</span> http://sitio.local <span class="tok-atributo">-w</span> lista.txt <span class="tok-atributo">-x</span> php,txt,html
+
+<span class="tok-coment"># dns: subdominios</span>
+<span class="tok-clave">gobuster</span> dns <span class="tok-atributo">-d</span> sitio.com <span class="tok-atributo">-w</span> subdominios.txt
+
+<span class="tok-coment"># vhost: virtual hosts (mismo servidor, distinta cabecera Host)</span>
+<span class="tok-clave">gobuster</span> vhost <span class="tok-atributo">-u</span> http://sitio.local <span class="tok-atributo">-w</span> subdominios.txt <span class="tok-atributo">--append-domain</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>dir</code></th><td>directorios y ficheros de un sitio web</td></tr>
+                  <tr><th scope="row"><code>dns</code></th><td>subdominios por resolución DNS</td></tr>
+                  <tr><th scope="row"><code>vhost</code></th><td>virtual hosts en una IP</td></tr>
+                  <tr><th scope="row"><code>-x php,txt</code></th><td>extensiones (como <code>-e</code> de ffuf)</td></tr>
+                  <tr><th scope="row"><code>-t 50</code></th><td>hilos en paralelo</td></tr>
+                  <tr><th scope="row"><code>-s</code> / <code>-b</code></th><td>códigos a mostrar / a ocultar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">ffuf o gobuster hacen lo mismo: elige el que te resulte cómodo. ffuf es más flexible para casos raros (parámetros, cuerpos); gobuster tiene una sintaxis muy directa para lo habitual.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Parámetros y vhosts</h2>
+          <div class="cuerpo">
+            <p class="txt">El marcador <code>FUZZ</code> puede ir en cualquier parte de la petición, no solo en la ruta. Eso abre casos muy útiles:</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># descubrir nombres de parámetros GET</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> params.txt <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/api?FUZZ=1"</span> <span class="tok-atributo">-fs</span> 0
+
+<span class="tok-coment"># fuzz de virtual hosts: el hueco va en la cabecera Host</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> subs.txt <span class="tok-atributo">-u</span> http://sitio.local \
+     <span class="tok-atributo">-H</span> <span class="tok-texto">"Host: FUZZ.sitio.local"</span> <span class="tok-atributo">-fs</span> 1234
+
+<span class="tok-coment"># fuzz de valores en el cuerpo de un POST</span>
+<span class="tok-clave">ffuf</span> <span class="tok-atributo">-w</span> users.txt <span class="tok-atributo">-u</span> <span class="tok-texto">"http://sitio.local/login"</span> \
+     <span class="tok-atributo">-X</span> POST <span class="tok-atributo">-d</span> <span class="tok-texto">"user=FUZZ&amp;pass=x"</span> \
+     <span class="tok-atributo">-H</span> <span class="tok-texto">"Content-Type: application/x-www-form-urlencoded"</span></code></pre></figure>
+            <p class="nota">Para virtual hosts, primero mira el tamaño de la respuesta «por defecto» (con un Host que no existe) y fíltralo con <code>-fs</code>: lo que se salga de ese tamaño es un vhost real.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Otras herramientas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">feroxbuster</th><td>rápido y recursivo por defecto; muy cómodo para contenido web</td></tr>
+                  <tr><th scope="row">wfuzz</th><td>el clásico en Python; muy configurable, hoy algo más lento</td></tr>
+                  <tr><th scope="row">dirb / dirbuster</th><td>los veteranos; dirbuster tiene interfaz gráfica</td></tr>
+                  <tr><th scope="row">nikto</th><td>escáner web que además prueba fallos conocidos</td></tr>
+                  <tr><th scope="row">nmap</th><td><code>--script http-enum</code> hace una enumeración básica (ver <a href="nmap.html">Nmap</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Todos comparten la misma idea (diccionario + observar respuestas); cambia la sintaxis. ffuf y feroxbuster son los favoritos actuales por velocidad.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Rendimiento y cuidado</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-t 40</code></th><td>hilos: más rápido, pero más carga sobre el servidor</td></tr>
+                  <tr><th scope="row"><code>-rate 100</code></th><td>límite de peticiones por segundo (ffuf)</td></tr>
+                  <tr><th scope="row"><code>-p 0.1</code></th><td>pausa entre peticiones</td></tr>
+                  <tr><th scope="row"><code>-timeout 10</code></th><td>cuánto esperar cada respuesta</td></tr>
+                  <tr><th scope="row"><code>-replay-proxy</code></th><td>reenviar los aciertos a Burp para inspeccionarlos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>No satures.</strong> Subir los hilos a lo bestia puede tumbar un sitio frágil y, en producción, es una interrupción del servicio. Ajusta <code>-rate</code> y <code>-t</code> a algo razonable; si el objetivo empieza a devolver errores 429 o 503, baja el ritmo.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Defensa y normas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Nada sensible sin autenticar</th><td>que <code>/admin</code> o <code>/backup.zip</code> no sean accesibles «por no estar enlazados»</td></tr>
+                  <tr><th scope="row">Rate limiting / WAF</th><td>limitar peticiones por IP y detectar patrones de escaneo</td></tr>
+                  <tr><th scope="row">Vigilar los logs</th><td>una ráfaga de 404 es la firma de un fuzzing; ver <a href="../sistemas/logs.html">Logs</a></td></tr>
+                  <tr><th scope="row">Página de error uniforme</th><td>no revelar con el código o el tamaño qué existe y qué no</td></tr>
+                  <tr><th scope="row">Quitar lo que sobra</th><td>backups, ficheros de prueba y paneles antiguos fuera del servidor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">Trabaja solo sobre objetivos tuyos o de laboratorio, y con permiso por escrito y alcance definido cuando audites los de otra persona. Ajusta el ritmo para no interrumpir el servicio y no salgas del alcance acordado. El objetivo de aprender esto es no dejar recursos sensibles expuestos.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="fuerza-bruta.html">← Fuerza bruta</a><a class="siguiente" href="shells.html">Shells →</a></nav>
+      <footer class="pie">Documentación: <a href="https://github.com/ffuf/ffuf">github.com/ffuf/ffuf</a> y <a href="https://github.com/OJ/gobuster">github.com/OJ/gobuster</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

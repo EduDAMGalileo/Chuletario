@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Buscar y texto · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><a href="terminal-linux.html">Comandos</a><span aria-hidden="true">›</span><span>Buscar y texto</span></nav>
+          <h1>Buscar y procesar texto</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Encontrar ficheros y texto, encadenar órdenes con tuberías y transformar la salida: find, grep, redirecciones, awk, sed, cut y sort.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Comandos">
+      <div class="wrap"><a href="comandos-archivos.html">Archivos y navegación</a><a href="comandos-texto.html" aria-current="page">Buscar y texto</a><a href="comandos-usuarios.html">Usuarios y permisos</a><a href="comandos-procesos.html">Procesos y sistema</a><a href="comandos-paquetes.html">Paquetes y compresión</a><a href="comandos-red.html">Red y acceso remoto</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Buscar</a><a href="#s2"><b>2</b>Redirecciones y tuberías</a><a href="#s3"><b>3</b>Procesar texto</a></nav>
+      <div class="rejilla">
+        <!-- 1. Buscar -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Buscar</h2>
+          <div class="cuerpo">
+            <h3>Ficheros</h3>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">find</span> . <span class="tok-atributo">-name</span> <span class="tok-texto">"*.java"</span>                 <span class="tok-coment"># por nombre, desde aquí</span>
+<span class="tok-clave">find</span> /home <span class="tok-atributo">-iname</span> <span class="tok-texto">"informe*"</span>          <span class="tok-coment"># sin distinguir mayúsculas</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-type</span> d <span class="tok-atributo">-name</span> <span class="tok-texto">"build"</span>          <span class="tok-coment"># solo carpetas (f = ficheros)</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-size</span> +100M                    <span class="tok-coment"># más de 100 MB</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-mtime</span> <span class="tok-atributo">-7</span>                      <span class="tok-coment"># modificados en los últimos 7 días</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-name</span> <span class="tok-texto">"*.log"</span> <span class="tok-atributo">-mtime</span> +30 <span class="tok-atributo">-delete</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-name</span> <span class="tok-texto">"*.sh"</span> <span class="tok-atributo">-exec</span> chmod +x {} \;
+
+<span class="tok-clave">locate</span> hosts        <span class="tok-coment"># muy rápido; usa un índice (sudo updatedb)</span></code></pre></figure>
+            <h3>Texto dentro de ficheros</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>grep "error" app.log</code></th><td>líneas que contienen «error»</td></tr>
+                  <tr><th scope="row"><code>grep -i</code></th><td>sin distinguir mayúsculas</td></tr>
+                  <tr><th scope="row"><code>grep -n</code></th><td>muestra el número de línea</td></tr>
+                  <tr><th scope="row"><code>grep -r "TODO" src/</code></th><td>busca en todos los ficheros de una carpeta</td></tr>
+                  <tr><th scope="row"><code>grep -v</code></th><td>líneas que <strong>no</strong> contienen el texto</td></tr>
+                  <tr><th scope="row"><code>grep -c</code></th><td>solo cuenta las coincidencias</td></tr>
+                  <tr><th scope="row"><code>grep -l</code></th><td>solo muestra los nombres de fichero</td></tr>
+                  <tr><th scope="row"><code>grep -E "404|500"</code></th><td>expresión regular extendida</td></tr>
+                  <tr><th scope="row"><code>grep -w "id"</code></th><td>palabra completa</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Redirecciones y tuberías -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Redirecciones y tuberías</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>orden &gt; fichero</code></th><td>guarda la salida (sobrescribe)</td></tr>
+                  <tr><th scope="row"><code>orden &gt;&gt; fichero</code></th><td>añade al final</td></tr>
+                  <tr><th scope="row"><code>orden 2&gt; errores.txt</code></th><td>guarda solo los errores</td></tr>
+                  <tr><th scope="row"><code>orden &gt; todo.txt 2&gt;&amp;1</code></th><td>salida y errores al mismo fichero</td></tr>
+                  <tr><th scope="row"><code>orden 2&gt; /dev/null</code></th><td>descarta los errores</td></tr>
+                  <tr><th scope="row"><code>orden &lt; fichero</code></th><td>usa el fichero como entrada</td></tr>
+                  <tr><th scope="row"><code>orden1 | orden2</code></th><td>la salida de una es la entrada de la otra</td></tr>
+                  <tr><th scope="row"><code>orden | tee fichero</code></th><td>muestra en pantalla y guarda a la vez</td></tr>
+                  <tr><th scope="row"><code>orden1 &amp;&amp; orden2</code></th><td>la segunda solo si la primera va bien</td></tr>
+                  <tr><th scope="row"><code>orden1 || orden2</code></th><td>la segunda solo si la primera falla</td></tr>
+                  <tr><th scope="row"><code>orden1 ; orden2</code></th><td>una detrás de otra, pase lo que pase</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ls</span> <span class="tok-atributo">-l</span> <span class="tok-operador">|</span> <span class="tok-clave">grep</span> <span class="tok-texto">".pdf"</span>
+<span class="tok-clave">history</span> <span class="tok-operador">|</span> <span class="tok-clave">grep</span> apt
+<span class="tok-clave">ps</span> aux <span class="tok-operador">|</span> <span class="tok-clave">grep</span> java
+<span class="tok-clave">find</span> / <span class="tok-atributo">-name</span> <span class="tok-texto">"*.conf"</span> <span class="tok-operador">2&gt;</span> /dev/null <span class="tok-operador">|</span> <span class="tok-clave">wc</span> <span class="tok-atributo">-l</span>
+<span class="tok-clave">sudo apt</span> update <span class="tok-operador">&amp;&amp;</span> <span class="tok-clave">sudo apt</span> upgrade <span class="tok-atributo">-y</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 3. Procesar texto -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Procesar texto</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sort</code></th><td>ordena líneas (<code>-n</code> numérico, <code>-r</code> inverso, <code>-h</code> tamaños)</td></tr>
+                  <tr><th scope="row"><code>uniq -c</code></th><td>quita repetidas consecutivas y las cuenta</td></tr>
+                  <tr><th scope="row"><code>cut -d ':' -f 1</code></th><td>extrae la columna 1 usando <code>:</code> como separador</td></tr>
+                  <tr><th scope="row"><code>tr 'a-z' 'A-Z'</code></th><td>cambia caracteres</td></tr>
+                  <tr><th scope="row"><code>sed 's/viejo/nuevo/g' f</code></th><td>sustituye texto (con <code>-i</code> modifica el fichero)</td></tr>
+                  <tr><th scope="row"><code>awk '{print $1, $3}' f</code></th><td>imprime columnas separadas por espacios</td></tr>
+                  <tr><th scope="row"><code>xargs</code></th><td>convierte líneas en argumentos de otra orden</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># usuarios del sistema</span>
+<span class="tok-clave">cut</span> <span class="tok-atributo">-d</span> <span class="tok-texto">':'</span> <span class="tok-atributo">-f</span> 1 /etc/passwd
+
+<span class="tok-coment"># las 10 IP que más peticiones hacen a un servidor web</span>
+<span class="tok-clave">cut</span> <span class="tok-atributo">-d</span> <span class="tok-texto">' '</span> <span class="tok-atributo">-f</span> 1 access.log <span class="tok-operador">|</span> <span class="tok-clave">sort</span> <span class="tok-operador">|</span> <span class="tok-clave">uniq</span> <span class="tok-atributo">-c</span> <span class="tok-operador">|</span> <span class="tok-clave">sort</span> <span class="tok-atributo">-rn</span> <span class="tok-operador">|</span> <span class="tok-clave">head</span>
+
+<span class="tok-coment"># qué ocupa más en la carpeta actual</span>
+<span class="tok-clave">du</span> <span class="tok-atributo">-sh</span> * <span class="tok-operador">|</span> <span class="tok-clave">sort</span> <span class="tok-atributo">-h</span>
+
+<span class="tok-coment"># borrar todos los .tmp encontrados</span>
+<span class="tok-clave">find</span> . <span class="tok-atributo">-name</span> <span class="tok-texto">"*.tmp"</span> <span class="tok-operador">|</span> <span class="tok-clave">xargs</span> rm</code></pre></figure>
+            <p class="nota">Este mismo instrumental (grep, awk, <code>sort | uniq -c | sort -rn</code>) es la base del análisis de <a href="logs.html">Logs</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="comandos-archivos.html">← Archivos y navegación</a><a class="siguiente" href="comandos-usuarios.html">Usuarios y permisos →</a></nav>
+      <footer class="pie">Parte de los <a href="terminal-linux.html">Comandos de Linux</a>. Para cualquier orden: <code>man comando</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

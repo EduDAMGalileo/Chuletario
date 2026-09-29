@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Paquetes y compresión · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><a href="terminal-linux.html">Comandos</a><span aria-hidden="true">›</span><span>Paquetes y compresión</span></nav>
+          <h1>Paquetes y compresión</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Instalar y actualizar software con APT, y empaquetar y comprimir con tar, gzip y zip.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Comandos">
+      <div class="wrap"><a href="comandos-archivos.html">Archivos y navegación</a><a href="comandos-texto.html">Buscar y texto</a><a href="comandos-usuarios.html">Usuarios y permisos</a><a href="comandos-procesos.html">Procesos y sistema</a><a href="comandos-paquetes.html" aria-current="page">Paquetes y compresión</a><a href="comandos-red.html">Red y acceso remoto</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Instalar software con APT</a><a href="#s2"><b>2</b>Comprimir y empaquetar</a></nav>
+      <div class="rejilla">
+        <!-- 1. Instalar software con APT -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Instalar software con APT</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sudo apt update</code></th><td>actualiza la lista de paquetes disponibles</td></tr>
+                  <tr><th scope="row"><code>sudo apt upgrade</code></th><td>actualiza los paquetes instalados</td></tr>
+                  <tr><th scope="row"><code>sudo apt full-upgrade</code></th><td>actualiza aunque haya que añadir o quitar paquetes</td></tr>
+                  <tr><th scope="row"><code>sudo apt install git</code></th><td>instala (varios separados por espacios)</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo apt install ./app.deb</code></th><td>instala un .deb descargado con sus dependencias</td></tr>
+                  <tr><th scope="row"><code>sudo apt remove git</code></th><td>desinstala y conserva la configuración</td></tr>
+                  <tr><th scope="row"><code>sudo apt purge git</code></th><td>desinstala y borra la configuración</td></tr>
+                  <tr><th scope="row"><code>sudo apt autoremove</code></th><td>quita dependencias que ya nadie usa</td></tr>
+                  <tr><th scope="row"><code>apt search editor</code></th><td>busca paquetes</td></tr>
+                  <tr><th scope="row"><code>apt show git</code></th><td>información de un paquete</td></tr>
+                  <tr><th scope="row"><code>apt list --installed</code></th><td>paquetes instalados</td></tr>
+                  <tr><th scope="row"><code>apt list --upgradable</code></th><td>paquetes con actualización pendiente</td></tr>
+                  <tr><th scope="row"><code>dpkg -l | grep java</code></th><td>buscar entre lo instalado</td></tr>
+                  <tr><th scope="row"><code>dpkg -L git</code></th><td>ficheros que instaló un paquete</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># Ubuntu: rutina habitual</span>
+<span class="tok-clave">sudo apt</span> update <span class="tok-operador">&amp;&amp;</span> <span class="tok-clave">sudo apt</span> upgrade <span class="tok-atributo">-y</span>
+
+<span class="tok-coment"># Kali: se recomienda full-upgrade</span>
+<span class="tok-clave">sudo apt</span> update <span class="tok-operador">&amp;&amp;</span> <span class="tok-clave">sudo apt</span> full-upgrade <span class="tok-atributo">-y</span>
+
+<span class="tok-coment"># Ubuntu también usa snap</span>
+<span class="tok-clave">sudo snap</span> install code <span class="tok-atributo">--classic</span></code></pre></figure>
+            <p class="nota">Siempre <code>apt update</code> antes de instalar. Los repositorios se configuran en <code>/etc/apt/sources.list</code> y <code>/etc/apt/sources.list.d/</code>. Mezclar repositorios de Ubuntu en Kali (o al revés) suele romper el sistema.</p>
+          </div>
+        </section>
+        <!-- 2. Comprimir y empaquetar -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Comprimir y empaquetar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>tar -czvf copia.tar.gz carpeta/</code></th><td>crear un .tar.gz</td></tr>
+                  <tr><th scope="row"><code>tar -xzvf copia.tar.gz</code></th><td>extraer aquí</td></tr>
+                  <tr><th scope="row" class="larga"><code>tar -xzvf copia.tar.gz -C destino/</code></th><td>extraer en otra carpeta</td></tr>
+                  <tr><th scope="row"><code>tar -tzf copia.tar.gz</code></th><td>ver el contenido sin extraer</td></tr>
+                  <tr><th scope="row" class="larga"><code>tar -cJvf copia.tar.xz carpeta/</code></th><td>crear un .tar.xz (comprime más)</td></tr>
+                  <tr><th scope="row" class="larga"><code>zip -r proyecto.zip proyecto/</code></th><td>crear un .zip</td></tr>
+                  <tr><th scope="row" class="larga"><code>unzip proyecto.zip -d destino/</code></th><td>extraer un .zip</td></tr>
+                  <tr><th scope="row" class="larga"><code>gzip fichero  gunzip fichero.gz</code></th><td>comprimir o descomprimir un solo fichero</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Opciones de <code>tar</code>: <code>c</code> crear, <code>x</code> extraer, <code>t</code> listar, <code>z</code> gzip, <code>J</code> xz, <code>v</code> detallado, <code>f</code> fichero (siempre la última).</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="comandos-procesos.html">← Procesos y sistema</a><a class="siguiente" href="comandos-red.html">Red y acceso remoto →</a></nav>
+      <footer class="pie">Parte de los <a href="terminal-linux.html">Comandos de Linux</a>. Para cualquier orden: <code>man comando</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

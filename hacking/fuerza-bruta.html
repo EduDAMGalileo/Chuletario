@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fuerza bruta · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="hacking">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Hacking</a><span aria-hidden="true">›</span><span>Fuerza bruta</span></nav>
+          <h1>Fuerza bruta</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El ataque de adivinar credenciales por repetición, sus variantes y un chuletario de John the Ripper y Hydra, para entornos propios o de laboratorio con autorización.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Hacking">
+      <div class="wrap"><a href="pentest.html">Pentest</a><a href="google-dorking.html">Google dorking</a><a href="nmap.html">Nmap</a><a href="netcat.html">Netcat</a><a href="sqlmap.html">sqlmap</a><a href="fuerza-bruta.html" aria-current="page">Fuerza bruta</a><a href="fuzzing.html">Fuzzing</a><a href="shells.html">Shells</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es la fuerza bruta</a><a href="#s2"><b>2</b>Variantes del ataque</a><a href="#s3"><b>3</b>En línea o fuera de línea</a><a href="#s4"><b>4</b>Diccionarios y reglas</a><a href="#s5"><b>5</b>John the Ripper</a><a href="#s6"><b>6</b>John: formatos y modos</a><a href="#s7"><b>7</b>John: recetas</a><a href="#s8"><b>8</b>Hydra</a><a href="#s9"><b>9</b>Hydra: servicios</a><a href="#s10"><b>10</b>Formularios web con Hydra</a><a href="#s11"><b>11</b>Cómo defenderse</a><a href="#s12"><b>12</b>Normas de uso</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="aviso"><strong>Solo con autorización.</strong> Probar contraseñas ajenas —de un correo, un router, un servidor o un servicio web— es un delito, aunque «solo estés mirando». Todo lo de aquí es para tus propias máquinas, para laboratorios (DVWA, Metasploitable, VulnHub, HTB) o para auditorías con permiso por escrito y alcance definido.</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">La fuerza bruta prueba credenciales una tras otra hasta acertar. No explota ningún fallo del programa: aprovecha que la contraseña es débil, reutilizada o que no hay límite de intentos.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Dos herramientas, dos escenarios</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Hydra</th><td>ataca un <strong>servicio en vivo</strong>: SSH, FTP, un formulario de login...</td></tr>
+                  <tr><th scope="row">John the Ripper</th><td>ataca un <strong>hash ya robado</strong>, sin tocar la red</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es la fuerza bruta</h2>
+          <div class="cuerpo">
+            <p class="txt">Es adivinar un secreto (una contraseña, un PIN, una clave) probando candidatos de forma sistemática. Si se prueban <em>todas</em> las combinaciones posibles, antes o después se acierta; el único límite es el tiempo.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Espacio de claves</th><td>cuántas combinaciones hay (longitud × tipos de carácter)</td></tr>
+                  <tr><th scope="row">Coste</th><td>crece exponencialmente con la longitud: cada carácter multiplica</td></tr>
+                  <tr><th scope="row">Cuello de botella</th><td>en línea, la red y el bloqueo; fuera de línea, la velocidad de cálculo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Por eso una contraseña larga vence a la fuerza bruta pura: añadir longitud multiplica el trabajo del atacante mucho más que añadir «complejidad».</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Variantes del ataque</h2>
+          <div class="cuerpo">
+            <p class="txt">«Fuerza bruta» a secas suele referirse a la primera fila, pero en la práctica se usan variantes mucho más rápidas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Fuerza bruta pura</th><td>todas las combinaciones de un juego de caracteres. Segura pero lentísima</td></tr>
+                  <tr><th scope="row">Ataque de diccionario</th><td>prueba una lista de contraseñas probables (<code>rockyou.txt</code>). El más habitual</td></tr>
+                  <tr><th scope="row">Híbrido</th><td>diccionario + variaciones por reglas: <code>password</code> → <code>Password1!</code></td></tr>
+                  <tr><th scope="row">Credential stuffing</th><td>reusa pares usuario:clave filtrados en otra brecha</td></tr>
+                  <tr><th scope="row">Password spraying</th><td>una sola clave común (<code>Verano2024</code>) contra muchos usuarios, para no bloquear cuentas</td></tr>
+                  <tr><th scope="row">Rainbow tables</th><td>hashes precalculados; solo sirve si el hash no lleva <em>salt</em></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El diccionario y el híbrido son los reyes: casi nadie usa una contraseña aleatoria, así que probar las probables acierta muchísimo antes que recorrer todo el espacio de claves.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>En línea o fuera de línea</h2>
+          <div class="cuerpo">
+            <p class="txt">La distinción que decide qué herramienta usar y a qué velocidad vas:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">En línea (online)</th><td>pruebas contra el servicio real. Lento (red) y ruidoso: deja logs y salta el bloqueo. Herramienta: <strong>Hydra</strong></td></tr>
+                  <tr><th scope="row">Fuera de línea (offline)</th><td>ya tienes el hash (de un volcado, <code>/etc/shadow</code>, una fuga...) y lo atacas en tu equipo. Rapidísimo y silencioso. Herramienta: <strong>John</strong> o hashcat</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Miles de intentos por segundo solo existen fuera de línea.</strong> En línea, un buen servicio te frena a unos pocos por minuto y te bloquea. Si vas offline es porque el hash ya se ha filtrado: el fallo estuvo antes.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Diccionarios y reglas</h2>
+          <div class="cuerpo">
+            <p class="txt">El diccionario es la munición. Los clásicos en Kali:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>/usr/share/wordlists/rockyou.txt</code></th><td>14 millones de contraseñas reales filtradas; el estándar</td></tr>
+                  <tr><th scope="row"><code>/usr/share/seclists/</code></th><td>colección enorme: usuarios, claves, rutas web...</td></tr>
+                  <tr><th scope="row"><code>gzip -d rockyou.txt.gz</code></th><td>en Kali viene comprimido: descomprímelo la primera vez</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">Las <strong>reglas</strong> generan variantes de cada palabra al vuelo (añadir números, cambiar mayúsculas, sustituir letras por símbolos). Multiplican el diccionario sin agrandar el fichero. Y para un objetivo concreto, un diccionario a medida:</p>
+            <figure class="codigo"><figcaption>Generar candidatos con crunch (patrón: 8 dígitos)</figcaption><pre data-lang="bash"><code><span class="tok-clave">crunch</span> 8 8 0123456789 <span class="tok-atributo">-o</span> pins.txt
+
+<span class="tok-coment"># cewl saca palabras de la web del objetivo para un diccionario a medida</span>
+<span class="tok-clave">cewl</span> <span class="tok-atributo">-w</span> palabras.txt <span class="tok-atributo">-d</span> 2 <span class="tok-texto">"http://sitio.local"</span></code></pre></figure>
+            <p class="nota">Ver <a href="../marcas/index.html">formatos</a> aparte: aquí lo importante es que un buen diccionario vale más que un ataque más largo. La info recogida en el reconocimiento (nombres, fechas, la empresa) hace diccionarios que aciertan.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>John the Ripper</h2>
+          <div class="cuerpo">
+            <p class="txt">Crackea hashes <strong>fuera de línea</strong>. La versión recomendada es <em>jumbo</em> (cientos de formatos). Detecta el tipo de hash solo y va probando candidatos hasta que uno coincide.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo apt</span> install john      <span class="tok-coment"># en Kali ya viene</span>
+<span class="tok-clave">john</span> <span class="tok-atributo">--list=formats</span>        <span class="tok-coment"># todos los formatos que entiende</span></code></pre></figure>
+            <p class="txt">El flujo típico contra las cuentas de un Linux: combinar <code>passwd</code> y <code>shadow</code> en un fichero que John entienda, y lanzarlo.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">unshadow</span> /etc/passwd /etc/shadow &gt; hashes.txt
+<span class="tok-clave">john</span> <span class="tok-atributo">--wordlist</span>=/usr/share/wordlists/rockyou.txt hashes.txt
+<span class="tok-clave">john</span> <span class="tok-atributo">--show</span> hashes.txt        <span class="tok-coment"># ver lo ya descifrado</span></code></pre></figure>
+            <p class="nota">John guarda lo que rompe en <code>~/.john/john.pot</code>. Por eso <code>--show</code> funciona luego, y por eso un mismo hash no se vuelve a crackear dos veces.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>John: formatos y modos</h2>
+          <div class="cuerpo">
+            <p class="txt">John tiene tres modos de generar candidatos:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--wordlist=FICH</code></th><td>modo diccionario: prueba cada línea del fichero</td></tr>
+                  <tr><th scope="row"><code>--rules</code></th><td>aplica reglas al diccionario (modo híbrido)</td></tr>
+                  <tr><th scope="row"><code>--incremental</code></th><td>fuerza bruta pura: todas las combinaciones. El último recurso</td></tr>
+                  <tr><th scope="row"><code>--single</code></th><td>usa datos del propio usuario (nombre, login) como pistas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">Opciones de control frecuentes:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>--format=NAME</code></th><td>forzar el tipo de hash (<code>raw-md5</code>, <code>sha512crypt</code>, <code>NT</code>...)</td></tr>
+                  <tr><th scope="row"><code>--show</code></th><td>mostrar las contraseñas ya encontradas</td></tr>
+                  <tr><th scope="row"><code>--pot=FICH</code></th><td>usar otro fichero <em>pot</em> de resultados</td></tr>
+                  <tr><th scope="row"><code>--fork=4</code></th><td>usar 4 procesos (varios núcleos)</td></tr>
+                  <tr><th scope="row"><code>--status</code> / tecla</th><td>ver el progreso (pulsa cualquier tecla mientras corre)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si John dice «No password hashes loaded», casi siempre es que no adivinó el formato: mira el hash, identifícalo (<code>hashid</code> o <code>hash-identifier</code>) y pásalo con <code>--format</code>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>John: recetas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><figcaption>Casos habituales</figcaption><pre data-lang="bash"><code><span class="tok-coment"># diccionario + reglas (lo más rentable)</span>
+<span class="tok-clave">john</span> <span class="tok-atributo">--wordlist</span>=rockyou.txt <span class="tok-atributo">--rules</span> hashes.txt
+
+<span class="tok-coment"># un hash MD5 suelto, formato forzado</span>
+<span class="tok-clave">john</span> <span class="tok-atributo">--format</span>=raw-md5 <span class="tok-atributo">--wordlist</span>=rockyou.txt hash.txt
+
+<span class="tok-coment"># fuerza bruta pura si el diccionario no acierta</span>
+<span class="tok-clave">john</span> <span class="tok-atributo">--incremental</span> hash.txt
+
+<span class="tok-coment"># archivos protegidos: extraer el hash con los *2john</span>
+<span class="tok-clave">zip2john</span> secreto.zip &gt; zip.hash
+<span class="tok-clave">rar2john</span> secreto.rar &gt; rar.hash
+<span class="tok-clave">ssh2john</span> id_rsa      &gt; key.hash
+<span class="tok-clave">john</span> <span class="tok-atributo">--wordlist</span>=rockyou.txt zip.hash</code></pre></figure>
+            <p class="nota">La familia <code>*2john</code> (zip2john, rar2john, ssh2john, office2john, keepass2john...) convierte ficheros y claves protegidas en un hash que John puede atacar. Es media diversión de los CTF.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Hydra</h2>
+          <div class="cuerpo">
+            <p class="txt">Prueba credenciales <strong>en línea</strong> contra un servicio en marcha. Sintaxis general:</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">hydra</span> <span class="tok-atributo">-l</span> usuario <span class="tok-atributo">-P</span> claves.txt <span class="tok-tipo">servicio</span>://<span class="tok-variable">IP</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-l USER</code> / <code>-L FICH</code></th><td>un usuario / una lista de usuarios</td></tr>
+                  <tr><th scope="row"><code>-p CLAVE</code> / <code>-P FICH</code></th><td>una contraseña / un diccionario</td></tr>
+                  <tr><th scope="row"><code>-C user:pass.txt</code></th><td>pares <code>usuario:clave</code> por línea (credential stuffing)</td></tr>
+                  <tr><th scope="row"><code>-s PUERTO</code></th><td>puerto no estándar</td></tr>
+                  <tr><th scope="row"><code>-t 4</code></th><td>hilos en paralelo (baja a 4 en SSH, que corta conexiones)</td></tr>
+                  <tr><th scope="row"><code>-f</code></th><td>parar en cuanto encuentre una válida</td></tr>
+                  <tr><th scope="row"><code>-V</code> / <code>-vV</code></th><td>ver cada intento</td></tr>
+                  <tr><th scope="row"><code>-o salida.txt</code></th><td>guardar los aciertos en un fichero</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Regla de oro: pocos hilos y despacio. En línea, subir <code>-t</code> a lo bestia satura el servicio, dispara alarmas y a menudo va <em>más lento</em> por los reintentos.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Hydra: servicios</h2>
+          <div class="cuerpo">
+            <p class="txt">Hydra habla muchos protocolos (<code>hydra -h</code> los lista). Los más usados en laboratorio:</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># SSH</span>
+<span class="tok-clave">hydra</span> <span class="tok-atributo">-l</span> root <span class="tok-atributo">-P</span> rockyou.txt <span class="tok-atributo">-t</span> 4 ssh://192.168.1.10
+
+<span class="tok-coment"># FTP</span>
+<span class="tok-clave">hydra</span> <span class="tok-atributo">-L</span> users.txt <span class="tok-atributo">-P</span> rockyou.txt ftp://192.168.1.10
+
+<span class="tok-coment"># RDP (escritorio remoto de Windows)</span>
+<span class="tok-clave">hydra</span> <span class="tok-atributo">-l</span> administrador <span class="tok-atributo">-P</span> claves.txt rdp://192.168.1.10
+
+<span class="tok-coment"># password spraying: una clave contra muchos usuarios</span>
+<span class="tok-clave">hydra</span> <span class="tok-atributo">-L</span> users.txt <span class="tok-atributo">-p</span> <span class="tok-texto">"Verano2024!"</span> <span class="tok-atributo">-t</span> 4 ssh://192.168.1.10</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">ssh, ftp, telnet</th><td>acceso remoto clásico</td></tr>
+                  <tr><th scope="row">rdp, smb</th><td>servicios de Windows</td></tr>
+                  <tr><th scope="row">mysql, postgres</th><td>gestores de base de datos</td></tr>
+                  <tr><th scope="row">http-get, http-post-form</th><td>autenticación y formularios web (sección 10)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Formularios web con Hydra</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo más útil y lo más quisquilloso. El módulo <code>http-post-form</code> necesita tres campos separados por <code>:</code> — la ruta, el cuerpo del POST y una cadena que solo aparece cuando el login <em>falla</em>.</p>
+            <figure class="codigo"><figcaption>Login por POST; ^USER^ y ^PASS^ son los huecos que Hydra rellena</figcaption><pre data-lang="bash"><code><span class="tok-clave">hydra</span> <span class="tok-atributo">-l</span> admin <span class="tok-atributo">-P</span> rockyou.txt 192.168.1.10 http-post-form \
+  <span class="tok-texto">"/login.php:user=^USER^&amp;pass=^PASS^:Usuario o clave incorrectos"</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">1. Ruta</th><td><code>/login.php</code>: la página que recibe el formulario</td></tr>
+                  <tr><th scope="row">2. Cuerpo</th><td>los campos POST, con <code>^USER^</code> y <code>^PASS^</code> como marcadores</td></tr>
+                  <tr><th scope="row">3. Condición de fallo</th><td>texto que aparece al fallar; si no está, Hydra da la clave por buena</td></tr>
+                  <tr><th scope="row"><code>F=texto</code></th><td>alternativa: marcar el fallo con <code>F=</code></td></tr>
+                  <tr><th scope="row"><code>S=texto</code></th><td>o marcar el éxito con <code>S=</code> (p. ej. «Bienvenido»)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>El fallo más común:</strong> elegir mal la cadena de la condición. Manda una petición a mano (o con Burp) con una clave incorrecta, copia el mensaje de error <em>exacto</em> y úsalo. Si la eliges mal, Hydra dirá que ha encontrado todas o ninguna.</p>
+            <p class="nota">Los nombres de los campos (<code>user</code>, <code>pass</code>) los sacas del HTML del formulario o del tráfico. Para SQL en esos mismos formularios, ver <a href="sqlmap.html">sqlmap</a>.</p>
+          </div>
+        </section>
+        <!-- 11 -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Cómo defenderse</h2>
+          <div class="cuerpo">
+            <p class="txt">Entender el ataque es saber cerrarlo. La fuerza bruta se combate por dos frentes: que las claves no sean adivinables y que no se pueda probar sin parar.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">MFA / doble factor</th><td>la medida que más frena: la clave sola ya no basta</td></tr>
+                  <tr><th scope="row">Contraseñas largas</th><td>frases de paso; longitud &gt; complejidad. Gestor de contraseñas</td></tr>
+                  <tr><th scope="row">Límite de intentos</th><td>bloqueo temporal o CAPTCHA tras varios fallos (mata el online)</td></tr>
+                  <tr><th scope="row"><code>fail2ban</code></th><td>banea la IP que insiste; ver <a href="../seguridad/index.html">Seguridad</a></td></tr>
+                  <tr><th scope="row">Hash lento + salt</th><td>bcrypt/argon2 con salt: hunde el ataque offline y anula rainbow tables</td></tr>
+                  <tr><th scope="row">No reutilizar</th><td>una clave por sitio: corta el credential stuffing</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Guardar contraseñas con un hash lento y con salt (bcrypt, argon2) es lo que convierte una fuga en un problema manejable en vez de una catástrofe: sin salt y con MD5, John las revienta en segundos.</p>
+          </div>
+        </section>
+        <!-- 12 -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Normas de uso</h2>
+          <div class="cuerpo"><p class="txt">Ataca solo sistemas tuyos o de laboratorio, y con permiso por escrito y alcance definido cuando audites los de otra persona. En línea, ve despacio y con pocos hilos: puedes tumbar el servicio o bloquear cuentas reales. Los diccionarios de contraseñas filtradas contienen datos de personas: trátalos con cuidado. Y recuerda que el objetivo de aprender esto es poner contraseñas fuertes, activar el doble factor y configurar bien los límites de intentos.</p></div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sqlmap.html">← sqlmap</a><a class="siguiente" href="fuzzing.html">Fuzzing →</a></nav>
+      <footer class="pie">Documentación: <a href="https://www.openwall.com/john/doc/">openwall.com/john</a> y <a href="https://github.com/vanhauser-thc/thc-hydra">github.com/vanhauser-thc/thc-hydra</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Visual Studio Code · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="programacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Programación</a><span aria-hidden="true">›</span><span>Visual Studio Code</span></nav>
+          <h1>Visual Studio Code</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El editor de código de Microsoft: la paleta de comandos, moverse y editar rápido, la terminal integrada, depurar, Git y extensiones.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Programación">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="pseudocodigo.html">Pseudocódigo y diagramas</a><a href="entornos.html">Entornos de desarrollo</a><a href="eclipse.html">Eclipse</a><a href="vscode.html" aria-current="page">VS Code</a><a href="agile.html">Agile</a><a href="cascada.html">Modelo en cascada</a><a href="../java/index.html">Java</a><a href="../python/index.html">Python</a><a href="../kotlin/index.html">Kotlin</a><a href="../php/index.html">PHP</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es VS Code</a><a href="#s2"><b>2</b>La interfaz</a><a href="#s3"><b>3</b>La paleta de comandos</a><a href="#s4"><b>4</b>Moverse rápido</a><a href="#s5"><b>5</b>Editar</a><a href="#s6"><b>6</b>Buscar y reemplazar</a><a href="#s7"><b>7</b>Terminal integrada</a><a href="#s8"><b>8</b>Depurar</a><a href="#s9"><b>9</b>Git integrado</a><a href="#s10"><b>10</b>Extensiones</a><a href="#s11"><b>11</b>Ajustes y atajos</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">VS Code es un <strong>editor de código</strong> ligero, gratuito y multiplataforma. No es un IDE completo de serie como <a href="eclipse.html">Eclipse</a>, pero con extensiones se acerca mucho, para casi cualquier lenguaje.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">El atajo que lo abre todo</p>
+            <p class="txt">Si te quedas con uno, que sea <strong>Ctrl+Shift+P</strong>: la paleta de comandos. Desde ahí se ejecuta cualquier acción del editor sin buscarla en menús.</p>
+            <p class="nota">En macOS, cambia <code>Ctrl</code> por <code>Cmd</code> en casi todos los atajos.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es VS Code</h2>
+          <div class="cuerpo">
+            <p class="txt">Un editor extensible construido sobre tecnología web (Electron). Rápido de arrancar, con un enorme catálogo de extensiones que le añaden lenguajes, depuradores y herramientas. Es hoy el editor más usado.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Editor vs IDE</th><td>de base es un editor; las extensiones lo convierten casi en IDE</td></tr>
+                  <tr><th scope="row">Multiplataforma</th><td>Windows, macOS y Linux</td></tr>
+                  <tr><th scope="row">IntelliSense</th><td>autocompletado inteligente según el lenguaje</td></tr>
+                  <tr><th scope="row">No confundir</th><td>«VS Code» ≠ «Visual Studio», el IDE grande de Microsoft</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Alternativa 100% libre: <em>VSCodium</em>, la misma base sin la telemetría ni la marca de Microsoft.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>La interfaz</h2>
+          <div class="cuerpo">
+            <p class="txt">Cinco zonas que conviene reconocer:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Activity Bar</th><td>la columna de iconos de la izquierda (explorador, buscar, Git, depurar, extensiones)</td></tr>
+                  <tr><th scope="row">Side Bar</th><td>el panel que abre cada icono; el explorador de archivos por defecto</td></tr>
+                  <tr><th scope="row">Editor</th><td>la zona central; admite pestañas y dividir en columnas</td></tr>
+                  <tr><th scope="row">Panel</th><td>abajo: terminal, problemas, salida, consola de depuración</td></tr>
+                  <tr><th scope="row">Status Bar</th><td>la barra inferior: rama de Git, errores, lenguaje, codificación</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+B</th><td>mostrar / ocultar la barra lateral</td></tr>
+                  <tr><th scope="row">Ctrl+\</th><td>dividir el editor en dos</td></tr>
+                  <tr><th scope="row">Abrir carpeta</th><td>VS Code trabaja sobre una carpeta (el <em>workspace</em>), no sobre ficheros sueltos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Trabaja siempre abriendo la <strong>carpeta</strong> del proyecto (<em>File › Open Folder</em>): así funcionan la búsqueda global, Git y las rutas relativas.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>La paleta de comandos</h2>
+          <div class="cuerpo">
+            <p class="txt">El corazón de VS Code. Un buscador de <em>todo</em> lo que el editor puede hacer; empieza a escribir y filtra.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+Shift+P</th><td>abrir la paleta de comandos</td></tr>
+                  <tr><th scope="row">Ctrl+P</th><td>abrir un fichero por nombre (Quick Open)</td></tr>
+                  <tr><th scope="row">&gt;</th><td>prefijo de comando (lo que pone Ctrl+Shift+P)</td></tr>
+                  <tr><th scope="row">@</th><td>ir a un símbolo del fichero (función, clase)</td></tr>
+                  <tr><th scope="row">:</th><td>ir a una línea concreta</td></tr>
+                  <tr><th scope="row">?</th><td>ver la ayuda de qué prefijos hay</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Todos comparten el mismo cuadro: <code>Ctrl+P</code> y luego escribes <code>&gt;</code>, <code>@</code> o <code>:</code> para cambiar de modo. Si no recuerdas un atajo, casi siempre está en la paleta escribiendo lo que quieres hacer.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Moverse rápido</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+P</th><td>saltar a un fichero por nombre</td></tr>
+                  <tr><th scope="row">Ctrl+Shift+O</th><td>ir a un símbolo (método, clase) del fichero</td></tr>
+                  <tr><th scope="row">Ctrl+G</th><td>ir a una línea</td></tr>
+                  <tr><th scope="row">F12</th><td>ir a la definición (Ctrl+clic también)</td></tr>
+                  <tr><th scope="row">Alt+← / →</th><td>atrás / adelante en el historial de navegación</td></tr>
+                  <tr><th scope="row">Ctrl+Tab</th><td>cambiar entre pestañas abiertas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La barra de <em>breadcrumbs</em> (migas) sobre el editor muestra la ruta y el símbolo actual; es clicable para navegar por la estructura del fichero.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Editar</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo que más productividad da: los <strong>cursores múltiples</strong>, para editar varios sitios a la vez.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Alt+clic</th><td>añadir un cursor donde pulses</td></tr>
+                  <tr><th scope="row">Ctrl+D</th><td>seleccionar la siguiente aparición de lo seleccionado</td></tr>
+                  <tr><th scope="row">Ctrl+Shift+L</th><td>seleccionar todas las apariciones a la vez</td></tr>
+                  <tr><th scope="row">Alt+↑ / ↓</th><td>mover la línea arriba / abajo</td></tr>
+                  <tr><th scope="row">Shift+Alt+↓</th><td>duplicar la línea</td></tr>
+                  <tr><th scope="row">Ctrl+/</th><td>comentar / descomentar</td></tr>
+                  <tr><th scope="row">Shift+Alt+F</th><td>formatear el documento</td></tr>
+                  <tr><th scope="row">F2</th><td>renombrar el símbolo en todo el proyecto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>Ctrl+D</code> repetido es el flujo estrella: seleccionas una palabra, pulsas <code>Ctrl+D</code> varias veces para ir cazando cada aparición y las editas todas juntas.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Buscar y reemplazar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+F</th><td>buscar en el fichero actual</td></tr>
+                  <tr><th scope="row">Ctrl+H</th><td>buscar y reemplazar en el fichero</td></tr>
+                  <tr><th scope="row">Ctrl+Shift+F</th><td>buscar en todo el proyecto</td></tr>
+                  <tr><th scope="row">Ctrl+Shift+H</th><td>reemplazar en todo el proyecto</td></tr>
+                  <tr><th scope="row">.*</th><td>activar expresiones regulares en el cuadro de búsqueda</td></tr>
+                  <tr><th scope="row">Aa</th><td>distinguir mayúsculas; el botón <code>ab</code> busca palabra completa</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La búsqueda global admite filtros por tipo de fichero (<code>files to include</code>: <code>*.js</code>) y excluir carpetas, muy útil para no buscar en <code>node_modules</code>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Terminal integrada</h2>
+          <div class="cuerpo">
+            <p class="txt">Una terminal completa dentro del editor, en la carpeta del proyecto. Evita saltar a otra ventana para lanzar comandos.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+`</th><td>abrir / cerrar la terminal (la tecla del acento grave)</td></tr>
+                  <tr><th scope="row">Ctrl+Shift+`</th><td>abrir una terminal nueva</td></tr>
+                  <tr><th scope="row">+ / lista</th><td>varias terminales a la vez; se cambia en el desplegable</td></tr>
+                  <tr><th scope="row">Elegir shell</th><td>Bash, PowerShell, etc. desde el desplegable de la terminal</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En teclados españoles, si <code>Ctrl+`</code> no responde, míralo en <em>Terminal › New Terminal</em> o reasigna el atajo (sección 11). Aquí van muy bien las chuletas de <a href="../sistemas/terminal-linux.html">terminal</a> y <a href="../git/git.html">Git</a>.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Depurar</h2>
+          <div class="cuerpo">
+            <p class="txt">VS Code trae un depurador visual; cada lenguaje aporta el suyo mediante una extensión. Se controla desde la vista <em>Run and Debug</em>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">F5</th><td>iniciar / continuar la depuración</td></tr>
+                  <tr><th scope="row">Clic al margen</th><td>poner o quitar un breakpoint (punto de ruptura)</td></tr>
+                  <tr><th scope="row">F10</th><td>siguiente línea (step over)</td></tr>
+                  <tr><th scope="row">F11</th><td>entrar en la función (step into)</td></tr>
+                  <tr><th scope="row">Shift+F5</th><td>detener</td></tr>
+                  <tr><th scope="row"><code>launch.json</code></th><td>configuración de cómo arrancar la depuración</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Con el programa parado en un breakpoint, la vista de la izquierda muestra las variables y la pila de llamadas, y puedes evaluar expresiones en la consola de depuración. Ver el <a href="entornos.html#s6">depurador</a> en general.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Git integrado</h2>
+          <div class="cuerpo">
+            <p class="txt">La vista <em>Source Control</em> (icono de ramas en la Activity Bar) integra <a href="../git/git.html">Git</a> sin salir del editor.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+Shift+G</th><td>abrir el panel de control de código</td></tr>
+                  <tr><th scope="row">+ (Stage)</th><td>preparar cambios para el commit</td></tr>
+                  <tr><th scope="row">✓ (Commit)</th><td>confirmar con el mensaje escrito arriba</td></tr>
+                  <tr><th scope="row">Sync</th><td>hacer push y pull con el remoto</td></tr>
+                  <tr><th scope="row">Clic en un fichero</th><td>ver el <em>diff</em> de lo cambiado</td></tr>
+                  <tr><th scope="row">Barra de estado</th><td>abajo a la izquierda: la rama actual; clic para cambiarla</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El margen del editor marca con colores las líneas añadidas, cambiadas o borradas respecto al último commit (el <em>gutter</em>). La extensión <em>GitLens</em> añade aún más (autoría línea a línea, historial). Ver <a href="../git/github.html">GitHub</a>.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Extensiones</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo que hace grande a VS Code. Se instalan desde el icono de extensiones (<strong>Ctrl+Shift+X</strong>) o el Marketplace.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Packs de lenguaje</th><td>Python, Extension Pack for Java, C/C++...</td></tr>
+                  <tr><th scope="row">Linters / formato</th><td>ESLint, Prettier: avisan de errores y formatean</td></tr>
+                  <tr><th scope="row">Remotas</th><td>WSL, SSH, Dev Containers: editar en otra máquina o contenedor</td></tr>
+                  <tr><th scope="row">Utilidad</th><td>GitLens, Live Server, REST Client</td></tr>
+                  <tr><th scope="row">Temas</th><td>colores e iconos del editor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">No instales de todo: cada extensión consume memoria y puede ralentizar el arranque. Instala la del lenguaje que uses y poco más; revisa de vez en cuando las que ya no necesitas.</p>
+          </div>
+        </section>
+        <!-- 11 -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Ajustes y atajos</h2>
+          <div class="cuerpo">
+            <p class="txt">Todo es configurable. Los ajustes tienen una interfaz gráfica y, por debajo, un fichero JSON.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Ctrl+,</th><td>abrir los ajustes (Settings)</td></tr>
+                  <tr><th scope="row"><code>settings.json</code></th><td>los ajustes en texto (paleta: <em>Open User Settings (JSON)</em>)</td></tr>
+                  <tr><th scope="row">Usuario vs Workspace</th><td>ajustes globales o solo para este proyecto (carpeta <code>.vscode/</code>)</td></tr>
+                  <tr><th scope="row">Ctrl+K Ctrl+S</th><td>editar los atajos de teclado</td></tr>
+                  <tr><th scope="row"><code>keybindings.json</code></th><td>tus atajos personalizados</td></tr>
+                  <tr><th scope="row">Ctrl+K Ctrl+T</th><td>cambiar el tema de color</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Los ajustes de <em>Workspace</em> se guardan en <code>.vscode/settings.json</code> dentro del proyecto: compártelos por Git para que el equipo use el mismo formato, pero no metas ahí nada personal o con secretos.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="eclipse.html">← Eclipse</a><a class="siguiente" href="agile.html">Agile →</a></nav>
+      <footer class="pie">Documentación y atajos oficiales en <a href="https://code.visualstudio.com/docs">code.visualstudio.com/docs</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

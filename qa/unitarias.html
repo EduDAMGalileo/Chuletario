@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pruebas unitarias · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="qa">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">QA</a><span aria-hidden="true">›</span><span>Pruebas unitarias</span></nav>
+          <h1>Pruebas unitarias</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El nivel más bajo de la pirámide: probar una función o clase aislada. El patrón AAA, los dobles de prueba, la cobertura, TDD y las herramientas de cada lenguaje.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de QA">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="unitarias.html" aria-current="page">Pruebas unitarias</a><a href="integracion.html">Pruebas de integración</a><a href="sistema-e2e.html">Sistema y E2E</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es una prueba unitaria</a><a href="#s2"><b>2</b>El patrón AAA</a><a href="#s3"><b>3</b>Una buena unitaria (FIRST)</a><a href="#s4"><b>4</b>Dobles de prueba</a><a href="#s5"><b>5</b>Aislar dependencias</a><a href="#s6"><b>6</b>Cobertura</a><a href="#s7"><b>7</b>TDD</a><a href="#s8"><b>8</b>Herramientas por lenguaje</a><a href="#s9"><b>9</b>Buenas prácticas</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Una prueba unitaria comprueba una «unidad» de código —normalmente un método o una clase— de forma <strong>aislada</strong> del resto. Son la base de la <a href="fundamentos.html#s4">pirámide de pruebas</a>: muchas, rápidas y baratas.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Por qué importan</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Rápidas</th><td>miles en segundos; se lanzan a cada cambio</td></tr>
+                  <tr><th scope="row">Precisas</th><td>si fallan, señalan exactamente qué se rompió</td></tr>
+                  <tr><th scope="row">Red de seguridad</th><td>permiten refactorizar sin miedo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es una prueba unitaria</h2>
+          <div class="cuerpo">
+            <p class="txt">Prueba una unidad de código sin depender de nada externo: sin base de datos, sin red, sin ficheros. Solo la lógica de esa pieza. Por eso son deterministas y vuelan.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Unidad</th><td>lo más pequeño con sentido propio: un método, una clase</td></tr>
+                  <tr><th scope="row">Aislada</th><td>sus dependencias se sustituyen por dobles (sección 4)</td></tr>
+                  <tr><th scope="row">Caja blanca</th><td>quien programa la escribe conociendo el código (ver <a href="fundamentos.html#s6">caja blanca</a>)</td></tr>
+                  <tr><th scope="row">Automatizada</th><td>se ejecuta sola, una y otra vez, sin intervención</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Regla práctica: si tu «prueba unitaria» necesita una base de datos o Internet para pasar, ya no es unitaria: es de <a href="integracion.html">integración</a>.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>El patrón AAA</h2>
+          <div class="cuerpo">
+            <p class="txt">Casi toda prueba unitaria tiene la misma estructura en tres pasos, que conviene separar visualmente:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Arrange</th><td>preparar: crear el objeto y los datos de entrada</td></tr>
+                  <tr><th scope="row">Act</th><td>actuar: llamar al método que se prueba</td></tr>
+                  <tr><th scope="row">Assert</th><td>afirmar: comprobar que el resultado es el esperado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Los tres pasos, aquí con JUnit</figcaption><pre data-lang="java"><code><span class="tok-tipo">Cesta</span> cesta = <span class="tok-clave">new</span> <span class="tok-tipo">Cesta</span>();              <span class="tok-coment">// Arrange</span>
+cesta.<span class="tok-funcion">anadir</span>(<span class="tok-clave">new</span> <span class="tok-tipo">Producto</span>(<span class="tok-numero">10</span>));
+<span class="tok-clave">double</span> total = cesta.<span class="tok-funcion">total</span>();            <span class="tok-coment">// Act</span>
+<span class="tok-funcion">assertEquals</span>(<span class="tok-numero">10</span>, total);                  <span class="tok-coment">// Assert</span></code></pre></figure>
+            <p class="nota">Una variante en pruebas de estilo BDD es <em>Given-When-Then</em> (dado / cuando / entonces): es lo mismo con otros nombres. Ver <a href="sistema-e2e.html#s9">BDD</a>.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Una buena unitaria (FIRST)</h2>
+          <div class="cuerpo">
+            <p class="txt">Las siglas <strong>FIRST</strong> resumen qué hace fiable a una prueba unitaria:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Fast</th><td>rápida: milisegundos, para lanzar miles sin esperar</td></tr>
+                  <tr><th scope="row">Independent</th><td>independiente: no depende de otras ni del orden</td></tr>
+                  <tr><th scope="row">Repeatable</th><td>repetible: mismo resultado siempre, en cualquier máquina</td></tr>
+                  <tr><th scope="row">Self-validating</th><td>se valida sola: pasa o falla, sin revisar la salida a ojo</td></tr>
+                  <tr><th scope="row">Timely</th><td>a tiempo: se escribe junto al código, no meses después</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">La enemiga número uno es la prueba <em>frágil</em>: la que falla por motivos ajenos al bug (una fecha, un orden, un dato compartido). Una suite en la que «a veces fallan cosas» deja de servir porque nadie se la cree.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Dobles de prueba</h2>
+          <div class="cuerpo">
+            <p class="txt">Para aislar la unidad, sus dependencias se reemplazan por «dobles» (como los de cine). El término general es <em>test double</em>; hay varios tipos:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Dummy</th><td>se pasa para rellenar, pero no se usa</td></tr>
+                  <tr><th scope="row">Stub</th><td>devuelve respuestas fijas programadas</td></tr>
+                  <tr><th scope="row">Spy</th><td>un stub que además registra cómo lo llamaron</td></tr>
+                  <tr><th scope="row">Mock</th><td>se le programan expectativas y verifica que se cumplan</td></tr>
+                  <tr><th scope="row">Fake</th><td>una implementación real pero simplificada (una BD en memoria)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En el día a día se dice «mockear» para todo, pero la distinción importa: un <strong>stub</strong> alimenta datos de entrada; un <strong>mock</strong> comprueba interacciones de salida (que se llamó a tal método). En Java se hacen con Mockito (ver <a href="../java/junit.html#s10">JUnit</a>).</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Aislar dependencias</h2>
+          <div class="cuerpo">
+            <p class="txt">Para poder sustituir una dependencia por un doble, la clase no debe crearla ella misma, sino recibirla desde fuera. Es la <strong>inyección de dependencias</strong>.</p>
+            <figure class="codigo"><figcaption>Difícil de probar vs fácil de probar</figcaption><pre data-lang="java"><code><span class="tok-coment">// ✗ crea la dependencia dentro: no puedes sustituirla</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Servicio</span> {
+    <span class="tok-tipo">Repositorio</span> repo = <span class="tok-clave">new</span> <span class="tok-tipo">RepositorioSQL</span>();
+}
+
+<span class="tok-coment">// ✓ la recibe por el constructor: en el test le pasas un doble</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Servicio</span> {
+    <span class="tok-clave">private final</span> <span class="tok-tipo">Repositorio</span> repo;
+    <span class="tok-tipo">Servicio</span>(<span class="tok-tipo">Repositorio</span> repo) { <span class="tok-clave">this</span>.repo = repo; }
+}</code></pre></figure>
+            <p class="nota">Código fácil de probar y código bien diseñado suelen ir de la mano: si algo es difícil de testear, muchas veces es señal de que está demasiado acoplado.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Cobertura</h2>
+          <div class="cuerpo">
+            <p class="txt">La <em>cobertura de código</em> mide qué porcentaje del código ejecutan las pruebas. Ayuda a ver zonas sin probar, pero no es una nota de calidad.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">De líneas</th><td>qué líneas se ejecutaron</td></tr>
+                  <tr><th scope="row">De ramas</th><td>si se probaron los dos lados de cada <code>if</code></td></tr>
+                  <tr><th scope="row">Herramientas</th><td>JaCoCo (Java), coverage.py (Python), Istanbul (JS)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">No persigas el 100%. Una cobertura alta con aserciones flojas no prueba nada: se ejecuta el código pero no se comprueba el resultado. Mejor 80% con buenas aserciones que 100% vacío.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>TDD</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>Test-Driven Development</strong>: escribir la prueba <em>antes</em> que el código. Un ciclo corto que se repite:</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Rojo</b><small>test que falla</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Verde</b><small>código mínimo</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Refactor</b><small>limpiar</small></div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Rojo</th><td>escribes un test de algo que aún no existe; falla</td></tr>
+                  <tr><th scope="row">Verde</th><td>escribes lo mínimo para que pase</td></tr>
+                  <tr><th scope="row">Refactor</th><td>mejoras el código con la red de seguridad del test</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">TDD obliga a pensar primero en <em>qué</em> debe hacer el código y produce diseños fáciles de probar. No es obligatorio, pero es una técnica muy ligada a las pruebas unitarias.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Herramientas por lenguaje</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Java</th><td><a href="../java/junit.html">JUnit</a> + Mockito (mocks) + AssertJ (aserciones fluidas)</td></tr>
+                  <tr><th scope="row">Python</th><td>pytest, unittest; <code>unittest.mock</code> para mocks</td></tr>
+                  <tr><th scope="row">JavaScript</th><td>Jest, Vitest, Mocha + Chai</td></tr>
+                  <tr><th scope="row">C#</th><td>xUnit, NUnit, MSTest; Moq</td></tr>
+                  <tr><th scope="row">PHP</th><td>PHPUnit</td></tr>
+                  <tr><th scope="row">Go</th><td><code>testing</code> (integrado en el lenguaje)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Todos comparten las mismas ideas (anotar tests, aserciones, dobles, ciclo de vida); cambia la sintaxis. La chuleta detallada de Java es <a href="../java/junit.html">JUnit</a>.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Buenas prácticas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Un motivo de fallo</th><td>cada test comprueba una cosa; si falla, sabes cuál</td></tr>
+                  <tr><th scope="row">Nombres que explican</th><td><code>metodo_situacion_resultadoEsperado</code></td></tr>
+                  <tr><th scope="row">Probar los bordes</th><td>nulo, vacío, cero, negativo, el límite y el error</td></tr>
+                  <tr><th scope="row">Sin lógica en el test</th><td>nada de <code>if</code> o bucles: el test debe ser obvio</td></tr>
+                  <tr><th scope="row">Rápidas y sin E/S</th><td>si toca red o disco, es de <a href="integracion.html">integración</a></td></tr>
+                  <tr><th scope="row">Se ejecutan en CI</th><td>en cada cambio (ver <a href="../git/github.html#s12">GitHub Actions</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Siguiente nivel: cuando varias unidades ya funcionan por separado, toca comprobar que encajan entre sí. Eso son las <a href="integracion.html">pruebas de integración</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="fundamentos.html">← Fundamentos</a><a class="siguiente" href="integracion.html">Pruebas de integración →</a></nav>
+      <footer class="pie">Herramienta de referencia en Java: <a href="../java/junit.html">JUnit</a>. Base de la <a href="fundamentos.html#s4">pirámide de pruebas</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

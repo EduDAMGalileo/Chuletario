@@ -22,7 +22,7 @@
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de Sistemas">
-      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Terminal Linux</a><a href="vim.html">Vim</a><a href="bash-script.html" aria-current="page">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a></div>
+      <div class="wrap"><a href="linux.html">Linux</a><a href="terminal-linux.html">Comandos</a><a href="vim.html">Vim</a><a href="bash-script.html" aria-current="page">Shell script</a><a href="servicios.html">Servicios y demonios</a><a href="tareas.html">Tareas programadas</a><a href="logs.html">Logs</a></div>
     </nav>
     <main class="wrap">
       <!-- Índice de secciones -->
@@ -486,7 +486,7 @@ nombre=<span class="tok-texto">"$(basename "</span><span class="tok-variable">$o
 
 <span class="tok-clave">find</span> <span class="tok-texto">"$destino"</span> <span class="tok-atributo">-name</span> <span class="tok-texto">"*.tar.gz"</span> <span class="tok-atributo">-mtime</span> +<span class="tok-texto">"$dias"</span> <span class="tok-atributo">-delete</span>
 <span class="tok-clave">echo</span> <span class="tok-texto">"Copias de más de $dias días eliminadas"</span></code></pre></figure>
-            <p class="nota">Para que se ejecute sola cada noche, añádelo a <code>crontab -e</code>: <code>0 2 * * * /home/ana/copia.sh /home/ana/proyectos</code>. Más en la sección de cron de <a href="terminal-linux.html#s18">Terminal Linux</a>.</p>
+            <p class="nota">Para que se ejecute sola cada noche, añádelo a <code>crontab -e</code>: <code>0 2 * * * /home/ana/copia.sh /home/ana/proyectos</code>. Más en <a href="tareas.html">Tareas programadas</a>.</p>
           </div>
         </section>
       </div>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vagrant · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="virtualizacion">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Virtualización</a><span aria-hidden="true">›</span><span>Vagrant</span></nav>
+          <h1>Vagrant</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Máquinas virtuales reproducibles desde un fichero de texto. Levantar un entorno completo con un comando y compartirlo con el equipo.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Virtualización">
+      <div class="wrap"><a href="fundamentos.html">Fundamentos</a><a href="docker.html">Docker</a><a href="vagrant.html" aria-current="page">Vagrant</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es Vagrant</a><a href="#s2"><b>2</b>Vagrant o Docker</a><a href="#s3"><b>3</b>Instalación</a><a href="#s4"><b>4</b>El Vagrantfile</a><a href="#s5"><b>5</b>Comandos</a><a href="#s6"><b>6</b>Boxes</a><a href="#s7"><b>7</b>Red y carpetas</a><a href="#s8"><b>8</b>Aprovisionamiento</a><a href="#s9"><b>9</b>Consejos</a></nav>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt">Vagrant automatiza la creación de <strong>máquinas virtuales</strong>: describes el entorno en un <code>Vagrantfile</code> y con <code>vagrant up</code> tienes una VM idéntica cada vez. Acaba con el «funciona en mi máquina» a nivel de sistema completo.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Lo mínimo</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">vagrant</span> init debian/bookworm64
+<span class="tok-clave">vagrant</span> up          <span class="tok-coment"># crea y arranca la VM</span>
+<span class="tok-clave">vagrant</span> ssh         <span class="tok-coment"># entra por SSH</span>
+<span class="tok-clave">vagrant</span> destroy     <span class="tok-coment"># la elimina</span></code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es Vagrant</h2>
+          <div class="cuerpo">
+            <p class="txt">Una herramienta (de HashiCorp) para construir y gestionar entornos de máquinas virtuales de forma automática y reproducible. Se apoya en un <strong>proveedor</strong> (VirtualBox, VMware, Hyper-V) que crea la VM real.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Reproducible</th><td>el mismo Vagrantfile da la misma VM en cualquier equipo</td></tr>
+                  <tr><th scope="row">Versionable</th><td>el Vagrantfile va en el repositorio, junto al código</td></tr>
+                  <tr><th scope="row">Desechable</th><td>rompes algo, <code>destroy</code> y vuelves a empezar limpio</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Muy usado para montar laboratorios (por ejemplo, de <a href="../hacking/pentest.html">pentesting</a>) y entornos de desarrollo idénticos a producción.</p>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Vagrant o Docker</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Vagrant</th><td>máquinas virtuales completas (con su propio núcleo)</td></tr>
+                  <tr><th scope="row"><a href="docker.html">Docker</a></th><td>contenedores que comparten el núcleo del anfitrión</td></tr>
+                  <tr><th scope="row">Peso</th><td>una VM es pesada (GB); un contenedor, ligero (MB)</td></tr>
+                  <tr><th scope="row">Aislamiento</th><td>la VM aísla más (SO entero); el contenedor, menos</td></tr>
+                  <tr><th scope="row">Cuándo</th><td>Vagrant: probar sistemas enteros y kernels; Docker: empaquetar apps</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">No compiten tanto como parece: Vagrant simula máquinas completas; Docker empaqueta aplicaciones. A veces se usan juntos.</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Instalación</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> <span class="tok-clave">apt</span> install virtualbox     <span class="tok-coment"># el proveedor</span>
+<span class="tok-coment"># instalar Vagrant desde vagrantup.com</span>
+<span class="tok-clave">vagrant</span> <span class="tok-atributo">--version</span>
+<span class="tok-clave">vagrant</span> plugin list</code></pre></figure>
+            <p class="txt">Vagrant necesita un <strong>proveedor</strong> instalado. El más común y gratuito es <strong>VirtualBox</strong>. Cada proyecto vive en su carpeta, con su Vagrantfile.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>El Vagrantfile</h2>
+          <div class="cuerpo">
+            <p class="txt">El fichero (en Ruby) que describe la máquina. Se genera con <code>vagrant init</code> y se edita a mano.</p>
+            <figure class="codigo"><figcaption>Vagrantfile</figcaption><pre data-lang="ruby"><code>Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bookworm64"
+  config.vm.hostname = "servidor"
+
+  config.vm.network "private_network", ip: "192.168.56.10"
+  config.vm.synced_folder ".", "/vagrant"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 1024
+    vb.cpus = 2
+  end
+
+  config.vm.provision "shell", inline: "apt-get update && apt-get install -y nginx"
+end</code></pre></figure>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Comandos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">vagrant</span> init debian/bookworm64   <span class="tok-coment"># crea el Vagrantfile</span>
+<span class="tok-clave">vagrant</span> up                       <span class="tok-coment"># crea y arranca la VM</span>
+<span class="tok-clave">vagrant</span> ssh                      <span class="tok-coment"># entra por SSH</span>
+<span class="tok-clave">vagrant</span> halt                     <span class="tok-coment"># apaga la VM</span>
+<span class="tok-clave">vagrant</span> reload                   <span class="tok-coment"># reinicia (aplica cambios del Vagrantfile)</span>
+<span class="tok-clave">vagrant</span> provision                <span class="tok-coment"># relanza el aprovisionamiento</span>
+<span class="tok-clave">vagrant</span> status                   <span class="tok-coment"># estado</span>
+<span class="tok-clave">vagrant</span> destroy                  <span class="tok-coment"># borra la VM</span>
+<span class="tok-clave">vagrant</span> global-status            <span class="tok-coment"># todas las VMs de tu equipo</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>up</code></th><td>la primera vez descarga la box y la crea</td></tr>
+                  <tr><th scope="row"><code>reload --provision</code></th><td>reinicia y vuelve a aprovisionar</td></tr>
+                  <tr><th scope="row"><code>suspend</code> / <code>resume</code></th><td>pausar y reanudar (guarda el estado)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Boxes</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>box</strong> es la imagen base de la VM (un sistema ya instalado). Se descargan del catálogo público <em>Vagrant Cloud</em>.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">vagrant</span> box list                 <span class="tok-coment"># las que tienes</span>
+<span class="tok-clave">vagrant</span> box add ubuntu/jammy64   <span class="tok-coment"># descargar una</span>
+<span class="tok-clave">vagrant</span> box update
+<span class="tok-clave">vagrant</span> box remove ubuntu/jammy64</code></pre></figure>
+            <p class="nota">Ejemplos de boxes: <code>debian/bookworm64</code>, <code>ubuntu/jammy64</code>, <code>generic/alma9</code>. Se buscan en <a href="https://portal.cloud.hashicorp.com/vagrant/discover">Vagrant Cloud</a>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Red y carpetas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Carpeta sincronizada</th><td><code>/vagrant</code> en la VM es tu carpeta del proyecto</td></tr>
+                  <tr><th scope="row">private_network</th><td>red interna con IP fija, aislada</td></tr>
+                  <tr><th scope="row">forwarded_port</th><td>redirige un puerto de la VM a tu equipo</td></tr>
+                  <tr><th scope="row">public_network</th><td>la VM en tu red real (con cuidado)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="ruby"><code>config.vm.network "forwarded_port", guest: 80, host: 8080</code></pre></figure>
+            <p class="nota">Para un laboratorio de seguridad, usa <code>private_network</code> y no <code>public_network</code>: mantén las máquinas aisladas de tu red real.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Aprovisionamiento</h2>
+          <div class="cuerpo">
+            <p class="txt">El <em>provisioning</em> instala y configura software automáticamente al crear la VM, para que salga lista para usar.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">shell</th><td>ejecutar comandos o un script (lo más simple)</td></tr>
+                  <tr><th scope="row">file</th><td>copiar ficheros a la VM</td></tr>
+                  <tr><th scope="row">ansible / puppet</th><td>gestión de configuración avanzada</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="ruby"><code>config.vm.provision "shell", path: "setup.sh"</code></pre></figure>
+            <p class="nota">Se ejecuta solo la primera vez (o con <code>vagrant provision</code>). Combínalo con <a href="../sistemas/bash-script.html">shell scripts</a> para dejar el entorno a punto.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Consejos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Versiona el Vagrantfile</th><td>que el equipo levante el mismo entorno</td></tr>
+                  <tr><th scope="row">No versiones <code>.vagrant/</code></th><td>es estado local; al <code>.gitignore</code></td></tr>
+                  <tr><th scope="row">destroy sin miedo</th><td>si algo se rompe, recrea desde cero</td></tr>
+                  <tr><th scope="row">Recursos</th><td>ajusta memoria y CPU; una VM consume mucho más que un contenedor</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="docker.html">← Docker</a><span></span></nav>
+      <footer class="pie">Documentación en <a href="https://developer.hashicorp.com/vagrant/docs">developer.hashicorp.com/vagrant</a>. Boxes en Vagrant Cloud.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

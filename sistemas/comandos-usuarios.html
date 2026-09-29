@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Usuarios y permisos · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="sistemas">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Sistemas</a><span aria-hidden="true">›</span><a href="terminal-linux.html">Comandos</a><span aria-hidden="true">›</span><span>Usuarios y permisos</span></nav>
+          <h1>Usuarios y permisos</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Quién puede hacer qué: permisos de ficheros con chmod y chown, y gestión de usuarios, grupos y sudo.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Comandos">
+      <div class="wrap"><a href="comandos-archivos.html">Archivos y navegación</a><a href="comandos-texto.html">Buscar y texto</a><a href="comandos-usuarios.html" aria-current="page">Usuarios y permisos</a><a href="comandos-procesos.html">Procesos y sistema</a><a href="comandos-paquetes.html">Paquetes y compresión</a><a href="comandos-red.html">Red y acceso remoto</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Permisos</a><a href="#s2"><b>2</b>Usuarios, grupos y sudo</a></nav>
+      <div class="rejilla">
+        <!-- 1. Permisos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Permisos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="text"><code>$ ls -l script.sh
+-rwxr-x--- 1 ana dam 512 sep 16 10:00 script.sh
+│└┬┘└┬┘└┬┘   └┬┘ └┬┘
+│ │  │  │     │   └ grupo
+│ │  │  │     └ propietario
+│ │  │  └ otros:       ---  nada
+│ │  └ grupo:          r-x  leer y ejecutar
+│ └ propietario:       rwx  leer, escribir, ejecutar
+└ tipo: - fichero, d carpeta, l enlace</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>r = 4</code></th><td>leer; en carpetas, listar su contenido</td></tr>
+                  <tr><th scope="row"><code>w = 2</code></th><td>escribir; en carpetas, crear y borrar dentro</td></tr>
+                  <tr><th scope="row"><code>x = 1</code></th><td>ejecutar; en carpetas, poder entrar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>chmod 755 script.sh</code></th><td><code>rwxr-xr-x</code>: programas y carpetas</td></tr>
+                  <tr><th scope="row"><code>chmod 644 fichero</code></th><td><code>rw-r--r--</code>: ficheros normales</td></tr>
+                  <tr><th scope="row"><code>chmod 600 clave</code></th><td><code>rw-------</code>: solo tú (claves SSH)</td></tr>
+                  <tr><th scope="row"><code>chmod u+x script.sh</code></th><td>añade ejecución al propietario</td></tr>
+                  <tr><th scope="row"><code>chmod go-w fichero</code></th><td>quita escritura a grupo y otros</td></tr>
+                  <tr><th scope="row"><code>chmod -R 755 carpeta</code></th><td>recursivo</td></tr>
+                  <tr><th scope="row"><code>chown ana fichero</code></th><td>cambia el propietario</td></tr>
+                  <tr><th scope="row"><code>chown -R ana:dam carpeta</code></th><td>propietario y grupo, recursivo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>u</code> propietario, <code>g</code> grupo, <code>o</code> otros, <code>a</code> todos. Evita <code>chmod 777</code>: da permiso total a cualquiera.</p>
+          </div>
+        </section>
+        <!-- 2. Usuarios, grupos y sudo -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Usuarios, grupos y sudo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>whoami</code></th><td>qué usuario eres</td></tr>
+                  <tr><th scope="row"><code>id</code></th><td>tu UID y tus grupos</td></tr>
+                  <tr><th scope="row"><code>sudo orden</code></th><td>ejecuta una orden como administrador</td></tr>
+                  <tr><th scope="row"><code>sudo -i</code></th><td>abre una shell de root (<code>exit</code> para salir)</td></tr>
+                  <tr><th scope="row"><code>su - ana</code></th><td>cambia al usuario ana</td></tr>
+                  <tr><th scope="row"><code>passwd</code></th><td>cambia tu contraseña</td></tr>
+                  <tr><th scope="row"><code>sudo adduser ana</code></th><td>crea un usuario de forma guiada (Debian)</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo usermod -aG sudo ana</code></th><td>añade a ana al grupo sudo</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo usermod -aG docker ana</code></th><td>añade a otro grupo (hay que volver a entrar)</td></tr>
+                  <tr><th scope="row"><code>groups ana</code></th><td>grupos de un usuario</td></tr>
+                  <tr><th scope="row" class="larga"><code>sudo deluser --remove-home ana</code></th><td>borra el usuario y su carpeta</td></tr>
+                  <tr><th scope="row"><code>who  w  last</code></th><td>quién está conectado / últimos accesos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> en <code>usermod -aG</code> no olvides la <code>a</code>: sin ella el usuario sale de todos sus otros grupos, incluido sudo.</p>
+            <p class="nota">Usuarios en <code>/etc/passwd</code>, grupos en <code>/etc/group</code> y contraseñas cifradas en <code>/etc/shadow</code>. En las imágenes de Kali para máquina virtual el usuario por defecto es <code>kali</code> con contraseña <code>kali</code>: cámbiala con <code>passwd</code>. Sobre cómo se guardan las contraseñas, ver <a href="../seguridad/criptografia.html#s7">Criptografía</a>.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="comandos-texto.html">← Buscar y texto</a><a class="siguiente" href="comandos-procesos.html">Procesos y sistema →</a></nav>
+      <footer class="pie">Parte de los <a href="terminal-linux.html">Comandos de Linux</a>. Para cualquier orden: <code>man comando</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
