@@ -23,7 +23,7 @@ chuletario/
 ├── hacking/                pentest, google-dorking, nmap, netcat, sqlmap,
 │                           fuerza-bruta, fuzzing, shells
 ├── seguridad/              introduccion, cortafuegos, iptables, nftables,
-│                           criptografia, firma-certificados, gpg
+│                           criptografia, firma-certificados, gpg, ssh
 ├── git/                    git, github
 ├── virtualizacion/         fundamentos, virtualbox, vagrant, docker
 ├── qa/                     fundamentos, unitarias, integracion,

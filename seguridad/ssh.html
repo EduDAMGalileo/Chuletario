@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SSH · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="seguridad">
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Seguridad</a><span aria-hidden="true">›</span><span>SSH</span></nav>
+          <h1>SSH</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Chuletario de OpenSSH: conectarse a otra máquina, entrar con claves, copiar ficheros con scp, sftp y rsync, túneles y asegurar el servidor.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Seguridad">
+      <div class="wrap"><a href="introduccion.html">Introducción</a><a href="cortafuegos.html">Cortafuegos</a><a href="iptables.html">iptables</a><a href="nftables.html">nftables</a><a href="criptografia.html">Criptografía</a><a href="firma-certificados.html">Firma y certificados</a><a href="gpg.html">GPG</a><a href="ssh.html" aria-current="page">SSH</a></div>
+    </nav>
+    <main class="wrap">
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es SSH</a><a href="#s2"><b>2</b>Instalar el servidor</a><a href="#s3"><b>3</b>Conectarse</a><a href="#s4"><b>4</b>Huella y known_hosts</a><a href="#s5"><b>5</b>Generar claves</a><a href="#s6"><b>6</b>Entrar con clave</a><a href="#s7"><b>7</b>ssh-agent</a><a href="#s8"><b>8</b>~/.ssh/config</a><a href="#s9"><b>9</b>scp</a><a href="#s10"><b>10</b>sftp</a><a href="#s11"><b>11</b>rsync</a><a href="#s12"><b>12</b>Túneles y saltos</a><a href="#s13"><b>13</b>Asegurar el servidor</a><a href="#s14"><b>14</b>Problemas típicos</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="txt">SSH (<em>Secure Shell</em>) abre una terminal en otra máquina a través de un canal <strong>cifrado</strong>, por el puerto <strong>22/TCP</strong>. <strong>OpenSSH</strong> es la implementación que traen Linux, macOS y Windows 10/11 (<code>ssh -V</code> para ver la versión). Sustituye a telnet, rsh y FTP, que mandaban todo en claro.</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Las dos partes</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Cliente</th><td><code>ssh</code>, en la máquina desde la que te conectas</td></tr>
+                  <tr><th scope="row">Servidor</th><td><code>sshd</code>, en la máquina a la que entras</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <p class="banda-titulo">En los ejemplos</p>
+            <p class="txt"><code>ana</code> es el usuario remoto y <code>servidor</code> la máquina (vale una IP como <code>192.168.1.20</code> o un nombre). Los comandos se lanzan en <em>tu</em> equipo salvo que se diga lo contrario.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rejilla">
+        <!-- 1 -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es SSH</h2>
+          <div class="cuerpo">
+            <p class="txt">Un protocolo de la <a href="../redes/tcp-ip.html">capa de aplicación</a> que cifra toda la sesión: contraseña, comandos y salida. Al conectar, cliente y servidor acuerdan una clave de sesión (<a href="criptografia.html#s3">cifrado simétrico</a>) y el servidor demuestra quién es con su clave de host (<a href="criptografia.html#s4">asimétrico</a>).</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ssh</code></th><td>abrir una sesión o ejecutar un comando remoto</td></tr>
+                  <tr><th scope="row"><code>scp</code> / <code>sftp</code></th><td>copiar ficheros por SSH</td></tr>
+                  <tr><th scope="row"><code>ssh-keygen</code></th><td>crear y gestionar claves</td></tr>
+                  <tr><th scope="row"><code>ssh-copy-id</code></th><td>instalar tu clave pública en el servidor</td></tr>
+                  <tr><th scope="row"><code>ssh-agent</code> / <code>ssh-add</code></th><td>recordar la passphrase de tus claves</td></tr>
+                  <tr><th scope="row"><code>sshd</code></th><td>el servicio servidor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Ficheros importantes</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>~/.ssh/</code></th><td>tu carpeta SSH (claves, config, known_hosts)</td></tr>
+                  <tr><th scope="row"><code>~/.ssh/config</code></th><td>atajos y opciones del cliente</td></tr>
+                  <tr><th scope="row"><code>~/.ssh/known_hosts</code></th><td>huellas de los servidores en los que confías</td></tr>
+                  <tr><th scope="row"><code>~/.ssh/authorized_keys</code></th><td>(en el servidor) claves públicas que pueden entrar</td></tr>
+                  <tr><th scope="row"><code>/etc/ssh/sshd_config</code></th><td>configuración del servidor</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2 -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Instalar el servidor</h2>
+          <div class="cuerpo">
+            <p class="txt">El cliente suele venir instalado. El servidor hay que ponerlo en la máquina a la que quieres entrar.</p>
+            <figure class="codigo"><figcaption>En el servidor (Debian / Ubuntu)</figcaption><pre data-lang="bash"><code><span class="tok-clave">sudo</span> apt install openssh-server
+<span class="tok-clave">sudo</span> systemctl enable <span class="tok-atributo">--now</span> ssh     <span class="tok-coment"># arrancar y activar al inicio</span>
+<span class="tok-clave">sudo</span> systemctl status ssh
+<span class="tok-clave">sudo</span> ss <span class="tok-atributo">-tlnp</span> | grep :22           <span class="tok-coment"># ¿está escuchando?</span>
+<span class="tok-clave">sudo</span> ufw allow ssh                 <span class="tok-coment"># si tienes ufw activo</span>
+<span class="tok-clave">ip</span> <span class="tok-atributo">-br</span> a                           <span class="tok-coment"># la IP a la que conectarte</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Debian / Ubuntu</th><td>paquete <code>openssh-server</code>, servicio <code>ssh</code></td></tr>
+                  <tr><th scope="row">Fedora / RHEL</th><td>paquete <code>openssh-server</code>, servicio <code>sshd</code></td></tr>
+                  <tr><th scope="row">Windows</th><td>Configuración › Sistema › Características opcionales › Servidor OpenSSH</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En una máquina virtual con red NAT no llegarás a su IP desde fuera: usa red puente o una <a href="../virtualizacion/virtualbox.html#s6">redirección de puertos</a> (por ejemplo, el 2222 del anfitrión al 22 de la VM, y <code>ssh -p 2222 ana@localhost</code>).</p>
+          </div>
+        </section>
+        <!-- 3 -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Conectarse</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ssh</span> ana@servidor                    <span class="tok-coment"># sesión interactiva</span>
+<span class="tok-clave">ssh</span> servidor                        <span class="tok-coment"># mismo usuario que en local</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-p</span> 2222 ana@servidor            <span class="tok-coment"># otro puerto</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-i</span> ~/.ssh/clave_lab ana@servidor  <span class="tok-coment"># con una clave concreta</span>
+
+<span class="tok-coment"># ejecutar un comando y volver (sin abrir sesión)</span>
+<span class="tok-clave">ssh</span> ana@servidor <span class="tok-texto">'df -h; uptime'</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-t</span> ana@servidor <span class="tok-texto">'sudo systemctl restart nginx'</span>  <span class="tok-coment"># -t: con terminal (para sudo, top...)</span>
+
+<span class="tok-clave">exit</span>                                <span class="tok-coment"># cerrar la sesión (o Ctrl+D)</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-p</code></th><td>puerto (en minúscula; en <code>scp</code> es <code>-P</code>)</td></tr>
+                  <tr><th scope="row"><code>-i</code></th><td>fichero de clave privada</td></tr>
+                  <tr><th scope="row"><code>-v</code> / <code>-vvv</code></th><td>modo detallado: imprescindible para depurar</td></tr>
+                  <tr><th scope="row"><code>-t</code></th><td>forzar terminal al ejecutar un comando</td></tr>
+                  <tr><th scope="row"><code>-X</code></th><td>reenviar aplicaciones gráficas (X11)</td></tr>
+                  <tr><th scope="row"><code>-C</code></th><td>comprimir (útil en conexiones lentas)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si la sesión se queda colgada, pulsa <code>Intro</code> y luego <code>~.</code> para cortarla desde el cliente. Para que un proceso largo sobreviva al cierre de la sesión, lánzalo dentro de <code>tmux</code> o <code>screen</code>.</p>
+          </div>
+        </section>
+        <!-- 4 -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Huella y known_hosts</h2>
+          <div class="cuerpo">
+            <p class="txt">La primera vez que te conectas a un servidor, SSH no lo conoce y te enseña su <strong>huella</strong> (fingerprint) para que decidas si te fías:</p>
+            <figure class="codigo"><pre data-lang="text"><code>The authenticity of host 'servidor (192.168.1.20)' can't be established.
+ED25519 key fingerprint is SHA256:Xw3p...k8Q.
+Are you sure you want to continue connecting (yes/no/[fingerprint])?</code></pre></figure>
+            <p class="txt">Al decir <code>yes</code>, se guarda en <code>~/.ssh/known_hosts</code>. Las siguientes veces SSH compara y, si la clave del servidor ha cambiado, se niega a conectar.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># en el servidor: ver su huella para comprobarla</span>
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-lf</span> /etc/ssh/ssh_host_ed25519_key.pub
+
+<span class="tok-coment"># en el cliente: olvidar la huella de un servidor</span>
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-R</span> servidor
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-R</span> <span class="tok-texto">"[localhost]:2222"</span>     <span class="tok-coment"># si usaba otro puerto</span></code></pre></figure>
+            <p class="aviso"><code>WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!</code> puede ser un ataque <em>man-in-the-middle</em>... o que has reinstalado la máquina o reutilizado la IP. Borra la entrada con <code>ssh-keygen -R</code> solo si sabes por qué ha cambiado.</p>
+          </div>
+        </section>
+        <!-- 5 -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Generar claves</h2>
+          <div class="cuerpo">
+            <p class="txt">En vez de contraseña, te identificas con un <strong>par de claves</strong>: la privada se queda en tu equipo y la pública se copia a los servidores. Más seguro y más cómodo.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-t</span> ed25519 <span class="tok-atributo">-C</span> <span class="tok-texto">"ana@portatil"</span>            <span class="tok-coment"># la recomendada</span>
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-t</span> rsa <span class="tok-atributo">-b</span> 4096                         <span class="tok-coment"># si el servidor es muy antiguo</span>
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-t</span> ed25519 <span class="tok-atributo">-f</span> ~/.ssh/clave_lab         <span class="tok-coment"># con otro nombre</span>
+
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-p</span> <span class="tok-atributo">-f</span> ~/.ssh/id_ed25519      <span class="tok-coment"># cambiar o poner la passphrase</span>
+<span class="tok-clave">ssh-keygen</span> <span class="tok-atributo">-lf</span> ~/.ssh/id_ed25519.pub   <span class="tok-coment"># ver la huella de tu clave</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>id_ed25519</code></th><td>clave <strong>privada</strong>: no sale nunca de tu equipo</td></tr>
+                  <tr><th scope="row"><code>id_ed25519.pub</code></th><td>clave <strong>pública</strong>: la que repartes</td></tr>
+                  <tr><th scope="row"><code>-t</code></th><td>tipo: <code>ed25519</code> (moderno, corto) o <code>rsa</code></td></tr>
+                  <tr><th scope="row"><code>-C</code></th><td>comentario para reconocerla (equipo, correo)</td></tr>
+                  <tr><th scope="row">Passphrase</th><td>cifra la privada en disco; ponla</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">Sin passphrase, quien copie tu <code>id_ed25519</code> entra en todos tus servidores. Con ella y con <a href="#s7">ssh-agent</a> solo la escribes una vez por sesión.</p>
+          </div>
+        </section>
+        <!-- 6 -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Entrar con clave</h2>
+          <div class="cuerpo">
+            <p class="txt">Hay que añadir tu clave <em>pública</em> al fichero <code>~/.ssh/authorized_keys</code> del usuario en el servidor. La primera vez te pedirá la contraseña; después, ya no.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># lo más cómodo (Linux / macOS)</span>
+<span class="tok-clave">ssh-copy-id</span> ana@servidor
+<span class="tok-clave">ssh-copy-id</span> <span class="tok-atributo">-i</span> ~/.ssh/clave_lab.pub <span class="tok-atributo">-p</span> 2222 ana@servidor
+
+<span class="tok-coment"># a mano (o desde Windows, que no trae ssh-copy-id)</span>
+<span class="tok-clave">cat</span> ~/.ssh/id_ed25519.pub | <span class="tok-clave">ssh</span> ana@servidor \
+  <span class="tok-texto">'mkdir -p ~/.ssh &amp;&amp; chmod 700 ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys &amp;&amp; chmod 600 ~/.ssh/authorized_keys'</span>
+
+<span class="tok-coment"># probar</span>
+<span class="tok-clave">ssh</span> ana@servidor                  <span class="tok-coment"># ya no pide contraseña (sí la passphrase)</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Desde PowerShell en Windows</figcaption><pre data-lang="sh"><code><span class="tok-clave">type</span> $env:USERPROFILE\.ssh\id_ed25519.pub | <span class="tok-clave">ssh</span> ana@servidor <span class="tok-texto">"cat &gt;&gt; ~/.ssh/authorized_keys"</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>~/.ssh</code></th><td><code>700</code> (solo el dueño)</td></tr>
+                  <tr><th scope="row"><code>authorized_keys</code></th><td><code>600</code></td></tr>
+                  <tr><th scope="row">Clave privada</th><td><code>600</code></td></tr>
+                  <tr><th scope="row">Clave pública</th><td><code>644</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si los permisos son más abiertos, <code>sshd</code> ignora las claves sin avisar y vuelve a pedir contraseña. Ver <a href="../sistemas/comandos-usuarios.html">chmod</a>.</p>
+          </div>
+        </section>
+        <!-- 7 -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>ssh-agent</h2>
+          <div class="cuerpo">
+            <p class="txt">Un proceso que guarda en memoria tus claves ya desbloqueadas. Escribes la passphrase una vez y las siguientes conexiones (y <code>git push</code>) no la piden.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">eval</span> <span class="tok-texto">"$(ssh-agent -s)"</span>       <span class="tok-coment"># arrancarlo (muchos escritorios ya lo hacen)</span>
+<span class="tok-clave">ssh-add</span>                     <span class="tok-coment"># añadir ~/.ssh/id_ed25519 (pide la passphrase)</span>
+<span class="tok-clave">ssh-add</span> ~/.ssh/clave_lab     <span class="tok-coment"># añadir otra</span>
+<span class="tok-clave">ssh-add</span> <span class="tok-atributo">-t</span> 1h               <span class="tok-coment"># que caduque en una hora</span>
+<span class="tok-clave">ssh-add</span> <span class="tok-atributo">-l</span>                  <span class="tok-coment"># listar las cargadas</span>
+<span class="tok-clave">ssh-add</span> <span class="tok-atributo">-D</span>                  <span class="tok-coment"># vaciar el agente</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Windows (PowerShell como administrador, una vez)</figcaption><pre data-lang="sh"><code><span class="tok-clave">Get-Service</span> ssh-agent | <span class="tok-clave">Set-Service</span> <span class="tok-atributo">-StartupType</span> Automatic
+<span class="tok-clave">Start-Service</span> ssh-agent
+<span class="tok-clave">ssh-add</span> $env:USERPROFILE\.ssh\id_ed25519</code></pre></figure>
+            <p class="aviso"><code>ssh -A</code> (reenvío del agente) deja usar tus claves desde el servidor para saltar a otro. Quien sea root allí puede usarlas mientras estés conectado: úsalo solo en máquinas de confianza y prefiere <a href="#s12"><code>-J</code></a>.</p>
+          </div>
+        </section>
+        <!-- 8 -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>~/.ssh/config</h2>
+          <div class="cuerpo">
+            <p class="txt">Guarda cada servidor con un alias y sus opciones. Después basta con <code>ssh web</code>, y lo entienden también <code>scp</code>, <code>sftp</code>, <code>rsync</code> y <code>git</code>.</p>
+            <figure class="codigo"><figcaption>~/.ssh/config</figcaption><pre data-lang="text"><code><span class="tok-clave">Host</span> web
+    <span class="tok-atributo">HostName</span> 192.168.1.20
+    <span class="tok-atributo">User</span> ana
+    <span class="tok-atributo">Port</span> 2222
+    <span class="tok-atributo">IdentityFile</span> ~/.ssh/clave_lab
+
+<span class="tok-clave">Host</span> interno
+    <span class="tok-atributo">HostName</span> 10.0.0.5
+    <span class="tok-atributo">User</span> admin
+    <span class="tok-atributo">ProxyJump</span> web               <span class="tok-coment"># pasa por "web" para llegar</span>
+
+<span class="tok-coment"># opciones para todos (va al final: gana el primer valor que aparezca)</span>
+<span class="tok-clave">Host</span> *
+    <span class="tok-atributo">AddKeysToAgent</span> yes
+    <span class="tok-atributo">ServerAliveInterval</span> 60     <span class="tok-coment"># evita que se corte por inactividad</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">ssh</span> web
+<span class="tok-clave">scp</span> informe.pdf web:~/
+<span class="tok-clave">ssh</span> interno                      <span class="tok-coment"># entra en 10.0.0.5 a través de web</span></code></pre></figure>
+            <p class="nota">En Windows el fichero está en <code>C:\Users\tu_usuario\.ssh\config</code> (sin extensión). Lo usa también la extensión Remote-SSH de <a href="../programacion/vscode.html">VS Code</a>.</p>
+          </div>
+        </section>
+        <!-- 9 -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>scp</h2>
+          <div class="cuerpo">
+            <p class="txt">Copia ficheros como <code>cp</code>, pero entre máquinas. La parte remota se escribe <code>usuario@host:ruta</code>; sin los dos puntos, scp entiende un fichero local.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># subir: local → remoto</span>
+<span class="tok-clave">scp</span> informe.pdf ana@servidor:/home/ana/
+<span class="tok-clave">scp</span> informe.pdf ana@servidor:          <span class="tok-coment"># ":" solo = su carpeta personal</span>
+<span class="tok-clave">scp</span> *.log ana@servidor:~/logs/
+
+<span class="tok-coment"># bajar: remoto → local</span>
+<span class="tok-clave">scp</span> ana@servidor:/var/log/syslog .
+<span class="tok-clave">scp</span> ana@servidor:<span class="tok-texto">'~/fotos/*.jpg'</span> ./fotos/   <span class="tok-coment"># comillas: el * lo expande el remoto</span>
+
+<span class="tok-coment"># carpetas, puerto y entre dos remotos</span>
+<span class="tok-clave">scp</span> <span class="tok-atributo">-r</span> proyecto/ ana@servidor:~/
+<span class="tok-clave">scp</span> <span class="tok-atributo">-P</span> 2222 informe.pdf ana@servidor:~/
+<span class="tok-clave">scp</span> <span class="tok-atributo">-3</span> ana@srv1:datos.sql bob@srv2:/tmp/</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-r</code></th><td>recursivo (carpetas)</td></tr>
+                  <tr><th scope="row"><code>-P</code></th><td>puerto, en <strong>mayúscula</strong></td></tr>
+                  <tr><th scope="row"><code>-i</code></th><td>clave privada</td></tr>
+                  <tr><th scope="row"><code>-p</code></th><td>conservar fechas y permisos</td></tr>
+                  <tr><th scope="row"><code>-C</code></th><td>comprimir durante la copia</td></tr>
+                  <tr><th scope="row"><code>-3</code></th><td>entre dos remotos, pasando por tu equipo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">El error clásico: <code>scp -p 2222</code> no cambia el puerto, conserva permisos e intenta copiar un fichero llamado <code>2222</code>. El puerto es <code>-P</code>.</p>
+          </div>
+        </section>
+        <!-- 10 -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>sftp</h2>
+          <div class="cuerpo">
+            <p class="txt">Una sesión interactiva para moverse por el servidor y subir o bajar ficheros, al estilo del FTP clásico pero cifrado. Lo usan también clientes gráficos como FileZilla o WinSCP.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sftp</span> ana@servidor
+<span class="tok-clave">sftp</span> <span class="tok-atributo">-P</span> 2222 ana@servidor          <span class="tok-coment"># otro puerto (también -P)</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ls</code> / <code>cd</code> / <code>pwd</code></th><td>en el <strong>remoto</strong></td></tr>
+                  <tr><th scope="row"><code>lls</code> / <code>lcd</code> / <code>lpwd</code></th><td>en <strong>local</strong> (la <code>l</code> delante)</td></tr>
+                  <tr><th scope="row"><code>get fichero</code></th><td>bajar (<code>get -r carpeta</code> para carpetas)</td></tr>
+                  <tr><th scope="row"><code>put fichero</code></th><td>subir (<code>put -r carpeta</code>)</td></tr>
+                  <tr><th scope="row"><code>mget *.log</code> / <code>mput *.txt</code></th><td>varios a la vez</td></tr>
+                  <tr><th scope="row"><code>mkdir</code> / <code>rm</code> / <code>rename</code></th><td>gestionar ficheros remotos</td></tr>
+                  <tr><th scope="row"><code>!comando</code></th><td>ejecutar un comando en local</td></tr>
+                  <tr><th scope="row"><code>bye</code> / <code>exit</code></th><td>salir</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 11 -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>rsync</h2>
+          <div class="cuerpo">
+            <p class="txt">Sincroniza carpetas copiando <strong>solo lo que ha cambiado</strong>, y puede reanudar. Para copias grandes o repetidas (despliegues, copias de seguridad) es mejor que scp. Debe estar instalado en los dos lados.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">rsync</span> <span class="tok-atributo">-avz</span> proyecto/ ana@servidor:~/proyecto/          <span class="tok-coment"># subir</span>
+<span class="tok-clave">rsync</span> <span class="tok-atributo">-avz</span> ana@servidor:/var/www/ ./copia-web/        <span class="tok-coment"># bajar</span>
+<span class="tok-clave">rsync</span> <span class="tok-atributo">-avzP</span> iso/ ana@servidor:~/iso/                <span class="tok-coment"># progreso y reanudar</span>
+<span class="tok-clave">rsync</span> <span class="tok-atributo">-avz</span> <span class="tok-atributo">--delete</span> <span class="tok-atributo">-n</span> web/ ana@servidor:/var/www/   <span class="tok-coment"># espejo exacto: PRUEBA primero</span>
+<span class="tok-clave">rsync</span> <span class="tok-atributo">-avz</span> <span class="tok-atributo">--exclude</span> <span class="tok-texto">'node_modules'</span> app/ web:~/app/
+<span class="tok-clave">rsync</span> <span class="tok-atributo">-avz</span> <span class="tok-atributo">-e</span> <span class="tok-texto">"ssh -p 2222"</span> datos/ ana@servidor:~/datos/  <span class="tok-coment"># otro puerto</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-a</code></th><td>modo archivo: recursivo y conserva permisos, fechas, enlaces</td></tr>
+                  <tr><th scope="row"><code>-v</code> / <code>-z</code></th><td>detallado / comprimir</td></tr>
+                  <tr><th scope="row"><code>-n</code> (<code>--dry-run</code>)</th><td>simular: enseña qué haría sin tocar nada</td></tr>
+                  <tr><th scope="row"><code>--delete</code></th><td>borra en destino lo que ya no está en origen</td></tr>
+                  <tr><th scope="row"><code>-P</code></th><td><code>--partial --progress</code> (aquí no es el puerto)</td></tr>
+                  <tr><th scope="row"><code>-e "ssh ..."</code></th><td>opciones de SSH (puerto, clave)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso">La <strong>barra final</strong> del origen cambia el resultado: <code>proyecto/</code> copia el <em>contenido</em>; <code>proyecto</code> copia la carpeta dentro del destino (<code>~/proyecto/proyecto</code>). Con <code>--delete</code> un despiste así borra cosas: usa antes <code>-n</code>.</p>
+          </div>
+        </section>
+        <!-- 12 -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Túneles y saltos</h2>
+          <div class="cuerpo">
+            <p class="txt">SSH puede llevar otras conexiones dentro de su canal cifrado (<em>port forwarding</em>). Sirve para llegar a servicios que no están expuestos a la red.</p>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># LOCAL: tu puerto 8080 → puerto 80 visto desde el servidor</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-L</span> 8080:localhost:80 ana@servidor
+<span class="tok-coment">#   abre http://localhost:8080 en tu navegador</span>
+
+<span class="tok-coment"># LOCAL hacia una tercera máquina (la BD solo acepta desde la red interna)</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-L</span> 5433:10.0.0.7:5432 ana@servidor
+<span class="tok-clave">psql</span> <span class="tok-atributo">-h</span> localhost <span class="tok-atributo">-p</span> 5433 <span class="tok-atributo">-U</span> app
+
+<span class="tok-coment"># REMOTO: el 9000 del servidor → tu puerto 3000 (enseñar algo local)</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-R</span> 9000:localhost:3000 ana@servidor
+
+<span class="tok-coment"># DINÁMICO: un proxy SOCKS en tu 1080; navegas como si fueras el servidor</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-D</span> 1080 ana@servidor
+
+<span class="tok-coment"># solo el túnel, sin terminal, y en segundo plano</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-fN</span> <span class="tok-atributo">-L</span> 8080:localhost:80 ana@servidor
+
+<span class="tok-coment"># SALTO: llegar a "interno" pasando por un bastión</span>
+<span class="tok-clave">ssh</span> <span class="tok-atributo">-J</span> ana@bastion admin@10.0.0.5</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-L puertoLocal:destino:puerto</code></th><td>traer un servicio remoto a tu equipo</td></tr>
+                  <tr><th scope="row"><code>-R puertoRemoto:destino:puerto</code></th><td>publicar un servicio tuyo en el servidor</td></tr>
+                  <tr><th scope="row"><code>-D puerto</code></th><td>proxy SOCKS: todo el tráfico sale por el servidor</td></tr>
+                  <tr><th scope="row"><code>-N</code> / <code>-f</code></th><td>no abrir terminal / irse a segundo plano</td></tr>
+                  <tr><th scope="row"><code>-J</code></th><td>saltar por una o varias máquinas (<code>ProxyJump</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En <code>-L</code>, el <code>destino</code> se resuelve <em>desde el servidor</em>: <code>localhost</code> ahí es el propio servidor, no tu equipo.</p>
+          </div>
+        </section>
+        <!-- 13 -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Asegurar el servidor</h2>
+          <div class="cuerpo">
+            <p class="txt">Un SSH abierto a internet recibe intentos de <a href="../hacking/fuerza-bruta.html">fuerza bruta</a> a todas horas. Lo básico: solo claves y nada de root. Edita <code>/etc/ssh/sshd_config</code> o, mejor, un fichero propio en <code>/etc/ssh/sshd_config.d/</code>.</p>
+            <figure class="codigo"><figcaption>/etc/ssh/sshd_config.d/10-seguro.conf</figcaption><pre data-lang="text"><code><span class="tok-atributo">PermitRootLogin</span> no              <span class="tok-coment"># root no entra; usa sudo</span>
+<span class="tok-atributo">PasswordAuthentication</span> no       <span class="tok-coment"># solo claves (comprueba ANTES que entras con la tuya)</span>
+<span class="tok-atributo">KbdInteractiveAuthentication</span> no
+<span class="tok-atributo">PubkeyAuthentication</span> yes
+<span class="tok-atributo">AllowUsers</span> ana bob               <span class="tok-coment"># lista blanca de usuarios</span>
+<span class="tok-atributo">MaxAuthTries</span> 3
+<span class="tok-atributo">X11Forwarding</span> no
+<span class="tok-coment">#Port 2222                        # otro puerto: menos ruido en los logs, no más seguridad</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">sudo</span> sshd <span class="tok-atributo">-t</span>                       <span class="tok-coment"># comprobar la sintaxis (sin salida = bien)</span>
+<span class="tok-clave">sudo</span> sshd <span class="tok-atributo">-T</span> | grep <span class="tok-atributo">-i</span> password    <span class="tok-coment"># ver la configuración efectiva</span>
+<span class="tok-clave">sudo</span> systemctl restart ssh
+<span class="tok-clave">sudo</span> journalctl <span class="tok-atributo">-u</span> ssh <span class="tok-atributo">-f</span>           <span class="tok-coment"># ver intentos de acceso en directo</span></code></pre></figure>
+            <p class="aviso"><strong>No te encierres fuera.</strong> Antes de reiniciar <code>sshd</code>, deja abierta una sesión y prueba desde <em>otra</em> terminal que puedes entrar. Si cambias el puerto, ábrelo antes en el <a href="cortafuegos.html">cortafuegos</a>; en Ubuntu 24.04, que arranca SSH por socket, aplica el cambio con <code>sudo systemctl daemon-reload &amp;&amp; sudo systemctl restart ssh.socket</code>.</p>
+            <p class="nota">En <code>sshd_config</code> manda el <strong>primer</strong> valor que se lee, y los <code>.conf</code> de <code>sshd_config.d/</code> se leen antes y en orden alfabético. Por eso un <code>50-cloud-init.conf</code> con <code>PasswordAuthentication yes</code> puede anular tu cambio: compruébalo con <code>sshd -T</code>. Para más protección, <code>fail2ban</code> banea las IP que fallan muchas veces.</p>
+          </div>
+        </section>
+        <!-- 14 -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Problemas típicos</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo primero, siempre: <code>ssh -v ana@servidor</code>. En el servidor, <code>journalctl -u ssh</code> suele decir el motivo exacto.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Connection refused</code></th><td>llegas a la máquina pero no hay nada en ese puerto: <code>sshd</code> parado o puerto equivocado</td></tr>
+                  <tr><th scope="row"><code>Connection timed out</code></th><td>no llegas: IP errónea, cortafuegos o red NAT de la VM</td></tr>
+                  <tr><th scope="row"><code>Permission denied (publickey)</code></th><td>clave no instalada, usuario equivocado o permisos de <code>~/.ssh</code> demasiado abiertos (<a href="#s6">ver 6</a>)</td></tr>
+                  <tr><th scope="row"><code>UNPROTECTED PRIVATE KEY FILE!</code></th><td>la privada la puede leer otro: <code>chmod 600 ~/.ssh/id_ed25519</code></td></tr>
+                  <tr><th scope="row"><code>REMOTE HOST IDENTIFICATION HAS CHANGED</code></th><td>la clave del servidor no coincide (<a href="#s4">ver 4</a>)</td></tr>
+                  <tr><th scope="row"><code>Too many authentication failures</code></th><td>el agente prueba demasiadas claves: <code>-i clave -o IdentitiesOnly=yes</code></td></tr>
+                  <tr><th scope="row"><code>Host key verification failed</code></th><td>en un script sin terminal: conéctate una vez a mano para aceptar la huella</td></tr>
+                  <tr><th scope="row">Se corta al rato</th><td><code>ServerAliveInterval 60</code> en <a href="#s8">~/.ssh/config</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Las claves privadas en Windows también necesitan permisos restringidos: si da el error de clave desprotegida, en Propiedades › Seguridad deja solo a tu usuario.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="gpg.html">← GPG</a><span></span></nav>
+      <footer class="pie">Manual: <a href="https://www.openssh.com/manual.html">openssh.com/manual.html</a> (<code>man ssh</code>, <code>man ssh_config</code>, <code>man sshd_config</code>). Las claves se basan en la <a href="criptografia.html#s4">criptografía asimétrica</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
