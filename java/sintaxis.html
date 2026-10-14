@@ -16,17 +16,17 @@
           <h1>Sintaxis básica</h1>
         </div>
         <div class="apoyo">
-          <p class="sub">Tipos, variables, operadores, control de flujo, arrays y métodos. Los ejemplos usan <code>IO.println</code> de Java 25; en versiones anteriores es <code>System.out.println</code>.</p>
+          <p class="sub">Tipos, variables, operadores, salida con formato, lectura por teclado y control de flujo. Los ejemplos usan <code>IO.println</code> de Java 25; en versiones anteriores es <code>System.out.println</code>.</p>
           <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
         </div>
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de Java">
-      <div class="wrap"><a href="sintaxis.html" aria-current="page">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+      <div class="wrap"><a href="sintaxis.html" aria-current="page">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
     </nav>
     <main class="wrap">
       <!-- Índice de secciones -->
-      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Tipos primitivos y variables</a><a href="#s2"><b>2</b>Operadores</a><a href="#s3"><b>3</b>Mostrar y leer por consola</a><a href="#s4"><b>4</b>Condicionales</a><a href="#s5"><b>5</b>Bucles</a><a href="#s6"><b>6</b>Convenios y despistes habituales</a></nav>
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Tipos primitivos y variables</a><a href="#s2"><b>2</b>Operadores</a><a href="#s3"><b>3</b>Mostrar por consola</a><a href="#s4"><b>4</b>Leer por teclado: Scanner</a><a href="#s5"><b>5</b>Condicionales</a><a href="#s6"><b>6</b>Bucles</a><a href="#s7"><b>7</b>Convenios y despistes habituales</a></nav>
       <!-- Banda destacada -->
       <div class="banda">
         <p class="banda-titulo">Un programa mínimo</p>
@@ -123,45 +123,207 @@ java Hola.java    <span class="tok-coment"># compila y ejecuta en un paso</span>
             <p class="aviso"><strong>Cuidado:</strong> los objetos, incluido <code>String</code>, se comparan con <code>.equals()</code>. Con <code>==</code> comparas si son el mismo objeto, no si valen lo mismo.</p>
           </div>
         </section>
-        <!-- 3. Mostrar y leer por consola -->
+        <!-- 3. Mostrar por consola -->
         <section id="s3" class="tarjeta">
-          <h2><span class="num">3</span>Mostrar y leer por consola</h2>
+          <h2><span class="num">3</span>Mostrar por consola</h2>
           <div class="cuerpo">
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// Salida</span>
-<span class="tok-tipo">System</span>.out.println(<span class="tok-texto">"Con salto de línea"</span>);
-<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Sin salto"</span>);
-<span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%s tiene %d años y un %.2f de nota%n"</span>, nombre, edad, nota);
-
-<span class="tok-tipo">IO</span>.println(<span class="tok-texto">"En Java 25 basta con esto"</span>);   <span class="tok-coment">// java.lang.IO</span>
-
-<span class="tok-coment">// Entrada con Scanner</span>
-<span class="tok-tipo">Scanner</span> sc = <span class="tok-clave">new</span> <span class="tok-tipo">Scanner</span>(<span class="tok-tipo">System</span>.in);
-<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Nombre: "</span>);
-<span class="tok-tipo">String</span> nombre = sc.nextLine();
-<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Edad: "</span>);
-<span class="tok-tipo">int</span> edad = sc.nextInt();
-sc.nextLine();          <span class="tok-coment">// consume el salto de línea pendiente</span>
-
-<span class="tok-coment">// Entrada en Java 25</span>
-<span class="tok-tipo">String</span> ciudad = <span class="tok-tipo">IO</span>.readln(<span class="tok-texto">"Ciudad: "</span>);</code></pre></figure>
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row"><code>%s</code></th><td>texto</td></tr>
-                  <tr><th scope="row"><code>%d</code></th><td>entero</td></tr>
-                  <tr><th scope="row"><code>%f  %.2f</code></th><td>decimal, con los decimales que indiques</td></tr>
-                  <tr><th scope="row"><code>%b</code></th><td>booleano</td></tr>
-                  <tr><th scope="row"><code>%n</code></th><td>salto de línea</td></tr>
-                  <tr><th scope="row"><code>%-10s</code></th><td>alinea a la izquierda en 10 caracteres</td></tr>
+                  <tr><th scope="row"><code>System.out.println(x)</code></th><td>escribe y salta de línea; sin argumentos, solo salta</td></tr>
+                  <tr><th scope="row"><code>System.out.print(x)</code></th><td>escribe sin saltar de línea</td></tr>
+                  <tr><th scope="row"><code>System.out.printf(f, ...)</code></th><td>escribe con formato; no salta de línea salvo con <code>%n</code></td></tr>
+                  <tr><th scope="row"><code>System.err.println(x)</code></th><td>salida de errores (en rojo en muchos IDE)</td></tr>
+                  <tr><th scope="row"><code>IO.println(x)  IO.print(x)</code></th><td>Java 25: lo mismo, más corto</td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="aviso"><strong>Cuidado:</strong> después de <code>nextInt()</code> queda el salto de línea sin leer, así que el siguiente <code>nextLine()</code> devuelve una cadena vacía. Añade un <code>nextLine()</code> extra.</p>
+            <h3>Concatenar con +</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> nombre = <span class="tok-texto">"Ana"</span>;
+<span class="tok-tipo">int</span> edad = <span class="tok-numero">20</span>;
+<span class="tok-tipo">System</span>.out.println(<span class="tok-texto">"Hola, "</span> + nombre + <span class="tok-texto">". Tienes "</span> + edad + <span class="tok-texto">" años"</span>);
+<span class="tok-coment">// Hola, Ana. Tienes 20 años</span>
+
+<span class="tok-coment">// se evalúa de izquierda a derecha: en cuanto aparece un String, todo es texto</span>
+<span class="tok-tipo">System</span>.out.println(<span class="tok-texto">"Suma: "</span> + <span class="tok-numero">2</span> + <span class="tok-numero">3</span>);     <span class="tok-coment">// Suma: 23</span>
+<span class="tok-tipo">System</span>.out.println(<span class="tok-texto">"Suma: "</span> + (<span class="tok-numero">2</span> + <span class="tok-numero">3</span>));   <span class="tok-coment">// Suma: 5</span>
+<span class="tok-tipo">System</span>.out.println(<span class="tok-numero">2</span> + <span class="tok-numero">3</span> + <span class="tok-texto">" de total"</span>);  <span class="tok-coment">// 5 de total</span>
+
+<span class="tok-coment">// char se suma como número si no hay un String delante</span>
+<span class="tok-tipo">System</span>.out.println(<span class="tok-texto">'a'</span> + <span class="tok-texto">'b'</span>);            <span class="tok-coment">// 195</span>
+<span class="tok-tipo">System</span>.out.println(<span class="tok-texto">""</span> + <span class="tok-texto">'a'</span> + <span class="tok-texto">'b'</span>);       <span class="tok-coment">// ab</span>
+
+<span class="tok-coment">// los objetos se convierten con su toString(); null se escribe como "null"</span>
+<span class="tok-tipo">System</span>.out.println(<span class="tok-texto">"Alumno: "</span> + alumno);
+
+<span class="tok-coment">// += también concatena</span>
+<span class="tok-tipo">String</span> linea = <span class="tok-texto">"Notas:"</span>;
+linea += <span class="tok-texto">" "</span> + nota;
+
+<span class="tok-coment">// una línea muy larga se puede partir</span>
+<span class="tok-tipo">String</span> msg = <span class="tok-texto">"Primera parte, "</span>
+        + <span class="tok-texto">"segunda parte"</span>;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>\n</code></th><td>salto de línea</td></tr>
+                  <tr><th scope="row"><code>\t</code></th><td>tabulador</td></tr>
+                  <tr><th scope="row"><code>\"  \'</code></th><td>comillas dentro del texto</td></tr>
+                  <tr><th scope="row"><code>\\</code></th><td>la barra invertida</td></tr>
+                  <tr><th scope="row"><code>\u00F1</code></th><td>carácter Unicode (ñ)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> concatenar con <code>+=</code> dentro de un bucle largo crea un <code>String</code> nuevo en cada vuelta. Usa <code>StringBuilder</code> (ver <a href="strings.html">Strings</a>).</p>
+            <h3>printf: salida con formato</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%s tiene %d años y un %.2f de nota%n"</span>, nombre, edad, nota);
+<span class="tok-coment">// Ana tiene 20 años y un 7,50 de nota</span>
+
+<span class="tok-coment">// tabla alineada: ancho fijo por columna</span>
+<span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%-10s|%5s|%8s%n"</span>, <span class="tok-texto">"Nombre"</span>, <span class="tok-texto">"Edad"</span>, <span class="tok-texto">"Nota"</span>);
+<span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%-10s|%5d|%8.2f%n"</span>, <span class="tok-texto">"Ana"</span>, <span class="tok-numero">20</span>, <span class="tok-numero">7.5</span>);
+<span class="tok-coment">// Nombre    | Edad|    Nota</span>
+<span class="tok-coment">// Ana       |   20|    7,50</span>
+
+<span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%05d%n"</span>, <span class="tok-numero">42</span>);           <span class="tok-coment">// 00042</span>
+<span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%,d%n"</span>, <span class="tok-numero">1500000</span>);       <span class="tok-coment">// 1.500.000</span>
+<span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%+d%n"</span>, <span class="tok-numero">5</span>);             <span class="tok-coment">// +5</span>
+<span class="tok-tipo">System</span>.out.printf(<span class="tok-texto">"%d%%%n"</span>, <span class="tok-numero">80</span>);           <span class="tok-coment">// 80%</span>
+<span class="tok-tipo">System</span>.out.printf(<span class="tok-tipo">Locale</span>.<span class="tok-tipo">US</span>, <span class="tok-texto">"%.2f%n"</span>, <span class="tok-numero">7.5</span>); <span class="tok-coment">// 7.50, con punto</span>
+
+<span class="tok-coment">// lo mismo, pero guardándolo en un String en vez de imprimirlo</span>
+<span class="tok-tipo">String</span> s = <span class="tok-tipo">String</span>.format(<span class="tok-texto">"%.2f €"</span>, precio);
+<span class="tok-tipo">String</span> t = <span class="tok-texto">"%s: %d"</span>.formatted(nombre, edad);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>%s</code></th><td>texto (o cualquier objeto, con su <code>toString</code>)</td></tr>
+                  <tr><th scope="row"><code>%d</code></th><td>entero: <code>int</code>, <code>long</code>...</td></tr>
+                  <tr><th scope="row"><code>%f  %.2f</code></th><td>decimal; por defecto 6 decimales, <code>.2</code> deja 2 y redondea</td></tr>
+                  <tr><th scope="row"><code>%e</code></th><td>notación científica: <code>1,50e+03</code></td></tr>
+                  <tr><th scope="row"><code>%c</code></th><td>un carácter</td></tr>
+                  <tr><th scope="row"><code>%b</code></th><td>booleano</td></tr>
+                  <tr><th scope="row"><code>%x  %o</code></th><td>entero en hexadecimal y en octal</td></tr>
+                  <tr><th scope="row"><code>%n</code></th><td>salto de línea del sistema</td></tr>
+                  <tr><th scope="row"><code>%%</code></th><td>el símbolo %</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>%10s  %10d</code></th><td>ancho mínimo 10, alineado a la derecha</td></tr>
+                  <tr><th scope="row"><code>%-10s</code></th><td>ancho 10, alineado a la izquierda</td></tr>
+                  <tr><th scope="row"><code>%8.2f</code></th><td>ancho 8 en total, con 2 decimales</td></tr>
+                  <tr><th scope="row"><code>%05d</code></th><td>rellena con ceros a la izquierda</td></tr>
+                  <tr><th scope="row"><code>%,d</code></th><td>separador de miles</td></tr>
+                  <tr><th scope="row"><code>%+d</code></th><td>muestra siempre el signo</td></tr>
+                  <tr><th scope="row"><code>%1$s %1$s</code></th><td>reutiliza el argumento 1</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> el tipo tiene que encajar. <code>%d</code> con un <code>double</code> lanza <code>IllegalFormatConversionException</code>. Y con el sistema en español, <code>%.2f</code> escribe coma decimal: si necesitas punto, pasa <code>Locale.US</code>.</p>
           </div>
         </section>
-        <!-- 4. Condicionales -->
+        <!-- 4. Leer por teclado: Scanner -->
         <section id="s4" class="tarjeta">
-          <h2><span class="num">4</span>Condicionales</h2>
+          <h2><span class="num">4</span>Leer por teclado: Scanner</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> java.util.<span class="tok-tipo">Scanner</span>;
+
+<span class="tok-tipo">Scanner</span> sc = <span class="tok-clave">new</span> <span class="tok-tipo">Scanner</span>(<span class="tok-tipo">System</span>.in);   <span class="tok-coment">// uno solo para todo el programa</span>
+
+<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Nombre completo: "</span>);
+<span class="tok-tipo">String</span> nombre = sc.nextLine();           <span class="tok-coment">// toda la línea, con espacios</span>
+
+<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Edad: "</span>);
+<span class="tok-tipo">int</span> edad = sc.nextInt();
+sc.nextLine();                            <span class="tok-coment">// consume el salto de línea pendiente</span>
+
+<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Nota: "</span>);
+<span class="tok-tipo">double</span> nota = sc.nextDouble();           <span class="tok-coment">// en español se escribe 7,5</span>
+
+<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"¿Repetidor? (true/false): "</span>);
+<span class="tok-tipo">boolean</span> repite = sc.nextBoolean();
+
+<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Inicial: "</span>);
+<span class="tok-tipo">char</span> inicial = sc.next().charAt(<span class="tok-numero">0</span>);     <span class="tok-coment">// no existe nextChar()</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>nextLine()</code></th><td>el resto de la línea, con espacios; consume el salto</td></tr>
+                  <tr><th scope="row"><code>next()</code></th><td>la siguiente palabra (hasta un espacio)</td></tr>
+                  <tr><th scope="row"><code>nextInt()  nextLong()</code></th><td>un entero</td></tr>
+                  <tr><th scope="row"><code>nextDouble()  nextFloat()</code></th><td>un decimal, según el <code>Locale</code></td></tr>
+                  <tr><th scope="row"><code>nextBoolean()</code></th><td><code>true</code> o <code>false</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>hasNextInt()  hasNextDouble()</code></th><td>¿lo siguiente es de ese tipo? no consume nada</td></tr>
+                  <tr><th scope="row"><code>hasNextLine()  hasNext()</code></th><td>¿queda algo por leer?</td></tr>
+                  <tr><th scope="row"><code>useLocale(Locale.US)</code></th><td>leer decimales con punto</td></tr>
+                  <tr><th scope="row"><code>useDelimiter(";")</code></th><td>cambia el separador (por defecto, espacios y saltos)</td></tr>
+                  <tr><th scope="row"><code>close()</code></th><td>cierra el Scanner y también <code>System.in</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>El problema del salto de línea</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// el usuario escribe: 20⏎  Ana López⏎</span>
+<span class="tok-tipo">int</span> edad = sc.nextInt();          <span class="tok-coment">// lee 20 y deja el ⏎ en el buffer</span>
+<span class="tok-tipo">String</span> nombre = sc.nextLine();     <span class="tok-coment">// lee ese ⏎: devuelve "" sin esperar</span>
+
+<span class="tok-coment">// solución 1: un nextLine() extra después de cada nextXxx()</span>
+<span class="tok-tipo">int</span> edad = sc.nextInt();
+sc.nextLine();
+
+<span class="tok-coment">// solución 2: leer siempre líneas y convertir</span>
+<span class="tok-tipo">int</span> edad = <span class="tok-tipo">Integer</span>.parseInt(sc.nextLine().trim());</code></pre></figure>
+            <h3>Validar la entrada</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// con hasNextInt: no salta excepción</span>
+<span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Número: "</span>);
+<span class="tok-clave">while</span> (!sc.hasNextInt()) {
+    <span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Eso no es un número. Otra vez: "</span>);
+    sc.nextLine();                 <span class="tok-coment">// descarta lo escrito</span>
+}
+<span class="tok-tipo">int</span> n = sc.nextInt();
+sc.nextLine();
+
+<span class="tok-coment">// con try-catch y un rango</span>
+<span class="tok-tipo">int</span> opcion;
+<span class="tok-clave">while</span> (<span class="tok-clave">true</span>) {
+    <span class="tok-tipo">System</span>.out.print(<span class="tok-texto">"Opción (1-4): "</span>);
+    <span class="tok-clave">try</span> {
+        opcion = <span class="tok-tipo">Integer</span>.parseInt(sc.nextLine().trim());
+        <span class="tok-clave">if</span> (opcion &gt;= <span class="tok-numero">1</span> &amp;&amp; opcion &lt;= <span class="tok-numero">4</span>) <span class="tok-clave">break</span>;
+        <span class="tok-tipo">System</span>.out.println(<span class="tok-texto">"Fuera de rango"</span>);
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">NumberFormatException</span> e) {
+        <span class="tok-tipo">System</span>.out.println(<span class="tok-texto">"Escribe un número"</span>);
+    }
+}</code></pre></figure>
+            <h3>Varios datos en una línea</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// el usuario escribe: 3 7 12</span>
+<span class="tok-tipo">int</span> a = sc.nextInt(), b = sc.nextInt(), c = sc.nextInt();
+
+<span class="tok-coment">// o leer la línea y trocearla</span>
+<span class="tok-tipo">String</span>[] partes = sc.nextLine().trim().split(<span class="tok-texto">"\\s+"</span>);
+
+<span class="tok-coment">// leer hasta que el usuario escriba "fin"</span>
+<span class="tok-tipo">String</span> linea;
+<span class="tok-clave">while</span> (!(linea = sc.nextLine()).equalsIgnoreCase(<span class="tok-texto">"fin"</span>)) {
+    lista.add(linea);
+}</code></pre></figure>
+            <h3>Otras formas de leer</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// Java 25: muestra el mensaje y lee una línea</span>
+<span class="tok-tipo">String</span> ciudad = <span class="tok-tipo">IO</span>.readln(<span class="tok-texto">"Ciudad: "</span>);
+<span class="tok-tipo">int</span> edad = <span class="tok-tipo">Integer</span>.parseInt(<span class="tok-tipo">IO</span>.readln(<span class="tok-texto">"Edad: "</span>));
+
+<span class="tok-coment">// BufferedReader: más rápido, solo lee líneas</span>
+<span class="tok-tipo">BufferedReader</span> br = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(<span class="tok-tipo">System</span>.in));
+<span class="tok-tipo">String</span> linea = br.readLine();     <span class="tok-coment">// lanza IOException</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> no cierres el <code>Scanner</code> de <code>System.in</code> a mitad de programa ni crees uno nuevo en cada método. Al cerrarlo se cierra <code>System.in</code> y ya no se puede volver a leer del teclado (salta <code>NoSuchElementException</code>).</p>
+            <p class="nota"><code>Scanner</code> también lee de ficheros y de textos: ver <a href="lectura-escritura.html">Lectura y escritura</a>.</p>
+          </div>
+        </section>
+        <!-- 5. Condicionales -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Condicionales</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">if</span> (nota &gt;= <span class="tok-numero">9</span>) {
     <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Sobresaliente"</span>);
@@ -189,9 +351,9 @@ sc.nextLine();          <span class="tok-coment">// consume el salto de línea p
             <p class="nota">El <code>switch</code> con flecha no continúa al siguiente caso, así que no hace falta <code>break</code>. El clásico con <code>case x:</code> sí lo necesita.</p>
           </div>
         </section>
-        <!-- 5. Bucles -->
-        <section id="s5" class="tarjeta">
-          <h2><span class="num">5</span>Bucles</h2>
+        <!-- 6. Bucles -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Bucles</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// for clásico: cuando sabes cuántas vueltas</span>
 <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; <span class="tok-numero">10</span>; i++) {
@@ -231,9 +393,9 @@ sc.nextLine();          <span class="tok-coment">// consume el salto de línea p
             <p class="nota">Para trabajar con varios valores a la vez, ver <a href="arrays.html">Arrays y matrices</a>. Y para agrupar código reutilizable, <a href="metodos.html">Métodos y recursividad</a>.</p>
           </div>
         </section>
-        <!-- 6. Convenios y despistes habituales -->
-        <section id="s6" class="tarjeta">
-          <h2><span class="num">6</span>Convenios y despistes habituales</h2>
+        <!-- 7. Convenios y despistes habituales -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Convenios y despistes habituales</h2>
           <div class="cuerpo">
             <div class="tabla-scroll">
               <table class="ref ">

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sets · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><a href="colecciones.html">Colecciones</a><span aria-hidden="true">›</span><span>Sets</span></nav>
+          <h1>Sets</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Conjuntos sin elementos repetidos: <code>HashSet</code>, <code>LinkedHashSet</code>, <code>TreeSet</code> y <code>EnumSet</code>, operaciones de conjuntos y navegación por orden.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html" aria-current="page">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Crear y usar un Set</a><a href="#s2"><b>2</b>HashSet, LinkedHashSet y TreeSet</a><a href="#s3"><b>3</b>equals y hashCode</a><a href="#s4"><b>4</b>Operaciones de conjuntos</a><a href="#s5"><b>5</b>TreeSet: navegar por orden</a><a href="#s6"><b>6</b>TreeSet con Comparator</a><a href="#s7"><b>7</b>EnumSet</a><a href="#s8"><b>8</b>Recetas</a><a href="#s9"><b>9</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Las implementaciones de Set</p>
+        <div class="cols">
+          <div>
+            <figure class="codigo"><pre data-lang="text"><code>Collection&lt;E&gt;
+└── <span class="tok-clave">Set&lt;E&gt;</span>                    sin repetidos
+    ├── <span class="tok-tipo">HashSet</span>                tabla hash: rápido, sin orden
+    │   └── <span class="tok-tipo">LinkedHashSet</span>      + recuerda el orden de inserción
+    ├── <span class="tok-tipo">EnumSet</span>                solo valores de un enum
+    └── <span class="tok-clave">SortedSet&lt;E&gt;</span>           siempre ordenado
+        └── <span class="tok-clave">NavigableSet&lt;E&gt;</span>    + floor, ceiling, headSet...
+            └── <span class="tok-tipo">TreeSet</span>        árbol rojo-negro</code></pre></figure>
+          </div>
+          <div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; datos = <span class="tok-tipo">List</span>.of(<span class="tok-texto">"pera"</span>, <span class="tok-texto">"kiwi"</span>, <span class="tok-texto">"manzana"</span>, <span class="tok-texto">"kiwi"</span>);
+
+<span class="tok-clave">new</span> <span class="tok-tipo">HashSet</span>&lt;&gt;(datos);        <span class="tok-coment">// los 3, en un orden imprevisible</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">LinkedHashSet</span>&lt;&gt;(datos);  <span class="tok-coment">// [pera, kiwi, manzana]  orden de llegada</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(datos);        <span class="tok-coment">// [kiwi, manzana, pera]  alfabético</span></code></pre></figure>
+            <p class="nota">Un set no tiene posiciones: no hay <code>get(i)</code>. Se pregunta si algo está (<code>contains</code>) o se recorre entero.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Crear y usar un Set -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Crear y usar un Set</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">String</span>&gt; etiquetas = <span class="tok-clave">new</span> <span class="tok-tipo">HashSet</span>&lt;&gt;();
+
+etiquetas.add(<span class="tok-texto">"java"</span>);          <span class="tok-coment">// true</span>
+etiquetas.add(<span class="tok-texto">"java"</span>);          <span class="tok-coment">// false: ya estaba, no hace nada</span>
+etiquetas.contains(<span class="tok-texto">"java"</span>);     <span class="tok-coment">// true: muy rápido</span>
+etiquetas.remove(<span class="tok-texto">"java"</span>);
+etiquetas.size();
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> e : etiquetas) <span class="tok-tipo">IO</span>.println(e);
+
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; primos = <span class="tok-tipo">Set</span>.of(<span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">5</span>, <span class="tok-numero">7</span>);    <span class="tok-coment">// inmutable; repetidos = excepción</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">String</span>&gt; copia = <span class="tok-tipo">Set</span>.copyOf(lista);       <span class="tok-coment">// inmutable, quita repetidos</span></code></pre></figure>
+            <p class="nota">Que <code>add</code> devuelva <code>boolean</code> sirve para detectar repetidos al vuelo: <code>if (!vistos.add(x)) IO.println(x + " está repetido");</code></p>
+          </div>
+        </section>
+        <!-- 2. HashSet, LinkedHashSet y TreeSet -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>HashSet, LinkedHashSet y TreeSet</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">&nbsp;</th><td><strong>HashSet</strong></td><td><strong>LinkedHashSet</strong></td><td><strong>TreeSet</strong></td></tr>
+                  <tr><th scope="row">orden</th><td>ninguno</td><td>inserción</td><td>natural o Comparator</td></tr>
+                  <tr><th scope="row">add / contains</th><td>O(1)</td><td>O(1)</td><td>O(log n)</td></tr>
+                  <tr><th scope="row">null</th><td>uno</td><td>uno</td><td>no</td></tr>
+                  <tr><th scope="row">necesita</th><td>equals + hashCode</td><td>equals + hashCode</td><td>Comparable o Comparator</td></tr>
+                  <tr><th scope="row">extra</th><td>&nbsp;</td><td>getFirst, reversed (Java 21)</td><td>first, last, floor, headSet...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Por dentro, <code>HashSet</code> es un <code>HashMap</code> en el que solo se usan las claves, y <code>TreeSet</code> un <code>TreeMap</code>.</p>
+          </div>
+        </section>
+        <!-- 3. equals y hashCode -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>equals y hashCode</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <code>HashSet</code> calcula el <code>hashCode</code> para saber en qué "cajón" mirar y luego usa <code>equals</code> para comparar. Si tu clase no redefine los dos, dos objetos con los mismos datos cuentan como distintos.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">class</span> <span class="tok-tipo">Punto</span> {
+    <span class="tok-tipo">int</span> x, y;
+    <span class="tok-tipo">Punto</span>(<span class="tok-tipo">int</span> x, <span class="tok-tipo">int</span> y) { <span class="tok-clave">this</span>.x = x; <span class="tok-clave">this</span>.y = y; }
+}
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Punto</span>&gt; s = <span class="tok-clave">new</span> <span class="tok-tipo">HashSet</span>&lt;&gt;();
+s.add(<span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>));
+s.add(<span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>));
+s.size();                    <span class="tok-coment">// 2 (!)</span>
+
+<span class="tok-coment">// solución: redefinir los dos con los mismos atributos</span>
+<span class="tok-atributo">@Override</span> <span class="tok-clave">public</span> <span class="tok-tipo">boolean</span> equals(<span class="tok-tipo">Object</span> o) {
+    <span class="tok-clave">return</span> o <span class="tok-clave">instanceof</span> <span class="tok-tipo">Punto</span> p &amp;&amp; p.x == x &amp;&amp; p.y == y;
+}
+<span class="tok-atributo">@Override</span> <span class="tok-clave">public</span> <span class="tok-tipo">int</span> hashCode() { <span class="tok-clave">return</span> <span class="tok-tipo">Objects</span>.hash(x, y); }
+
+<span class="tok-coment">// o usar un record, que ya los trae</span>
+<span class="tok-clave">record</span> <span class="tok-tipo">Punto</span>(<span class="tok-tipo">int</span> x, <span class="tok-tipo">int</span> y) { }</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> no modifiques un objeto que ya está dentro de un <code>HashSet</code> si el cambio afecta a su <code>hashCode</code>: queda en el cajón equivocado y <code>contains</code> y <code>remove</code> dejan de encontrarlo.</p>
+          </div>
+        </section>
+        <!-- 4. Operaciones de conjuntos -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Operaciones de conjuntos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; a = <span class="tok-tipo">Set</span>.of(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">4</span>);
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; b = <span class="tok-tipo">Set</span>.of(<span class="tok-numero">3</span>, <span class="tok-numero">4</span>, <span class="tok-numero">5</span>);
+
+<span class="tok-coment">// se trabaja sobre una copia modificable para no estropear a</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; union = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(a);
+union.addAll(b);                          <span class="tok-coment">// [1, 2, 3, 4, 5]</span>
+
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; interseccion = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(a);
+interseccion.retainAll(b);                <span class="tok-coment">// [3, 4]</span>
+
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; diferencia = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(a);
+diferencia.removeAll(b);                  <span class="tok-coment">// [1, 2]   (a − b)</span>
+
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; simetrica = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(union);
+simetrica.removeAll(interseccion);        <span class="tok-coment">// [1, 2, 5]  en uno u otro, no en los dos</span>
+
+a.containsAll(<span class="tok-tipo">Set</span>.of(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>));            <span class="tok-coment">// ¿subconjunto?  true</span>
+<span class="tok-tipo">Collections</span>.disjoint(a, <span class="tok-tipo">Set</span>.of(<span class="tok-numero">9</span>));     <span class="tok-coment">// ¿sin elementos comunes?  true</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">A ∪ B</th><td><code>addAll</code></td></tr>
+                  <tr><th scope="row">A ∩ B</th><td><code>retainAll</code></td></tr>
+                  <tr><th scope="row">A − B</th><td><code>removeAll</code></td></tr>
+                  <tr><th scope="row">B ⊆ A</th><td><code>a.containsAll(b)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>addAll</code>, <code>retainAll</code> y <code>removeAll</code> modifican el set sobre el que se llaman. Haz antes una copia si necesitas conservar el original.</p>
+          </div>
+        </section>
+        <!-- 5. TreeSet: navegar por orden -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>TreeSet: navegar por orden</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">TreeSet</span>&lt;<span class="tok-tipo">Integer</span>&gt; t = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(<span class="tok-tipo">List</span>.of(<span class="tok-numero">10</span>, <span class="tok-numero">20</span>, <span class="tok-numero">30</span>, <span class="tok-numero">40</span>, <span class="tok-numero">50</span>));
+
+t.first();            <span class="tok-coment">// 10</span>
+t.last();             <span class="tok-coment">// 50</span>
+t.floor(<span class="tok-numero">25</span>);          <span class="tok-coment">// 20   mayor ≤ 25</span>
+t.lower(<span class="tok-numero">20</span>);          <span class="tok-coment">// 10   mayor &lt; 20</span>
+t.ceiling(<span class="tok-numero">25</span>);        <span class="tok-coment">// 30   menor ≥ 25</span>
+t.higher(<span class="tok-numero">30</span>);         <span class="tok-coment">// 40   menor &gt; 30</span>
+
+t.headSet(<span class="tok-numero">30</span>);        <span class="tok-coment">// [10, 20]        menores que 30</span>
+t.tailSet(<span class="tok-numero">30</span>);        <span class="tok-coment">// [30, 40, 50]    desde 30</span>
+t.subSet(<span class="tok-numero">20</span>, <span class="tok-numero">40</span>);     <span class="tok-coment">// [20, 30]        [20, 40)</span>
+t.headSet(<span class="tok-numero">30</span>, <span class="tok-clave">true</span>);  <span class="tok-coment">// [10, 20, 30]    incluyendo el 30</span>
+
+t.descendingSet();    <span class="tok-coment">// [50, 40, 30, 20, 10]</span>
+t.pollFirst();        <span class="tok-coment">// saca y devuelve el menor</span>
+t.pollLast();         <span class="tok-coment">// saca y devuelve el mayor</span></code></pre></figure>
+            <p class="nota">Para usar estos métodos, la variable tiene que ser de tipo <code>TreeSet</code> o <code>NavigableSet</code>, no <code>Set</code>. <code>floor</code>, <code>ceiling</code>... devuelven <code>null</code> si no hay ninguno; <code>first</code> y <code>last</code> lanzan excepción si está vacío.</p>
+          </div>
+        </section>
+        <!-- 6. TreeSet con Comparator -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>TreeSet con Comparator</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// sin distinguir mayúsculas</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">String</span>&gt; s = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(<span class="tok-tipo">String</span>.<span class="tok-tipo">CASE_INSENSITIVE_ORDER</span>);
+s.add(<span class="tok-texto">"Ana"</span>);  s.add(<span class="tok-texto">"ana"</span>);         <span class="tok-coment">// size() = 1: para el comparador son iguales</span>
+
+<span class="tok-coment">// de mayor a menor</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; desc = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(<span class="tok-tipo">Comparator</span>.reverseOrder());
+
+<span class="tok-coment">// objetos propios: por nota, y a igual nota por nombre</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Alumno</span>&gt; ranking = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;(
+    <span class="tok-tipo">Comparator</span>.comparingDouble(<span class="tok-tipo">Alumno</span>::nota).reversed()
+              .thenComparing(<span class="tok-tipo">Alumno</span>::nombre));</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> un <code>TreeSet</code> no usa <code>equals</code>: si el comparador devuelve 0, considera que es el mismo elemento y no añade el segundo. Ordenar alumnos solo por nota haría desaparecer a los que empatan; añade siempre un criterio de desempate.</p>
+          </div>
+        </section>
+        <!-- 7. EnumSet -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>EnumSet</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">enum</span> <span class="tok-tipo">Dia</span> { <span class="tok-tipo">LUNES</span>, <span class="tok-tipo">MARTES</span>, <span class="tok-tipo">MIERCOLES</span>, <span class="tok-tipo">JUEVES</span>, <span class="tok-tipo">VIERNES</span>, <span class="tok-tipo">SABADO</span>, <span class="tok-tipo">DOMINGO</span> }
+
+<span class="tok-tipo">EnumSet</span>&lt;<span class="tok-tipo">Dia</span>&gt; finde = <span class="tok-tipo">EnumSet</span>.of(<span class="tok-tipo">Dia</span>.<span class="tok-tipo">SABADO</span>, <span class="tok-tipo">Dia</span>.<span class="tok-tipo">DOMINGO</span>);
+<span class="tok-tipo">EnumSet</span>&lt;<span class="tok-tipo">Dia</span>&gt; laborables = <span class="tok-tipo">EnumSet</span>.complementOf(finde);
+<span class="tok-tipo">EnumSet</span>&lt;<span class="tok-tipo">Dia</span>&gt; todos = <span class="tok-tipo">EnumSet</span>.allOf(<span class="tok-tipo">Dia</span>.<span class="tok-clave">class</span>);
+<span class="tok-tipo">EnumSet</span>&lt;<span class="tok-tipo">Dia</span>&gt; ninguno = <span class="tok-tipo">EnumSet</span>.noneOf(<span class="tok-tipo">Dia</span>.<span class="tok-clave">class</span>);
+<span class="tok-tipo">EnumSet</span>&lt;<span class="tok-tipo">Dia</span>&gt; mitad = <span class="tok-tipo">EnumSet</span>.range(<span class="tok-tipo">Dia</span>.<span class="tok-tipo">LUNES</span>, <span class="tok-tipo">Dia</span>.<span class="tok-tipo">MIERCOLES</span>);
+
+finde.contains(hoy);</code></pre></figure>
+            <p class="nota">Solo admite valores de un enum, los guarda en orden de declaración y es muy rápido (por dentro son bits). Es la forma de expresar "opciones activadas" sin usar enteros con máscaras.</p>
+          </div>
+        </section>
+        <!-- 8. Recetas -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Recetas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// quitar repetidos de una lista conservando el orden</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; sinRep = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;(<span class="tok-clave">new</span> <span class="tok-tipo">LinkedHashSet</span>&lt;&gt;(lista));
+
+<span class="tok-coment">// ¿hay repetidos?</span>
+<span class="tok-tipo">boolean</span> hayRep = <span class="tok-clave">new</span> <span class="tok-tipo">HashSet</span>&lt;&gt;(lista).size() &lt; lista.size();
+
+<span class="tok-coment">// cuáles se repiten</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">String</span>&gt; vistos = <span class="tok-clave">new</span> <span class="tok-tipo">HashSet</span>&lt;&gt;(), repes = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> x : lista) <span class="tok-clave">if</span> (!vistos.add(x)) repes.add(x);
+
+<span class="tok-coment">// letras distintas de un texto</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Character</span>&gt; letras = <span class="tok-clave">new</span> <span class="tok-tipo">TreeSet</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">char</span> c : texto.toCharArray()) <span class="tok-clave">if</span> (<span class="tok-tipo">Character</span>.isLetter(c)) letras.add(c);
+
+<span class="tok-coment">// palabras comunes a dos textos</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">String</span>&gt; comunes = <span class="tok-clave">new</span> <span class="tok-tipo">HashSet</span>&lt;&gt;(<span class="tok-tipo">List</span>.of(t1.split(<span class="tok-texto">"\\s+"</span>)));
+comunes.retainAll(<span class="tok-tipo">List</span>.of(t2.split(<span class="tok-texto">"\\s+"</span>)));</code></pre></figure>
+          </div>
+        </section>
+        <!-- 9. Despistes habituales -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Esperar orden en un HashSet</th><td>no lo tiene: <code>LinkedHashSet</code> o <code>TreeSet</code></td></tr>
+                  <tr><th scope="row" class="larga">Clases propias sin equals/hashCode</th><td>los "iguales" se cuelan como distintos</td></tr>
+                  <tr><th scope="row" class="larga">TreeSet con objetos no comparables</th><td><code>ClassCastException</code> al añadir: implementa <code>Comparable</code> o pasa un <code>Comparator</code></td></tr>
+                  <tr><th scope="row" class="larga">Comparator sin desempate</th><td>el <code>TreeSet</code> descarta los empates</td></tr>
+                  <tr><th scope="row" class="larga">Buscar por posición</th><td>no hay <code>get(i)</code>; si lo necesitas, es una lista</td></tr>
+                  <tr><th scope="row" class="larga"><code>Set.of</code> con repetidos o null</th><td><code>IllegalArgumentException</code> / <code>NullPointerException</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="listas.html">← Listas</a><a class="siguiente" href="mapas.html">Mapas →</a></nav>
+      <footer class="pie">Forma parte de <a href="colecciones.html">Colecciones</a>. Para <code>equals</code>, <code>hashCode</code> y records, mira <a href="poo.html">Fundamentos de POO</a> y <a href="poo-avanzada.html">POO avanzada</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

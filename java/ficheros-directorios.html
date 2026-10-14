@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ficheros y directorios · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Ficheros y directorios</span></nav>
+          <h1>Ficheros y directorios</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Acceso a datos, parte 1: localizar, crear, copiar, mover, borrar y recorrer ficheros y carpetas con <code>File</code>, <code>Path</code> y <code>Files</code>.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html" aria-current="page">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>File (java.io)</a><a href="#s2"><b>2</b>Path y Paths</a><a href="#s3"><b>3</b>Files: comprobar</a><a href="#s4"><b>4</b>Files: crear</a><a href="#s5"><b>5</b>Files: copiar, mover y borrar</a><a href="#s6"><b>6</b>Files: listar y recorrer</a><a href="#s7"><b>7</b>Atributos y permisos</a><a href="#s8"><b>8</b>Files: leer y escribir de un tirón</a><a href="#s9"><b>9</b>File frente a Path y Files</a><a href="#s10"><b>10</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Tres clases, tres papeles</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">File: la API clásica (java.io)</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">File</span> f = <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"datos/alumnos.txt"</span>);
+<span class="tok-clave">if</span> (f.exists() &amp;&amp; f.isFile()) {
+    <span class="tok-tipo">IO</span>.println(f.length() + <span class="tok-texto">" bytes"</span>);
+}</code></pre></figure>
+            <p class="nota">Un objeto con la ruta y los métodos para trabajar con ella. Aún aparece en mucho código y en muchos exámenes.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Path: la ruta (java.nio.file)</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Path</span> p = <span class="tok-tipo">Path</span>.of(<span class="tok-texto">"datos"</span>, <span class="tok-texto">"alumnos.txt"</span>);
+p.getFileName();     <span class="tok-coment">// alumnos.txt</span>
+p.getParent();       <span class="tok-coment">// datos</span></code></pre></figure>
+            <p class="nota">Solo representa la ruta: no comprueba si existe ni toca el disco.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Files: las operaciones (java.nio.file)</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">if</span> (<span class="tok-tipo">Files</span>.exists(p)) {
+    <span class="tok-tipo">Files</span>.copy(p, <span class="tok-tipo">Path</span>.of(<span class="tok-texto">"copia.txt"</span>));
+}</code></pre></figure>
+            <p class="nota">Clase con métodos estáticos que reciben un <code>Path</code>. Todo lo que toca el disco lanza <code>IOException</code>.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. File (java.io) -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>File (java.io)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">File</span> f = <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"notas.txt"</span>);               <span class="tok-coment">// relativa</span>
+<span class="tok-tipo">File</span> g = <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"datos"</span>, <span class="tok-texto">"notas.txt"</span>);      <span class="tok-coment">// carpeta + nombre</span>
+<span class="tok-tipo">File</span> carpeta = <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"datos"</span>);
+<span class="tok-tipo">File</span> h = <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(carpeta, <span class="tok-texto">"notas.txt"</span>);
+
+<span class="tok-coment">// crear: devuelven false si no pudieron, sin decir por qué</span>
+<span class="tok-clave">if</span> (!carpeta.exists()) carpeta.mkdirs();
+<span class="tok-tipo">boolean</span> creado = f.createNewFile();         <span class="tok-coment">// lanza IOException</span>
+
+<span class="tok-coment">// listar una carpeta</span>
+<span class="tok-tipo">File</span>[] hijos = carpeta.listFiles();
+<span class="tok-clave">if</span> (hijos != <span class="tok-clave">null</span>) {                         <span class="tok-coment">// null si no es carpeta</span>
+    <span class="tok-clave">for</span> (<span class="tok-tipo">File</span> h : hijos) {
+        <span class="tok-tipo">IO</span>.println((h.isDirectory() ? <span class="tok-texto">"[D] "</span> : <span class="tok-texto">"    "</span>) + h.getName());
+    }
+}
+
+<span class="tok-coment">// filtrar: solo los .txt</span>
+<span class="tok-tipo">File</span>[] txt = carpeta.listFiles((dir, nombre) -&gt; nombre.endsWith(<span class="tok-texto">".txt"</span>));  <span class="tok-coment">// FilenameFilter</span>
+<span class="tok-tipo">File</span>[] subcarpetas = carpeta.listFiles(<span class="tok-tipo">File</span>::isDirectory);              <span class="tok-coment">// FileFilter</span></code></pre></figure>
+            <h3>Información</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>exists()</code></th><td>¿existe?</td></tr>
+                  <tr><th scope="row"><code>isFile()  isDirectory()</code></th><td>¿es fichero? ¿es carpeta?</td></tr>
+                  <tr><th scope="row"><code>canRead()  canWrite()</code></th><td>permisos de lectura y escritura</td></tr>
+                  <tr><th scope="row"><code>isHidden()</code></th><td>¿está oculto?</td></tr>
+                  <tr><th scope="row"><code>length()</code></th><td>tamaño en bytes (0 si no existe)</td></tr>
+                  <tr><th scope="row"><code>lastModified()</code></th><td>fecha de modificación en milisegundos</td></tr>
+                  <tr><th scope="row"><code>getName()</code></th><td>nombre: <code>notas.txt</code></td></tr>
+                  <tr><th scope="row"><code>getParent()</code></th><td>carpeta padre como <code>String</code> (<code>getParentFile()</code> como <code>File</code>)</td></tr>
+                  <tr><th scope="row"><code>getPath()</code></th><td>la ruta tal como se escribió</td></tr>
+                  <tr><th scope="row"><code>getAbsolutePath()</code></th><td>ruta absoluta</td></tr>
+                  <tr><th scope="row"><code>getCanonicalPath()</code></th><td>ruta absoluta sin <code>.</code> ni <code>..</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Operaciones</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>createNewFile()</code></th><td>crea el fichero vacío; <code>false</code> si ya existía</td></tr>
+                  <tr><th scope="row"><code>mkdir()</code></th><td>crea una carpeta (la padre debe existir)</td></tr>
+                  <tr><th scope="row"><code>mkdirs()</code></th><td>crea la carpeta y todas las que falten</td></tr>
+                  <tr><th scope="row"><code>delete()</code></th><td>borra; una carpeta solo si está vacía</td></tr>
+                  <tr><th scope="row"><code>renameTo(otro)</code></th><td>renombra o mueve</td></tr>
+                  <tr><th scope="row"><code>list()</code></th><td>nombres del contenido (<code>String[]</code>)</td></tr>
+                  <tr><th scope="row"><code>listFiles()</code></th><td>contenido como <code>File[]</code>; admite filtro</td></tr>
+                  <tr><th scope="row"><code>File.separator</code></th><td><code>\</code> en Windows, <code>/</code> en Linux</td></tr>
+                  <tr><th scope="row"><code>toPath()</code></th><td>convierte a <code>Path</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> los métodos de <code>File</code> devuelven <code>false</code> o <code>null</code> cuando fallan, en vez de lanzar una excepción. Comprueba siempre el resultado de <code>delete()</code>, <code>mkdir()</code>, <code>renameTo()</code> y <code>listFiles()</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Path y Paths -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Path y Paths</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Path</span> a = <span class="tok-tipo">Path</span>.of(<span class="tok-texto">"datos"</span>, <span class="tok-texto">"2024"</span>, <span class="tok-texto">"notas.txt"</span>);  <span class="tok-coment">// datos/2024/notas.txt</span>
+<span class="tok-tipo">Path</span> b = <span class="tok-tipo">Paths</span>.get(<span class="tok-texto">"datos/notas.txt"</span>);           <span class="tok-coment">// igual; forma antigua (Java 7)</span>
+<span class="tok-tipo">Path</span> casa = <span class="tok-tipo">Path</span>.of(<span class="tok-tipo">System</span>.getProperty(<span class="tok-texto">"user.home"</span>));
+<span class="tok-tipo">Path</span> actual = <span class="tok-tipo">Path</span>.of(<span class="tok-texto">""</span>).toAbsolutePath();       <span class="tok-coment">// carpeta de trabajo</span>
+
+<span class="tok-coment">// p = /home/ana/datos/2024/notas.txt</span>
+p.getFileName();         <span class="tok-coment">// notas.txt</span>
+p.getParent();           <span class="tok-coment">// /home/ana/datos/2024</span>
+p.getRoot();             <span class="tok-coment">// /</span>
+p.getNameCount();        <span class="tok-coment">// 5</span>
+p.getName(<span class="tok-numero">2</span>);           <span class="tok-coment">// datos</span>
+p.subpath(<span class="tok-numero">2</span>, <span class="tok-numero">4</span>);        <span class="tok-coment">// datos/2024</span>
+
+<span class="tok-coment">// combinar rutas</span>
+<span class="tok-tipo">Path</span> base = <span class="tok-tipo">Path</span>.of(<span class="tok-texto">"/home/ana"</span>);
+base.resolve(<span class="tok-texto">"datos/x.txt"</span>);           <span class="tok-coment">// /home/ana/datos/x.txt</span>
+p.resolveSibling(<span class="tok-texto">"notas.bak"</span>);         <span class="tok-coment">// /home/ana/datos/2024/notas.bak</span>
+base.relativize(p);                     <span class="tok-coment">// datos/2024/notas.txt</span>
+<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"a/./b/../c"</span>).normalize();     <span class="tok-coment">// a/c</span>
+
+<span class="tok-coment">// recorrer sus partes</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">Path</span> parte : p) {
+    <span class="tok-tipo">IO</span>.println(parte);                  <span class="tok-coment">// home, ana, datos, 2024, notas.txt</span>
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>Path.of(...)  Paths.get(...)</code></th><td>crea la ruta a partir de uno o varios tramos</td></tr>
+                  <tr><th scope="row"><code>getFileName()</code></th><td>último tramo</td></tr>
+                  <tr><th scope="row"><code>getParent()</code></th><td>todo menos el último tramo; <code>null</code> si no hay</td></tr>
+                  <tr><th scope="row"><code>getRoot()</code></th><td><code>/</code> o <code>C:\</code>; <code>null</code> en rutas relativas</td></tr>
+                  <tr><th scope="row"><code>isAbsolute()</code></th><td>¿es absoluta?</td></tr>
+                  <tr><th scope="row"><code>toAbsolutePath()</code></th><td>la completa, desde la carpeta de trabajo</td></tr>
+                  <tr><th scope="row"><code>normalize()</code></th><td>quita los <code>.</code> y <code>..</code></td></tr>
+                  <tr><th scope="row"><code>toRealPath()</code></th><td>absoluta, normalizada y con enlaces resueltos; el fichero debe existir</td></tr>
+                  <tr><th scope="row"><code>resolve(otra)</code></th><td>añade un tramo al final</td></tr>
+                  <tr><th scope="row"><code>resolveSibling(otra)</code></th><td>cambia el último tramo</td></tr>
+                  <tr><th scope="row"><code>relativize(otra)</code></th><td>cómo llegar de esta ruta a la otra</td></tr>
+                  <tr><th scope="row"><code>startsWith()  endsWith()</code></th><td>compara tramos completos, no texto</td></tr>
+                  <tr><th scope="row"><code>toFile()</code></th><td>convierte a <code>File</code></td></tr>
+                  <tr><th scope="row"><code>toString()</code></th><td>la ruta como texto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>p.endsWith(".txt")</code> es <code>false</code>, porque compara tramos completos de la ruta. Para la extensión: <code>p.toString().endsWith(".txt")</code> o <code>p.getFileName().toString().endsWith(".txt")</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Files: comprobar -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Files: comprobar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>exists(p)</code></th><td>¿existe?</td></tr>
+                  <tr><th scope="row"><code>notExists(p)</code></th><td>¿seguro que no existe? (los dos son <code>false</code> si no hay permiso para saberlo)</td></tr>
+                  <tr><th scope="row"><code>isRegularFile(p)</code></th><td>¿es un fichero normal?</td></tr>
+                  <tr><th scope="row"><code>isDirectory(p)</code></th><td>¿es una carpeta?</td></tr>
+                  <tr><th scope="row"><code>isSymbolicLink(p)</code></th><td>¿es un enlace simbólico?</td></tr>
+                  <tr><th scope="row" class="larga"><code>isReadable(p)  isWritable(p)</code></th><td>permisos</td></tr>
+                  <tr><th scope="row"><code>isExecutable(p)</code></th><td>¿se puede ejecutar?</td></tr>
+                  <tr><th scope="row"><code>isHidden(p)</code></th><td>¿está oculto?</td></tr>
+                  <tr><th scope="row"><code>isSameFile(p, q)</code></th><td>¿apuntan al mismo fichero?</td></tr>
+                  <tr><th scope="row"><code>size(p)</code></th><td>tamaño en bytes</td></tr>
+                  <tr><th scope="row"><code>getLastModifiedTime(p)</code></th><td>fecha de modificación (<code>FileTime</code>)</td></tr>
+                  <tr><th scope="row"><code>probeContentType(p)</code></th><td>tipo MIME aproximado: <code>text/plain</code></td></tr>
+                  <tr><th scope="row"><code>mismatch(p, q)</code></th><td>posición del primer byte distinto, o -1 si son iguales</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Path</span> p = <span class="tok-tipo">Path</span>.of(<span class="tok-texto">"informe.pdf"</span>);
+<span class="tok-clave">if</span> (<span class="tok-tipo">Files</span>.isRegularFile(p) &amp;&amp; <span class="tok-tipo">Files</span>.isReadable(p)) {
+    <span class="tok-tipo">long</span> kb = <span class="tok-tipo">Files</span>.size(p) / <span class="tok-numero">1024</span>;
+    <span class="tok-tipo">FileTime</span> t = <span class="tok-tipo">Files</span>.getLastModifiedTime(p);
+    <span class="tok-tipo">LocalDateTime</span> fecha = <span class="tok-tipo">LocalDateTime</span>.ofInstant(t.toInstant(), <span class="tok-tipo">ZoneId</span>.systemDefault());
+    <span class="tok-tipo">IO</span>.println(kb + <span class="tok-texto">" KB, modificado el "</span> + fecha);
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Files: crear -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Files: crear</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>createFile(p)</code></th><td>fichero vacío; <code>FileAlreadyExistsException</code> si ya existe</td></tr>
+                  <tr><th scope="row"><code>createDirectory(p)</code></th><td>una carpeta; la padre debe existir</td></tr>
+                  <tr><th scope="row"><code>createDirectories(p)</code></th><td>la carpeta y las que falten; no falla si ya existe</td></tr>
+                  <tr><th scope="row"><code>createTempFile(pre, suf)</code></th><td>fichero temporal con nombre único</td></tr>
+                  <tr><th scope="row"><code>createTempDirectory(pre)</code></th><td>carpeta temporal</td></tr>
+                  <tr><th scope="row" class="larga"><code>createSymbolicLink(enlace, destino)</code></th><td>enlace simbólico</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Path</span> salida = <span class="tok-tipo">Path</span>.of(<span class="tok-texto">"salida"</span>, <span class="tok-texto">"2024"</span>, <span class="tok-texto">"informe.txt"</span>);
+<span class="tok-tipo">Files</span>.createDirectories(salida.getParent());    <span class="tok-coment">// asegura la carpeta</span>
+<span class="tok-clave">if</span> (<span class="tok-tipo">Files</span>.notExists(salida)) {
+    <span class="tok-tipo">Files</span>.createFile(salida);
+}
+
+<span class="tok-tipo">Path</span> tmp = <span class="tok-tipo">Files</span>.createTempFile(<span class="tok-texto">"export-"</span>, <span class="tok-texto">".csv"</span>);  <span class="tok-coment">// /tmp/export-81234.csv</span>
+tmp.toFile().deleteOnExit();                      <span class="tok-coment">// se borra al salir</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 5. Files: copiar, mover y borrar -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Files: copiar, mover y borrar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Files</span>.copy(origen, destino);                     <span class="tok-coment">// falla si destino existe</span>
+<span class="tok-tipo">Files</span>.copy(origen, destino, <span class="tok-tipo">StandardCopyOption</span>.<span class="tok-tipo">REPLACE_EXISTING</span>);
+
+<span class="tok-tipo">Files</span>.move(origen, destino);                     <span class="tok-coment">// mover o renombrar</span>
+<span class="tok-tipo">Files</span>.move(p, p.resolveSibling(<span class="tok-texto">"nuevo.txt"</span>));    <span class="tok-coment">// renombrar en la misma carpeta</span>
+
+<span class="tok-tipo">Files</span>.delete(p);                                 <span class="tok-coment">// NoSuchFileException si no existe</span>
+<span class="tok-tipo">Files</span>.deleteIfExists(p);                         <span class="tok-coment">// devuelve true si lo borró</span>
+
+<span class="tok-coment">// copiar desde un InputStream (una descarga, un recurso...)</span>
+<span class="tok-tipo">Files</span>.copy(entrada, destino);
+
+<span class="tok-coment">// borrar una carpeta con todo su contenido: de dentro hacia fuera</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Stream</span>&lt;<span class="tok-tipo">Path</span>&gt; todo = <span class="tok-tipo">Files</span>.walk(carpeta)) {
+    todo.sorted(<span class="tok-tipo">Comparator</span>.reverseOrder())
+        .forEach(x -&gt; x.toFile().delete());
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>REPLACE_EXISTING</code></th><td>sobrescribe el destino</td></tr>
+                  <tr><th scope="row"><code>COPY_ATTRIBUTES</code></th><td>copia también fechas y permisos</td></tr>
+                  <tr><th scope="row"><code>ATOMIC_MOVE</code></th><td>mueve de golpe o no mueve (misma unidad)</td></tr>
+                  <tr><th scope="row"><code>LinkOption.NOFOLLOW_LINKS</code></th><td>trabaja con el enlace, no con su destino</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>Files.copy</code> con una carpeta solo crea la carpeta vacía, no copia su contenido. <code>Files.delete</code> con una carpeta que tiene algo lanza <code>DirectoryNotEmptyException</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Files: listar y recorrer -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Files: listar y recorrer</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>list(carpeta)</code></th><td><code>Stream&lt;Path&gt;</code> de un solo nivel</td></tr>
+                  <tr><th scope="row"><code>walk(carpeta)</code></th><td><code>Stream&lt;Path&gt;</code> recursivo, incluida la propia carpeta</td></tr>
+                  <tr><th scope="row"><code>walk(carpeta, n)</code></th><td>recursivo hasta <em>n</em> niveles</td></tr>
+                  <tr><th scope="row"><code>find(carpeta, n, filtro)</code></th><td>recursivo, filtrando por ruta y atributos</td></tr>
+                  <tr><th scope="row" class="larga"><code>newDirectoryStream(carpeta, "*.txt")</code></th><td>un nivel, con patrón glob; se recorre con for-each</td></tr>
+                  <tr><th scope="row" class="larga"><code>walkFileTree(carpeta, visitor)</code></th><td>recorrido con control total (al entrar, al salir, en errores)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// un nivel: nombres ordenados</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Stream</span>&lt;<span class="tok-tipo">Path</span>&gt; s = <span class="tok-tipo">Files</span>.list(carpeta)) {
+    s.map(<span class="tok-tipo">Path</span>::getFileName).sorted().forEach(<span class="tok-tipo">IO</span>::println);
+}
+
+<span class="tok-coment">// recursivo: todos los .java</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Stream</span>&lt;<span class="tok-tipo">Path</span>&gt; s = <span class="tok-tipo">Files</span>.walk(<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"src"</span>))) {
+    <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Path</span>&gt; fuentes = s.filter(<span class="tok-tipo">Files</span>::isRegularFile)
+                           .filter(x -&gt; x.toString().endsWith(<span class="tok-texto">".java"</span>))
+                           .toList();
+}
+
+<span class="tok-coment">// tamaño total de una carpeta</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Stream</span>&lt;<span class="tok-tipo">Path</span>&gt; s = <span class="tok-tipo">Files</span>.walk(carpeta)) {
+    <span class="tok-tipo">long</span> total = s.filter(<span class="tok-tipo">Files</span>::isRegularFile)
+                  .mapToLong(x -&gt; x.toFile().length())
+                  .sum();
+}
+
+<span class="tok-coment">// ficheros de más de 1 MB</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Stream</span>&lt;<span class="tok-tipo">Path</span>&gt; s = <span class="tok-tipo">Files</span>.find(carpeta, <span class="tok-numero">10</span>,
+        (ruta, attr) -&gt; attr.isRegularFile() &amp;&amp; attr.size() &gt; <span class="tok-numero">1_000_000</span>)) {
+    s.forEach(<span class="tok-tipo">IO</span>::println);
+}
+
+<span class="tok-coment">// con patrón glob, sin streams</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">DirectoryStream</span>&lt;<span class="tok-tipo">Path</span>&gt; ds = <span class="tok-tipo">Files</span>.newDirectoryStream(carpeta, <span class="tok-texto">"*.{jpg,png}"</span>)) {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Path</span> img : ds) {
+        <span class="tok-tipo">IO</span>.println(img.getFileName());
+    }
+}</code></pre></figure>
+            <h3>Árbol de carpetas con File (recursivo)</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">static</span> <span class="tok-clave">void</span> arbol(<span class="tok-tipo">File</span> f, <span class="tok-tipo">int</span> nivel) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"  "</span>.repeat(nivel) + f.getName());
+    <span class="tok-tipo">File</span>[] hijos = f.listFiles();
+    <span class="tok-clave">if</span> (hijos != <span class="tok-clave">null</span>) {
+        <span class="tok-clave">for</span> (<span class="tok-tipo">File</span> h : hijos) arbol(h, nivel + <span class="tok-numero">1</span>);
+    }
+}</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> los streams de <code>list</code>, <code>walk</code>, <code>find</code> y <code>lines</code> mantienen la carpeta o el fichero abiertos. Ciérralos siempre con <code>try-with-resources</code>.</p>
+          </div>
+        </section>
+        <!-- 7. Atributos y permisos -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Atributos y permisos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">BasicFileAttributes</span> a = <span class="tok-tipo">Files</span>.readAttributes(p, <span class="tok-tipo">BasicFileAttributes</span>.<span class="tok-clave">class</span>);
+a.size();               <span class="tok-coment">// tamaño</span>
+a.creationTime();       <span class="tok-coment">// FileTime</span>
+a.lastModifiedTime();
+a.lastAccessTime();
+a.isDirectory();
+a.isRegularFile();
+
+<span class="tok-coment">// cambiar la fecha de modificación</span>
+<span class="tok-tipo">Files</span>.setLastModifiedTime(p, <span class="tok-tipo">FileTime</span>.from(<span class="tok-tipo">Instant</span>.now()));
+
+<span class="tok-coment">// permisos estilo Linux (no funciona en Windows)</span>
+<span class="tok-tipo">Files</span>.setPosixFilePermissions(p, <span class="tok-tipo">PosixFilePermissions</span>.fromString(<span class="tok-texto">"rw-r-----"</span>));
+<span class="tok-tipo">String</span> permisos = <span class="tok-tipo">PosixFilePermissions</span>.toString(<span class="tok-tipo">Files</span>.getPosixFilePermissions(p));
+
+<span class="tok-coment">// propietario</span>
+<span class="tok-tipo">Files</span>.getOwner(p).getName();</code></pre></figure>
+            <p class="nota">Con <code>File</code>: <code>setReadable</code>, <code>setWritable</code>, <code>setExecutable</code> y <code>setLastModified</code>. Devuelven <code>boolean</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Files: leer y escribir de un tirón -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Files: leer y escribir de un tirón</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>readString(p)</code></th><td>todo el texto en un <code>String</code></td></tr>
+                  <tr><th scope="row"><code>readAllLines(p)</code></th><td><code>List&lt;String&gt;</code> con las líneas</td></tr>
+                  <tr><th scope="row"><code>lines(p)</code></th><td><code>Stream&lt;String&gt;</code>, perezoso; hay que cerrarlo</td></tr>
+                  <tr><th scope="row"><code>readAllBytes(p)</code></th><td>todo como <code>byte[]</code></td></tr>
+                  <tr><th scope="row"><code>writeString(p, texto)</code></th><td>escribe un texto</td></tr>
+                  <tr><th scope="row"><code>write(p, lineas)</code></th><td>escribe una colección de líneas</td></tr>
+                  <tr><th scope="row"><code>write(p, bytes)</code></th><td>escribe un <code>byte[]</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>newBufferedReader(p)  newBufferedWriter(p)</code></th><td>flujos de caracteres con búfer</td></tr>
+                  <tr><th scope="row" class="larga"><code>newInputStream(p)  newOutputStream(p)</code></th><td>flujos de bytes</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> todo = <span class="tok-tipo">Files</span>.readString(p);
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; lineas = <span class="tok-tipo">Files</span>.readAllLines(p);
+
+<span class="tok-tipo">Files</span>.writeString(p, <span class="tok-texto">"Hola\n"</span>);                     <span class="tok-coment">// crea o sobrescribe</span>
+<span class="tok-tipo">Files</span>.writeString(p, <span class="tok-texto">"Otra\n"</span>, <span class="tok-tipo">StandardOpenOption</span>.<span class="tok-tipo">CREATE</span>,
+                                 <span class="tok-tipo">StandardOpenOption</span>.<span class="tok-tipo">APPEND</span>);  <span class="tok-coment">// añade</span>
+<span class="tok-tipo">Files</span>.write(p, <span class="tok-tipo">List</span>.of(<span class="tok-texto">"uno"</span>, <span class="tok-texto">"dos"</span>));</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>CREATE</code></th><td>crea el fichero si no existe</td></tr>
+                  <tr><th scope="row"><code>CREATE_NEW</code></th><td>crea, y falla si ya existe</td></tr>
+                  <tr><th scope="row"><code>APPEND</code></th><td>escribe al final</td></tr>
+                  <tr><th scope="row"><code>TRUNCATE_EXISTING</code></th><td>vacía el fichero antes de escribir</td></tr>
+                  <tr><th scope="row"><code>WRITE  READ</code></th><td>abrir para escribir o leer</td></tr>
+                  <tr><th scope="row"><code>DELETE_ON_CLOSE</code></th><td>borra el fichero al cerrarlo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Sin opciones, escribir equivale a <code>CREATE</code> + <code>TRUNCATE_EXISTING</code> + <code>WRITE</code>: crea o sobrescribe. Todo lo de flujos, búferes, binarios, objetos y acceso aleatorio está en <a href="lectura-escritura.html">Lectura y escritura</a>.</p>
+          </div>
+        </section>
+        <!-- 9. File frente a Path y Files -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>File frente a Path y Files</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">java.io.File (clásico)</span><span class="b">java.nio.file (actual)</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>new File("datos", "a.txt")</code></div>
+                <div class="cmp-b"><code>Path.of("datos", "a.txt")</code></div>
+                <div class="cmp-nota">crear la referencia</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.exists()</code></div>
+                <div class="cmp-b"><code>Files.exists(p)</code></div>
+                <div class="cmp-nota">¿existe?</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.isFile()  f.isDirectory()</code></div>
+                <div class="cmp-b"><code>Files.isRegularFile(p)  Files.isDirectory(p)</code></div>
+                <div class="cmp-nota">tipo</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.length()</code></div>
+                <div class="cmp-b"><code>Files.size(p)</code></div>
+                <div class="cmp-nota">tamaño en bytes</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.getName()  f.getParentFile()</code></div>
+                <div class="cmp-b"><code>p.getFileName()  p.getParent()</code></div>
+                <div class="cmp-nota">nombre y carpeta padre</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.createNewFile()</code></div>
+                <div class="cmp-b"><code>Files.createFile(p)</code></div>
+                <div class="cmp-nota">crear fichero vacío</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.mkdir()  f.mkdirs()</code></div>
+                <div class="cmp-b"><code>Files.createDirectory(p)  Files.createDirectories(p)</code></div>
+                <div class="cmp-nota">crear carpetas</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.delete()</code></div>
+                <div class="cmp-b"><code>Files.delete(p)</code></div>
+                <div class="cmp-nota">borrar; la versión nueva explica por qué falla</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.renameTo(otro)</code></div>
+                <div class="cmp-b"><code>Files.move(p, otro)</code></div>
+                <div class="cmp-nota">renombrar o mover</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><span class="ninguno">no existe</span></div>
+                <div class="cmp-b"><code>Files.copy(p, otro)</code></div>
+                <div class="cmp-nota">copiar</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>f.listFiles()</code></div>
+                <div class="cmp-b"><code>Files.list(p)</code></div>
+                <div class="cmp-nota">contenido de una carpeta</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>p.toFile()</code></div>
+                <div class="cmp-b"><code>f.toPath()</code></div>
+                <div class="cmp-nota">pasar de una a otra</div>
+              </div>
+            </div>
+            <p class="nota">Para código nuevo, <code>Path</code> y <code>Files</code>: lanzan excepciones con la causa real, copian, manejan enlaces simbólicos y atributos. <code>File</code> sigue siendo necesario con APIs antiguas que lo piden, y es fácil pasar de una a otra.</p>
+          </div>
+        </section>
+        <!-- 10. Despistes habituales -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>Ruta relativa que no aparece</code></th><td>es relativa a la carpeta desde la que se lanza el programa, no al <code>.java</code>; en un IDE suele ser la raíz del proyecto</td></tr>
+                  <tr><th scope="row" class="larga"><code>Rutas con \\ escritas a mano</code></th><td>usa <code>Path.of("a", "b")</code> o <code>File.separator</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>No comprobar lo que devuelve File</code></th><td><code>delete()</code> o <code>mkdir()</code> pueden fallar en silencio</td></tr>
+                  <tr><th scope="row"><code>listFiles() devuelve null</code></th><td>si la ruta no es una carpeta o no hay permiso</td></tr>
+                  <tr><th scope="row" class="larga"><code>No cerrar Files.list o walk</code></th><td>deja la carpeta bloqueada, sobre todo en Windows</td></tr>
+                  <tr><th scope="row" class="larga"><code>Borrar una carpeta con contenido</code></th><td>hay que vaciarla antes: <code>walk</code> + orden inverso</td></tr>
+                  <tr><th scope="row"><code>Comprobar y luego actuar</code></th><td>entre <code>exists</code> y <code>createFile</code> otro proceso puede crearlo; captura la excepción</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="streams.html">← Lambdas y streams</a><a class="siguiente" href="lectura-escritura.html">Lectura y escritura →</a></nav>
+      <footer class="pie">Casi todo lo de <code>Files</code> lanza <code>IOException</code>: repasa <a href="excepciones.html">Excepciones</a>. Para leer y escribir el contenido de los ficheros, sigue con <a href="lectura-escritura.html">Lectura y escritura</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

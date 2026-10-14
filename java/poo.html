@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Orientación a objetos · Chuletario</title>
+    <title>Fundamentos de POO · Chuletario</title>
     <link rel="stylesheet" href="../assets/chuletas.css">
     <link rel="icon" href="../assets/favicon.svg">
   </head>
@@ -12,21 +12,21 @@
     <header class="top">
       <div class="wrap">
         <div class="titulo">
-          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Orientación a objetos</span></nav>
-          <h1>Orientación a objetos</h1>
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Fundamentos de POO</span></nav>
+          <h1>Fundamentos de POO</h1>
         </div>
         <div class="apoyo">
-          <p class="sub">Clases, objetos, herencia, interfaces, records, enumerados y pattern matching.</p>
+          <p class="sub">Los cuatro pilares, clases y objetos, modificadores de acceso, constructores, getters y setters, herencia, polimorfismo, clases abstractas e interfaces.</p>
           <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
         </div>
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de Java">
-      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html" aria-current="page">Orientación a objetos</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="fechas.html">Fechas y horas</a><a href="ficheros.html">Ficheros y entrada/salida</a><a href="entrada-salida.html">Clases de entrada/salida</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html" aria-current="page">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
     </nav>
     <main class="wrap">
       <!-- Índice de secciones -->
-      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Partes de una clase</a><a href="#s2"><b>2</b>Modificadores de acceso</a><a href="#s3"><b>3</b>Constructores</a><a href="#s4"><b>4</b>Herencia</a><a href="#s5"><b>5</b>Clases abstractas</a><a href="#s6"><b>6</b>Interfaces</a><a href="#s7"><b>7</b>equals, hashCode y toString</a><a href="#s8"><b>8</b>Records</a><a href="#s9"><b>9</b>Enumerados</a><a href="#s10"><b>10</b>Sealed y pattern matching</a><a href="#s11"><b>11</b>Clases internas y anónimas</a><a href="#s12"><b>12</b>Paquetes y organización</a></nav>
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Los cuatro pilares</a><a href="#s2"><b>2</b>Clase y objeto</a><a href="#s3"><b>3</b>Partes de una clase</a><a href="#s4"><b>4</b>Modificadores de acceso</a><a href="#s5"><b>5</b>Constructores</a><a href="#s6"><b>6</b>Getters y setters</a><a href="#s7"><b>7</b>this y static</a><a href="#s8"><b>8</b>Herencia</a><a href="#s9"><b>9</b>Polimorfismo</a><a href="#s10"><b>10</b>Clases abstractas</a><a href="#s11"><b>11</b>Interfaces</a><a href="#s12"><b>12</b>equals, hashCode y toString</a><a href="#s13"><b>13</b>Paquetes y organización</a></nav>
       <!-- Banda destacada -->
       <div class="banda">
         <p class="banda-titulo">Una clase y un objeto</p>
@@ -34,7 +34,7 @@
           <div>
             <p class="banda-titulo">La clase: el molde</p>
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Alumno</span> {
-    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> nombre;   <span class="tok-coment">// atributos o campos</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> nombre;   <span class="tok-coment">// atributos: el estado</span>
     <span class="tok-clave">private</span> <span class="tok-tipo">double</span> nota;
 
     <span class="tok-clave">public</span> <span class="tok-tipo">Alumno</span>(<span class="tok-tipo">String</span> nombre, <span class="tok-tipo">double</span> nota) {  <span class="tok-coment">// constructor</span>
@@ -42,7 +42,7 @@
         <span class="tok-clave">this</span>.nota = nota;
     }
 
-    <span class="tok-clave">public</span> <span class="tok-tipo">String</span> getNombre() {  <span class="tok-coment">// métodos</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">String</span> getNombre() {  <span class="tok-coment">// métodos: el comportamiento</span>
         <span class="tok-clave">return</span> nombre;
     }
 
@@ -58,15 +58,82 @@
 
 <span class="tok-tipo">IO</span>.println(ana.getNombre());   <span class="tok-coment">// Ana</span>
 <span class="tok-tipo">IO</span>.println(luis.aprobado());   <span class="tok-coment">// false</span></code></pre></figure>
-            <p class="nota">Los atributos van <code>private</code> y se accede a ellos con métodos públicos: así la clase controla lo que se puede hacer con sus datos. Es lo que se llama <strong>encapsulación</strong>.</p>
+            <p class="nota">Una clase se escribe una vez; de ella se crean tantos objetos como haga falta, cada uno con sus propios valores. Los atributos van <code>private</code> y se accede a ellos con métodos públicos: eso es la <strong>encapsulación</strong>.</p>
           </div>
         </div>
       </div>
       <!-- Secciones -->
       <div class="rejilla">
-        <!-- 1. Partes de una clase -->
+        <!-- 1. Los cuatro pilares -->
         <section id="s1" class="tarjeta">
-          <h2><span class="num">1</span>Partes de una clase</h2>
+          <h2><span class="num">1</span>Los cuatro pilares</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><strong>Abstracción</strong></th><td>quedarse con lo importante de algo real y modelarlo como clase. Un <code>Alumno</code> tiene nombre y nota; su color de pelo no interesa al programa.</td></tr>
+                  <tr><th scope="row"><strong>Encapsulación</strong></th><td>ocultar los datos dentro del objeto (<code>private</code>) y dejar tocarlos solo a través de métodos que controlan qué se puede hacer.</td></tr>
+                  <tr><th scope="row"><strong>Herencia</strong></th><td>crear una clase a partir de otra (<code>extends</code>): la hija recibe lo del padre y añade o cambia lo suyo.</td></tr>
+                  <tr><th scope="row"><strong>Polimorfismo</strong></th><td>un mismo mensaje produce comportamientos distintos según el objeto real que lo recibe.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// abstracción: solo lo que el programa necesita</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Cuenta</span> {
+    <span class="tok-coment">// encapsulación: nadie toca el saldo directamente</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">double</span> saldo;
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> retirar(<span class="tok-tipo">double</span> c) {
+        <span class="tok-clave">if</span> (c &gt; saldo) <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">IllegalStateException</span>(<span class="tok-texto">"Saldo insuficiente"</span>);
+        saldo -= c;
+    }
+    <span class="tok-clave">public</span> <span class="tok-tipo">double</span> comision() { <span class="tok-clave">return</span> <span class="tok-numero">2</span>; }
+}
+
+<span class="tok-coment">// herencia: una cuenta joven es una cuenta</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">CuentaJoven</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Cuenta</span> {
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">double</span> comision() { <span class="tok-clave">return</span> <span class="tok-numero">0</span>; }
+}
+
+<span class="tok-coment">// polimorfismo: la misma llamada, distinto resultado</span>
+<span class="tok-tipo">Cuenta</span> c = <span class="tok-clave">new</span> <span class="tok-tipo">CuentaJoven</span>();
+c.comision();      <span class="tok-coment">// 0: manda el objeto real, no el tipo de la variable</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 2. Clase y objeto -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Clase y objeto</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Clase</th><td>la definición: qué datos tiene y qué sabe hacer. Es un tipo, como <code>String</code>.</td></tr>
+                  <tr><th scope="row">Objeto o instancia</th><td>un ejemplar concreto creado con <code>new</code>, con sus propios valores.</td></tr>
+                  <tr><th scope="row">Estado</th><td>los valores de sus atributos en un momento dado.</td></tr>
+                  <tr><th scope="row">Comportamiento</th><td>sus métodos.</td></tr>
+                  <tr><th scope="row">Referencia</th><td>la variable no contiene el objeto, sino una flecha hacia él.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Alumno</span> a;                         <span class="tok-coment">// solo la variable: vale null</span>
+a = <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">8</span>);           <span class="tok-coment">// new reserva memoria y llama al constructor</span>
+
+<span class="tok-tipo">Alumno</span> b = a;                     <span class="tok-coment">// NO copia: dos referencias, un objeto</span>
+b.setNota(<span class="tok-numero">10</span>);
+<span class="tok-tipo">IO</span>.println(a.getNota());          <span class="tok-coment">// 10</span>
+
+<span class="tok-tipo">Alumno</span> c = <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">10</span>);
+a == c;                            <span class="tok-coment">// false: objetos distintos</span>
+a.equals(c);                       <span class="tok-coment">// true solo si Alumno redefine equals</span>
+
+a = <span class="tok-clave">null</span>;                          <span class="tok-coment">// el objeto sigue vivo: b lo apunta</span>
+b = <span class="tok-clave">null</span>;                          <span class="tok-coment">// ya nadie lo apunta: el recolector lo borrará</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> llamar a un método sobre una variable que vale <code>null</code> lanza <code>NullPointerException</code>. Y pasar un objeto a un método pasa la referencia: si el método lo modifica, el cambio se ve fuera.</p>
+          </div>
+        </section>
+        <!-- 3. Partes de una clase -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Partes de una clase</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">package</span> es.ejemplo.gestion;      <span class="tok-coment">// paquete: carpeta donde vive la clase</span>
 
@@ -100,10 +167,9 @@
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row"><code>atributo</code></th><td>dato que guarda cada objeto</td></tr>
+                  <tr><th scope="row"><code>atributo</code></th><td>dato que guarda cada objeto; si no se inicializa vale 0, <code>false</code> o <code>null</code></td></tr>
                   <tr><th scope="row"><code>constructor</code></th><td>se llama al hacer <code>new</code>; mismo nombre que la clase y sin tipo de retorno</td></tr>
                   <tr><th scope="row"><code>método</code></th><td>lo que el objeto sabe hacer</td></tr>
-                  <tr><th scope="row"><code>this</code></th><td>el objeto actual; sirve para distinguir el atributo del parámetro</td></tr>
                   <tr><th scope="row"><code>static</code></th><td>pertenece a la clase, no a cada objeto</td></tr>
                   <tr><th scope="row"><code>final</code></th><td>no se puede reasignar</td></tr>
                 </tbody>
@@ -111,45 +177,162 @@
             </div>
           </div>
         </section>
-        <!-- 2. Modificadores de acceso -->
-        <section id="s2" class="tarjeta">
-          <h2><span class="num">2</span>Modificadores de acceso</h2>
+        <!-- 4. Modificadores de acceso -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Modificadores de acceso</h2>
           <div class="cuerpo">
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row"><code>private</code></th><td>solo dentro de la propia clase</td></tr>
-                  <tr><th scope="row"><code>(sin nada)</code></th><td>las clases del mismo paquete</td></tr>
-                  <tr><th scope="row"><code>protected</code></th><td>mismo paquete y clases hijas</td></tr>
-                  <tr><th scope="row"><code>public</code></th><td>desde cualquier sitio</td></tr>
+                  <tr><th scope="row">&nbsp;</th><td><strong>clase</strong></td><td><strong>paquete</strong></td><td><strong>subclase</strong></td><td><strong>resto</strong></td></tr>
+                  <tr><th scope="row"><code>private</code></th><td>sí</td><td>no</td><td>no</td><td>no</td></tr>
+                  <tr><th scope="row"><code>(sin nada)</code></th><td>sí</td><td>sí</td><td>no*</td><td>no</td></tr>
+                  <tr><th scope="row"><code>protected</code></th><td>sí</td><td>sí</td><td>sí</td><td>no</td></tr>
+                  <tr><th scope="row"><code>public</code></th><td>sí</td><td>sí</td><td>sí</td><td>sí</td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="nota">Regla práctica: atributos <code>private</code>, métodos que forman la interfaz de la clase <code>public</code> y el resto lo más cerrado posible.</p>
+            <p class="nota">* Una subclase en <em>otro</em> paquete no ve lo que no tiene modificador; si está en el mismo paquete, sí. El acceso sin modificador se llama <em>de paquete</em> o <em>package-private</em>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Clases de primer nivel</th><td>solo <code>public</code> o sin nada; una <code>public</code> por fichero, con su mismo nombre</td></tr>
+                  <tr><th scope="row">Atributos</th><td><code>private</code> casi siempre</td></tr>
+                  <tr><th scope="row">Métodos</th><td><code>public</code> los que ofrece la clase; <code>private</code> los auxiliares</td></tr>
+                  <tr><th scope="row">Constructores</th><td><code>public</code>; <code>private</code> si no quieres que se creen objetos desde fuera</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Regla práctica: lo más cerrado posible, y abrir solo lo que haga falta.</p>
           </div>
         </section>
-        <!-- 3. Constructores -->
-        <section id="s3" class="tarjeta">
-          <h2><span class="num">3</span>Constructores</h2>
+        <!-- 5. Constructores -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Constructores</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Punto</span> {
     <span class="tok-clave">private</span> <span class="tok-tipo">int</span> x, y;
 
+    <span class="tok-coment">// con parámetros</span>
     <span class="tok-clave">public</span> <span class="tok-tipo">Punto</span>(<span class="tok-tipo">int</span> x, <span class="tok-tipo">int</span> y) {
         <span class="tok-clave">this</span>.x = x;
         <span class="tok-clave">this</span>.y = y;
     }
 
-    <span class="tok-clave">public</span> <span class="tok-tipo">Punto</span>() {        <span class="tok-coment">// sobrecarga: otro constructor</span>
-        <span class="tok-clave">this</span>(<span class="tok-numero">0</span>, <span class="tok-numero">0</span>);         <span class="tok-coment">// llama al anterior; tiene que ser la primera línea</span>
+    <span class="tok-coment">// sin parámetros: reutiliza el anterior con this(...)</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">Punto</span>() {
+        <span class="tok-clave">this</span>(<span class="tok-numero">0</span>, <span class="tok-numero">0</span>);         <span class="tok-coment">// tiene que ser la primera línea</span>
     }
-}</code></pre></figure>
-            <p class="nota">Si no escribes ningún constructor, Java crea uno vacío. En cuanto escribes uno, ese ya no existe: si lo necesitas, decláralo tú.</p>
+
+    <span class="tok-coment">// de copia: un objeto nuevo con los mismos valores</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">Punto</span>(<span class="tok-tipo">Punto</span> otro) {
+        <span class="tok-clave">this</span>(otro.x, otro.y);
+    }
+}
+
+<span class="tok-tipo">Punto</span> origen = <span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>();
+<span class="tok-tipo">Punto</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(<span class="tok-numero">3</span>, <span class="tok-numero">4</span>);
+<span class="tok-tipo">Punto</span> copia = <span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(p);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Por defecto</th><td>si no escribes ninguno, Java crea uno vacío sin parámetros</td></tr>
+                  <tr><th scope="row">Sobrecarga</th><td>varios constructores con distintos parámetros</td></tr>
+                  <tr><th scope="row"><code>this(...)</code></th><td>llama a otro constructor de la misma clase</td></tr>
+                  <tr><th scope="row"><code>super(...)</code></th><td>llama al constructor del padre (ver <a href="#s8">Herencia</a>)</td></tr>
+                  <tr><th scope="row">Validar</th><td>lanza una excepción si los datos no valen: el objeto no llega a crearse</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> en cuanto escribes un constructor con parámetros, el vacío por defecto deja de existir y <code>new Punto()</code> no compila. Si lo necesitas, decláralo tú.</p>
           </div>
         </section>
-        <!-- 4. Herencia -->
-        <section id="s4" class="tarjeta">
-          <h2><span class="num">4</span>Herencia</h2>
+        <!-- 6. Getters y setters -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Getters y setters</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Producto</span> {
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> nombre;
+    <span class="tok-clave">private</span> <span class="tok-tipo">double</span> precio;
+    <span class="tok-clave">private</span> <span class="tok-tipo">boolean</span> activo;
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; etiquetas = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">String</span> getNombre() { <span class="tok-clave">return</span> nombre; }
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">double</span> getPrecio() { <span class="tok-clave">return</span> precio; }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> setPrecio(<span class="tok-tipo">double</span> precio) {
+        <span class="tok-clave">if</span> (precio &lt; <span class="tok-numero">0</span>) {                     <span class="tok-coment">// el setter protege el dato</span>
+            <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">IllegalArgumentException</span>(<span class="tok-texto">"Precio negativo"</span>);
+        }
+        <span class="tok-clave">this</span>.precio = precio;
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">boolean</span> isActivo() { <span class="tok-clave">return</span> activo; }  <span class="tok-coment">// boolean: is en vez de get</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> setActivo(<span class="tok-tipo">boolean</span> activo) { <span class="tok-clave">this</span>.activo = activo; }
+
+    <span class="tok-coment">// no devolver la lista interna: se podría modificar desde fuera</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; getEtiquetas() { <span class="tok-clave">return</span> <span class="tok-tipo">List</span>.copyOf(etiquetas); }
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> addEtiqueta(<span class="tok-tipo">String</span> e) { etiquetas.add(e); }
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>getAtributo()</code></th><td>devuelve el valor</td></tr>
+                  <tr><th scope="row"><code>isAtributo()</code></th><td>getter de un <code>boolean</code></td></tr>
+                  <tr><th scope="row"><code>setAtributo(valor)</code></th><td>cambia el valor; buen sitio para validar</td></tr>
+                  <tr><th scope="row">Sin setter</th><td>el atributo solo se fija en el constructor: solo lectura</td></tr>
+                  <tr><th scope="row">Sin getter</th><td>dato interno que no interesa fuera</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">No hace falta un getter y un setter para cada atributo: pon solo los que tengan sentido. Una clase sin setters y con atributos <code>final</code> es <strong>inmutable</strong>, como <code>String</code>. Los IDE los generan solos (en Eclipse: <em>Source › Generate Getters and Setters</em>).</p>
+          </div>
+        </section>
+        <!-- 7. this y static -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>this y static</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Alumno</span> {
+    <span class="tok-clave">private</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> total = <span class="tok-numero">0</span>;     <span class="tok-coment">// una sola copia para toda la clase</span>
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">int</span> id;             <span class="tok-coment">// una copia por objeto</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> nombre;
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">Alumno</span>(<span class="tok-tipo">String</span> nombre) {
+        <span class="tok-clave">this</span>.nombre = nombre;            <span class="tok-coment">// this.nombre: el atributo; nombre: el parámetro</span>
+        <span class="tok-clave">this</span>.id = ++total;
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">Alumno</span> conNombre(<span class="tok-tipo">String</span> n) {
+        <span class="tok-clave">this</span>.nombre = n;
+        <span class="tok-clave">return</span> <span class="tok-clave">this</span>;                     <span class="tok-coment">// devolver this permite encadenar</span>
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> getTotal() {     <span class="tok-coment">// se llama Alumno.getTotal()</span>
+        <span class="tok-clave">return</span> total;                    <span class="tok-coment">// aquí no existe this</span>
+    }
+
+    <span class="tok-clave">static</span> {                             <span class="tok-coment">// bloque static: se ejecuta una vez, al cargar la clase</span>
+        <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Clase Alumno cargada"</span>);
+    }
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>this</code></th><td>el objeto actual</td></tr>
+                  <tr><th scope="row"><code>this.atributo</code></th><td>distingue el atributo de un parámetro con el mismo nombre</td></tr>
+                  <tr><th scope="row"><code>static</code> atributo</th><td>compartido por todos los objetos: contadores, constantes</td></tr>
+                  <tr><th scope="row"><code>static</code> método</th><td>no necesita objeto: <code>Math.sqrt</code>, <code>Integer.parseInt</code></td></tr>
+                  <tr><th scope="row"><code>static final</code></th><td>constante: <code>MAYUSCULAS_CON_GUION</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> desde un método <code>static</code> (como <code>main</code>) no se pueden usar atributos ni métodos de objeto directamente: no hay ningún <code>this</code>. Crea un objeto o haz el método también <code>static</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Herencia -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Herencia</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Persona</span> {
     <span class="tok-clave">protected</span> <span class="tok-tipo">String</span> nombre;
@@ -185,21 +368,56 @@
                   <tr><th scope="row"><code>@Override</code></th><td>avisa al compilador de que estás redefiniendo; te salva de erratas</td></tr>
                   <tr><th scope="row"><code>final class</code></th><td>no se puede heredar de ella</td></tr>
                   <tr><th scope="row"><code>final método</code></th><td>no se puede redefinir</td></tr>
+                  <tr><th scope="row"><code>Object</code></th><td>la raíz de todas: si no pones <code>extends</code>, heredas de <code>Object</code></td></tr>
                 </tbody>
               </table>
             </div>
-            <h3>Polimorfismo</h3>
+            <p class="nota">Herencia solo cuando la relación es «es un»: un alumno <em>es una</em> persona. Si es «tiene un» (un coche <em>tiene un</em> motor), usa un atributo: composición.</p>
+          </div>
+        </section>
+        <!-- 9. Polimorfismo -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Polimorfismo</h2>
+          <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Persona</span>&gt; gente = <span class="tok-tipo">List</span>.of(<span class="tok-clave">new</span> <span class="tok-tipo">Persona</span>(<span class="tok-texto">"Ana"</span>), <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Luis"</span>, <span class="tok-texto">"DAM"</span>));
 
 <span class="tok-clave">for</span> (<span class="tok-tipo">Persona</span> p : gente) {
     <span class="tok-tipo">IO</span>.println(p.describir());   <span class="tok-coment">// se ejecuta la versión de cada objeto</span>
+}
+
+<span class="tok-coment">// upcasting: automático, de hija a padre</span>
+<span class="tok-tipo">Persona</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Eva"</span>, <span class="tok-texto">"DAW"</span>);
+p.describir();                     <span class="tok-coment">// la de Alumno</span>
+p.getCurso();                      <span class="tok-coment">// no compila: la variable es Persona</span>
+
+<span class="tok-coment">// downcasting: de padre a hija, comprobando antes</span>
+<span class="tok-clave">if</span> (p <span class="tok-clave">instanceof</span> <span class="tok-tipo">Alumno</span> a) {
+    <span class="tok-tipo">IO</span>.println(a.getCurso());
 }</code></pre></figure>
-            <p class="nota">Una variable del tipo padre puede guardar objetos de las hijas. El método que se ejecuta lo decide el objeto real, no el tipo de la variable.</p>
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">Sobrecarga (overload)</span><span class="b">Sobrescritura (override)</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>mismo nombre, distintos parámetros</code></div>
+                <div class="cmp-b"><code>mismo nombre y mismos parámetros</code></div>
+                <div class="cmp-nota">firma</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>en la misma clase</code></div>
+                <div class="cmp-b"><code>en una clase hija</code></div>
+                <div class="cmp-nota">dónde</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>lo decide el compilador</code></div>
+                <div class="cmp-b"><code>lo decide el objeto al ejecutar</code></div>
+                <div class="cmp-nota">cuándo se elige</div>
+              </div>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> un cast a la clase equivocada compila pero lanza <code>ClassCastException</code> al ejecutar. Comprueba con <code>instanceof</code>.</p>
           </div>
         </section>
-        <!-- 5. Clases abstractas -->
-        <section id="s5" class="tarjeta">
-          <h2><span class="num">5</span>Clases abstractas</h2>
+        <!-- 10. Clases abstractas -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Clases abstractas</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">abstract</span> <span class="tok-clave">class</span> <span class="tok-tipo">Figura</span> {
     <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">String</span> nombre;
@@ -224,17 +442,17 @@
     <span class="tok-atributo">@Override</span>
     <span class="tok-clave">public</span> <span class="tok-tipo">double</span> area() { <span class="tok-clave">return</span> <span class="tok-tipo">Math</span>.<span class="tok-tipo">PI</span> * radio * radio; }
 }</code></pre></figure>
-            <p class="nota">De una clase abstracta no se pueden crear objetos: sirve para reunir lo común y obligar a las hijas a implementar lo que falta.</p>
+            <p class="nota">De una clase abstracta no se pueden crear objetos (<code>new Figura()</code> no compila): sirve para reunir lo común y obligar a las hijas a implementar lo que falta. Si una hija no implementa todos los métodos abstractos, también tiene que ser abstracta.</p>
           </div>
         </section>
-        <!-- 6. Interfaces -->
-        <section id="s6" class="tarjeta">
-          <h2><span class="num">6</span>Interfaces</h2>
+        <!-- 11. Interfaces -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Interfaces</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">interface</span> <span class="tok-tipo">Imprimible</span> {
     <span class="tok-tipo">String</span> <span class="tok-tipo">CABECERA</span> = <span class="tok-texto">"=== Informe ==="</span>;   <span class="tok-coment">// constante: public static final</span>
 
-    <span class="tok-clave">void</span> imprimir();                        <span class="tok-coment">// método a implementar</span>
+    <span class="tok-clave">void</span> imprimir();                        <span class="tok-coment">// abstracto: public abstract</span>
 
     <span class="tok-clave">default</span> <span class="tok-clave">void</span> imprimirConCabecera() {    <span class="tok-coment">// implementación por defecto</span>
         <span class="tok-tipo">IO</span>.println(<span class="tok-tipo">CABECERA</span>);
@@ -252,23 +470,48 @@
 
     <span class="tok-atributo">@Override</span>
     <span class="tok-clave">public</span> <span class="tok-tipo">int</span> compareTo(<span class="tok-tipo">Factura</span> otra) { ... }
-}</code></pre></figure>
+}
+
+<span class="tok-coment">// la interfaz como tipo: vale cualquier clase que la implemente</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Imprimible</span>&gt; cola = <span class="tok-tipo">List</span>.of(<span class="tok-clave">new</span> <span class="tok-tipo">Factura</span>(), <span class="tok-clave">new</span> <span class="tok-tipo">Albaran</span>());
+cola.forEach(<span class="tok-tipo">Imprimible</span>::imprimir);
+
+<span class="tok-coment">// una interfaz puede heredar de otras</span>
+<span class="tok-clave">interface</span> <span class="tok-tipo">Documento</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Imprimible</span>, <span class="tok-tipo">Serializable</span> { }</code></pre></figure>
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row"><code>implements</code></th><td>se pueden implementar varias interfaces</td></tr>
+                  <tr><th scope="row"><code>implements</code></th><td>una clase puede implementar varias interfaces</td></tr>
                   <tr><th scope="row"><code>default</code></th><td>método con cuerpo que heredan las clases</td></tr>
                   <tr><th scope="row"><code>static</code></th><td>método de la interfaz, se llama con su nombre</td></tr>
-                  <tr><th scope="row"><code>interfaz funcional</code></th><td>la que tiene un solo método abstracto: se puede usar con lambdas</td></tr>
+                  <tr><th scope="row"><code>private</code></th><td>método auxiliar para los <code>default</code> (Java 9)</td></tr>
+                  <tr><th scope="row">interfaz funcional</th><td>la que tiene un solo método abstracto: se puede usar con lambdas</td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="nota">Clase abstracta frente a interfaz: la clase abstracta comparte <strong>estado y comportamiento</strong> con sus hijas, la interfaz define un <strong>contrato</strong> que puede cumplir cualquier clase.</p>
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">Clase abstracta</span><span class="b">Interfaz</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>extends: solo una</code></div>
+                <div class="cmp-b"><code>implements: varias</code></div>
+                <div class="cmp-nota">cuántas</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>atributos de objeto y constructores</code></div>
+                <div class="cmp-b"><code>solo constantes, sin constructores</code></div>
+                <div class="cmp-nota">estado</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>«es un»: familia de clases</code></div>
+                <div class="cmp-b"><code>«sabe hacer»: un contrato</code></div>
+                <div class="cmp-nota">idea</div>
+              </div>
+            </div>
           </div>
         </section>
-        <!-- 7. equals, hashCode y toString -->
-        <section id="s7" class="tarjeta">
-          <h2><span class="num">7</span>equals, hashCode y toString</h2>
+        <!-- 12. equals, hashCode y toString -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>equals, hashCode y toString</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="java"><code><span class="tok-atributo">@Override</span>
 <span class="tok-clave">public</span> <span class="tok-tipo">String</span> toString() {
@@ -286,116 +529,22 @@
 <span class="tok-clave">public</span> <span class="tok-tipo">int</span> hashCode() {
     <span class="tok-clave">return</span> <span class="tok-tipo">Objects</span>.hash(nombre);
 }</code></pre></figure>
-            <p class="aviso"><strong>Cuidado:</strong> si redefines <code>equals</code>, redefine también <code>hashCode</code>. Si no, tus objetos se comportarán mal dentro de un <code>HashSet</code> o como claves de un <code>HashMap</code>.</p>
-            <p class="nota">Los IDE generan estos tres métodos automáticamente, y un <code>record</code> ya los trae hechos.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>toString()</code></th><td>texto al imprimir o concatenar; por defecto, <code>Alumno@1b6d3586</code></td></tr>
+                  <tr><th scope="row"><code>equals(o)</code></th><td>¿valen lo mismo?; por defecto es igual que <code>==</code></td></tr>
+                  <tr><th scope="row"><code>hashCode()</code></th><td>número que usan <code>HashSet</code> y <code>HashMap</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> si redefines <code>equals</code>, redefine también <code>hashCode</code> con los mismos atributos. Si no, tus objetos se comportarán mal dentro de un <code>HashSet</code> o como claves de un <code>HashMap</code>.</p>
+            <p class="nota">Los IDE generan estos tres métodos automáticamente, y un <code>record</code> ya los trae hechos (ver <a href="poo-avanzada.html">POO avanzada</a>).</p>
           </div>
         </section>
-        <!-- 8. Records -->
-        <section id="s8" class="tarjeta">
-          <h2><span class="num">8</span>Records</h2>
-          <div class="cuerpo">
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">record</span> <span class="tok-tipo">Punto</span>(<span class="tok-tipo">int</span> x, <span class="tok-tipo">int</span> y) { }
-
-<span class="tok-tipo">Punto</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(<span class="tok-numero">3</span>, <span class="tok-numero">4</span>);
-<span class="tok-tipo">IO</span>.println(p.x());        <span class="tok-coment">// 3   los getters se llaman como el campo</span>
-<span class="tok-tipo">IO</span>.println(p);            <span class="tok-coment">// Punto[x=3, y=4]</span>
-p.equals(<span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(<span class="tok-numero">3</span>, <span class="tok-numero">4</span>)); <span class="tok-coment">// true</span>
-
-<span class="tok-coment">// con validación y métodos propios</span>
-<span class="tok-clave">public</span> <span class="tok-clave">record</span> <span class="tok-tipo">Alumno</span>(<span class="tok-tipo">String</span> nombre, <span class="tok-tipo">double</span> nota) {
-    <span class="tok-clave">public</span> <span class="tok-tipo">Alumno</span> {
-        <span class="tok-clave">if</span> (nota &lt; <span class="tok-numero">0</span> || nota &gt; <span class="tok-numero">10</span>) {
-            <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">IllegalArgumentException</span>(<span class="tok-texto">"Nota fuera de rango"</span>);
-        }
-    }
-
-    <span class="tok-clave">public</span> <span class="tok-tipo">boolean</span> aprobado() { <span class="tok-clave">return</span> nota &gt;= <span class="tok-numero">5</span>; }
-}</code></pre></figure>
-            <p class="nota">Un record es una clase inmutable pensada para transportar datos: genera constructor, getters, <code>equals</code>, <code>hashCode</code> y <code>toString</code>. No admite herencia.</p>
-          </div>
-        </section>
-        <!-- 9. Enumerados -->
-        <section id="s9" class="tarjeta">
-          <h2><span class="num">9</span>Enumerados</h2>
-          <div class="cuerpo">
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">enum</span> <span class="tok-tipo">Dia</span> { <span class="tok-tipo">LUNES</span>, <span class="tok-tipo">MARTES</span>, <span class="tok-tipo">MIERCOLES</span>, <span class="tok-tipo">JUEVES</span>, <span class="tok-tipo">VIERNES</span>, <span class="tok-tipo">SABADO</span>, <span class="tok-tipo">DOMINGO</span> }
-
-<span class="tok-tipo">Dia</span> hoy = <span class="tok-tipo">Dia</span>.<span class="tok-tipo">MARTES</span>;
-<span class="tok-tipo">IO</span>.println(hoy.name());       <span class="tok-coment">// MARTES</span>
-<span class="tok-tipo">IO</span>.println(hoy.ordinal());    <span class="tok-coment">// 1  (empieza en 0)</span>
-<span class="tok-tipo">Dia</span>[] todos = <span class="tok-tipo">Dia</span>.values();
-<span class="tok-tipo">Dia</span> d = <span class="tok-tipo">Dia</span>.valueOf(<span class="tok-texto">"LUNES"</span>);
-
-<span class="tok-coment">// con datos y métodos propios</span>
-<span class="tok-clave">public</span> <span class="tok-clave">enum</span> <span class="tok-tipo">Planeta</span> {
-    <span class="tok-tipo">TIERRA</span>(<span class="tok-numero">5</span>.97e24, <span class="tok-numero">6</span>.37e6),
-    <span class="tok-tipo">MARTE</span>(<span class="tok-numero">6</span>.42e23, <span class="tok-numero">3</span>.39e6);
-
-    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">double</span> masa, radio;
-
-    <span class="tok-tipo">Planeta</span>(<span class="tok-tipo">double</span> masa, <span class="tok-tipo">double</span> radio) {   <span class="tok-coment">// el constructor es privado</span>
-        <span class="tok-clave">this</span>.masa = masa;
-        <span class="tok-clave">this</span>.radio = radio;
-    }
-
-    <span class="tok-clave">public</span> <span class="tok-tipo">double</span> gravedad() {
-        <span class="tok-clave">return</span> <span class="tok-numero">6</span>.67e-<span class="tok-numero">11</span> * masa / (radio * radio);
-    }
-}</code></pre></figure>
-          </div>
-        </section>
-        <!-- 10. Sealed y pattern matching -->
-        <section id="s10" class="tarjeta">
-          <h2><span class="num">10</span>Sealed y pattern matching</h2>
-          <div class="cuerpo">
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">sealed</span> <span class="tok-clave">interface</span> <span class="tok-tipo">Figura</span> <span class="tok-clave">permits</span> <span class="tok-tipo">Circulo</span>, <span class="tok-tipo">Cuadrado</span> { }
-
-<span class="tok-clave">public</span> <span class="tok-clave">record</span> <span class="tok-tipo">Circulo</span>(<span class="tok-tipo">double</span> radio) <span class="tok-clave">implements</span> <span class="tok-tipo">Figura</span> { }
-<span class="tok-clave">public</span> <span class="tok-clave">record</span> <span class="tok-tipo">Cuadrado</span>(<span class="tok-tipo">double</span> lado) <span class="tok-clave">implements</span> <span class="tok-tipo">Figura</span> { }
-
-<span class="tok-coment">// instanceof con variable</span>
-<span class="tok-clave">if</span> (obj <span class="tok-clave">instanceof</span> <span class="tok-tipo">String</span> s &amp;&amp; !s.isBlank()) {
-    <span class="tok-tipo">IO</span>.println(s.length());
-}
-
-<span class="tok-coment">// switch sobre tipos, descomponiendo el record</span>
-<span class="tok-tipo">double</span> area = <span class="tok-clave">switch</span> (figura) {
-    <span class="tok-clave">case</span> <span class="tok-tipo">Circulo</span> c -&gt; <span class="tok-tipo">Math</span>.<span class="tok-tipo">PI</span> * c.radio() * c.radio();
-    <span class="tok-clave">case</span> <span class="tok-tipo">Cuadrado</span>(<span class="tok-tipo">double</span> lado) -&gt; lado * lado;
-};  <span class="tok-coment">// no hace falta default: sealed garantiza que están todos los casos</span></code></pre></figure>
-            <p class="nota"><code>sealed</code> limita quién puede heredar o implementar. A cambio, el compilador sabe que la lista de casos está completa.</p>
-          </div>
-        </section>
-        <!-- 11. Clases internas y anónimas -->
-        <section id="s11" class="tarjeta">
-          <h2><span class="num">11</span>Clases internas y anónimas</h2>
-          <div class="cuerpo">
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Lista</span> {
-    <span class="tok-clave">private</span> <span class="tok-clave">class</span> <span class="tok-tipo">Nodo</span> {          <span class="tok-coment">// interna: tiene acceso a la lista</span>
-        <span class="tok-tipo">int</span> valor;
-        <span class="tok-tipo">Nodo</span> siguiente;
-    }
-
-    <span class="tok-clave">private</span> <span class="tok-clave">static</span> <span class="tok-clave">class</span> <span class="tok-tipo">Ayuda</span> {  <span class="tok-coment">// estática: no necesita la lista</span>
-        <span class="tok-clave">static</span> <span class="tok-tipo">int</span> doble(<span class="tok-tipo">int</span> x) { <span class="tok-clave">return</span> x * <span class="tok-numero">2</span>; }
-    }
-}
-
-<span class="tok-coment">// clase anónima: implementar una interfaz al vuelo</span>
-<span class="tok-tipo">Comparator</span>&lt;<span class="tok-tipo">String</span>&gt; porLongitud = <span class="tok-clave">new</span> <span class="tok-tipo">Comparator</span>&lt;&gt;() {
-    <span class="tok-atributo">@Override</span>
-    <span class="tok-clave">public</span> <span class="tok-tipo">int</span> compare(<span class="tok-tipo">String</span> a, <span class="tok-tipo">String</span> b) {
-        <span class="tok-clave">return</span> a.length() - b.length();
-    }
-};
-
-<span class="tok-coment">// lo mismo con una lambda</span>
-<span class="tok-tipo">Comparator</span>&lt;<span class="tok-tipo">String</span>&gt; corto = (a, b) -&gt; a.length() - b.length();</code></pre></figure>
-          </div>
-        </section>
-        <!-- 12. Paquetes y organización -->
-        <section id="s12" class="tarjeta">
-          <h2><span class="num">12</span>Paquetes y organización</h2>
+        <!-- 13. Paquetes y organización -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Paquetes y organización</h2>
           <div class="cuerpo">
             <figure class="codigo"><pre data-lang="text"><code>src/
 └── es/ejemplo/gestion/
@@ -416,8 +565,8 @@ p.equals(<span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(
           </div>
         </section>
       </div>
-      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="metodos.html">← Métodos y recursividad</a><a class="siguiente" href="excepciones.html">Excepciones →</a></nav>
-      <footer class="pie">Los ejemplos se centran en el diseño de clases; para recorrer conjuntos de objetos, mira <a href="colecciones.html">Colecciones</a>.</footer>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="metodos.html">← Métodos y recursividad</a><a class="siguiente" href="poo-avanzada.html">POO avanzada →</a></nav>
+      <footer class="pie">Sigue con <a href="poo-avanzada.html">POO avanzada</a>: clases anidadas y anónimas, enums y records. Para recorrer conjuntos de objetos, mira <a href="colecciones.html">Colecciones</a>.</footer>
     </main>
     <script src="../assets/chuletas.js" defer></script>
   </body>

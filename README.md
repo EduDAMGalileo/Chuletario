@@ -30,9 +30,13 @@ chuletario/
 │                           sistema-e2e
 ├── programacion/           fundamentos, pseudocodigo, entornos, eclipse,
 │                           vscode, agile, cascada, y los lenguajes
-├── java/                   sintaxis, arrays, strings, metodos, poo,
-│                           excepciones, colecciones, streams, fechas,
-│                           ficheros, entrada-salida, procesos, maven, junit
+├── java/                   sintaxis, arrays, strings, metodos; poo,
+│                           poo-avanzada, excepciones; colecciones
+│                           (índice, y genericos/listas/sets/mapas/
+│                           pilas-colas), streams; acceso a datos
+│                           (ficheros-directorios, lectura-escritura);
+│                           clases útiles (fechas, math, random);
+│                           procesos; maven, junit
 ├── python/                 sintaxis
 ├── kotlin/                 sintaxis
 ├── php/                    sintaxis, cookies-sesiones

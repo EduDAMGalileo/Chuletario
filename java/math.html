@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Math · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Math</span></nav>
+          <h1>Math</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">La clase <code>java.lang.Math</code>: potencias, raíces, redondeo, división entera, trigonometría y desbordamiento. Y <code>BigDecimal</code> y <code>BigInteger</code> para cuando <code>double</code> y <code>long</code> no bastan.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html" aria-current="page">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Constantes, valor absoluto, máximo y mínimo</a><a href="#s2"><b>2</b>Potencias, raíces y logaritmos</a><a href="#s3"><b>3</b>Redondeo</a><a href="#s4"><b>4</b>División entera y resto</a><a href="#s5"><b>5</b>Trigonometría</a><a href="#s6"><b>6</b>Desbordamiento</a><a href="#s7"><b>7</b>Límites y valores especiales</a><a href="#s8"><b>8</b>BigDecimal: decimales exactos</a><a href="#s9"><b>9</b>BigInteger: enteros sin límite</a><a href="#s10"><b>10</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Lo más usado</p>
+        <div class="cols">
+          <div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Math</span>.abs(-<span class="tok-numero">7</span>)          <span class="tok-coment">// 7</span>
+<span class="tok-tipo">Math</span>.max(<span class="tok-numero">3</span>, <span class="tok-numero">9</span>)         <span class="tok-coment">// 9</span>
+<span class="tok-tipo">Math</span>.pow(<span class="tok-numero">2</span>, <span class="tok-numero">10</span>)        <span class="tok-coment">// 1024.0  (double)</span>
+<span class="tok-tipo">Math</span>.sqrt(<span class="tok-numero">16</span>)          <span class="tok-coment">// 4.0</span>
+<span class="tok-tipo">Math</span>.round(<span class="tok-numero">2.5</span>)        <span class="tok-coment">// 3       (long)</span>
+<span class="tok-tipo">Math</span>.floor(<span class="tok-numero">2.9</span>)        <span class="tok-coment">// 2.0</span>
+<span class="tok-tipo">Math</span>.ceil(<span class="tok-numero">2.1</span>)         <span class="tok-coment">// 3.0</span>
+<span class="tok-tipo">Math</span>.<span class="tok-tipo">PI</span>               <span class="tok-coment">// 3.141592653589793</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="nota"><code>Math</code> está en <code>java.lang</code>: no hay que importarla. Todos sus métodos son <code>static</code>, así que se llaman con <code>Math.metodo()</code> y nunca se crea un objeto <code>Math</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// con import estático te ahorras el "Math."</span>
+<span class="tok-clave">import</span> <span class="tok-clave">static</span> java.lang.<span class="tok-tipo">Math</span>.*;
+
+<span class="tok-tipo">double</span> h = sqrt(pow(a, <span class="tok-numero">2</span>) + pow(b, <span class="tok-numero">2</span>));</code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Constantes, valor absoluto, máximo y mínimo -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Constantes, valor absoluto, máximo y mínimo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Math.PI</code></th><td>π = 3.141592653589793</td></tr>
+                  <tr><th scope="row"><code>Math.E</code></th><td>e = 2.718281828459045</td></tr>
+                  <tr><th scope="row"><code>abs(x)</code></th><td>valor absoluto; mismo tipo que recibe</td></tr>
+                  <tr><th scope="row"><code>max(a, b)  min(a, b)</code></th><td>el mayor y el menor de dos</td></tr>
+                  <tr><th scope="row"><code>signum(x)</code></th><td>-1.0, 0.0 o 1.0 según el signo</td></tr>
+                  <tr><th scope="row"><code>clamp(x, min, max)</code></th><td>Java 21: encaja <code>x</code> en el rango</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">double</span> area = <span class="tok-tipo">Math</span>.<span class="tok-tipo">PI</span> * r * r;
+<span class="tok-tipo">int</span> distancia = <span class="tok-tipo">Math</span>.abs(a - b);
+
+<span class="tok-coment">// máximo de tres o más</span>
+<span class="tok-tipo">int</span> mayor = <span class="tok-tipo">Math</span>.max(a, <span class="tok-tipo">Math</span>.max(b, c));
+<span class="tok-tipo">int</span> mayorArray = <span class="tok-tipo">Arrays</span>.stream(numeros).max().getAsInt();
+
+<span class="tok-coment">// limitar un valor a un rango [0, 100]</span>
+<span class="tok-tipo">int</span> pct = <span class="tok-tipo">Math</span>.max(<span class="tok-numero">0</span>, <span class="tok-tipo">Math</span>.min(<span class="tok-numero">100</span>, valor));
+<span class="tok-tipo">int</span> pct21 = <span class="tok-tipo">Math</span>.clamp(valor, <span class="tok-numero">0</span>, <span class="tok-numero">100</span>);       <span class="tok-coment">// Java 21</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 2. Potencias, raíces y logaritmos -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Potencias, raíces y logaritmos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>pow(base, exp)</code></th><td>potencia; siempre devuelve <code>double</code></td></tr>
+                  <tr><th scope="row"><code>sqrt(x)</code></th><td>raíz cuadrada; <code>NaN</code> si x &lt; 0</td></tr>
+                  <tr><th scope="row"><code>cbrt(x)</code></th><td>raíz cúbica (admite negativos)</td></tr>
+                  <tr><th scope="row"><code>hypot(x, y)</code></th><td>√(x² + y²), sin desbordar</td></tr>
+                  <tr><th scope="row"><code>exp(x)</code></th><td>eˣ</td></tr>
+                  <tr><th scope="row"><code>log(x)</code></th><td>logaritmo natural (base e)</td></tr>
+                  <tr><th scope="row"><code>log10(x)</code></th><td>logaritmo en base 10</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">int</span> cubo = (<span class="tok-tipo">int</span>) <span class="tok-tipo">Math</span>.pow(<span class="tok-numero">3</span>, <span class="tok-numero">3</span>);           <span class="tok-coment">// 27: hay que convertir</span>
+<span class="tok-tipo">double</span> raizN = <span class="tok-tipo">Math</span>.pow(<span class="tok-numero">81</span>, <span class="tok-numero">1.0</span> / <span class="tok-numero">4</span>);       <span class="tok-coment">// raíz cuarta: 3.0</span>
+<span class="tok-tipo">double</span> dist = <span class="tok-tipo">Math</span>.hypot(x2 - x1, y2 - y1);  <span class="tok-coment">// distancia entre dos puntos</span>
+
+<span class="tok-coment">// logaritmo en cualquier base</span>
+<span class="tok-tipo">double</span> log2 = <span class="tok-tipo">Math</span>.log(n) / <span class="tok-tipo">Math</span>.log(<span class="tok-numero">2</span>);
+
+<span class="tok-coment">// cuántas cifras tiene un entero positivo</span>
+<span class="tok-tipo">int</span> cifras = (<span class="tok-tipo">int</span>) <span class="tok-tipo">Math</span>.log10(n) + <span class="tok-numero">1</span>;
+
+<span class="tok-coment">// interés compuesto</span>
+<span class="tok-tipo">double</span> capital = inicial * <span class="tok-tipo">Math</span>.pow(<span class="tok-numero">1</span> + interes, anios);</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>Math.pow(81, 1/4)</code> da 1.0, porque <code>1/4</code> es división entera y vale 0. Escribe <code>1.0/4</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Redondeo -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Redondeo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>round(x)</code></th><td>al entero más cercano; .5 sube. Devuelve <code>long</code> (o <code>int</code> si recibe <code>float</code>)</td></tr>
+                  <tr><th scope="row"><code>floor(x)</code></th><td>hacia abajo (hacia −∞); devuelve <code>double</code></td></tr>
+                  <tr><th scope="row"><code>ceil(x)</code></th><td>hacia arriba (hacia +∞); devuelve <code>double</code></td></tr>
+                  <tr><th scope="row"><code>rint(x)</code></th><td>al más cercano; en .5, al par; devuelve <code>double</code></td></tr>
+                  <tr><th scope="row"><code>(int) x</code></th><td>trunca: quita los decimales (hacia 0)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>x</code></th><td><code>round · floor · ceil · rint · (int)</code></td></tr>
+                  <tr><th scope="row"><code>2.4</code></th><td><code>2 · 2.0 · 3.0 · 2.0 · 2</code></td></tr>
+                  <tr><th scope="row"><code>2.5</code></th><td><code>3 · 2.0 · 3.0 · 2.0 · 2</code></td></tr>
+                  <tr><th scope="row"><code>3.5</code></th><td><code>4 · 3.0 · 4.0 · 4.0 · 3</code></td></tr>
+                  <tr><th scope="row"><code>-2.5</code></th><td><code>-2 · -3.0 · -2.0 · -2.0 · -2</code></td></tr>
+                  <tr><th scope="row"><code>-2.7</code></th><td><code>-3 · -3.0 · -2.0 · -3.0 · -2</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Redondear a n decimales</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">double</span> x = <span class="tok-numero">3.14159</span>;
+
+<span class="tok-coment">// para calcular: multiplicar, redondear, dividir</span>
+<span class="tok-tipo">double</span> dos = <span class="tok-tipo">Math</span>.round(x * <span class="tok-numero">100</span>) / <span class="tok-numero">100.0</span>;    <span class="tok-coment">// 3.14</span>
+
+<span class="tok-coment">// solo para mostrar: formato</span>
+<span class="tok-tipo">String</span> s = <span class="tok-tipo">String</span>.format(<span class="tok-texto">"%.2f"</span>, x);          <span class="tok-coment">// "3,14"</span>
+
+<span class="tok-coment">// exacto (dinero): BigDecimal</span>
+<span class="tok-tipo">BigDecimal</span> bd = <span class="tok-clave">new</span> <span class="tok-tipo">BigDecimal</span>(<span class="tok-texto">"3.145"</span>).setScale(<span class="tok-numero">2</span>, <span class="tok-tipo">RoundingMode</span>.<span class="tok-tipo">HALF_UP</span>);  <span class="tok-coment">// 3.15</span>
+
+<span class="tok-coment">// redondeo hacia arriba en divisiones enteras: páginas necesarias</span>
+<span class="tok-tipo">int</span> paginas = (<span class="tok-tipo">int</span>) <span class="tok-tipo">Math</span>.ceil(total / (<span class="tok-tipo">double</span>) porPagina);
+<span class="tok-tipo">int</span> paginas2 = (total + porPagina - <span class="tok-numero">1</span>) / porPagina;   <span class="tok-coment">// sin decimales</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>int n = Math.round(x);</code> no compila con un <code>double</code>, porque devuelve <code>long</code>. Escribe <code>(int) Math.round(x)</code>.</p>
+          </div>
+        </section>
+        <!-- 4. División entera y resto -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>División entera y resto</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>a / b</code></th><td>con enteros, cociente truncado hacia 0</td></tr>
+                  <tr><th scope="row"><code>a % b</code></th><td>resto; tiene el signo de <code>a</code></td></tr>
+                  <tr><th scope="row"><code>floorDiv(a, b)</code></th><td>cociente redondeado hacia −∞</td></tr>
+                  <tr><th scope="row"><code>floorMod(a, b)</code></th><td>resto con el signo de <code>b</code>: nunca negativo si <code>b &gt; 0</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code> <span class="tok-numero">7</span> / <span class="tok-numero">2</span>   <span class="tok-coment">//  3</span>       <span class="tok-numero">7</span> % <span class="tok-numero">2</span>   <span class="tok-coment">//  1</span>
+-<span class="tok-numero">7</span> / <span class="tok-numero">2</span>   <span class="tok-coment">// -3</span>      -<span class="tok-numero">7</span> % <span class="tok-numero">2</span>   <span class="tok-coment">// -1</span>
+<span class="tok-tipo">Math</span>.floorDiv(-<span class="tok-numero">7</span>, <span class="tok-numero">2</span>)   <span class="tok-coment">// -4</span>
+<span class="tok-tipo">Math</span>.floorMod(-<span class="tok-numero">7</span>, <span class="tok-numero">2</span>)   <span class="tok-coment">//  1</span>
+
+<span class="tok-coment">// usos típicos del resto</span>
+<span class="tok-tipo">boolean</span> par = n % <span class="tok-numero">2</span> == <span class="tok-numero">0</span>;
+<span class="tok-tipo">boolean</span> multiploDe5 = n % <span class="tok-numero">5</span> == <span class="tok-numero">0</span>;
+<span class="tok-tipo">int</span> ultimaCifra = n % <span class="tok-numero">10</span>;
+<span class="tok-tipo">int</span> sinUltima = n / <span class="tok-numero">10</span>;
+
+<span class="tok-coment">// separar segundos en h, min, s</span>
+<span class="tok-tipo">int</span> h = seg / <span class="tok-numero">3600</span>, m = (seg % <span class="tok-numero">3600</span>) / <span class="tok-numero">60</span>, s = seg % <span class="tok-numero">60</span>;
+
+<span class="tok-coment">// índice circular (también hacia atrás)</span>
+<span class="tok-tipo">int</span> anterior = <span class="tok-tipo">Math</span>.floorMod(i - <span class="tok-numero">1</span>, array.length);
+
+<span class="tok-coment">// sumar las cifras de un número</span>
+<span class="tok-tipo">int</span> suma = <span class="tok-numero">0</span>;
+<span class="tok-clave">while</span> (n &gt; <span class="tok-numero">0</span>) { suma += n % <span class="tok-numero">10</span>; n /= <span class="tok-numero">10</span>; }</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>n % 2 == 1</code> no detecta los impares negativos (<code>-3 % 2</code> es -1). Usa <code>n % 2 != 0</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Trigonometría -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Trigonometría</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>sin  cos  tan</code></th><td>reciben el ángulo en <strong>radianes</strong></td></tr>
+                  <tr><th scope="row"><code>asin  acos  atan</code></th><td>inversas; devuelven radianes</td></tr>
+                  <tr><th scope="row"><code>atan2(y, x)</code></th><td>ángulo del punto (x, y), con el cuadrante correcto</td></tr>
+                  <tr><th scope="row"><code>toRadians(g)</code></th><td>grados a radianes</td></tr>
+                  <tr><th scope="row"><code>toDegrees(r)</code></th><td>radianes a grados</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">double</span> s = <span class="tok-tipo">Math</span>.sin(<span class="tok-tipo">Math</span>.toRadians(<span class="tok-numero">30</span>));     <span class="tok-coment">// 0.49999999999999994</span>
+<span class="tok-tipo">double</span> grados = <span class="tok-tipo">Math</span>.toDegrees(<span class="tok-tipo">Math</span>.atan2(<span class="tok-numero">1</span>, <span class="tok-numero">1</span>)); <span class="tok-coment">// 45.0</span>
+
+<span class="tok-coment">// coordenadas de un punto en una circunferencia</span>
+<span class="tok-tipo">double</span> x = cx + r * <span class="tok-tipo">Math</span>.cos(angulo);
+<span class="tok-tipo">double</span> y = cy + r * <span class="tok-tipo">Math</span>.sin(angulo);</code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Desbordamiento -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Desbordamiento</h2>
+          <div class="cuerpo">
+            <p class="txt">Si una operación entera se sale del rango del tipo, Java <strong>no avisa</strong>: el valor da la vuelta.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">int</span> max = <span class="tok-tipo">Integer</span>.<span class="tok-tipo">MAX_VALUE</span>;       <span class="tok-coment">// 2147483647</span>
+<span class="tok-tipo">IO</span>.println(max + <span class="tok-numero">1</span>);              <span class="tok-coment">// -2147483648</span>
+
+<span class="tok-tipo">long</span> mal = <span class="tok-numero">1_000_000</span> * <span class="tok-numero">1_000_000</span>;   <span class="tok-coment">// -727379968: se calcula en int</span>
+<span class="tok-tipo">long</span> bien = <span class="tok-numero">1_000_000L</span> * <span class="tok-numero">1_000_000</span>;  <span class="tok-coment">// 1000000000000</span>
+
+<span class="tok-coment">// las versiones Exact lanzan ArithmeticException en vez de dar la vuelta</span>
+<span class="tok-tipo">Math</span>.addExact(max, <span class="tok-numero">1</span>);             <span class="tok-coment">// ArithmeticException: integer overflow</span>
+<span class="tok-tipo">Math</span>.multiplyExact(a, b);
+<span class="tok-tipo">Math</span>.toIntExact(unLong);            <span class="tok-coment">// falla si no cabe en int</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>addExact  subtractExact</code></th><td>suma y resta comprobadas</td></tr>
+                  <tr><th scope="row"><code>multiplyExact</code></th><td>multiplicación comprobada</td></tr>
+                  <tr><th scope="row" class="larga"><code>incrementExact  negateExact</code></th><td>+1 y cambio de signo comprobados</td></tr>
+                  <tr><th scope="row"><code>toIntExact(long)</code></th><td>convierte a <code>int</code> o lanza excepción</td></tr>
+                  <tr><th scope="row"><code>absExact(x)</code></th><td><code>abs</code> comprobado (<code>Math.abs(Integer.MIN_VALUE)</code> es negativo)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Límites y valores especiales -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Límites y valores especiales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Integer.MAX_VALUE</code></th><td>2 147 483 647</td></tr>
+                  <tr><th scope="row"><code>Integer.MIN_VALUE</code></th><td>−2 147 483 648</td></tr>
+                  <tr><th scope="row"><code>Long.MAX_VALUE</code></th><td>≈ 9,2 × 10¹⁸</td></tr>
+                  <tr><th scope="row"><code>Double.MAX_VALUE</code></th><td>≈ 1,8 × 10³⁰⁸</td></tr>
+                  <tr><th scope="row"><code>Double.MIN_VALUE</code></th><td>el positivo más pequeño (≈ 4,9 × 10⁻³²⁴), no el más negativo</td></tr>
+                  <tr><th scope="row"><code>Double.POSITIVE_INFINITY</code></th><td>resultado de <code>1.0 / 0</code></td></tr>
+                  <tr><th scope="row"><code>Double.NaN</code></th><td>«no es un número»: <code>0.0 / 0</code>, <code>Math.sqrt(-1)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-numero">1</span> / <span class="tok-numero">0</span>         <span class="tok-coment">// ArithmeticException: / by zero</span>
+<span class="tok-numero">1.0</span> / <span class="tok-numero">0</span>       <span class="tok-coment">// Infinity</span>
+<span class="tok-numero">0.0</span> / <span class="tok-numero">0</span>       <span class="tok-coment">// NaN</span>
+
+<span class="tok-tipo">Double</span>.isNaN(x)            <span class="tok-coment">// x == Double.NaN siempre es false</span>
+<span class="tok-tipo">Double</span>.isInfinite(x)
+<span class="tok-tipo">Double</span>.isFinite(x)
+
+<span class="tok-coment">// valores iniciales para buscar máximos y mínimos</span>
+<span class="tok-tipo">int</span> mayor = <span class="tok-tipo">Integer</span>.<span class="tok-tipo">MIN_VALUE</span>;
+<span class="tok-tipo">int</span> menor = <span class="tok-tipo">Integer</span>.<span class="tok-tipo">MAX_VALUE</span>;
+
+<span class="tok-coment">// comparar decimales con tolerancia</span>
+<span class="tok-tipo">boolean</span> iguales = <span class="tok-tipo">Math</span>.abs(a - b) &lt; <span class="tok-numero">1e-9</span>;</code></pre></figure>
+          </div>
+        </section>
+        <!-- 8. BigDecimal: decimales exactos -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>BigDecimal: decimales exactos</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>double</code> guarda los decimales en binario y no puede representar exactamente valores como 0.1. Para dinero o cualquier cálculo que tenga que cuadrar al céntimo se usa <code>java.math.BigDecimal</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">IO</span>.println(<span class="tok-numero">0.1</span> + <span class="tok-numero">0.2</span>);                  <span class="tok-coment">// 0.30000000000000004</span>
+
+<span class="tok-tipo">BigDecimal</span> a = <span class="tok-clave">new</span> <span class="tok-tipo">BigDecimal</span>(<span class="tok-texto">"0.1"</span>);       <span class="tok-coment">// desde String: exacto</span>
+<span class="tok-tipo">BigDecimal</span> b = <span class="tok-tipo">BigDecimal</span>.valueOf(<span class="tok-numero">0.2</span>);     <span class="tok-coment">// desde double: también vale</span>
+<span class="tok-tipo">IO</span>.println(a.add(b));                     <span class="tok-coment">// 0.3</span>
+
+<span class="tok-coment">// es inmutable: cada operación devuelve uno nuevo</span>
+<span class="tok-tipo">BigDecimal</span> precio = <span class="tok-clave">new</span> <span class="tok-tipo">BigDecimal</span>(<span class="tok-texto">"19.99"</span>);
+<span class="tok-tipo">BigDecimal</span> iva = <span class="tok-clave">new</span> <span class="tok-tipo">BigDecimal</span>(<span class="tok-texto">"0.21"</span>);
+<span class="tok-tipo">BigDecimal</span> total = precio.add(precio.multiply(iva))
+                          .setScale(<span class="tok-numero">2</span>, <span class="tok-tipo">RoundingMode</span>.<span class="tok-tipo">HALF_UP</span>);   <span class="tok-coment">// 24.19</span>
+
+<span class="tok-coment">// dividir: hay que decir cuántos decimales y cómo redondear</span>
+<span class="tok-tipo">BigDecimal</span> parte = total.divide(<span class="tok-tipo">BigDecimal</span>.valueOf(<span class="tok-numero">3</span>), <span class="tok-numero">2</span>, <span class="tok-tipo">RoundingMode</span>.<span class="tok-tipo">HALF_UP</span>);
+
+<span class="tok-coment">// comparar: compareTo, no equals</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">BigDecimal</span>(<span class="tok-texto">"2.0"</span>).equals(<span class="tok-clave">new</span> <span class="tok-tipo">BigDecimal</span>(<span class="tok-texto">"2.00"</span>));     <span class="tok-coment">// false: distinta escala</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">BigDecimal</span>(<span class="tok-texto">"2.0"</span>).compareTo(<span class="tok-clave">new</span> <span class="tok-tipo">BigDecimal</span>(<span class="tok-texto">"2.00"</span>));  <span class="tok-coment">// 0: valen lo mismo</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>add  subtract  multiply</code></th><td>suma, resta, multiplicación</td></tr>
+                  <tr><th scope="row"><code>divide(x, escala, modo)</code></th><td>división; sin escala lanza excepción si no es exacta (1/3)</td></tr>
+                  <tr><th scope="row"><code>setScale(n, modo)</code></th><td>deja n decimales</td></tr>
+                  <tr><th scope="row"><code>compareTo(x)</code></th><td>-1, 0 o 1</td></tr>
+                  <tr><th scope="row"><code>negate()  abs()  pow(n)</code></th><td>signo, valor absoluto, potencia</td></tr>
+                  <tr><th scope="row"><code>max(x)  min(x)</code></th><td>mayor y menor</td></tr>
+                  <tr><th scope="row"><code>doubleValue()  intValue()</code></th><td>convertir a primitivo</td></tr>
+                  <tr><th scope="row"><code>ZERO  ONE  TEN</code></th><td>constantes</td></tr>
+                  <tr><th scope="row"><code>RoundingMode.HALF_UP</code></th><td>redondeo escolar: .5 sube</td></tr>
+                  <tr><th scope="row"><code>RoundingMode.HALF_EVEN</code></th><td>.5 al par (redondeo bancario)</td></tr>
+                  <tr><th scope="row"><code>RoundingMode.DOWN  UP</code></th><td>truncar hacia 0 / alejarse de 0</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>new BigDecimal(0.1)</code> (con un <code>double</code>) da 0.1000000000000000055511151231257827... porque arrastra el error del <code>double</code>. Usa el constructor con <code>String</code> o <code>BigDecimal.valueOf</code>.</p>
+          </div>
+        </section>
+        <!-- 9. BigInteger: enteros sin límite -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>BigInteger: enteros sin límite</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// factorial de 50: no cabe ni en long</span>
+<span class="tok-tipo">BigInteger</span> f = <span class="tok-tipo">BigInteger</span>.<span class="tok-tipo">ONE</span>;
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">2</span>; i &lt;= <span class="tok-numero">50</span>; i++) {
+    f = f.multiply(<span class="tok-tipo">BigInteger</span>.valueOf(i));
+}
+
+<span class="tok-tipo">BigInteger</span> g = <span class="tok-clave">new</span> <span class="tok-tipo">BigInteger</span>(<span class="tok-texto">"123456789012345678901234567890"</span>);
+g.pow(<span class="tok-numero">3</span>);
+g.mod(<span class="tok-tipo">BigInteger</span>.valueOf(<span class="tok-numero">7</span>));
+g.gcd(otro);                     <span class="tok-coment">// máximo común divisor</span>
+g.isProbablePrime(<span class="tok-numero">20</span>);          <span class="tok-coment">// ¿primo? (con probabilidad altísima)</span>
+g.toString(<span class="tok-numero">2</span>);                  <span class="tok-coment">// en binario</span></code></pre></figure>
+            <p class="nota">Mismos nombres de métodos que <code>BigDecimal</code> (<code>add</code>, <code>subtract</code>, <code>multiply</code>, <code>divide</code>, <code>compareTo</code>), y también inmutable.</p>
+          </div>
+        </section>
+        <!-- 10. Despistes habituales -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>5 / 2</code></th><td>da 2: si quieres 2.5, uno de los dos debe ser decimal</td></tr>
+                  <tr><th scope="row"><code>int x = Math.pow(2, 3)</code></th><td>no compila: <code>pow</code> devuelve <code>double</code></td></tr>
+                  <tr><th scope="row"><code>int x = Math.round(d)</code></th><td>no compila: devuelve <code>long</code></td></tr>
+                  <tr><th scope="row"><code>0.1 + 0.2 == 0.3</code></th><td><code>false</code>: compara con tolerancia o usa <code>BigDecimal</code></td></tr>
+                  <tr><th scope="row"><code>x == Double.NaN</code></th><td>siempre <code>false</code>: usa <code>Double.isNaN(x)</code></td></tr>
+                  <tr><th scope="row"><code>Math.sin(90)</code></th><td>90 radianes, no grados: <code>Math.toRadians(90)</code></td></tr>
+                  <tr><th scope="row"><code>-7 % 2</code></th><td>es -1, no 1: usa <code>floorMod</code> si necesitas positivo</td></tr>
+                  <tr><th scope="row"><code>int * int</code> grande</th><td>se desborda antes de asignarse a <code>long</code>: pon una <code>L</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="fechas.html">← Fechas y horas</a><a class="siguiente" href="random.html">Números aleatorios →</a></nav>
+      <footer class="pie">Para generar números al azar (<code>Math.random</code>, <code>Random</code>), mira <a href="random.html">Números aleatorios</a>. Documentación: <code>java.lang.Math</code>, <code>java.math.BigDecimal</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

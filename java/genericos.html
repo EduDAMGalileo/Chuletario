@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Genéricos · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><a href="colecciones.html">Colecciones</a><span aria-hidden="true">›</span><span>Genéricos</span></nav>
+          <h1>Genéricos</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Escribir clases, interfaces y métodos que funcionan con cualquier tipo sin perder la comprobación del compilador: parámetros de tipo, límites, comodines y borrado de tipos.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html" aria-current="page">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Para qué sirven</a><a href="#s2"><b>2</b>Clases genéricas</a><a href="#s3"><b>3</b>Interfaces genéricas</a><a href="#s4"><b>4</b>Métodos genéricos</a><a href="#s5"><b>5</b>Límites: extends</a><a href="#s6"><b>6</b>Comodines: ?</a><a href="#s7"><b>7</b>? extends y ? super (PECS)</a><a href="#s8"><b>8</b>Borrado de tipos y restricciones</a><a href="#s9"><b>9</b>Envoltorios y autoboxing</a><a href="#s10"><b>10</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">La sintaxis de un vistazo</p>
+        <div class="cols">
+          <div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// clase genérica: T es un parámetro de tipo</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Caja</span>&lt;<span class="tok-tipo">T</span>&gt; {
+    <span class="tok-clave">private</span> <span class="tok-tipo">T</span> contenido;
+    <span class="tok-tipo">T</span> get() { <span class="tok-clave">return</span> contenido; }
+    <span class="tok-clave">void</span> set(<span class="tok-tipo">T</span> x) { contenido = x; }
+}
+
+<span class="tok-tipo">Caja</span>&lt;<span class="tok-tipo">String</span>&gt; c = <span class="tok-clave">new</span> <span class="tok-tipo">Caja</span>&lt;&gt;();   <span class="tok-coment">// T = String</span></code></pre></figure>
+          </div>
+          <div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// método genérico: &lt;T&gt; antes del tipo de retorno</span>
+<span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span>&gt; <span class="tok-tipo">T</span> primero(<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; l) { <span class="tok-clave">return</span> l.get(<span class="tok-numero">0</span>); }
+
+<span class="tok-coment">// límite: T tiene que ser un Number o hija</span>
+<span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Number</span>&gt; <span class="tok-tipo">double</span> doble(<span class="tok-tipo">T</span> n) { ... }
+
+<span class="tok-coment">// comodín: una lista de algo que sea Number</span>
+<span class="tok-clave">static</span> <span class="tok-tipo">double</span> suma(<span class="tok-tipo">List</span>&lt;? <span class="tok-clave">extends</span> <span class="tok-tipo">Number</span>&gt; l) { ... }</code></pre></figure>
+          </div>
+          <div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>T</code></th><td>Type: un tipo cualquiera</td></tr>
+                  <tr><th scope="row"><code>E</code></th><td>Element: elemento de una colección</td></tr>
+                  <tr><th scope="row"><code>K  V</code></th><td>Key, Value: clave y valor</td></tr>
+                  <tr><th scope="row"><code>R</code></th><td>Result: tipo de resultado</td></tr>
+                  <tr><th scope="row"><code>N</code></th><td>Number</td></tr>
+                  <tr><th scope="row"><code>S  U</code></th><td>segundo, tercer tipo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Son solo convenios: una letra mayúscula para que no se confunda con una clase real.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Para qué sirven -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Para qué sirven</h2>
+          <div class="cuerpo">
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">Sin genéricos (Java 1.4)</span><span class="b">Con genéricos</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>List lista = new ArrayList();</code></div>
+                <div class="cmp-b"><code>List&lt;String&gt; lista = new ArrayList&lt;&gt;();</code></div>
+                <div class="cmp-nota">declarar</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>lista.add(42);   // compila</code></div>
+                <div class="cmp-b"><code>lista.add(42);   // error de compilación</code></div>
+                <div class="cmp-nota">el error aparece al compilar, no al ejecutar</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>String s = (String) lista.get(0);</code></div>
+                <div class="cmp-b"><code>String s = lista.get(0);</code></div>
+                <div class="cmp-nota">sin casts</div>
+              </div>
+            </div>
+            <p class="nota">Los genéricos dan <strong>seguridad de tipos</strong> (el compilador comprueba qué entra), quitan los <strong>casts</strong> y permiten <strong>reutilizar</strong> el mismo código con tipos distintos.</p>
+          </div>
+        </section>
+        <!-- 2. Clases genéricas -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Clases genéricas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Par</span>&lt;<span class="tok-tipo">A</span>, <span class="tok-tipo">B</span>&gt; {
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">A</span> primero;
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">B</span> segundo;
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">Par</span>(<span class="tok-tipo">A</span> primero, <span class="tok-tipo">B</span> segundo) {
+        <span class="tok-clave">this</span>.primero = primero;
+        <span class="tok-clave">this</span>.segundo = segundo;
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">A</span> getPrimero() { <span class="tok-clave">return</span> primero; }
+    <span class="tok-clave">public</span> <span class="tok-tipo">B</span> getSegundo() { <span class="tok-clave">return</span> segundo; }
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">Par</span>&lt;<span class="tok-tipo">B</span>, <span class="tok-tipo">A</span>&gt; invertir() { <span class="tok-clave">return</span> <span class="tok-clave">new</span> <span class="tok-tipo">Par</span>&lt;&gt;(segundo, primero); }
+}
+
+<span class="tok-tipo">Par</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; p = <span class="tok-clave">new</span> <span class="tok-tipo">Par</span>&lt;&gt;(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">8</span>);
+<span class="tok-tipo">int</span> nota = p.getSegundo();
+<span class="tok-clave">var</span> q = <span class="tok-clave">new</span> <span class="tok-tipo">Par</span>&lt;&gt;(<span class="tok-numero">1.5</span>, <span class="tok-clave">true</span>);          <span class="tok-coment">// Par&lt;Double, Boolean&gt;</span>
+
+<span class="tok-coment">// los records también pueden ser genéricos</span>
+<span class="tok-clave">record</span> <span class="tok-tipo">Resultado</span>&lt;<span class="tok-tipo">T</span>&gt;(<span class="tok-tipo">T</span> valor, <span class="tok-tipo">String</span> error) { }
+
+<span class="tok-coment">// heredar de una clase genérica</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">ParNombres</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Par</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">String</span>&gt; { ... }   <span class="tok-coment">// fija los tipos</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Trio</span>&lt;<span class="tok-tipo">A</span>, <span class="tok-tipo">B</span>, <span class="tok-tipo">C</span>&gt; <span class="tok-clave">extends</span> <span class="tok-tipo">Par</span>&lt;<span class="tok-tipo">A</span>, <span class="tok-tipo">B</span>&gt; { ... }     <span class="tok-coment">// los mantiene y añade</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 3. Interfaces genéricas -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Interfaces genéricas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">interface</span> <span class="tok-tipo">Repositorio</span>&lt;<span class="tok-tipo">T</span>, <span class="tok-tipo">ID</span>&gt; {
+    <span class="tok-clave">void</span> guardar(<span class="tok-tipo">T</span> entidad);
+    <span class="tok-tipo">Optional</span>&lt;<span class="tok-tipo">T</span>&gt; buscar(<span class="tok-tipo">ID</span> id);
+    <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; todos();
+}
+
+<span class="tok-coment">// al implementarla se dice qué tipos concretos se usan</span>
+<span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">AlumnoRepo</span> <span class="tok-clave">implements</span> <span class="tok-tipo">Repositorio</span>&lt;<span class="tok-tipo">Alumno</span>, <span class="tok-tipo">Integer</span>&gt; {
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">Integer</span>, <span class="tok-tipo">Alumno</span>&gt; datos = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+
+    <span class="tok-atributo">@Override</span> <span class="tok-clave">public</span> <span class="tok-clave">void</span> guardar(<span class="tok-tipo">Alumno</span> a) { datos.put(a.id(), a); }
+    <span class="tok-atributo">@Override</span> <span class="tok-clave">public</span> <span class="tok-tipo">Optional</span>&lt;<span class="tok-tipo">Alumno</span>&gt; buscar(<span class="tok-tipo">Integer</span> id) { <span class="tok-clave">return</span> <span class="tok-tipo">Optional</span>.ofNullable(datos.get(id)); }
+    <span class="tok-atributo">@Override</span> <span class="tok-clave">public</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt; todos() { <span class="tok-clave">return</span> <span class="tok-tipo">List</span>.copyOf(datos.values()); }
+}
+
+<span class="tok-coment">// las del JDK que más se usan</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Alumno</span> <span class="tok-clave">implements</span> <span class="tok-tipo">Comparable</span>&lt;<span class="tok-tipo">Alumno</span>&gt; { ... }
+<span class="tok-tipo">Comparator</span>&lt;<span class="tok-tipo">Alumno</span>&gt;  <span class="tok-tipo">Function</span>&lt;<span class="tok-tipo">T</span>, <span class="tok-tipo">R</span>&gt;  <span class="tok-tipo">Predicate</span>&lt;<span class="tok-tipo">T</span>&gt;  <span class="tok-tipo">Supplier</span>&lt;<span class="tok-tipo">T</span>&gt;  <span class="tok-tipo">Iterable</span>&lt;<span class="tok-tipo">T</span>&gt;</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Métodos genéricos -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Métodos genéricos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// &lt;T&gt; declara el parámetro de tipo; va antes del tipo de retorno</span>
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span>&gt; <span class="tok-clave">void</span> intercambiar(<span class="tok-tipo">T</span>[] a, <span class="tok-tipo">int</span> i, <span class="tok-tipo">int</span> j) {
+    <span class="tok-tipo">T</span> tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+}
+
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span>&gt; <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; repetir(<span class="tok-tipo">T</span> x, <span class="tok-tipo">int</span> n) {
+    <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; l = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> k = <span class="tok-numero">0</span>; k &lt; n; k++) l.add(x);
+    <span class="tok-clave">return</span> l;
+}
+
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> &lt;<span class="tok-tipo">K</span>, <span class="tok-tipo">V</span>&gt; <span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">V</span>, <span class="tok-tipo">K</span>&gt; invertir(<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">K</span>, <span class="tok-tipo">V</span>&gt; m) {
+    <span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">V</span>, <span class="tok-tipo">K</span>&gt; r = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+    m.forEach((k, v) -&gt; r.put(v, k));
+    <span class="tok-clave">return</span> r;
+}
+
+<span class="tok-coment">// al llamar, el tipo se deduce solo</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; xs = repetir(<span class="tok-texto">"x"</span>, <span class="tok-numero">3</span>);
+<span class="tok-coment">// o se indica explícitamente (raro)</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Object</span>&gt; os = <span class="tok-tipo">Utilidades</span>.&lt;<span class="tok-tipo">Object</span>&gt;repetir(<span class="tok-texto">"x"</span>, <span class="tok-numero">3</span>);</code></pre></figure>
+            <p class="nota">Un método genérico puede estar en una clase que no lo es. Y en una clase genérica, un método que usa la <code>T</code> de la clase <strong>no</strong> es un método genérico: no lleva su propio <code>&lt;T&gt;</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Límites: extends -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Límites: extends</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// sin límite, T es un Object: no se puede llamar a doubleValue()</span>
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Number</span>&gt; <span class="tok-tipo">double</span> media(<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; l) {
+    <span class="tok-tipo">double</span> s = <span class="tok-numero">0</span>;
+    <span class="tok-clave">for</span> (<span class="tok-tipo">T</span> n : l) s += n.doubleValue();       <span class="tok-coment">// ahora sí: T es un Number</span>
+    <span class="tok-clave">return</span> s / l.size();
+}
+media(<span class="tok-tipo">List</span>.of(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>));         <span class="tok-coment">// Integer: vale</span>
+media(<span class="tok-tipo">List</span>.of(<span class="tok-numero">1.5</span>, <span class="tok-numero">2.5</span>));        <span class="tok-coment">// Double: vale</span>
+media(<span class="tok-tipo">List</span>.of(<span class="tok-texto">"a"</span>));             <span class="tok-coment">// no compila</span>
+
+<span class="tok-coment">// el mayor de una lista: T debe saber compararse</span>
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Comparable</span>&lt;<span class="tok-tipo">T</span>&gt;&gt; <span class="tok-tipo">T</span> maximo(<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; l) {
+    <span class="tok-tipo">T</span> max = l.get(<span class="tok-numero">0</span>);
+    <span class="tok-clave">for</span> (<span class="tok-tipo">T</span> x : l) <span class="tok-clave">if</span> (x.compareTo(max) &gt; <span class="tok-numero">0</span>) max = x;
+    <span class="tok-clave">return</span> max;
+}
+
+<span class="tok-coment">// varios límites: una clase (primero) y las interfaces que quieras</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Ranking</span>&lt;<span class="tok-tipo">T</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Persona</span> &amp; <span class="tok-tipo">Comparable</span>&lt;<span class="tok-tipo">T</span>&gt;&gt; { ... }</code></pre></figure>
+            <p class="nota">En los genéricos, <code>extends</code> vale tanto para clases como para interfaces: significa «es un subtipo de».</p>
+          </div>
+        </section>
+        <!-- 6. Comodines: ? -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Comodines: ?</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// List&lt;Integer&gt; NO es una List&lt;Number&gt;, aunque Integer sea un Number</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Integer</span>&gt; enteros = <span class="tok-tipo">List</span>.of(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>);
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Number</span>&gt; numeros = enteros;          <span class="tok-coment">// no compila</span>
+
+<span class="tok-coment">// si se pudiera, esto metería un Double en una lista de Integer:</span>
+<span class="tok-coment">// numeros.add(3.5);</span>
+
+<span class="tok-coment">// el comodín ? dice "una lista de algún tipo, no sé cuál"</span>
+<span class="tok-clave">static</span> <span class="tok-clave">void</span> imprimir(<span class="tok-tipo">List</span>&lt;?&gt; l) {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Object</span> x : l) <span class="tok-tipo">IO</span>.println(x);     <span class="tok-coment">// se lee como Object</span>
+}
+imprimir(enteros);
+imprimir(<span class="tok-tipo">List</span>.of(<span class="tok-texto">"a"</span>, <span class="tok-texto">"b"</span>));</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>List&lt;?&gt;</code></th><td>lista de cualquier cosa; se lee como <code>Object</code>, no se puede añadir (salvo <code>null</code>)</td></tr>
+                  <tr><th scope="row"><code>List&lt;? extends Number&gt;</code></th><td>de Number o hijas; se lee como <code>Number</code>, no se puede añadir</td></tr>
+                  <tr><th scope="row"><code>List&lt;? super Integer&gt;</code></th><td>de Integer o padres; se puede añadir <code>Integer</code>, se lee como <code>Object</code></td></tr>
+                  <tr><th scope="row"><code>List&lt;Object&gt;</code></th><td>no es lo mismo que <code>List&lt;?&gt;</code>: solo admite exactamente <code>List&lt;Object&gt;</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. ? extends y ? super (PECS) -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>? extends y ? super (PECS)</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>PECS</strong>: <em>Producer Extends, Consumer Super</em>. Si la colección te <strong>da</strong> datos (la lees), usa <code>? extends</code>. Si la colección <strong>recibe</strong> datos (escribes en ella), usa <code>? super</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// productor: solo leo de ella → extends</span>
+<span class="tok-clave">static</span> <span class="tok-tipo">double</span> suma(<span class="tok-tipo">Collection</span>&lt;? <span class="tok-clave">extends</span> <span class="tok-tipo">Number</span>&gt; c) {
+    <span class="tok-tipo">double</span> s = <span class="tok-numero">0</span>;
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Number</span> n : c) s += n.doubleValue();
+    <span class="tok-clave">return</span> s;
+}
+suma(<span class="tok-tipo">List</span>.of(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>));            <span class="tok-coment">// List&lt;Integer&gt;</span>
+suma(<span class="tok-tipo">Set</span>.of(<span class="tok-numero">1.5</span>, <span class="tok-numero">2.5</span>));         <span class="tok-coment">// Set&lt;Double&gt;</span>
+
+<span class="tok-coment">// consumidor: solo escribo en ella → super</span>
+<span class="tok-clave">static</span> <span class="tok-clave">void</span> rellenar(<span class="tok-tipo">List</span>&lt;? <span class="tok-clave">super</span> <span class="tok-tipo">Integer</span>&gt; destino, <span class="tok-tipo">int</span> n) {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; n; i++) destino.add(i);
+}
+rellenar(<span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;<span class="tok-tipo">Integer</span>&gt;(), <span class="tok-numero">5</span>);
+rellenar(<span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;<span class="tok-tipo">Number</span>&gt;(), <span class="tok-numero">5</span>);
+rellenar(<span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;<span class="tok-tipo">Object</span>&gt;(), <span class="tok-numero">5</span>);
+
+<span class="tok-coment">// las dos a la vez: así está declarado Collections.copy</span>
+<span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span>&gt; <span class="tok-clave">void</span> copy(<span class="tok-tipo">List</span>&lt;? <span class="tok-clave">super</span> <span class="tok-tipo">T</span>&gt; destino, <span class="tok-tipo">List</span>&lt;? <span class="tok-clave">extends</span> <span class="tok-tipo">T</span>&gt; origen)</code></pre></figure>
+            <p class="nota">Por eso en el JDK aparecen firmas como <code>sort(Comparator&lt;? super T&gt; c)</code>: un comparador de <code>Persona</code> sirve para ordenar una lista de <code>Alumno</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Borrado de tipos y restricciones -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Borrado de tipos y restricciones</h2>
+          <div class="cuerpo">
+            <p class="txt">Los genéricos solo existen para el compilador. Al generar el <code>.class</code>, <code>List&lt;String&gt;</code> y <code>List&lt;Integer&gt;</code> quedan como <code>List</code> y se añaden los casts necesarios. Es el <strong>borrado de tipos</strong> (<em>type erasure</em>). De ahí vienen estas limitaciones:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>new T()</code></th><td>no se puede: al ejecutar no se sabe qué es T. Pasa un <code>Supplier&lt;T&gt;</code></td></tr>
+                  <tr><th scope="row"><code>new T[10]</code></th><td>no se puede; usa una <code>List&lt;T&gt;</code></td></tr>
+                  <tr><th scope="row"><code>x instanceof List&lt;String&gt;</code></th><td>no compila; solo <code>instanceof List&lt;?&gt;</code></td></tr>
+                  <tr><th scope="row"><code>static T campo</code></th><td>no se puede: lo estático es de la clase, y T es de cada objeto</td></tr>
+                  <tr><th scope="row"><code>List&lt;int&gt;</code></th><td>no se puede: solo tipos objeto (<code>List&lt;Integer&gt;</code>)</td></tr>
+                  <tr><th scope="row">sobrecarga</th><td><code>f(List&lt;String&gt;)</code> y <code>f(List&lt;Integer&gt;)</code> chocan: tras el borrado son iguales</td></tr>
+                  <tr><th scope="row">excepciones</th><td>una clase genérica no puede extender <code>Exception</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// en vez de new T(): pedir quien sepa crearlo</span>
+<span class="tok-clave">static</span> &lt;<span class="tok-tipo">T</span>&gt; <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; crear(<span class="tok-tipo">int</span> n, <span class="tok-tipo">Supplier</span>&lt;<span class="tok-tipo">T</span>&gt; fabrica) {
+    <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; l = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; n; i++) l.add(fabrica.get());
+    <span class="tok-clave">return</span> l;
+}
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">StringBuilder</span>&gt; sbs = crear(<span class="tok-numero">3</span>, <span class="tok-tipo">StringBuilder</span>::<span class="tok-clave">new</span>);</code></pre></figure>
+            <h3>Raw types: el tipo sin genérico</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span> cruda = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>();       <span class="tok-coment">// compila con aviso "unchecked"</span>
+cruda.add(<span class="tok-texto">"a"</span>);
+cruda.add(<span class="tok-numero">1</span>);                       <span class="tok-coment">// nadie lo impide</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; l = cruda;           <span class="tok-coment">// otro aviso; el error llegará después</span>
+<span class="tok-tipo">String</span> s = l.get(<span class="tok-numero">1</span>);              <span class="tok-coment">// ClassCastException</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> los <em>raw types</em> existen solo por compatibilidad con código anterior a Java 5. Si el compilador avisa de <em>unchecked</em>, falta poner el tipo entre ángulos.</p>
+          </div>
+        </section>
+        <!-- 9. Envoltorios y autoboxing -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Envoltorios y autoboxing</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>int</code></th><td><code>Integer</code></td></tr>
+                  <tr><th scope="row"><code>long</code></th><td><code>Long</code></td></tr>
+                  <tr><th scope="row"><code>double</code></th><td><code>Double</code></td></tr>
+                  <tr><th scope="row"><code>float</code></th><td><code>Float</code></td></tr>
+                  <tr><th scope="row"><code>boolean</code></th><td><code>Boolean</code></td></tr>
+                  <tr><th scope="row"><code>char</code></th><td><code>Character</code></td></tr>
+                  <tr><th scope="row"><code>byte  short</code></th><td><code>Byte  Short</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Integer</span>&gt; l = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+l.add(<span class="tok-numero">5</span>);               <span class="tok-coment">// autoboxing: int → Integer</span>
+<span class="tok-tipo">int</span> x = l.get(<span class="tok-numero">0</span>);       <span class="tok-coment">// unboxing: Integer → int</span>
+
+<span class="tok-tipo">Integer</span> a = <span class="tok-numero">1000</span>, b = <span class="tok-numero">1000</span>;
+a == b;                 <span class="tok-coment">// false: son objetos distintos</span>
+a.equals(b);            <span class="tok-coment">// true</span>
+
+<span class="tok-tipo">Integer</span> nada = <span class="tok-clave">null</span>;
+<span class="tok-tipo">int</span> y = nada;           <span class="tok-coment">// NullPointerException al hacer unboxing</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> compara <code>Integer</code> con <code>equals</code>, nunca con <code>==</code>. Entre -128 y 127 Java reutiliza los objetos y <code>==</code> "funciona", lo que hace el error aún más traicionero.</p>
+          </div>
+        </section>
+        <!-- 10. Despistes habituales -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Olvidar el &lt;&gt; al crear</th><td><code>new ArrayList()</code> es un raw type; escribe <code>new ArrayList&lt;&gt;()</code></td></tr>
+                  <tr><th scope="row" class="larga">Esperar que List&lt;Hija&gt; sea List&lt;Padre&gt;</th><td>no lo es: usa <code>List&lt;? extends Padre&gt;</code></td></tr>
+                  <tr><th scope="row" class="larga">Añadir a una List&lt;? extends X&gt;</th><td>no se puede: es de solo lectura</td></tr>
+                  <tr><th scope="row" class="larga">Poner &lt;T&gt; en el sitio equivocado</th><td>en un método va antes del tipo de retorno: <code>static &lt;T&gt; void f(T x)</code></td></tr>
+                  <tr><th scope="row" class="larga">Usar primitivos</th><td><code>Map&lt;String, Integer&gt;</code>, no <code>Map&lt;String, int&gt;</code></td></tr>
+                  <tr><th scope="row" class="larga">Comparar Integer con ==</th><td>usa <code>equals</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="colecciones.html">← Colecciones</a><a class="siguiente" href="listas.html">Listas →</a></nav>
+      <footer class="pie">Forma parte de <a href="colecciones.html">Colecciones</a>. Las interfaces funcionales genéricas (<code>Function</code>, <code>Predicate</code>...) se explican en <a href="streams.html">Lambdas y streams</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

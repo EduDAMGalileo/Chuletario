@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pilas y colas · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><a href="colecciones.html">Colecciones</a><span aria-hidden="true">›</span><span>Pilas y colas</span></nav>
+          <h1>Pilas y colas</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Estructuras en las que se entra y se sale por los extremos: <code>Queue</code>, <code>Deque</code>, <code>ArrayDeque</code> como pila y como cola, <code>PriorityQueue</code> y la antigua <code>Stack</code>.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html" aria-current="page">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Pila (LIFO)</a><a href="#s2"><b>2</b>Cola (FIFO)</a><a href="#s3"><b>3</b>Excepción o null: los dos juegos de métodos</a><a href="#s4"><b>4</b>Deque: doble cola</a><a href="#s5"><b>5</b>ArrayDeque o LinkedList</a><a href="#s6"><b>6</b>PriorityQueue</a><a href="#s7"><b>7</b>Stack (antigua)</a><a href="#s8"><b>8</b>Recetas</a><a href="#s9"><b>9</b>Colas para hilos</a><a href="#s10"><b>10</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Pila y cola</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Pila: último en entrar, primero en salir (LIFO)</p>
+            <figure class="codigo"><pre data-lang="text"><code>   push(3) ↓   ↑ pop() → 3
+          ┌─────┐
+  cima →  │  3  │
+          │  2  │
+          │  1  │
+          └─────┘
+  Como una pila de platos: solo se toca el de arriba.
+  Usos: deshacer, historial atrás, paréntesis, recursión.</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Cola: primero en entrar, primero en salir (FIFO)</p>
+            <figure class="codigo"><pre data-lang="text"><code>  poll() → 1                     offer(4)
+         ┌────┬────┬────┐  ←────
+   ←──── │ 1  │ 2  │ 3  │
+         └────┴────┴────┘
+       cabeza          final
+  Como la cola del súper: se atiende por delante, se entra por detrás.
+  Usos: turnos, tareas pendientes, recorrido en anchura.</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">La jerarquía</p>
+            <figure class="codigo"><pre data-lang="text"><code>Collection&lt;E&gt;
+└── <span class="tok-clave">Queue&lt;E&gt;</span>              cola
+    ├── <span class="tok-tipo">PriorityQueue</span>      por prioridad
+    └── <span class="tok-clave">Deque&lt;E&gt;</span>          doble cola: pila y cola
+        ├── <span class="tok-tipo">ArrayDeque</span>     la recomendada
+        └── <span class="tok-tipo">LinkedList</span>     también es List
+
+<span class="tok-texto">Stack</span> (extiende Vector)   antigua: no usar</code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Pila (LIFO) -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Pila (LIFO)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Deque</span>&lt;<span class="tok-tipo">String</span>&gt; pila = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+
+pila.push(<span class="tok-texto">"uno"</span>);           <span class="tok-coment">// [uno]</span>
+pila.push(<span class="tok-texto">"dos"</span>);           <span class="tok-coment">// [dos, uno]     la cima está a la izquierda</span>
+pila.push(<span class="tok-texto">"tres"</span>);          <span class="tok-coment">// [tres, dos, uno]</span>
+
+pila.peek();                <span class="tok-coment">// "tres": mira la cima sin sacarla</span>
+pila.pop();                 <span class="tok-coment">// "tres": la saca</span>
+pila.size();                <span class="tok-coment">// 2</span>
+pila.isEmpty();
+
+<span class="tok-coment">// vaciar en orden de salida</span>
+<span class="tok-clave">while</span> (!pila.isEmpty()) {
+    <span class="tok-tipo">IO</span>.println(pila.pop());
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>push(e)</code></th><td>apila en la cima</td></tr>
+                  <tr><th scope="row"><code>pop()</code></th><td>saca la cima; <code>NoSuchElementException</code> si está vacía</td></tr>
+                  <tr><th scope="row"><code>peek()</code></th><td>mira la cima; <code>null</code> si está vacía</td></tr>
+                  <tr><th scope="row"><code>isEmpty()  size()</code></th><td>¿vacía? / cuántos hay</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Se declara como <code>Deque</code>: Java no tiene una interfaz <code>Stack</code> aparte. <code>push</code> equivale a <code>addFirst</code> y <code>pop</code> a <code>removeFirst</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Cola (FIFO) -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Cola (FIFO)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Queue</span>&lt;<span class="tok-tipo">String</span>&gt; cola = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+
+cola.offer(<span class="tok-texto">"Ana"</span>);          <span class="tok-coment">// [Ana]</span>
+cola.offer(<span class="tok-texto">"Luis"</span>);         <span class="tok-coment">// [Ana, Luis]</span>
+cola.offer(<span class="tok-texto">"Eva"</span>);          <span class="tok-coment">// [Ana, Luis, Eva]</span>
+
+cola.peek();                <span class="tok-coment">// "Ana": el siguiente, sin sacarlo</span>
+cola.poll();                <span class="tok-coment">// "Ana": lo saca</span>
+cola.poll();                <span class="tok-coment">// "Luis"</span>
+
+<span class="tok-coment">// atender a todos</span>
+<span class="tok-tipo">String</span> turno;
+<span class="tok-clave">while</span> ((turno = cola.poll()) != <span class="tok-clave">null</span>) {
+    atender(turno);
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>offer(e)</code></th><td>entra por el final</td></tr>
+                  <tr><th scope="row"><code>poll()</code></th><td>sale el de la cabeza; <code>null</code> si está vacía</td></tr>
+                  <tr><th scope="row"><code>peek()</code></th><td>mira la cabeza; <code>null</code> si está vacía</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si la variable es <code>Queue</code>, solo se ven los métodos de cola; así nadie puede colarse por delante sin querer.</p>
+          </div>
+        </section>
+        <!-- 3. Excepción o null: los dos juegos de métodos -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Excepción o null: los dos juegos de métodos</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>Queue</code> tiene cada operación repetida: una versión lanza excepción si no puede, la otra devuelve un valor especial.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">&nbsp;</th><td><strong>lanza excepción</strong></td><td><strong>devuelve null / false</strong></td></tr>
+                  <tr><th scope="row">añadir</th><td><code>add(e)</code></td><td><code>offer(e)</code></td></tr>
+                  <tr><th scope="row">sacar</th><td><code>remove()</code></td><td><code>poll()</code></td></tr>
+                  <tr><th scope="row">mirar</th><td><code>element()</code></td><td><code>peek()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Con <code>ArrayDeque</code> y <code>LinkedList</code>, <code>add</code> y <code>offer</code> nunca fallan (no tienen límite). La diferencia importa al sacar y al mirar con la cola vacía, y en las colas con capacidad máxima.</p>
+          </div>
+        </section>
+        <!-- 4. Deque: doble cola -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Deque: doble cola</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>Deque</code> (<em>double-ended queue</em>, se pronuncia "dec") permite entrar y salir por los dos extremos. Por eso sirve como pila y como cola.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">&nbsp;</th><td><strong>principio (cabeza)</strong></td><td><strong>final (cola)</strong></td></tr>
+                  <tr><th scope="row">añadir</th><td><code>addFirst  offerFirst</code></td><td><code>addLast  offerLast</code></td></tr>
+                  <tr><th scope="row">sacar</th><td><code>removeFirst  pollFirst</code></td><td><code>removeLast  pollLast</code></td></tr>
+                  <tr><th scope="row">mirar</th><td><code>getFirst  peekFirst</code></td><td><code>getLast  peekLast</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">como pila</th><td><code>push</code> = <code>addFirst</code> · <code>pop</code> = <code>removeFirst</code> · <code>peek</code> = <code>peekFirst</code></td></tr>
+                  <tr><th scope="row">como cola</th><td><code>offer</code> = <code>offerLast</code> · <code>poll</code> = <code>pollFirst</code> · <code>peek</code> = <code>peekFirst</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Deque</span>&lt;<span class="tok-tipo">Integer</span>&gt; d = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+d.offerLast(<span class="tok-numero">2</span>);  d.offerFirst(<span class="tok-numero">1</span>);  d.offerLast(<span class="tok-numero">3</span>);   <span class="tok-coment">// [1, 2, 3]</span>
+d.pollFirst();   <span class="tok-coment">// 1</span>
+d.pollLast();    <span class="tok-coment">// 3</span>
+
+<span class="tok-coment">// recorrer: de la cabeza al final, y al revés</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> x : d) <span class="tok-tipo">IO</span>.println(x);
+<span class="tok-tipo">Iterator</span>&lt;<span class="tok-tipo">Integer</span>&gt; it = d.descendingIterator();
+
+d.removeFirstOccurrence(<span class="tok-numero">2</span>);   <span class="tok-coment">// quitar un valor concreto</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 5. ArrayDeque o LinkedList -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>ArrayDeque o LinkedList</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">&nbsp;</th><td><strong>ArrayDeque</strong></td><td><strong>LinkedList</strong></td></tr>
+                  <tr><th scope="row">por dentro</th><td>array circular</td><td>nodos enlazados</td></tr>
+                  <tr><th scope="row">velocidad en extremos</th><td>O(1), más rápida</td><td>O(1)</td></tr>
+                  <tr><th scope="row">memoria</th><td>poca</td><td>más</td></tr>
+                  <tr><th scope="row">null</th><td>no</td><td>sí</td></tr>
+                  <tr><th scope="row">acceso por posición</th><td>no</td><td>sí (es List)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Por defecto, <code>ArrayDeque</code>. <code>LinkedList</code> solo si necesitas guardar <code>null</code> o usarla también como lista.</p>
+          </div>
+        </section>
+        <!-- 6. PriorityQueue -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>PriorityQueue</h2>
+          <div class="cuerpo">
+            <p class="txt">Una cola en la que no sale el primero que llegó, sino el <strong>menor</strong> según el orden natural o un <code>Comparator</code>. Por dentro es un montículo (<em>heap</em>).</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">PriorityQueue</span>&lt;<span class="tok-tipo">Integer</span>&gt; pq = <span class="tok-clave">new</span> <span class="tok-tipo">PriorityQueue</span>&lt;&gt;();
+pq.offer(<span class="tok-numero">5</span>);  pq.offer(<span class="tok-numero">1</span>);  pq.offer(<span class="tok-numero">3</span>);
+pq.poll();     <span class="tok-coment">// 1</span>
+pq.poll();     <span class="tok-coment">// 3</span>
+
+<span class="tok-coment">// el mayor primero</span>
+<span class="tok-tipo">PriorityQueue</span>&lt;<span class="tok-tipo">Integer</span>&gt; max = <span class="tok-clave">new</span> <span class="tok-tipo">PriorityQueue</span>&lt;&gt;(<span class="tok-tipo">Comparator</span>.reverseOrder());
+
+<span class="tok-coment">// tareas: urgencia más alta primero; a igualdad, la más antigua</span>
+<span class="tok-clave">record</span> <span class="tok-tipo">Tarea</span>(<span class="tok-tipo">String</span> nombre, <span class="tok-tipo">int</span> urgencia, <span class="tok-tipo">long</span> llegada) { }
+<span class="tok-tipo">Queue</span>&lt;<span class="tok-tipo">Tarea</span>&gt; tareas = <span class="tok-clave">new</span> <span class="tok-tipo">PriorityQueue</span>&lt;&gt;(
+    <span class="tok-tipo">Comparator</span>.comparingInt(<span class="tok-tipo">Tarea</span>::urgencia).reversed()
+              .thenComparingLong(<span class="tok-tipo">Tarea</span>::llegada));
+
+<span class="tok-clave">while</span> (!tareas.isEmpty()) procesar(tareas.poll());</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>offer  add</code></th><td>O(log n)</td></tr>
+                  <tr><th scope="row"><code>poll  remove()</code></th><td>O(log n): saca el menor</td></tr>
+                  <tr><th scope="row"><code>peek</code></th><td>O(1): mira el menor</td></tr>
+                  <tr><th scope="row"><code>contains  remove(o)</code></th><td>O(n)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> recorrerla con for-each o imprimirla <strong>no</strong> la muestra ordenada; solo la cabeza está garantizada. Para obtenerlos en orden, ve haciendo <code>poll()</code>. Y no admite <code>null</code>.</p>
+          </div>
+        </section>
+        <!-- 7. Stack (antigua) -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Stack (antigua)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Stack</span>&lt;<span class="tok-tipo">Integer</span>&gt; s = <span class="tok-clave">new</span> <span class="tok-tipo">Stack</span>&lt;&gt;();
+s.push(<span class="tok-numero">1</span>);  s.push(<span class="tok-numero">2</span>);
+s.peek();      <span class="tok-coment">// 2</span>
+s.pop();       <span class="tok-coment">// 2; EmptyStackException si está vacía</span>
+s.empty();     <span class="tok-coment">// como isEmpty()</span>
+s.search(<span class="tok-numero">1</span>);   <span class="tok-coment">// distancia a la cima (1 = arriba), o -1</span>
+
+s.get(<span class="tok-numero">0</span>);      <span class="tok-coment">// compila: hereda de Vector y deja romper la pila</span></code></pre></figure>
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">Stack (antiguo)</span><span class="b">ArrayDeque (actual)</span></div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>Stack&lt;T&gt; s = new Stack&lt;&gt;();</code></div>
+                <div class="cmp-b"><code>Deque&lt;T&gt; s = new ArrayDeque&lt;&gt;();</code></div>
+                <div class="cmp-nota">crear</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>s.empty()</code></div>
+                <div class="cmp-b"><code>s.isEmpty()</code></div>
+                <div class="cmp-nota">¿vacía?</div>
+              </div>
+              <div class="cmp-fila">
+                <div class="cmp-a"><code>for (x : s)  // de abajo arriba</code></div>
+                <div class="cmp-b"><code>for (x : s)  // de la cima hacia abajo</code></div>
+                <div class="cmp-nota">el orden al recorrer es el contrario</div>
+              </div>
+            </div>
+            <p class="nota"><code>push</code>, <code>pop</code> y <code>peek</code> se llaman igual, así que cambiar de una a otra es casi inmediato. <code>Stack</code> sincroniza cada operación y expone métodos de lista que no tienen sentido en una pila.</p>
+          </div>
+        </section>
+        <!-- 8. Recetas -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Recetas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// ¿paréntesis equilibrados?</span>
+<span class="tok-clave">static</span> <span class="tok-tipo">boolean</span> equilibrado(<span class="tok-tipo">String</span> s) {
+    <span class="tok-tipo">Deque</span>&lt;<span class="tok-tipo">Character</span>&gt; pila = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+    <span class="tok-clave">for</span> (<span class="tok-tipo">char</span> c : s.toCharArray()) {
+        <span class="tok-clave">switch</span> (c) {
+            <span class="tok-clave">case</span> <span class="tok-texto">'('</span>, <span class="tok-texto">'['</span>, <span class="tok-texto">'{'</span> -&gt; pila.push(c);
+            <span class="tok-clave">case</span> <span class="tok-texto">')'</span> -&gt; { <span class="tok-clave">if</span> (pila.isEmpty() || pila.pop() != <span class="tok-texto">'('</span>) <span class="tok-clave">return</span> <span class="tok-clave">false</span>; }
+            <span class="tok-clave">case</span> <span class="tok-texto">']'</span> -&gt; { <span class="tok-clave">if</span> (pila.isEmpty() || pila.pop() != <span class="tok-texto">'['</span>) <span class="tok-clave">return</span> <span class="tok-clave">false</span>; }
+            <span class="tok-clave">case</span> <span class="tok-texto">'}'</span> -&gt; { <span class="tok-clave">if</span> (pila.isEmpty() || pila.pop() != <span class="tok-texto">'{'</span>) <span class="tok-clave">return</span> <span class="tok-clave">false</span>; }
+            <span class="tok-clave">default</span> -&gt; { }
+        }
+    }
+    <span class="tok-clave">return</span> pila.isEmpty();
+}
+
+<span class="tok-coment">// invertir una cadena o una lista con una pila</span>
+<span class="tok-tipo">Deque</span>&lt;<span class="tok-tipo">String</span>&gt; p = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> x : lista) p.push(x);
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; invertida = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;(p);   <span class="tok-coment">// se recorre desde la cima</span>
+
+<span class="tok-coment">// deshacer / rehacer</span>
+<span class="tok-tipo">Deque</span>&lt;<span class="tok-tipo">String</span>&gt; deshacer = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;(), rehacer = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+<span class="tok-clave">void</span> hacer(<span class="tok-tipo">String</span> accion) { deshacer.push(accion); rehacer.clear(); }
+<span class="tok-clave">void</span> deshacer() { <span class="tok-clave">if</span> (!deshacer.isEmpty()) rehacer.push(deshacer.pop()); }
+<span class="tok-clave">void</span> rehacer()  { <span class="tok-clave">if</span> (!rehacer.isEmpty()) deshacer.push(rehacer.pop()); }
+
+<span class="tok-coment">// los k mayores de una lista: montículo de tamaño k</span>
+<span class="tok-tipo">PriorityQueue</span>&lt;<span class="tok-tipo">Integer</span>&gt; top = <span class="tok-clave">new</span> <span class="tok-tipo">PriorityQueue</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> x : numeros) {
+    top.offer(x);
+    <span class="tok-clave">if</span> (top.size() &gt; k) top.poll();   <span class="tok-coment">// tira el menor</span>
+}
+
+<span class="tok-coment">// recorrido en anchura (BFS) de un árbol</span>
+<span class="tok-tipo">Queue</span>&lt;<span class="tok-tipo">Nodo</span>&gt; q = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayDeque</span>&lt;&gt;();
+q.offer(raiz);
+<span class="tok-clave">while</span> (!q.isEmpty()) {
+    <span class="tok-tipo">Nodo</span> n = q.poll();
+    visitar(n);
+    n.hijos().forEach(q::offer);
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 9. Colas para hilos -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Colas para hilos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>BlockingQueue</code></th><td>interfaz: <code>put</code> espera si está llena, <code>take</code> espera si está vacía</td></tr>
+                  <tr><th scope="row"><code>ArrayBlockingQueue</code></th><td>con capacidad fija</td></tr>
+                  <tr><th scope="row"><code>LinkedBlockingQueue</code></th><td>capacidad opcional</td></tr>
+                  <tr><th scope="row"><code>PriorityBlockingQueue</code></th><td>por prioridad, sin límite</td></tr>
+                  <tr><th scope="row"><code>ConcurrentLinkedQueue</code></th><td>sin bloqueos, para muchas operaciones rápidas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// productor-consumidor</span>
+<span class="tok-tipo">BlockingQueue</span>&lt;<span class="tok-tipo">Pedido</span>&gt; pedidos = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayBlockingQueue</span>&lt;&gt;(<span class="tok-numero">100</span>);
+pedidos.put(p);                 <span class="tok-coment">// productor: espera si hay 100</span>
+<span class="tok-tipo">Pedido</span> sig = pedidos.take();     <span class="tok-coment">// consumidor: espera si no hay ninguno</span></code></pre></figure>
+            <p class="nota">Están en <code>java.util.concurrent</code>. Solo hacen falta cuando varios hilos comparten la cola.</p>
+          </div>
+        </section>
+        <!-- 10. Despistes habituales -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>pop()</code> o <code>remove()</code> con la estructura vacía</th><td><code>NoSuchElementException</code>: comprueba <code>isEmpty()</code> o usa <code>poll()</code></td></tr>
+                  <tr><th scope="row" class="larga">Mezclar push con offer en el mismo Deque</th><td><code>push</code> mete por delante y <code>offer</code> por detrás: decide si es pila o cola</td></tr>
+                  <tr><th scope="row" class="larga">Meter null en un ArrayDeque</th><td><code>NullPointerException</code></td></tr>
+                  <tr><th scope="row" class="larga">Imprimir una PriorityQueue esperando orden</th><td>solo la cabeza está en su sitio</td></tr>
+                  <tr><th scope="row" class="larga">Usar Stack en código nuevo</th><td>usa <code>Deque</code> + <code>ArrayDeque</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="mapas.html">← Mapas</a><a class="siguiente" href="streams.html">Lambdas y streams →</a></nav>
+      <footer class="pie">Forma parte de <a href="colecciones.html">Colecciones</a>, donde están el mapa de clases y la comparativa de todas las implementaciones.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

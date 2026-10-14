@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lectura y escritura · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Lectura y escritura</span></nav>
+          <h1>Lectura y escritura</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Acceso a datos, parte 2: los flujos de <code>java.io</code>, cómo se envuelven unos en otros, texto, binarios con tipo, serialización de objetos y acceso aleatorio.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html" aria-current="page">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Bytes y caracteres, nodo y filtro</a><a href="#s2"><b>2</b>Envolver un flujo en otro</a><a href="#s3"><b>3</b>Qué combinación usar</a><a href="#s4"><b>4</b>InputStream y OutputStream</a><a href="#s5"><b>5</b>Reader, Writer y los puentes</a><a href="#s6"><b>6</b>BufferedReader y BufferedWriter</a><a href="#s7"><b>7</b>PrintWriter y PrintStream</a><a href="#s8"><b>8</b>Scanner sobre ficheros y textos</a><a href="#s9"><b>9</b>Ficheros CSV sencillos</a><a href="#s10"><b>10</b>Datos binarios con tipo</a><a href="#s11"><b>11</b>Serialización de objetos</a><a href="#s12"><b>12</b>Acceso aleatorio: RandomAccessFile</a><a href="#s13"><b>13</b>Codificación de caracteres</a><a href="#s14"><b>14</b>Errores habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Mapa de clases de java.io</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Flujos de bytes (imágenes, ZIP, binarios, objetos)</p>
+            <figure class="codigo"><pre data-lang="text"><code>InputStream                     <span class="tok-coment">abstracta</span>
+├── FileInputStream             <span class="tok-tipo">nodo</span>    fichero
+├── ByteArrayInputStream        <span class="tok-tipo">nodo</span>    byte[] en memoria
+├── ObjectInputStream           <span class="tok-clave">filtro</span>  readObject
+└── FilterInputStream
+    ├── BufferedInputStream     <span class="tok-clave">filtro</span>  búfer
+    └── DataInputStream         <span class="tok-clave">filtro</span>  readInt, readDouble...
+
+OutputStream                    <span class="tok-coment">abstracta</span>
+├── FileOutputStream            <span class="tok-tipo">nodo</span>    fichero
+├── ByteArrayOutputStream       <span class="tok-tipo">nodo</span>    byte[] en memoria
+├── ObjectOutputStream          <span class="tok-clave">filtro</span>  writeObject
+└── FilterOutputStream
+    ├── BufferedOutputStream    <span class="tok-clave">filtro</span>  búfer
+    ├── DataOutputStream        <span class="tok-clave">filtro</span>  writeInt, writeDouble...
+    └── PrintStream             <span class="tok-clave">filtro</span>  print, printf (System.out)
+
+RandomAccessFile                <span class="tok-coment">aparte: lee y escribe, con seek</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Flujos de caracteres (texto: .txt, .csv, .xml)</p>
+            <figure class="codigo"><pre data-lang="text"><code>Reader                          <span class="tok-coment">abstracta</span>
+├── InputStreamReader           <span class="tok-texto">puente</span>  bytes → caracteres
+│   └── FileReader              <span class="tok-tipo">nodo</span>    fichero
+├── StringReader                <span class="tok-tipo">nodo</span>    String en memoria
+├── CharArrayReader             <span class="tok-tipo">nodo</span>    char[] en memoria
+└── BufferedReader              <span class="tok-clave">filtro</span>  búfer y readLine
+
+Writer                          <span class="tok-coment">abstracta</span>
+├── OutputStreamWriter          <span class="tok-texto">puente</span>  caracteres → bytes
+│   └── FileWriter              <span class="tok-tipo">nodo</span>    fichero
+├── StringWriter                <span class="tok-tipo">nodo</span>    String en memoria
+├── CharArrayWriter             <span class="tok-tipo">nodo</span>    char[] en memoria
+├── BufferedWriter              <span class="tok-clave">filtro</span>  búfer y newLine
+└── PrintWriter                 <span class="tok-clave">filtro</span>  print, println, printf
+
+Scanner (java.util)             <span class="tok-coment">aparte: trocea y convierte</span></code></pre></figure>
+          </div>
+        </div>
+        <p class="banda-titulo">Cómo se apilan: leer texto UTF-8 línea a línea</p>
+        <div class="flujo">
+          <div class="caja caja-1">datos.txt<small>bytes en disco</small></div>
+          <div class="flecha"><span class="ida">FileInputStream</span><br><span class="linea">──────▶</span><br><span class="vuelta">lee bytes</span></div>
+          <div class="caja caja-2">bytes<small>nodo</small></div>
+          <div class="flecha"><span class="ida">InputStreamReader</span><br><span class="linea">──────▶</span><br><span class="vuelta">decodifica UTF-8</span></div>
+          <div class="caja caja-3">caracteres<small>puente</small></div>
+          <div class="flecha"><span class="ida">BufferedReader</span><br><span class="linea">──────▶</span><br><span class="vuelta">agrupa y da readLine()</span></div>
+          <div class="caja caja-4">líneas<small>tu programa</small></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Bytes y caracteres, nodo y filtro -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Bytes y caracteres, nodo y filtro</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>flujo</strong> (<em>stream</em>) es una secuencia de datos que se lee o se escribe en orden, de principio a fin. Las clases de <code>java.io</code> se reparten en dos ejes.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Flujos de bytes</th><td>terminan en <code>InputStream</code> / <code>OutputStream</code>. Leen y escriben <code>byte</code> tal cual. Para cualquier fichero.</td></tr>
+                  <tr><th scope="row">Flujos de caracteres</th><td>terminan en <code>Reader</code> / <code>Writer</code>. Trabajan con <code>char</code> y aplican una codificación (UTF-8...). Solo para texto.</td></tr>
+                  <tr><th scope="row">Clase nodo</th><td>se conecta al origen o destino real: un fichero (<code>FileInputStream</code>, <code>FileReader</code>), un array, un <code>String</code>, un socket.</td></tr>
+                  <tr><th scope="row">Clase filtro</th><td>recibe otro flujo en el constructor y le añade algo: búfer, tipos, objetos, formato. No sabe de dónde vienen los datos.</td></tr>
+                  <tr><th scope="row">Clase puente</th><td><code>InputStreamReader</code> y <code>OutputStreamWriter</code>: convierten un flujo de bytes en uno de caracteres.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>read()</code></th><td>devuelve un <code>int</code>: el byte (0-255) o el carácter, o <strong>-1</strong> al llegar al final</td></tr>
+                  <tr><th scope="row"><code>write(x)</code></th><td>escribe un byte o un carácter</td></tr>
+                  <tr><th scope="row"><code>flush()</code></th><td>vacía el búfer: manda al destino lo pendiente</td></tr>
+                  <tr><th scope="row"><code>close()</code></th><td>cierra el flujo (y hace <code>flush</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si el contenido es texto, familia de caracteres. Si no lo es (imágenes, PDF, ZIP, objetos serializados), familia de bytes. Leer un binario con un <code>Reader</code> lo corrompe.</p>
+          </div>
+        </section>
+        <!-- 2. Envolver un flujo en otro -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Envolver un flujo en otro</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada clase hace una sola cosa. Para juntar varias capacidades se pasa un flujo al constructor de otro: el de fuera usa al de dentro. Es el <strong>patrón decorador</strong>: como capas de una cebolla, con el nodo en el centro.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// de dentro hacia fuera</span>
+<span class="tok-tipo">FileOutputStream</span> fos = <span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(<span class="tok-texto">"datos.bin"</span>);   <span class="tok-coment">// nodo: el fichero</span>
+<span class="tok-tipo">BufferedOutputStream</span> bos = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedOutputStream</span>(fos);   <span class="tok-coment">// + búfer</span>
+<span class="tok-tipo">DataOutputStream</span> dos = <span class="tok-clave">new</span> <span class="tok-tipo">DataOutputStream</span>(bos);           <span class="tok-coment">// + writeInt, writeUTF...</span>
+
+<span class="tok-coment">// lo normal es escribirlo anidado, en una sola expresión</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">DataOutputStream</span> out = <span class="tok-clave">new</span> <span class="tok-tipo">DataOutputStream</span>(
+        <span class="tok-clave">new</span> <span class="tok-tipo">BufferedOutputStream</span>(
+            <span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(<span class="tok-texto">"datos.bin"</span>)))) {
+    out.writeInt(<span class="tok-numero">42</span>);    <span class="tok-coment">// DataOutputStream → 4 bytes → búfer → fichero</span>
+}                       <span class="tok-coment">// cerrar el de fuera cierra todos los de dentro</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Buffered…</code></th><td>agrupa en memoria y va al disco por bloques: mucho más rápido</td></tr>
+                  <tr><th scope="row"><code>Data…</code></th><td>lee y escribe tipos primitivos y <code>String</code> en binario</td></tr>
+                  <tr><th scope="row"><code>Object…</code></th><td>lee y escribe objetos enteros (serialización)</td></tr>
+                  <tr><th scope="row"><code>InputStreamReader</code></th><td>convierte bytes en caracteres con una codificación</td></tr>
+                  <tr><th scope="row"><code>PrintWriter  PrintStream</code></th><td>añade <code>print</code>, <code>println</code> y <code>printf</code></td></tr>
+                  <tr><th scope="row"><code>Scanner</code></th><td>trocea el texto y convierte a números</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Ejemplos típicos de capas</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// texto del teclado, línea a línea</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(<span class="tok-tipo">System</span>.in))
+
+<span class="tok-coment">// texto de un fichero, con codificación explícita</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileInputStream</span>(f), <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>))
+
+<span class="tok-coment">// texto con formato a un fichero</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(<span class="tok-clave">new</span> <span class="tok-tipo">BufferedWriter</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileWriter</span>(f)))
+
+<span class="tok-coment">// objetos a un fichero, con búfer</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">ObjectOutputStream</span>(<span class="tok-clave">new</span> <span class="tok-tipo">BufferedOutputStream</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(f)))
+
+<span class="tok-coment">// lo mismo partiendo de Files (java.nio.file): el nodo ya viene hecho</span>
+<span class="tok-tipo">Files</span>.newBufferedReader(ruta)                   <span class="tok-coment">// = BufferedReader + Reader UTF-8</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">ObjectOutputStream</span>(<span class="tok-tipo">Files</span>.newOutputStream(ruta))</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> solo se combinan piezas de la misma familia. Un <code>BufferedReader</code> no puede envolver directamente un <code>FileInputStream</code>: hace falta el puente <code>InputStreamReader</code> en medio. Y el orden importa al leer: la capa de fuera debe ser la misma que se usó al escribir.</p>
+          </div>
+        </section>
+        <!-- 3. Qué combinación usar -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Qué combinación usar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Leer un texto pequeño entero</th><td><code>Files.readString</code> / <code>readAllLines</code></td></tr>
+                  <tr><th scope="row" class="larga">Leer texto línea a línea</th><td><code>BufferedReader</code> (<code>Files.newBufferedReader</code> o sobre <code>FileReader</code>)</td></tr>
+                  <tr><th scope="row" class="larga">Leer texto y convertir números</th><td><code>Scanner</code></td></tr>
+                  <tr><th scope="row" class="larga">Escribir texto</th><td><code>BufferedWriter</code> con <code>write</code> y <code>newLine</code></td></tr>
+                  <tr><th scope="row" class="larga">Escribir texto con formato</th><td><code>PrintWriter</code> con <code>printf</code></td></tr>
+                  <tr><th scope="row" class="larga">Añadir al final de un fichero</th><td><code>new FileWriter(f, true)</code> / <code>new FileOutputStream(f, true)</code> / <code>APPEND</code></td></tr>
+                  <tr><th scope="row" class="larga">Copiar un fichero cualquiera</th><td><code>Files.copy</code>, o <code>InputStream</code> + <code>OutputStream</code> con búfer</td></tr>
+                  <tr><th scope="row" class="larga">Guardar números, booleanos, textos en binario</th><td><code>DataOutputStream</code> / <code>DataInputStream</code></td></tr>
+                  <tr><th scope="row" class="larga">Guardar objetos</th><td><code>ObjectOutputStream</code> / <code>ObjectInputStream</code></td></tr>
+                  <tr><th scope="row" class="larga">Ir directo al registro n, modificar en sitio</th><td><code>RandomAccessFile</code></td></tr>
+                  <tr><th scope="row" class="larga">Leer o escribir en memoria</th><td><code>ByteArray…Stream</code>, <code>StringReader</code>, <code>StringWriter</code></td></tr>
+                  <tr><th scope="row" class="larga">Leer del teclado</th><td><code>Scanner(System.in)</code>, ver <a href="sintaxis.html#s4">Sintaxis básica</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// plantilla de lectura: siempre con try-with-resources</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">BufferedReader</span> br = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileReader</span>(<span class="tok-texto">"datos.txt"</span>))) {
+    ...
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">FileNotFoundException</span> e) {
+    <span class="tok-tipo">System</span>.err.println(<span class="tok-texto">"No existe el fichero"</span>);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">IOException</span> e) {
+    <span class="tok-tipo">System</span>.err.println(<span class="tok-texto">"Error de lectura: "</span> + e.getMessage());
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. InputStream y OutputStream -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>InputStream y OutputStream</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// copiar byte a byte (lento: solo para entender cómo funciona)</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">FileInputStream</span> in = <span class="tok-clave">new</span> <span class="tok-tipo">FileInputStream</span>(<span class="tok-texto">"foto.jpg"</span>);
+     <span class="tok-tipo">FileOutputStream</span> out = <span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(<span class="tok-texto">"copia.jpg"</span>)) {
+    <span class="tok-tipo">int</span> b;
+    <span class="tok-clave">while</span> ((b = in.read()) != -<span class="tok-numero">1</span>) {
+        out.write(b);
+    }
+}
+
+<span class="tok-coment">// copiar por bloques (lo habitual)</span>
+<span class="tok-tipo">byte</span>[] buffer = <span class="tok-clave">new</span> <span class="tok-tipo">byte</span>[<span class="tok-numero">8192</span>];
+<span class="tok-tipo">int</span> leidos;
+<span class="tok-clave">while</span> ((leidos = in.read(buffer)) != -<span class="tok-numero">1</span>) {
+    out.write(buffer, <span class="tok-numero">0</span>, leidos);     <span class="tok-coment">// solo los que se leyeron</span>
+}
+
+<span class="tok-coment">// o directamente</span>
+in.transferTo(out);
+
+<span class="tok-coment">// añadir al final</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(<span class="tok-texto">"log.bin"</span>, <span class="tok-clave">true</span>);
+
+<span class="tok-coment">// en memoria: útil para pruebas o para construir un byte[]</span>
+<span class="tok-tipo">ByteArrayOutputStream</span> mem = <span class="tok-clave">new</span> <span class="tok-tipo">ByteArrayOutputStream</span>();
+mem.write(<span class="tok-texto">"hola"</span>.getBytes());
+<span class="tok-tipo">byte</span>[] bytes = mem.toByteArray();
+<span class="tok-tipo">InputStream</span> desdeMemoria = <span class="tok-clave">new</span> <span class="tok-tipo">ByteArrayInputStream</span>(bytes);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>read()</code></th><td>un byte (0-255), o -1 al acabar</td></tr>
+                  <tr><th scope="row"><code>read(byte[] buf)</code></th><td>llena el array; devuelve cuántos leyó, o -1</td></tr>
+                  <tr><th scope="row"><code>readAllBytes()</code></th><td>todo lo que quede</td></tr>
+                  <tr><th scope="row"><code>readNBytes(n)</code></th><td>exactamente n bytes (o menos si se acaba)</td></tr>
+                  <tr><th scope="row"><code>skip(n)</code></th><td>salta n bytes</td></tr>
+                  <tr><th scope="row"><code>available()</code></th><td>bytes que se pueden leer sin esperar</td></tr>
+                  <tr><th scope="row"><code>transferTo(out)</code></th><td>vuelca todo en otro <code>OutputStream</code></td></tr>
+                  <tr><th scope="row"><code>write(int b)</code></th><td>escribe un byte</td></tr>
+                  <tr><th scope="row"><code>write(buf, ini, n)</code></th><td>escribe n bytes del array desde <code>ini</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>BufferedInputStream</code> y <code>BufferedOutputStream</code> no añaden métodos: solo reducen los accesos al disco. Envuélvelos siempre que leas o escribas poco a poco.</p>
+          </div>
+        </section>
+        <!-- 5. Reader, Writer y los puentes -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Reader, Writer y los puentes</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// carácter a carácter</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">FileReader</span> fr = <span class="tok-clave">new</span> <span class="tok-tipo">FileReader</span>(<span class="tok-texto">"texto.txt"</span>)) {
+    <span class="tok-tipo">int</span> c;
+    <span class="tok-clave">while</span> ((c = fr.read()) != -<span class="tok-numero">1</span>) {
+        <span class="tok-tipo">IO</span>.print((<span class="tok-tipo">char</span>) c);
+    }
+}
+
+<span class="tok-coment">// FileWriter: sobrescribe; con true, añade</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">FileWriter</span> fw = <span class="tok-clave">new</span> <span class="tok-tipo">FileWriter</span>(<span class="tok-texto">"log.txt"</span>, <span class="tok-clave">true</span>)) {
+    fw.write(<span class="tok-texto">"Nueva entrada\n"</span>);
+}
+
+<span class="tok-coment">// con codificación (Java 11+)</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">FileReader</span>(<span class="tok-texto">"viejo.txt"</span>, <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">ISO_8859_1</span>);
+
+<span class="tok-coment">// puentes: de cualquier flujo de bytes a caracteres</span>
+<span class="tok-tipo">Reader</span> r = <span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(socket.getInputStream(), <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);
+<span class="tok-tipo">Writer</span> w = <span class="tok-clave">new</span> <span class="tok-tipo">OutputStreamWriter</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(f), <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);
+
+<span class="tok-coment">// en memoria</span>
+<span class="tok-tipo">StringWriter</span> sw = <span class="tok-clave">new</span> <span class="tok-tipo">StringWriter</span>();
+sw.write(<span class="tok-texto">"texto acumulado"</span>);
+<span class="tok-tipo">String</span> resultado = sw.toString();
+<span class="tok-tipo">Reader</span> prueba = <span class="tok-clave">new</span> <span class="tok-tipo">StringReader</span>(<span class="tok-texto">"línea 1\nlínea 2"</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>read()</code></th><td>un carácter como <code>int</code>, o -1</td></tr>
+                  <tr><th scope="row"><code>read(char[] buf)</code></th><td>un bloque; devuelve cuántos leyó</td></tr>
+                  <tr><th scope="row"><code>transferTo(writer)</code></th><td>vuelca todo en un <code>Writer</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>write(String)  write(char[])</code></th><td>escribe texto</td></tr>
+                  <tr><th scope="row"><code>append(texto)</code></th><td>como <code>write</code>, pero encadenable</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6. BufferedReader y BufferedWriter -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>BufferedReader y BufferedWriter</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// leer línea a línea: el bucle de toda la vida</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">BufferedReader</span> br = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileReader</span>(<span class="tok-texto">"datos.txt"</span>))) {
+    <span class="tok-tipo">String</span> linea;
+    <span class="tok-tipo">int</span> n = <span class="tok-numero">0</span>;
+    <span class="tok-clave">while</span> ((linea = br.readLine()) != <span class="tok-clave">null</span>) {
+        n++;
+        <span class="tok-tipo">IO</span>.println(n + <span class="tok-texto">": "</span> + linea);
+    }
+}
+
+<span class="tok-coment">// como stream</span>
+<span class="tok-tipo">long</span> vacias = br.lines().filter(<span class="tok-tipo">String</span>::isBlank).count();
+
+<span class="tok-coment">// escribir</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">BufferedWriter</span> bw = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedWriter</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileWriter</span>(<span class="tok-texto">"salida.txt"</span>))) {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">String</span> s : lista) {
+        bw.write(s);
+        bw.newLine();                <span class="tok-coment">// \n o \r\n según el sistema</span>
+    }
+}
+
+<span class="tok-coment">// equivalentes con Files (UTF-8 por defecto)</span>
+<span class="tok-tipo">BufferedReader</span> br2 = <span class="tok-tipo">Files</span>.newBufferedReader(ruta);
+<span class="tok-tipo">BufferedWriter</span> bw2 = <span class="tok-tipo">Files</span>.newBufferedWriter(ruta, <span class="tok-tipo">StandardOpenOption</span>.<span class="tok-tipo">APPEND</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>readLine()</code></th><td>una línea sin el salto, o <code>null</code> al acabar</td></tr>
+                  <tr><th scope="row"><code>lines()</code></th><td><code>Stream&lt;String&gt;</code> con las líneas que quedan</td></tr>
+                  <tr><th scope="row"><code>ready()</code></th><td>¿se puede leer sin esperar?</td></tr>
+                  <tr><th scope="row"><code>mark(n)  reset()</code></th><td>marca una posición y vuelve a ella</td></tr>
+                  <tr><th scope="row"><code>write(String)</code></th><td>escribe texto</td></tr>
+                  <tr><th scope="row"><code>newLine()</code></th><td>salto de línea del sistema</td></tr>
+                  <tr><th scope="row"><code>flush()</code></th><td>vuelca el búfer sin cerrar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> lo escrito en un <code>BufferedWriter</code> se queda en memoria hasta que se llena el búfer, se hace <code>flush()</code> o se cierra. Si el programa acaba sin cerrarlo, el fichero queda incompleto o vacío.</p>
+          </div>
+        </section>
+        <!-- 7. PrintWriter y PrintStream -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>PrintWriter y PrintStream</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> (<span class="tok-tipo">PrintWriter</span> pw = <span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(<span class="tok-clave">new</span> <span class="tok-tipo">BufferedWriter</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileWriter</span>(<span class="tok-texto">"informe.txt"</span>)))) {
+    pw.println(<span class="tok-texto">"INFORME DE NOTAS"</span>);
+    pw.printf(<span class="tok-texto">"%-15s %6s%n"</span>, <span class="tok-texto">"Alumno"</span>, <span class="tok-texto">"Nota"</span>);
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Alumno</span> a : alumnos) {
+        pw.printf(<span class="tok-texto">"%-15s %6.2f%n"</span>, a.nombre(), a.nota());
+    }
+}
+
+<span class="tok-coment">// atajos: PrintWriter ya crea el FileWriter por dentro</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(<span class="tok-texto">"informe.txt"</span>);
+<span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileWriter</span>(<span class="tok-texto">"informe.txt"</span>, <span class="tok-clave">true</span>));   <span class="tok-coment">// para añadir</span>
+
+<span class="tok-coment">// autoflush: vuelca en cada println (útil en sockets)</span>
+<span class="tok-tipo">PrintWriter</span> salida = <span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(socket.getOutputStream(), <span class="tok-clave">true</span>);
+
+<span class="tok-coment">// redirigir System.out a un fichero</span>
+<span class="tok-tipo">System</span>.setOut(<span class="tok-clave">new</span> <span class="tok-tipo">PrintStream</span>(<span class="tok-texto">"salida.log"</span>));</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>PrintWriter</code></th><td>de caracteres; la opción para escribir texto con formato</td></tr>
+                  <tr><th scope="row"><code>PrintStream</code></th><td>de bytes; es el tipo de <code>System.out</code> y <code>System.err</code></td></tr>
+                  <tr><th scope="row"><code>print  println  printf</code></th><td>los mismos que en consola</td></tr>
+                  <tr><th scope="row"><code>checkError()</code></th><td><code>true</code> si hubo algún error</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> <code>PrintWriter</code> y <code>PrintStream</code> no lanzan <code>IOException</code> al escribir: se tragan los errores. Si es importante saber si falló, llama a <code>checkError()</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Scanner sobre ficheros y textos -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Scanner sobre ficheros y textos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// fichero de números separados por espacios o saltos</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Scanner</span> sc = <span class="tok-clave">new</span> <span class="tok-tipo">Scanner</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"numeros.txt"</span>))) {
+    <span class="tok-tipo">int</span> suma = <span class="tok-numero">0</span>;
+    <span class="tok-clave">while</span> (sc.hasNextInt()) {
+        suma += sc.nextInt();
+    }
+}
+
+<span class="tok-coment">// línea a línea</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Scanner</span> sc = <span class="tok-clave">new</span> <span class="tok-tipo">Scanner</span>(<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"datos.txt"</span>))) {
+    <span class="tok-clave">while</span> (sc.hasNextLine()) {
+        <span class="tok-tipo">String</span> linea = sc.nextLine();
+    }
+}
+
+<span class="tok-coment">// trocear un texto con otro separador</span>
+<span class="tok-tipo">Scanner</span> s = <span class="tok-clave">new</span> <span class="tok-tipo">Scanner</span>(<span class="tok-texto">"Ana;8,5;DAM"</span>).useDelimiter(<span class="tok-texto">";"</span>);
+<span class="tok-tipo">String</span> nombre = s.next();
+<span class="tok-tipo">double</span> nota = s.nextDouble();</code></pre></figure>
+            <p class="nota">Los métodos son los mismos que con el teclado: ver <a href="sintaxis.html#s4">Leer por teclado: Scanner</a>. Es cómodo, pero lento con ficheros grandes: ahí, <code>BufferedReader</code>.</p>
+          </div>
+        </section>
+        <!-- 9. Ficheros CSV sencillos -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Ficheros CSV sencillos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// escribir</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">PrintWriter</span> pw = <span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(<span class="tok-tipo">Files</span>.newBufferedWriter(ruta))) {
+    pw.println(<span class="tok-texto">"nombre;curso;nota"</span>);
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Alumno</span> a : alumnos) {
+        pw.printf(<span class="tok-texto">"%s;%s;%.2f%n"</span>, a.nombre(), a.curso(), a.nota());
+    }
+}
+
+<span class="tok-coment">// leer</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt; alumnos = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+<span class="tok-clave">try</span> (<span class="tok-tipo">BufferedReader</span> br = <span class="tok-tipo">Files</span>.newBufferedReader(ruta)) {
+    br.readLine();                          <span class="tok-coment">// salta la cabecera</span>
+    <span class="tok-tipo">String</span> linea;
+    <span class="tok-clave">while</span> ((linea = br.readLine()) != <span class="tok-clave">null</span>) {
+        <span class="tok-clave">if</span> (linea.isBlank()) <span class="tok-clave">continue</span>;
+        <span class="tok-tipo">String</span>[] c = linea.split(<span class="tok-texto">";"</span>, -<span class="tok-numero">1</span>);
+        alumnos.add(<span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(c[<span class="tok-numero">0</span>], c[<span class="tok-numero">1</span>], <span class="tok-tipo">Double</span>.parseDouble(c[<span class="tok-numero">2</span>].replace(<span class="tok-texto">','</span>, <span class="tok-texto">'.'</span>))));
+    }
+}</code></pre></figure>
+            <p class="nota"><code>printf</code> con el sistema en español escribe <code>8,50</code>; por eso al leer se cambia la coma por punto antes de <code>parseDouble</code>. Para CSV reales (comas dentro de campos, comillas) usa una librería como OpenCSV o Apache Commons CSV.</p>
+          </div>
+        </section>
+        <!-- 10. Datos binarios con tipo -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Datos binarios con tipo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// escribir varios registros</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">DataOutputStream</span> out = <span class="tok-clave">new</span> <span class="tok-tipo">DataOutputStream</span>(
+        <span class="tok-clave">new</span> <span class="tok-tipo">BufferedOutputStream</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(<span class="tok-texto">"alumnos.dat"</span>)))) {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Alumno</span> a : alumnos) {
+        out.writeInt(a.id());
+        out.writeUTF(a.nombre());
+        out.writeDouble(a.nota());
+    }
+}
+
+<span class="tok-coment">// leer hasta el final: readXxx lanza EOFException al acabar</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">DataInputStream</span> in = <span class="tok-clave">new</span> <span class="tok-tipo">DataInputStream</span>(
+        <span class="tok-clave">new</span> <span class="tok-tipo">BufferedInputStream</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileInputStream</span>(<span class="tok-texto">"alumnos.dat"</span>)))) {
+    <span class="tok-clave">while</span> (<span class="tok-clave">true</span>) {
+        <span class="tok-tipo">int</span> id = in.readInt();
+        <span class="tok-tipo">String</span> nombre = in.readUTF();
+        <span class="tok-tipo">double</span> nota = in.readDouble();
+        <span class="tok-tipo">IO</span>.println(id + <span class="tok-texto">" "</span> + nombre + <span class="tok-texto">" "</span> + nota);
+    }
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">EOFException</span> e) {
+    <span class="tok-coment">// fin del fichero: no es un error</span>
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>writeInt  readInt</code></th><td>4 bytes</td></tr>
+                  <tr><th scope="row"><code>writeLong  readLong</code></th><td>8 bytes</td></tr>
+                  <tr><th scope="row"><code>writeDouble  readDouble</code></th><td>8 bytes</td></tr>
+                  <tr><th scope="row"><code>writeFloat  readFloat</code></th><td>4 bytes</td></tr>
+                  <tr><th scope="row"><code>writeShort  writeByte</code></th><td>2 y 1 byte</td></tr>
+                  <tr><th scope="row"><code>writeBoolean  readBoolean</code></th><td>1 byte</td></tr>
+                  <tr><th scope="row"><code>writeChar  readChar</code></th><td>2 bytes</td></tr>
+                  <tr><th scope="row"><code>writeChars(s)</code></th><td>2 bytes por carácter, sin longitud (no hay <code>readChars</code>)</td></tr>
+                  <tr><th scope="row"><code>writeUTF  readUTF</code></th><td>2 bytes con la longitud + el texto: tamaño variable</td></tr>
+                  <tr><th scope="row"><code>size()</code></th><td>bytes escritos hasta ahora (<code>DataOutputStream</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> el fichero no guarda qué tipo es cada dato. Hay que leer <strong>en el mismo orden y con los mismos tipos</strong> en que se escribió; si no, se obtienen valores sin sentido.</p>
+          </div>
+        </section>
+        <!-- 11. Serialización de objetos -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Serialización de objetos</h2>
+          <div class="cuerpo">
+            <p class="txt"><strong>Serializar</strong> es convertir un objeto (con todos los objetos a los que apunta) en una secuencia de bytes para guardarlo o enviarlo. <strong>Deserializar</strong> es reconstruirlo.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Alumno</span> <span class="tok-clave">implements</span> <span class="tok-tipo">Serializable</span> {
+    <span class="tok-clave">private</span> <span class="tok-clave">static</span> <span class="tok-clave">final</span> <span class="tok-tipo">long</span> serialVersionUID = <span class="tok-numero">1L</span>;
+
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> nombre;
+    <span class="tok-clave">private</span> <span class="tok-tipo">double</span> nota;
+    <span class="tok-clave">private</span> <span class="tok-tipo">Direccion</span> direccion;           <span class="tok-coment">// también debe ser Serializable</span>
+    <span class="tok-clave">private</span> <span class="tok-clave">transient</span> <span class="tok-tipo">String</span> contrasena;    <span class="tok-coment">// no se guarda: vuelve como null</span>
+}
+
+<span class="tok-coment">// guardar objetos uno a uno</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">ObjectOutputStream</span> oos = <span class="tok-clave">new</span> <span class="tok-tipo">ObjectOutputStream</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(<span class="tok-texto">"alumnos.obj"</span>))) {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Alumno</span> a : alumnos) {
+        oos.writeObject(a);
+    }
+}
+
+<span class="tok-coment">// leerlos hasta el final</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt; leidos = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+<span class="tok-clave">try</span> (<span class="tok-tipo">ObjectInputStream</span> ois = <span class="tok-clave">new</span> <span class="tok-tipo">ObjectInputStream</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileInputStream</span>(<span class="tok-texto">"alumnos.obj"</span>))) {
+    <span class="tok-clave">while</span> (<span class="tok-clave">true</span>) {
+        leidos.add((<span class="tok-tipo">Alumno</span>) ois.readObject());
+    }
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">EOFException</span> e) {
+    <span class="tok-coment">// se acabaron los objetos</span>
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">ClassNotFoundException</span> | <span class="tok-tipo">IOException</span> e) {
+    e.printStackTrace();
+}
+
+<span class="tok-coment">// o guardar la lista entera de una vez (ArrayList es Serializable)</span>
+oos.writeObject(<span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;(alumnos));
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt; lista = (<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt;) ois.readObject();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Serializable</code></th><td>interfaz sin métodos: marca la clase como serializable; si no, <code>NotSerializableException</code></td></tr>
+                  <tr><th scope="row"><code>serialVersionUID</code></th><td>número de versión; si al leer no coincide, <code>InvalidClassException</code></td></tr>
+                  <tr><th scope="row"><code>transient</code></th><td>atributo que no se guarda; al leer toma su valor por defecto</td></tr>
+                  <tr><th scope="row"><code>static</code></th><td>no se guarda: es de la clase, no del objeto</td></tr>
+                  <tr><th scope="row">atributos objeto</th><td>se guardan también, y deben ser serializables (o <code>transient</code>)</td></tr>
+                  <tr><th scope="row">herencia</th><td>si la superclase es serializable, las hijas también</td></tr>
+                  <tr><th scope="row"><code>readObject()</code></th><td>devuelve <code>Object</code>: hay que hacer cast; lanza <code>ClassNotFoundException</code></td></tr>
+                  <tr><th scope="row"><code>Externalizable</code></th><td>alternativa en la que tú escribes <code>writeExternal</code> y <code>readExternal</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Añadir objetos a un fichero que ya existe</h3>
+            <p class="txt">Cada <code>ObjectOutputStream</code> escribe una cabecera al crearse. Si se abre el fichero en modo <em>append</em> con uno nuevo, aparece una segunda cabecera a mitad de fichero y la lectura falla con <code>StreamCorruptedException</code>. La solución es una subclase que no escriba cabecera:</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">MiObjectOutputStream</span> <span class="tok-clave">extends</span> <span class="tok-tipo">ObjectOutputStream</span> {
+    <span class="tok-clave">public</span> <span class="tok-tipo">MiObjectOutputStream</span>(<span class="tok-tipo">OutputStream</span> out) <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+        <span class="tok-clave">super</span>(out);
+    }
+
+    @<span class="tok-tipo">Override</span>
+    <span class="tok-clave">protected</span> <span class="tok-clave">void</span> writeStreamHeader() <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+        reset();                           <span class="tok-coment">// en vez de escribir la cabecera</span>
+    }
+}
+
+<span class="tok-tipo">File</span> f = <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"alumnos.obj"</span>);
+<span class="tok-tipo">FileOutputStream</span> fos = <span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(f, <span class="tok-clave">true</span>);
+<span class="tok-clave">try</span> (<span class="tok-tipo">ObjectOutputStream</span> oos = f.length() &gt; <span class="tok-numero">0</span>
+        ? <span class="tok-clave">new</span> <span class="tok-tipo">MiObjectOutputStream</span>(fos)        <span class="tok-coment">// ya tiene cabecera</span>
+        : <span class="tok-clave">new</span> <span class="tok-tipo">ObjectOutputStream</span>(fos)) {     <span class="tok-coment">// fichero nuevo: con cabecera</span>
+    oos.writeObject(nuevo);
+}</code></pre></figure>
+            <p class="nota">El fichero solo lo entiende Java y deja de valer si cambias mucho la clase. Para guardar datos que vayan a durar o que tenga que leer otro programa, mejor CSV, JSON o XML.</p>
+          </div>
+        </section>
+        <!-- 12. Acceso aleatorio: RandomAccessFile -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Acceso aleatorio: RandomAccessFile</h2>
+          <div class="cuerpo">
+            <p class="txt">Todos los flujos anteriores son de <strong>acceso secuencial</strong>: para llegar al dato 1000 hay que pasar por los 999 anteriores. <code>RandomAccessFile</code> tiene un <strong>puntero</strong> que se puede colocar en cualquier byte con <code>seek</code>, y permite leer y escribir sobre el mismo fichero. No es un flujo: no hereda de <code>InputStream</code> ni de <code>OutputStream</code>, aunque tiene los mismos <code>readXxx</code>/<code>writeXxx</code> que <code>Data…Stream</code>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>"r"</code></th><td>solo lectura; si no existe, <code>FileNotFoundException</code></td></tr>
+                  <tr><th scope="row"><code>"rw"</code></th><td>lectura y escritura; si no existe, lo crea</td></tr>
+                  <tr><th scope="row"><code>"rws"  "rwd"</code></th><td>como <code>rw</code>, pero cada escritura va al disco al momento</td></tr>
+                  <tr><th scope="row"><code>seek(pos)</code></th><td>coloca el puntero en el byte <code>pos</code></td></tr>
+                  <tr><th scope="row"><code>getFilePointer()</code></th><td>posición actual del puntero</td></tr>
+                  <tr><th scope="row"><code>length()</code></th><td>tamaño del fichero en bytes</td></tr>
+                  <tr><th scope="row"><code>setLength(n)</code></th><td>recorta o amplía el fichero</td></tr>
+                  <tr><th scope="row"><code>skipBytes(n)</code></th><td>avanza n bytes</td></tr>
+                  <tr><th scope="row"><code>readInt  writeInt...</code></th><td>como en <code>DataInputStream</code> / <code>DataOutputStream</code></td></tr>
+                  <tr><th scope="row"><code>readLine()</code></th><td>lee una línea (sin soporte de UTF-8: mejor no usarlo con tildes)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Registros de tamaño fijo</h3>
+            <p class="txt">La clave es que todos los registros ocupen lo mismo. Así, el registro <em>n</em> empieza en <code>n * TAM</code>. Los textos se rellenan hasta una longitud fija.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// registro: id (int, 4) + nombre (20 char, 40) + nota (double, 8) = 52 bytes</span>
+<span class="tok-clave">static</span> <span class="tok-clave">final</span> <span class="tok-tipo">int</span> <span class="tok-tipo">LON_NOMBRE</span> = <span class="tok-numero">20</span>;
+<span class="tok-clave">static</span> <span class="tok-clave">final</span> <span class="tok-tipo">int</span> <span class="tok-tipo">TAM</span> = <span class="tok-numero">4</span> + <span class="tok-tipo">LON_NOMBRE</span> * <span class="tok-numero">2</span> + <span class="tok-numero">8</span>;
+
+<span class="tok-clave">static</span> <span class="tok-clave">void</span> escribir(<span class="tok-tipo">RandomAccessFile</span> raf, <span class="tok-tipo">int</span> pos, <span class="tok-tipo">Alumno</span> a) <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+    raf.seek((<span class="tok-tipo">long</span>) pos * <span class="tok-tipo">TAM</span>);
+    raf.writeInt(a.id());
+    <span class="tok-tipo">StringBuilder</span> sb = <span class="tok-clave">new</span> <span class="tok-tipo">StringBuilder</span>(a.nombre());
+    sb.setLength(<span class="tok-tipo">LON_NOMBRE</span>);              <span class="tok-coment">// recorta o rellena con '\0'</span>
+    raf.writeChars(sb.toString());
+    raf.writeDouble(a.nota());
+}
+
+<span class="tok-clave">static</span> <span class="tok-tipo">Alumno</span> leer(<span class="tok-tipo">RandomAccessFile</span> raf, <span class="tok-tipo">int</span> pos) <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+    raf.seek((<span class="tok-tipo">long</span>) pos * <span class="tok-tipo">TAM</span>);
+    <span class="tok-tipo">int</span> id = raf.readInt();
+    <span class="tok-tipo">char</span>[] c = <span class="tok-clave">new</span> <span class="tok-tipo">char</span>[<span class="tok-tipo">LON_NOMBRE</span>];
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; c.length; i++) c[i] = raf.readChar();
+    <span class="tok-tipo">String</span> nombre = <span class="tok-clave">new</span> <span class="tok-tipo">String</span>(c).trim();   <span class="tok-coment">// trim quita también los '\0'</span>
+    <span class="tok-tipo">double</span> nota = raf.readDouble();
+    <span class="tok-clave">return</span> <span class="tok-clave">new</span> <span class="tok-tipo">Alumno</span>(id, nombre, nota);
+}
+
+<span class="tok-clave">try</span> (<span class="tok-tipo">RandomAccessFile</span> raf = <span class="tok-clave">new</span> <span class="tok-tipo">RandomAccessFile</span>(<span class="tok-texto">"alumnos.dat"</span>, <span class="tok-texto">"rw"</span>)) {
+    <span class="tok-tipo">long</span> total = raf.length() / <span class="tok-tipo">TAM</span>;             <span class="tok-coment">// número de registros</span>
+
+    escribir(raf, (<span class="tok-tipo">int</span>) total, nuevo);           <span class="tok-coment">// añadir al final</span>
+    <span class="tok-tipo">Alumno</span> tercero = leer(raf, <span class="tok-numero">2</span>);               <span class="tok-coment">// leer el registro 2 directamente</span>
+
+    <span class="tok-coment">// modificar solo la nota del registro 2, sin tocar lo demás</span>
+    raf.seek(<span class="tok-numero">2L</span> * <span class="tok-tipo">TAM</span> + <span class="tok-numero">4</span> + <span class="tok-tipo">LON_NOMBRE</span> * <span class="tok-numero">2</span>);
+    raf.writeDouble(<span class="tok-numero">9.5</span>);
+
+    <span class="tok-coment">// recorrer todos</span>
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; raf.length() / <span class="tok-tipo">TAM</span>; i++) {
+        <span class="tok-tipo">IO</span>.println(leer(raf, i));
+    }
+}</code></pre></figure>
+            <p class="nota">Para borrar un registro sin reescribir el fichero se usa un <strong>borrado lógico</strong>: se marca (por ejemplo, <code>id = -1</code> o un <code>boolean</code> de activo) y al recorrer se saltan los marcados.</p>
+            <p class="aviso"><strong>Cuidado:</strong> no uses <code>writeUTF</code> en registros de tamaño fijo: ocupa 2 bytes más la longitud real del texto, así que cada registro mediría distinto.</p>
+          </div>
+        </section>
+        <!-- 13. Codificación de caracteres -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Codificación de caracteres</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// leer un fichero antiguo en ISO-8859-1 y reescribirlo en UTF-8</span>
+<span class="tok-tipo">String</span> texto = <span class="tok-tipo">Files</span>.readString(viejo, <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">ISO_8859_1</span>);
+<span class="tok-tipo">Files</span>.writeString(nuevo, texto, <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);
+
+<span class="tok-coment">// en cualquier flujo, con el puente</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">FileInputStream</span>(f), <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);
+<span class="tok-clave">new</span> <span class="tok-tipo">FileWriter</span>(f, <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);              <span class="tok-coment">// Java 11+</span>
+
+<span class="tok-coment">// String y byte[]</span>
+<span class="tok-tipo">byte</span>[] b = <span class="tok-texto">"Año"</span>.getBytes(<span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);      <span class="tok-coment">// 4 bytes: la ñ ocupa 2</span>
+<span class="tok-tipo">String</span> s = <span class="tok-clave">new</span> <span class="tok-tipo">String</span>(b, <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);</code></pre></figure>
+            <p class="nota">Desde Java 18 la codificación por defecto es UTF-8 en todas las plataformas. Solo hay que indicarla cuando el fichero viene de otro sistema. Si aparecen símbolos raros donde había tildes, el fichero se está leyendo con la codificación equivocada.</p>
+          </div>
+        </section>
+        <!-- 14. Errores habituales -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Errores habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">No cerrar los flujos</th><td>usa <code>try-with-resources</code>: cierra siempre, incluso si salta una excepción</td></tr>
+                  <tr><th scope="row" class="larga">Cerrar el de dentro antes que el de fuera</th><td>cierra solo el exterior; él cierra los demás</td></tr>
+                  <tr><th scope="row" class="larga">Mezclar bytes y caracteres</th><td>un <code>FileReader</code> sobre un JPG lo estropea</td></tr>
+                  <tr><th scope="row" class="larga">No comprobar el final</th><td><code>readLine()</code> da <code>null</code>, <code>read()</code> da -1, <code>readInt()</code> y <code>readObject()</code> lanzan <code>EOFException</code></td></tr>
+                  <tr><th scope="row" class="larga">Sobrescribir sin querer</th><td><code>new FileWriter(f)</code> vacía el fichero; para añadir, <code>new FileWriter(f, true)</code></td></tr>
+                  <tr><th scope="row" class="larga">Leer en otro orden</th><td>con <code>Data…</code> y <code>RandomAccessFile</code>, mismo orden y tipos que al escribir</td></tr>
+                  <tr><th scope="row" class="larga">Añadir con un ObjectOutputStream nuevo</th><td>cabecera duplicada: <code>StreamCorruptedException</code></td></tr>
+                  <tr><th scope="row" class="larga">Olvidar Serializable en un atributo</th><td><code>NotSerializableException</code> al guardar</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="ficheros-directorios.html">← Ficheros y directorios</a><a class="siguiente" href="fechas.html">Fechas y horas →</a></nav>
+      <footer class="pie">Para localizar, crear y gestionar los ficheros, mira <a href="ficheros-directorios.html">Ficheros y directorios</a>. Casi todo lo de esta página lanza <code>IOException</code>: repasa <a href="excepciones.html">Excepciones</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

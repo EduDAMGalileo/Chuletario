@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Números aleatorios · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Números aleatorios</span></nav>
+          <h1>Números aleatorios</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub"><code>Math.random</code>, <code>Random</code>, <code>ThreadLocalRandom</code> y <code>SecureRandom</code>: generar números en un rango, elegir y barajar, y cuándo usar cada clase.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html" aria-current="page">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Math.random()</a><a href="#s2"><b>2</b>La clase Random</a><a href="#s3"><b>3</b>Semilla: repetir la misma secuencia</a><a href="#s4"><b>4</b>Streams de aleatorios</a><a href="#s5"><b>5</b>Elegir, barajar y sin repetir</a><a href="#s6"><b>6</b>ThreadLocalRandom</a><a href="#s7"><b>7</b>SecureRandom</a><a href="#s8"><b>8</b>RandomGenerator (Java 17)</a><a href="#s9"><b>9</b>Recetas</a><a href="#s10"><b>10</b>Qué clase usar y despistes</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Un entero entre min y max, ambos incluidos</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Con Math.random()</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">int</span> n = (<span class="tok-tipo">int</span>) (<span class="tok-tipo">Math</span>.random() * (max - min + <span class="tok-numero">1</span>)) + min;</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Con Random</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Random</span> r = <span class="tok-clave">new</span> <span class="tok-tipo">Random</span>();
+<span class="tok-tipo">int</span> n = r.nextInt(max - min + <span class="tok-numero">1</span>) + min;
+<span class="tok-tipo">int</span> m = r.nextInt(min, max + <span class="tok-numero">1</span>);     <span class="tok-coment">// Java 17</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Con ThreadLocalRandom</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">int</span> n = <span class="tok-tipo">ThreadLocalRandom</span>.current().nextInt(min, max + <span class="tok-numero">1</span>);</code></pre></figure>
+            <p class="nota">El límite superior <strong>nunca</strong> se incluye: por eso el <code>+ 1</code>.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Math.random() -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Math.random()</h2>
+          <div class="cuerpo">
+            <p class="txt">Devuelve un <code>double</code> en <strong>[0, 1)</strong>: puede salir 0.0, nunca 1.0. Para llevarlo a otro rango se multiplica, se desplaza y se convierte.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">double</span> x = <span class="tok-tipo">Math</span>.random();                    <span class="tok-coment">// 0.0 ≤ x &lt; 1.0</span>
+
+<span class="tok-tipo">int</span> dado = (<span class="tok-tipo">int</span>) (<span class="tok-tipo">Math</span>.random() * <span class="tok-numero">6</span>) + <span class="tok-numero">1</span>;      <span class="tok-coment">// 1..6</span>
+<span class="tok-tipo">int</span> cero9 = (<span class="tok-tipo">int</span>) (<span class="tok-tipo">Math</span>.random() * <span class="tok-numero">10</span>);      <span class="tok-coment">// 0..9</span>
+<span class="tok-tipo">int</span> entre = (<span class="tok-tipo">int</span>) (<span class="tok-tipo">Math</span>.random() * <span class="tok-numero">41</span>) + <span class="tok-numero">10</span>; <span class="tok-coment">// 10..50</span>
+<span class="tok-tipo">double</span> dec = <span class="tok-tipo">Math</span>.random() * <span class="tok-numero">5</span> + <span class="tok-numero">2</span>;           <span class="tok-coment">// 2.0..7.0 (sin el 7)</span>
+<span class="tok-tipo">boolean</span> cara = <span class="tok-tipo">Math</span>.random() &lt; <span class="tok-numero">0.5</span>;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Math.random()</code></th><td>[0, 1)</td></tr>
+                  <tr><th scope="row"><code>* n</code></th><td>[0, n)</td></tr>
+                  <tr><th scope="row"><code>(int) (...)</code></th><td>0, 1, ..., n−1</td></tr>
+                  <tr><th scope="row"><code>+ min</code></th><td>min, ..., min+n−1</td></tr>
+                  <tr><th scope="row"><code>n = max − min + 1</code></th><td>cuántos valores distintos hay</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Cuidado:</strong> los paréntesis importan. <code>(int) Math.random() * 6</code> es siempre 0: convierte primero a <code>int</code> el número entre 0 y 1 (que da 0) y luego multiplica.</p>
+          </div>
+        </section>
+        <!-- 2. La clase Random -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>La clase Random</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> java.util.<span class="tok-tipo">Random</span>;
+
+<span class="tok-tipo">Random</span> r = <span class="tok-clave">new</span> <span class="tok-tipo">Random</span>();                     <span class="tok-coment">// uno para todo el programa</span>
+
+<span class="tok-tipo">int</span> a = r.nextInt();                       <span class="tok-coment">// cualquier int, también negativos</span>
+<span class="tok-tipo">int</span> b = r.nextInt(<span class="tok-numero">10</span>);                     <span class="tok-coment">// 0..9</span>
+<span class="tok-tipo">int</span> c = r.nextInt(<span class="tok-numero">1</span>, <span class="tok-numero">7</span>);                   <span class="tok-coment">// 1..6 (Java 17)</span>
+<span class="tok-tipo">long</span> d = r.nextLong();
+<span class="tok-tipo">double</span> e = r.nextDouble();                  <span class="tok-coment">// [0, 1)</span>
+<span class="tok-tipo">double</span> f = r.nextDouble(<span class="tok-numero">5.0</span>, <span class="tok-numero">10.0</span>);         <span class="tok-coment">// [5, 10) (Java 17)</span>
+<span class="tok-tipo">boolean</span> g = r.nextBoolean();
+<span class="tok-tipo">double</span> h = r.nextGaussian();                <span class="tok-coment">// normal: media 0, desviación 1</span>
+<span class="tok-tipo">double</span> altura = <span class="tok-numero">170</span> + r.nextGaussian() * <span class="tok-numero">8</span>;  <span class="tok-coment">// media 170, desviación 8</span>
+
+<span class="tok-tipo">byte</span>[] bytes = <span class="tok-clave">new</span> <span class="tok-tipo">byte</span>[<span class="tok-numero">16</span>];
+r.nextBytes(bytes);                         <span class="tok-coment">// rellena el array</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>nextInt()</code></th><td>cualquier <code>int</code></td></tr>
+                  <tr><th scope="row"><code>nextInt(n)</code></th><td>[0, n); n debe ser positivo</td></tr>
+                  <tr><th scope="row"><code>nextInt(a, b)</code></th><td>[a, b), Java 17</td></tr>
+                  <tr><th scope="row"><code>nextLong()  nextLong(a, b)</code></th><td>igual, en <code>long</code></td></tr>
+                  <tr><th scope="row"><code>nextDouble()  nextFloat()</code></th><td>[0, 1)</td></tr>
+                  <tr><th scope="row"><code>nextDouble(a, b)</code></th><td>[a, b), Java 17</td></tr>
+                  <tr><th scope="row"><code>nextBoolean()</code></th><td><code>true</code> o <code>false</code> al 50 %</td></tr>
+                  <tr><th scope="row"><code>nextGaussian()</code></th><td>distribución normal (campana)</td></tr>
+                  <tr><th scope="row"><code>nextBytes(byte[])</code></th><td>rellena con bytes aleatorios</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>Math.random()</code> usa por dentro un <code>Random</code> compartido. <code>Random</code> es más cómodo: da enteros directamente, admite semilla y tiene más métodos.</p>
+          </div>
+        </section>
+        <!-- 3. Semilla: repetir la misma secuencia -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Semilla: repetir la misma secuencia</h2>
+          <div class="cuerpo">
+            <p class="txt">Los números de <code>Random</code> son <strong>pseudoaleatorios</strong>: salen de una fórmula a partir de un valor inicial, la <strong>semilla</strong>. Con la misma semilla se obtiene siempre la misma secuencia.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Random</span> r1 = <span class="tok-clave">new</span> <span class="tok-tipo">Random</span>(<span class="tok-numero">42</span>);
+<span class="tok-tipo">Random</span> r2 = <span class="tok-clave">new</span> <span class="tok-tipo">Random</span>(<span class="tok-numero">42</span>);
+r1.nextInt(<span class="tok-numero">100</span>) == r2.nextInt(<span class="tok-numero">100</span>);   <span class="tok-coment">// true, y así con todos los siguientes</span>
+
+r1.setSeed(<span class="tok-numero">42</span>);                     <span class="tok-coment">// reinicia la secuencia</span>
+
+<span class="tok-coment">// sin semilla, cada ejecución es distinta</span>
+<span class="tok-tipo">Random</span> r3 = <span class="tok-clave">new</span> <span class="tok-tipo">Random</span>();</code></pre></figure>
+            <p class="nota">Una semilla fija es útil en pruebas (<a href="junit.html">JUnit</a>), simulaciones que hay que poder repetir y para depurar un fallo que aparece "a veces".</p>
+          </div>
+        </section>
+        <!-- 4. Streams de aleatorios -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Streams de aleatorios</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Random</span> r = <span class="tok-clave">new</span> <span class="tok-tipo">Random</span>();
+
+<span class="tok-coment">// 10 enteros entre 1 y 100</span>
+<span class="tok-tipo">int</span>[] nums = r.ints(<span class="tok-numero">10</span>, <span class="tok-numero">1</span>, <span class="tok-numero">101</span>).toArray();
+
+<span class="tok-coment">// lista de 5 decimales en [0, 1)</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Double</span>&gt; ds = r.doubles(<span class="tok-numero">5</span>).boxed().toList();
+
+<span class="tok-coment">// 6 números distintos del 1 al 49 (lotería), ordenados</span>
+<span class="tok-tipo">int</span>[] loteria = r.ints(<span class="tok-numero">1</span>, <span class="tok-numero">50</span>).distinct().limit(<span class="tok-numero">6</span>).sorted().toArray();
+
+<span class="tok-coment">// media de 1000 tiradas de dado</span>
+<span class="tok-tipo">double</span> media = r.ints(<span class="tok-numero">1000</span>, <span class="tok-numero">1</span>, <span class="tok-numero">7</span>).average().orElse(<span class="tok-numero">0</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ints(n)</code></th><td>n enteros cualesquiera</td></tr>
+                  <tr><th scope="row"><code>ints(n, a, b)</code></th><td>n enteros en [a, b)</td></tr>
+                  <tr><th scope="row"><code>ints(a, b)</code></th><td>infinitos en [a, b): hay que cortar con <code>limit</code></td></tr>
+                  <tr><th scope="row"><code>doubles(...)  longs(...)</code></th><td>lo mismo con otros tipos</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Elegir, barajar y sin repetir -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Elegir, barajar y sin repetir</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// un elemento al azar</span>
+<span class="tok-tipo">String</span>[] colores = {<span class="tok-texto">"rojo"</span>, <span class="tok-texto">"verde"</span>, <span class="tok-texto">"azul"</span>};
+<span class="tok-tipo">String</span> c = colores[r.nextInt(colores.length)];
+<span class="tok-tipo">String</span> nombre = lista.get(r.nextInt(lista.size()));
+
+<span class="tok-coment">// barajar una lista</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Integer</span>&gt; cartas = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;(<span class="tok-tipo">List</span>.of(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">4</span>, <span class="tok-numero">5</span>));
+<span class="tok-tipo">Collections</span>.shuffle(cartas);
+<span class="tok-tipo">Collections</span>.shuffle(cartas, <span class="tok-clave">new</span> <span class="tok-tipo">Random</span>(<span class="tok-numero">7</span>));   <span class="tok-coment">// reproducible</span>
+
+<span class="tok-coment">// barajar un array (Fisher-Yates)</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = arr.length - <span class="tok-numero">1</span>; i &gt; <span class="tok-numero">0</span>; i--) {
+    <span class="tok-tipo">int</span> j = r.nextInt(i + <span class="tok-numero">1</span>);
+    <span class="tok-tipo">int</span> tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+}
+
+<span class="tok-coment">// k elementos distintos: barajar y coger los primeros</span>
+<span class="tok-tipo">Collections</span>.shuffle(alumnos);
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt; elegidos = alumnos.subList(<span class="tok-numero">0</span>, <span class="tok-numero">3</span>);
+
+<span class="tok-coment">// k números sin repetir con un Set</span>
+<span class="tok-tipo">Set</span>&lt;<span class="tok-tipo">Integer</span>&gt; sinRepetir = <span class="tok-clave">new</span> <span class="tok-tipo">LinkedHashSet</span>&lt;&gt;();
+<span class="tok-clave">while</span> (sinRepetir.size() &lt; <span class="tok-numero">6</span>) {
+    sinRepetir.add(r.nextInt(<span class="tok-numero">1</span>, <span class="tok-numero">50</span>));
+}</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>Collections.shuffle</code> falla con <code>List.of(...)</code> porque es inmutable (<code>UnsupportedOperationException</code>). Cópiala antes en un <code>ArrayList</code>.</p>
+          </div>
+        </section>
+        <!-- 6. ThreadLocalRandom -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>ThreadLocalRandom</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> java.util.concurrent.<span class="tok-tipo">ThreadLocalRandom</span>;
+
+<span class="tok-tipo">int</span> n = <span class="tok-tipo">ThreadLocalRandom</span>.current().nextInt(<span class="tok-numero">1</span>, <span class="tok-numero">7</span>);
+<span class="tok-tipo">double</span> d = <span class="tok-tipo">ThreadLocalRandom</span>.current().nextDouble(<span class="tok-numero">0</span>, <span class="tok-numero">100</span>);</code></pre></figure>
+            <p class="nota">Cada hilo tiene su propio generador, así que no se bloquean entre ellos. Es la opción recomendada en programas con varios hilos. No se crea con <code>new</code> ni admite semilla: siempre <code>ThreadLocalRandom.current()</code>.</p>
+          </div>
+        </section>
+        <!-- 7. SecureRandom -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>SecureRandom</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>Random</code> es predecible: viendo unos cuantos valores se pueden adivinar los siguientes. Para cualquier cosa de seguridad (contraseñas, tokens, claves, códigos de verificación) se usa <code>java.security.SecureRandom</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">SecureRandom</span> sr = <span class="tok-clave">new</span> <span class="tok-tipo">SecureRandom</span>();      <span class="tok-coment">// mismos métodos que Random</span>
+
+<span class="tok-coment">// código de verificación de 6 cifras</span>
+<span class="tok-tipo">String</span> codigo = <span class="tok-tipo">String</span>.format(<span class="tok-texto">"%06d"</span>, sr.nextInt(<span class="tok-numero">1_000_000</span>));
+
+<span class="tok-coment">// contraseña aleatoria</span>
+<span class="tok-tipo">String</span> chars = <span class="tok-texto">"ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%"</span>;
+<span class="tok-tipo">StringBuilder</span> sb = <span class="tok-clave">new</span> <span class="tok-tipo">StringBuilder</span>();
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; <span class="tok-numero">12</span>; i++) {
+    sb.append(chars.charAt(sr.nextInt(chars.length())));
+}
+
+<span class="tok-coment">// token para una URL</span>
+<span class="tok-tipo">byte</span>[] b = <span class="tok-clave">new</span> <span class="tok-tipo">byte</span>[<span class="tok-numero">32</span>];
+sr.nextBytes(b);
+<span class="tok-tipo">String</span> token = <span class="tok-tipo">Base64</span>.getUrlEncoder().withoutPadding().encodeToString(b);
+
+<span class="tok-coment">// identificador único</span>
+<span class="tok-tipo">String</span> id = <span class="tok-tipo">UUID</span>.randomUUID().toString();     <span class="tok-coment">// usa SecureRandom por dentro</span></code></pre></figure>
+            <p class="nota">Es más lento que <code>Random</code>; para juegos o simulaciones no hace falta.</p>
+          </div>
+        </section>
+        <!-- 8. RandomGenerator (Java 17) -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>RandomGenerator (Java 17)</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> java.util.random.<span class="tok-tipo">RandomGenerator</span>;
+
+<span class="tok-tipo">RandomGenerator</span> g = <span class="tok-tipo">RandomGenerator</span>.getDefault();
+<span class="tok-tipo">RandomGenerator</span> h = <span class="tok-tipo">RandomGenerator</span>.of(<span class="tok-texto">"L64X128MixRandom"</span>);   <span class="tok-coment">// algoritmo concreto</span>
+
+<span class="tok-coment">// para que un método acepte cualquier generador</span>
+<span class="tok-clave">static</span> <span class="tok-tipo">int</span> tirarDado(<span class="tok-tipo">RandomGenerator</span> g) {
+    <span class="tok-clave">return</span> g.nextInt(<span class="tok-numero">1</span>, <span class="tok-numero">7</span>);
+}
+tirarDado(<span class="tok-clave">new</span> <span class="tok-tipo">Random</span>(<span class="tok-numero">1</span>));
+tirarDado(<span class="tok-tipo">ThreadLocalRandom</span>.current());</code></pre></figure>
+            <p class="nota">Es la interfaz común que implementan <code>Random</code>, <code>SecureRandom</code> y <code>ThreadLocalRandom</code>. De ahí vienen los métodos con rango <code>nextInt(a, b)</code> y <code>nextDouble(a, b)</code>.</p>
+          </div>
+        </section>
+        <!-- 9. Recetas -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Recetas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// suceso con probabilidad del 30 %</span>
+<span class="tok-clave">if</span> (r.nextDouble() &lt; <span class="tok-numero">0.30</span>) { ... }
+
+<span class="tok-coment">// letra mayúscula aleatoria</span>
+<span class="tok-tipo">char</span> letra = (<span class="tok-tipo">char</span>) (<span class="tok-texto">'A'</span> + r.nextInt(<span class="tok-numero">26</span>));
+
+<span class="tok-coment">// valor de un enum al azar</span>
+<span class="tok-tipo">Palo</span>[] palos = <span class="tok-tipo">Palo</span>.values();
+<span class="tok-tipo">Palo</span> p = palos[r.nextInt(palos.length)];
+
+<span class="tok-coment">// decimal con 2 cifras entre 0 y 10</span>
+<span class="tok-tipo">double</span> nota = <span class="tok-tipo">Math</span>.round(r.nextDouble(<span class="tok-numero">0</span>, <span class="tok-numero">10</span>) * <span class="tok-numero">100</span>) / <span class="tok-numero">100.0</span>;
+
+<span class="tok-coment">// fecha aleatoria de 2024</span>
+<span class="tok-tipo">LocalDate</span> inicio = <span class="tok-tipo">LocalDate</span>.of(<span class="tok-numero">2024</span>, <span class="tok-numero">1</span>, <span class="tok-numero">1</span>);
+<span class="tok-tipo">LocalDate</span> fecha = inicio.plusDays(r.nextInt(inicio.lengthOfYear()));
+
+<span class="tok-coment">// elegir con pesos: A 50 %, B 30 %, C 20 %</span>
+<span class="tok-tipo">int</span> x = r.nextInt(<span class="tok-numero">100</span>);
+<span class="tok-tipo">String</span> premio = x &lt; <span class="tok-numero">50</span> ? <span class="tok-texto">"A"</span> : x &lt; <span class="tok-numero">80</span> ? <span class="tok-texto">"B"</span> : <span class="tok-texto">"C"</span>;
+
+<span class="tok-coment">// rellenar una matriz</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span>[] fila : matriz)
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> j = <span class="tok-numero">0</span>; j &lt; fila.length; j++)
+        fila[j] = r.nextInt(<span class="tok-numero">10</span>);</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Qué clase usar y despistes -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Qué clase usar y despistes</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Math.random()</code></th><td>algo rápido y puntual, solo <code>double</code></td></tr>
+                  <tr><th scope="row"><code>Random</code></th><td>lo normal: juegos, ejercicios, simulaciones; con semilla para repetir</td></tr>
+                  <tr><th scope="row"><code>ThreadLocalRandom</code></th><td>programas con varios hilos</td></tr>
+                  <tr><th scope="row"><code>SecureRandom</code></th><td>seguridad: contraseñas, tokens, claves</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Crear un <code>new Random()</code> en cada llamada</th><td>crea uno solo y reutilízalo</td></tr>
+                  <tr><th scope="row" class="larga">Olvidar el +1</th><td><code>nextInt(6)</code> da 0..5, no 1..6</td></tr>
+                  <tr><th scope="row" class="larga"><code>Math.abs(r.nextInt()) % n</code></th><td>puede dar negativo (con <code>MIN_VALUE</code>); usa <code>nextInt(n)</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>(int) Math.random() * n</code></th><td>siempre 0: faltan paréntesis</td></tr>
+                  <tr><th scope="row" class="larga">Usar <code>Random</code> para contraseñas</th><td>es predecible: <code>SecureRandom</code></td></tr>
+                  <tr><th scope="row" class="larga">Semilla fija en producción</th><td>todas las ejecuciones darían lo mismo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="math.html">← Math</a><a class="siguiente" href="procesos.html">Procesos →</a></nav>
+      <footer class="pie">Para el resto de operaciones numéricas, mira <a href="math.html">Math</a>. Documentación: <code>java.util.Random</code>, <code>java.util.random.RandomGenerator</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

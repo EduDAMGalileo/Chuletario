@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mapas · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><a href="colecciones.html">Colecciones</a><span aria-hidden="true">›</span><span>Mapas</span></nav>
+          <h1>Mapas</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Parejas clave → valor: <code>HashMap</code>, <code>LinkedHashMap</code>, <code>TreeMap</code>, <code>EnumMap</code> y la antigua <code>Hashtable</code>. Recorrerlos, actualizarlos sin líos y recetas de contar y agrupar.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html" aria-current="page">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Crear y usar un Map</a><a href="#s2"><b>2</b>Métodos de Map</a><a href="#s3"><b>3</b>Recorrer</a><a href="#s4"><b>4</b>Actualizar sin if: merge y compute</a><a href="#s5"><b>5</b>HashMap, LinkedHashMap y TreeMap</a><a href="#s6"><b>6</b>TreeMap: navegar por claves</a><a href="#s7"><b>7</b>LinkedHashMap como caché LRU</a><a href="#s8"><b>8</b>EnumMap y Hashtable</a><a href="#s9"><b>9</b>Recetas</a><a href="#s10"><b>10</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Las implementaciones de Map</p>
+        <div class="cols">
+          <div>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">Map&lt;K, V&gt;</span>                    claves únicas → un valor cada una
+├── <span class="tok-tipo">HashMap</span>                 tabla hash: rápido, sin orden
+│   └── <span class="tok-tipo">LinkedHashMap</span>       + orden de inserción (o de acceso)
+├── <span class="tok-tipo">EnumMap</span>                 claves de un enum
+├── <span class="tok-tipo">ConcurrentHashMap</span>       para varios hilos
+├── <span class="tok-texto">Hashtable</span>               antigua, sincronizada
+└── <span class="tok-clave">SortedMap&lt;K, V&gt;</span>         claves ordenadas
+    └── <span class="tok-clave">NavigableMap&lt;K, V&gt;</span>  + floorKey, headMap...
+        └── <span class="tok-tipo">TreeMap</span>         árbol rojo-negro
+
+Cada pareja es un <span class="tok-tipo">Map.Entry</span>&lt;K, V&gt;: getKey(), getValue()</code></pre></figure>
+          </div>
+          <div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; edades = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+edades.put(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">20</span>);
+edades.put(<span class="tok-texto">"Luis"</span>, <span class="tok-numero">22</span>);
+edades.get(<span class="tok-texto">"Ana"</span>);           <span class="tok-coment">// 20</span>
+
+<span class="tok-coment">//  clave   →  valor</span>
+<span class="tok-coment">//  "Ana"   →  20</span>
+<span class="tok-coment">//  "Luis"  →  22</span></code></pre></figure>
+            <p class="nota"><code>Map</code> no es una <code>Collection</code>: no tiene <code>add</code> ni se recorre directamente con for-each. Se recorren sus vistas: <code>keySet()</code>, <code>values()</code> y <code>entrySet()</code>.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Crear y usar un Map -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Crear y usar un Map</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; notas = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+
+notas.put(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">8</span>);                <span class="tok-coment">// devuelve null (no había)</span>
+notas.put(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">9</span>);                <span class="tok-coment">// devuelve 8: sustituye</span>
+notas.putIfAbsent(<span class="tok-texto">"Luis"</span>, <span class="tok-numero">5</span>);       <span class="tok-coment">// solo si no existe la clave</span>
+
+notas.get(<span class="tok-texto">"Ana"</span>);                   <span class="tok-coment">// 9</span>
+notas.get(<span class="tok-texto">"Pedro"</span>);                 <span class="tok-coment">// null</span>
+notas.getOrDefault(<span class="tok-texto">"Pedro"</span>, <span class="tok-numero">0</span>);     <span class="tok-coment">// 0</span>
+notas.containsKey(<span class="tok-texto">"Ana"</span>);           <span class="tok-coment">// rápido</span>
+notas.containsValue(<span class="tok-numero">9</span>);            <span class="tok-coment">// lento: recorre todo</span>
+notas.remove(<span class="tok-texto">"Luis"</span>);
+
+<span class="tok-coment">// inmutables</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; m = <span class="tok-tipo">Map</span>.of(<span class="tok-texto">"uno"</span>, <span class="tok-numero">1</span>, <span class="tok-texto">"dos"</span>, <span class="tok-numero">2</span>);   <span class="tok-coment">// hasta 10 parejas</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; n = <span class="tok-tipo">Map</span>.ofEntries(<span class="tok-tipo">Map</span>.entry(<span class="tok-texto">"uno"</span>, <span class="tok-numero">1</span>), <span class="tok-tipo">Map</span>.entry(<span class="tok-texto">"dos"</span>, <span class="tok-numero">2</span>));
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; copia = <span class="tok-tipo">Map</span>.copyOf(notas);</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>get</code> devuelve <code>null</code> tanto si la clave no está como si su valor es <code>null</code>. Y si guardas el resultado en un <code>int</code>, el <code>null</code> provoca <code>NullPointerException</code>. Usa <code>getOrDefault</code> o <code>containsKey</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Métodos de Map -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Métodos de Map</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>put(k, v)</code></th><td>añade o sustituye; devuelve el valor anterior o <code>null</code></td></tr>
+                  <tr><th scope="row"><code>putIfAbsent(k, v)</code></th><td>solo si la clave no está</td></tr>
+                  <tr><th scope="row"><code>putAll(otro)</code></th><td>copia todas las parejas de otro mapa</td></tr>
+                  <tr><th scope="row"><code>get(k)</code></th><td>el valor, o <code>null</code></td></tr>
+                  <tr><th scope="row"><code>getOrDefault(k, def)</code></th><td>el valor, o <code>def</code> si no está</td></tr>
+                  <tr><th scope="row"><code>containsKey(k)</code></th><td>¿existe la clave?</td></tr>
+                  <tr><th scope="row"><code>containsValue(v)</code></th><td>¿existe el valor? (recorre todo)</td></tr>
+                  <tr><th scope="row"><code>remove(k)</code></th><td>quita la pareja; devuelve el valor</td></tr>
+                  <tr><th scope="row"><code>remove(k, v)</code></th><td>quita solo si tiene ese valor</td></tr>
+                  <tr><th scope="row"><code>replace(k, v)</code></th><td>sustituye solo si la clave ya está</td></tr>
+                  <tr><th scope="row"><code>replaceAll((k, v) -&gt; ...)</code></th><td>recalcula todos los valores</td></tr>
+                  <tr><th scope="row"><code>merge(k, v, f)</code></th><td>pone v, o combina con el que había (sección 4)</td></tr>
+                  <tr><th scope="row"><code>compute...(k, f)</code></th><td>calcula el valor nuevo (sección 4)</td></tr>
+                  <tr><th scope="row"><code>keySet()</code></th><td><code>Set</code> con las claves</td></tr>
+                  <tr><th scope="row"><code>values()</code></th><td><code>Collection</code> con los valores (puede repetir)</td></tr>
+                  <tr><th scope="row"><code>entrySet()</code></th><td><code>Set&lt;Map.Entry&lt;K, V&gt;&gt;</code> con las parejas</td></tr>
+                  <tr><th scope="row"><code>size()  isEmpty()  clear()</code></th><td>tamaño, vacío, vaciar</td></tr>
+                  <tr><th scope="row"><code>forEach((k, v) -&gt; ...)</code></th><td>recorrer con lambda</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>keySet</code>, <code>values</code> y <code>entrySet</code> son <strong>vistas</strong>: si borras algo de ellas, se borra del mapa. <code>notas.values().removeIf(n -&gt; n &lt; 5)</code> quita a los suspensos.</p>
+          </div>
+        </section>
+        <!-- 3. Recorrer -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Recorrer</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// 1. parejas: la forma más eficiente si necesitas clave y valor</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">Map</span>.<span class="tok-tipo">Entry</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; e : notas.entrySet()) {
+    <span class="tok-tipo">IO</span>.println(e.getKey() + <span class="tok-texto">": "</span> + e.getValue());
+    e.setValue(e.getValue() + <span class="tok-numero">1</span>);            <span class="tok-coment">// se puede modificar el valor</span>
+}
+<span class="tok-clave">for</span> (<span class="tok-clave">var</span> e : notas.entrySet()) { ... }        <span class="tok-coment">// lo mismo, más corto</span>
+
+<span class="tok-coment">// 2. solo claves</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> clave : notas.keySet()) { ... }
+
+<span class="tok-coment">// 3. solo valores</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> valor : notas.values()) { ... }
+
+<span class="tok-coment">// 4. con lambda</span>
+notas.forEach((k, v) -&gt; <span class="tok-tipo">IO</span>.println(k + <span class="tok-texto">": "</span> + v));
+
+<span class="tok-coment">// ordenado por clave sin cambiar el mapa</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">TreeMap</span>&lt;&gt;(notas).forEach((k, v) -&gt; ...);
+
+<span class="tok-coment">// ordenado por valor, de mayor a menor</span>
+notas.entrySet().stream()
+     .sorted(<span class="tok-tipo">Map</span>.<span class="tok-tipo">Entry</span>.comparingByValue(<span class="tok-tipo">Comparator</span>.reverseOrder()))
+     .forEach(e -&gt; <span class="tok-tipo">IO</span>.println(e.getKey() + <span class="tok-texto">" "</span> + e.getValue()));
+
+<span class="tok-coment">// borrar mientras se recorre</span>
+notas.entrySet().removeIf(e -&gt; e.getValue() &lt; <span class="tok-numero">5</span>);</code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> recorrer <code>keySet()</code> y hacer <code>get(clave)</code> dentro busca cada clave dos veces. Si necesitas los dos, usa <code>entrySet()</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Actualizar sin if: merge y compute -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Actualizar sin if: merge y compute</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// contar: la forma larga</span>
+<span class="tok-clave">if</span> (conteo.containsKey(p)) conteo.put(p, conteo.get(p) + <span class="tok-numero">1</span>);
+<span class="tok-clave">else</span> conteo.put(p, <span class="tok-numero">1</span>);
+
+<span class="tok-coment">// lo mismo con merge: si no está pone 1; si está, suma</span>
+conteo.merge(p, <span class="tok-numero">1</span>, <span class="tok-tipo">Integer</span>::sum);
+
+<span class="tok-coment">// agrupar: crear la lista la primera vez y añadir</span>
+porCurso.computeIfAbsent(a.curso(), k -&gt; <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;()).add(a);
+
+<span class="tok-coment">// modificar solo si ya existe</span>
+stock.computeIfPresent(<span class="tok-texto">"pan"</span>, (k, v) -&gt; v - <span class="tok-numero">1</span>);
+
+<span class="tok-coment">// calcular siempre (v es null si no estaba)</span>
+stock.compute(<span class="tok-texto">"pan"</span>, (k, v) -&gt; v == <span class="tok-clave">null</span> ? <span class="tok-numero">1</span> : v + <span class="tok-numero">1</span>);
+
+<span class="tok-coment">// concatenar textos por clave</span>
+nombres.merge(curso, nombre, (viejo, nuevo) -&gt; viejo + <span class="tok-texto">", "</span> + nuevo);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>merge(k, v, f)</code></th><td>no está: pone <code>v</code>. Está: pone <code>f(viejo, v)</code></td></tr>
+                  <tr><th scope="row"><code>computeIfAbsent(k, f)</code></th><td>no está: pone <code>f(k)</code> y lo devuelve. Está: devuelve el que hay</td></tr>
+                  <tr><th scope="row"><code>computeIfPresent(k, f)</code></th><td>está: pone <code>f(k, viejo)</code></td></tr>
+                  <tr><th scope="row"><code>compute(k, f)</code></th><td>siempre: pone <code>f(k, viejo o null)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En los cuatro, si la función devuelve <code>null</code>, la clave se borra del mapa.</p>
+          </div>
+        </section>
+        <!-- 5. HashMap, LinkedHashMap y TreeMap -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>HashMap, LinkedHashMap y TreeMap</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">&nbsp;</th><td><strong>HashMap</strong></td><td><strong>LinkedHashMap</strong></td><td><strong>TreeMap</strong></td></tr>
+                  <tr><th scope="row">orden de claves</th><td>ninguno</td><td>inserción o acceso</td><td>natural o Comparator</td></tr>
+                  <tr><th scope="row">get / put</th><td>O(1)</td><td>O(1)</td><td>O(log n)</td></tr>
+                  <tr><th scope="row">clave null</th><td>una</td><td>una</td><td>no</td></tr>
+                  <tr><th scope="row">la clave necesita</th><td>equals + hashCode</td><td>equals + hashCode</td><td>Comparable o Comparator</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; h = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; l = <span class="tok-clave">new</span> <span class="tok-tipo">LinkedHashMap</span>&lt;&gt;();
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; t = <span class="tok-clave">new</span> <span class="tok-tipo">TreeMap</span>&lt;&gt;();
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; ti = <span class="tok-clave">new</span> <span class="tok-tipo">TreeMap</span>&lt;&gt;(<span class="tok-tipo">String</span>.<span class="tok-tipo">CASE_INSENSITIVE_ORDER</span>);
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; grande = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;(<span class="tok-numero">10_000</span>);   <span class="tok-coment">// capacidad inicial</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> no cambies un objeto que se usa como clave de un <code>HashMap</code> si eso altera su <code>hashCode</code>: el mapa ya no lo encontrará. Las claves deberían ser inmutables (<code>String</code>, <code>Integer</code>, records, enums).</p>
+          </div>
+        </section>
+        <!-- 6. TreeMap: navegar por claves -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>TreeMap: navegar por claves</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">TreeMap</span>&lt;<span class="tok-tipo">Integer</span>, <span class="tok-tipo">String</span>&gt; notas = <span class="tok-clave">new</span> <span class="tok-tipo">TreeMap</span>&lt;&gt;();
+notas.put(<span class="tok-numero">0</span>, <span class="tok-texto">"Insuficiente"</span>);
+notas.put(<span class="tok-numero">5</span>, <span class="tok-texto">"Suficiente"</span>);
+notas.put(<span class="tok-numero">6</span>, <span class="tok-texto">"Bien"</span>);
+notas.put(<span class="tok-numero">7</span>, <span class="tok-texto">"Notable"</span>);
+notas.put(<span class="tok-numero">9</span>, <span class="tok-texto">"Sobresaliente"</span>);
+
+<span class="tok-coment">// la calificación de un 8: la mayor clave ≤ 8</span>
+notas.floorEntry(<span class="tok-numero">8</span>).getValue();   <span class="tok-coment">// "Notable"</span>
+
+notas.firstKey();        <span class="tok-coment">// 0</span>
+notas.lastEntry();       <span class="tok-coment">// 9=Sobresaliente</span>
+notas.floorKey(<span class="tok-numero">8</span>);       <span class="tok-coment">// 7    mayor ≤ 8</span>
+notas.ceilingKey(<span class="tok-numero">8</span>);     <span class="tok-coment">// 9    menor ≥ 8</span>
+notas.lowerKey(<span class="tok-numero">5</span>);       <span class="tok-coment">// 0    mayor &lt; 5</span>
+notas.higherKey(<span class="tok-numero">5</span>);      <span class="tok-coment">// 6    menor &gt; 5</span>
+notas.headMap(<span class="tok-numero">6</span>);        <span class="tok-coment">// {0, 5}         claves &lt; 6</span>
+notas.tailMap(<span class="tok-numero">7</span>);        <span class="tok-coment">// {7, 9}         claves ≥ 7</span>
+notas.subMap(<span class="tok-numero">5</span>, <span class="tok-numero">9</span>);      <span class="tok-coment">// {5, 6, 7}      [5, 9)</span>
+notas.descendingMap();   <span class="tok-coment">// al revés</span>
+notas.pollFirstEntry();  <span class="tok-coment">// saca la primera pareja</span></code></pre></figure>
+            <p class="nota">Útil para tramos (notas, tarifas, franjas horarias): se guarda el inicio de cada tramo como clave y <code>floorEntry</code> encuentra al que pertenece un valor.</p>
+          </div>
+        </section>
+        <!-- 7. LinkedHashMap como caché LRU -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>LinkedHashMap como caché LRU</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// true = ordena por acceso: lo último usado va al final</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Cache</span>&lt;<span class="tok-tipo">K</span>, <span class="tok-tipo">V</span>&gt; <span class="tok-clave">extends</span> <span class="tok-tipo">LinkedHashMap</span>&lt;<span class="tok-tipo">K</span>, <span class="tok-tipo">V</span>&gt; {
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">int</span> max;
+
+    <span class="tok-tipo">Cache</span>(<span class="tok-tipo">int</span> max) {
+        <span class="tok-clave">super</span>(<span class="tok-numero">16</span>, <span class="tok-numero">0.75f</span>, <span class="tok-clave">true</span>);
+        <span class="tok-clave">this</span>.max = max;
+    }
+
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">protected</span> <span class="tok-tipo">boolean</span> removeEldestEntry(<span class="tok-tipo">Map</span>.<span class="tok-tipo">Entry</span>&lt;<span class="tok-tipo">K</span>, <span class="tok-tipo">V</span>&gt; mayor) {
+        <span class="tok-clave">return</span> size() &gt; max;          <span class="tok-coment">// al pasarse, borra el menos usado</span>
+    }
+}
+
+<span class="tok-tipo">Cache</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Imagen</span>&gt; c = <span class="tok-clave">new</span> <span class="tok-tipo">Cache</span>&lt;&gt;(<span class="tok-numero">100</span>);</code></pre></figure>
+            <p class="nota">LRU = <em>Least Recently Used</em>: cuando no cabe más, se descarta lo que hace más tiempo que no se usa. Con el constructor normal (<code>new LinkedHashMap&lt;&gt;()</code>) el orden es el de inserción.</p>
+          </div>
+        </section>
+        <!-- 8. EnumMap y Hashtable -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>EnumMap y Hashtable</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// EnumMap: claves de un enum, en su orden de declaración, muy rápido</span>
+<span class="tok-tipo">EnumMap</span>&lt;<span class="tok-tipo">Dia</span>, <span class="tok-tipo">Integer</span>&gt; horas = <span class="tok-clave">new</span> <span class="tok-tipo">EnumMap</span>&lt;&gt;(<span class="tok-tipo">Dia</span>.<span class="tok-clave">class</span>);
+horas.put(<span class="tok-tipo">Dia</span>.<span class="tok-tipo">LUNES</span>, <span class="tok-numero">6</span>);
+horas.merge(<span class="tok-tipo">Dia</span>.<span class="tok-tipo">LUNES</span>, <span class="tok-numero">1</span>, <span class="tok-tipo">Integer</span>::sum);
+
+<span class="tok-coment">// Hashtable: la versión de Java 1.0</span>
+<span class="tok-tipo">Hashtable</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; ht = <span class="tok-clave">new</span> <span class="tok-tipo">Hashtable</span>&lt;&gt;();
+ht.put(<span class="tok-texto">"a"</span>, <span class="tok-numero">1</span>);
+ht.put(<span class="tok-clave">null</span>, <span class="tok-numero">1</span>);      <span class="tok-coment">// NullPointerException: no admite null</span>
+<span class="tok-tipo">Enumeration</span>&lt;<span class="tok-tipo">String</span>&gt; claves = ht.keys();   <span class="tok-coment">// iterador antiguo</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> <code>Hashtable</code> sincroniza cada operación y no admite <code>null</code> ni como clave ni como valor. En código nuevo: <code>HashMap</code>, o <code>ConcurrentHashMap</code> si hay varios hilos. <code>Properties</code>, que lee ficheros <code>.properties</code>, sí sigue heredando de ella.</p>
+          </div>
+        </section>
+        <!-- 9. Recetas -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Recetas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// frecuencia de palabras, ordenadas alfabéticamente</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; freq = <span class="tok-clave">new</span> <span class="tok-tipo">TreeMap</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> p : texto.toLowerCase().split(<span class="tok-texto">"\\W+"</span>)) freq.merge(p, <span class="tok-numero">1</span>, <span class="tok-tipo">Integer</span>::sum);
+
+<span class="tok-coment">// la palabra más repetida</span>
+<span class="tok-tipo">String</span> top = <span class="tok-tipo">Collections</span>.max(freq.entrySet(), <span class="tok-tipo">Map</span>.<span class="tok-tipo">Entry</span>.comparingByValue()).getKey();
+
+<span class="tok-coment">// agrupar alumnos por curso</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt;&gt; porCurso = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">Alumno</span> a : alumnos) porCurso.computeIfAbsent(a.curso(), k -&gt; <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;()).add(a);
+
+<span class="tok-coment">// lo mismo con streams</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt;&gt; g = alumnos.stream().collect(<span class="tok-tipo">Collectors</span>.groupingBy(<span class="tok-tipo">Alumno</span>::curso));
+
+<span class="tok-coment">// índice por id para buscar rápido</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">Integer</span>, <span class="tok-tipo">Alumno</span>&gt; porId = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">Alumno</span> a : alumnos) porId.put(a.id(), a);
+
+<span class="tok-coment">// invertir clave y valor</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">Integer</span>, <span class="tok-tipo">String</span>&gt; inv = <span class="tok-clave">new</span> <span class="tok-tipo">HashMap</span>&lt;&gt;();
+edades.forEach((k, v) -&gt; inv.put(v, k));     <span class="tok-coment">// si se repiten valores, gana el último</span>
+
+<span class="tok-coment">// mapa de mapas: notas[alumno][asignatura]</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Double</span>&gt;&gt; boletin = <span class="tok-clave">new</span> <span class="tok-tipo">TreeMap</span>&lt;&gt;();
+boletin.computeIfAbsent(<span class="tok-texto">"Ana"</span>, k -&gt; <span class="tok-clave">new</span> <span class="tok-tipo">TreeMap</span>&lt;&gt;()).put(<span class="tok-texto">"Programación"</span>, <span class="tok-numero">8.5</span>);</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Despistes habituales -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>int n = mapa.get(k)</code> sin comprobar</th><td><code>NullPointerException</code> si no existe: <code>getOrDefault</code></td></tr>
+                  <tr><th scope="row" class="larga">Esperar orden en un HashMap</th><td><code>LinkedHashMap</code> (llegada) o <code>TreeMap</code> (clave)</td></tr>
+                  <tr><th scope="row" class="larga">Claves propias sin equals/hashCode</th><td>la misma clave aparece dos veces, o <code>get</code> no la encuentra</td></tr>
+                  <tr><th scope="row" class="larga"><code>put</code> en un mapa recorrido con for-each</th><td><code>ConcurrentModificationException</code> si añade claves nuevas</td></tr>
+                  <tr><th scope="row" class="larga">Usar <code>containsValue</code> en bucles</th><td>es O(n): quizá necesitas el mapa al revés</td></tr>
+                  <tr><th scope="row" class="larga">Ordenar un mapa por valor</th><td>no se puede "ordenar el mapa": se ordenan sus <code>entrySet()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sets.html">← Sets</a><a class="siguiente" href="pilas-colas.html">Pilas y colas →</a></nav>
+      <footer class="pie">Forma parte de <a href="colecciones.html">Colecciones</a>. Para agrupar y contar con <code>Collectors</code>, mira <a href="streams.html">Lambdas y streams</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
