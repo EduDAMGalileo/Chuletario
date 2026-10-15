@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Marcos de referencia · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="hacking">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="index.html">Hacking</a><span aria-hidden="true">›</span><span>Marcos de referencia</span></nav>
+          <h1>Marcos de referencia</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">PTES, OWASP, OSSTMM y MITRE ATT&amp;CK: qué problema resuelve cada uno, cómo se estructuran y cuándo usar cuál.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Hacking">
+      <div class="wrap"><a href="pentest.html">Pentest</a><a href="marcos-referencia.html" aria-current="page">Marcos de referencia</a><a href="inyeccion-sql.html">Inyección SQL</a><a href="fuerza-bruta.html">Fuerza bruta</a><a href="fuzzing.html">Fuzzing</a><a href="google-dorking.html">Google dorking</a><a href="shells.html">Shells</a><a href="nmap.html">Nmap</a><a href="netcat.html">Netcat</a><a href="sqlmap.html">sqlmap</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Por qué hay varios marcos</a><a href="#s2"><b>2</b>PTES: las fases de un pentest</a><a href="#s3"><b>3</b>OWASP: aplicaciones web</a><a href="#s4"><b>4</b>OSSTMM: medir la superficie</a><a href="#s5"><b>5</b>MITRE ATT&amp;CK: el mapa del adversario</a><a href="#s6"><b>6</b>Cuál usar en cada caso</a><a href="#s7"><b>7</b>Otros marcos y normas</a></nav>
+      <div class="banda">
+        <p class="banda-titulo">La idea de fondo</p>
+        <p class="txt">Ningún marco sustituye a los demás: cada uno responde a una pregunta distinta. <strong>PTES</strong> dice <em>en qué orden trabajar</em>. <strong>OWASP</strong> dice <em>qué fallos buscar en una web</em>. <strong>OSSTMM</strong> dice <em>cómo medir</em> lo que se ha cubierto. <strong>MITRE ATT&amp;CK</strong> dice <em>qué hacen los atacantes reales</em>, sin imponer un orden. En la práctica se combinan.</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Un vistazo rápido</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">PTES</th><td>proceso — las fases de un pentest de principio a fin</td></tr>
+                  <tr><th scope="row">OWASP</th><td>checklist — qué fallos buscar en apps web</td></tr>
+                  <tr><th scope="row">OSSTMM</th><td>métrica — cuánta superficie queda expuesta</td></tr>
+                  <tr><th scope="row">MITRE ATT&amp;CK</th><td>catálogo — tácticas y técnicas de ataques reales</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <p class="banda-titulo">Cómo se combinan en un pentest</p>
+            <p class="nota">Las fases del <a href="pentest.html">pentest</a> siguen el orden de <strong>PTES</strong>; dentro de la fase de explotación web se usa el checklist de <strong>OWASP</strong>; al cerrar, <strong>OSSTMM</strong> ayuda a justificar qué se cubrió; y si el objetivo es imitar una amenaza concreta (ransomware, un grupo APT), se eligen técnicas del catálogo de <strong>MITRE ATT&amp;CK</strong>.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Por qué hay varios marcos -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Por qué hay varios marcos</h2>
+          <div class="cuerpo">
+            <p class="txt">Un pentest necesita responder a tres preguntas distintas, y ningún documento único las cubre bien las tres a la vez:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">¿En qué orden trabajo?</th><td>lo responde un marco de <strong>proceso</strong> (PTES, OSSTMM)</td></tr>
+                  <tr><th scope="row">¿Qué fallos busco aquí?</th><td>lo responde una <strong>guía técnica</strong> por tipo de objetivo (OWASP para web)</td></tr>
+                  <tr><th scope="row">¿Cómo ataca de verdad un adversario?</th><td>lo responde un <strong>catálogo de comportamiento</strong> (MITRE ATT&amp;CK)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Por eso la chuleta de <a href="pentest.html">Pentest</a> ya usa PTES como columna vertebral (sus cinco fases son una simplificación de las siete de PTES) y aquí se profundiza en cada marco por separado.</p>
+          </div>
+        </section>
+        <!-- 2. PTES -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>PTES: las fases de un pentest</h2>
+          <div class="cuerpo">
+            <p class="txt"><em>Penetration Testing Execution Standard</em>. Define siete fases, de la negociación del contrato al informe final, y es el marco de proceso más citado para estructurar una auditoría.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">1· Pre-engagement</th><td>acordar alcance, reglas y autorización por escrito</td></tr>
+                  <tr><th scope="row">2· Intelligence gathering</th><td>reconocimiento — el mismo paso 1 de la chuleta de <a href="pentest.html">Pentest</a></td></tr>
+                  <tr><th scope="row">3· Threat modeling</th><td>qué activos importan y quién querría atacarlos</td></tr>
+                  <tr><th scope="row">4· Vulnerability analysis</th><td>escaneo y enumeración de fallos (paso 2)</td></tr>
+                  <tr><th scope="row">5· Exploitation</th><td>aprovechar los fallos para obtener acceso (paso 3)</td></tr>
+                  <tr><th scope="row">6· Post exploitation</th><td>escalar, moverse y medir el impacto real (paso 4)</td></tr>
+                  <tr><th scope="row">7· Reporting</th><td>documentar hallazgos y recomendaciones (paso 5)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">PTES añade una fase explícita de <em>threat modeling</em> que la versión resumida de cinco fases da por hecha dentro del reconocimiento: pensar qué le interesa proteger al cliente antes de lanzar la primera herramienta.</p>
+          </div>
+        </section>
+        <!-- 3. OWASP -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>OWASP: aplicaciones web</h2>
+          <div class="cuerpo">
+            <p class="txt"><em>Open Worldwide Application Security Project</em>. No define fases de un pentest: es la referencia de <strong>qué fallos</strong> buscar en una aplicación web, con dos documentos principales.</p>
+            <h3>OWASP Top 10</h3>
+            <p class="txt">Las diez categorías de riesgo más comunes en apps web, revisadas cada pocos años. La edición 2021 incluye, entre otras:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">A01 — Control de acceso roto</th><td>un usuario llega a datos o acciones que no le corresponden</td></tr>
+                  <tr><th scope="row">A02 — Fallos criptográficos</th><td>datos sensibles sin cifrar o con cifrado débil</td></tr>
+                  <tr><th scope="row">A03 — Inyección</th><td>SQL, NoSQL, comandos... — ver la chuleta de <a href="inyeccion-sql.html">Inyección SQL</a></td></tr>
+                  <tr><th scope="row">A05 — Configuración incorrecta</th><td>valores por defecto, servicios innecesarios, errores visibles</td></tr>
+                  <tr><th scope="row">A07 — Fallos de identificación y autenticación</th><td>sesiones, contraseñas y credenciales mal gestionadas</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>OWASP WSTG</h3>
+            <p class="txt"><em>Web Security Testing Guide</em>: una guía mucho más extensa y técnica, con cientos de pruebas concretas organizadas por categoría (gestión de configuración, autenticación, gestión de sesión, validación de entradas, lógica de negocio...). Donde el Top 10 dice <em>qué</em> buscar, el WSTG dice <em>cómo</em> probarlo paso a paso.</p>
+            <p class="nota">Existe también un <strong>OWASP Mobile Top 10</strong> y un <strong>API Security Top 10</strong>, con el mismo enfoque aplicado a apps móviles y APIs.</p>
+          </div>
+        </section>
+        <!-- 4. OSSTMM -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>OSSTMM: medir la superficie</h2>
+          <div class="cuerpo">
+            <p class="txt"><em>Open Source Security Testing Methodology Manual</em>. Aporta algo que PTES y OWASP no dan: una forma de <strong>medir</strong> cuánta superficie de ataque queda expuesta tras la auditoría, no solo una lista de hallazgos.</p>
+            <p class="txt">Divide lo auditable en seis canales:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Humano</th><td>ingeniería social, políticas y formación del personal</td></tr>
+                  <tr><th scope="row">Físico</th><td>acceso a instalaciones, cerraduras, cámaras</td></tr>
+                  <tr><th scope="row">Inalámbrico</th><td>Wi-Fi, Bluetooth, RFID</td></tr>
+                  <tr><th scope="row">Telecomunicaciones</th><td>telefonía, PBX, módems</td></tr>
+                  <tr><th scope="row">Redes de datos</th><td>lo que cubren el resto de chuletas de este tema</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Su indicador, el <strong>RAV</strong> (<em>Risk Assessment Value</em>), combina lo que está expuesto, los controles que hay y las pérdidas posibles en un único número comparable entre auditorías. Se usa menos que PTES u OWASP, pero es la referencia cuando el cliente pide algo medible y no solo una lista de fallos.</p>
+          </div>
+        </section>
+        <!-- 5. MITRE ATT&CK -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>MITRE ATT&amp;CK: el mapa del adversario</h2>
+          <div class="cuerpo">
+            <p class="txt">No es un proceso con fases en orden: es una <strong>matriz</strong> que cataloga comportamientos reales de atacantes, observados en incidentes de verdad. Se organiza en dos niveles:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Tácticas</th><td>el <em>por qué</em>: Reconnaissance, Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, Credential Access, Lateral Movement, Exfiltration, Impact...</td></tr>
+                  <tr><th scope="row">Técnicas</th><td>el <em>cómo</em>, dentro de cada táctica: cientos, cada una con ejemplos de grupos reales que la han usado</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">A diferencia de PTES, las tácticas no se recorren en línea recta: un atacante real salta entre ellas, repite algunas y se salta otras según lo que encuentra.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Red team</th><td>elige técnicas concretas para imitar a un grupo o amenaza específica</td></tr>
+                  <tr><th scope="row">Blue team</th><td>mapea sus detecciones contra la matriz para ver qué huecos de cobertura tiene</td></tr>
+                  <tr><th scope="row">ATT&amp;CK Navigator</th><td>herramienta web para marcar y comparar técnicas sobre la matriz</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Útil para ir más allá de «encontré un fallo» y hablar en los mismos términos que el resto de la industria: «esto corresponde a la técnica T1059 (Command and Scripting Interpreter)».</p>
+          </div>
+        </section>
+        <!-- 6. Cuál usar en cada caso -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Cuál usar en cada caso</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Estructurar la auditoría de principio a fin</th><td>PTES</td></tr>
+                  <tr><th scope="row">Auditar una aplicación o API web</th><td>OWASP (Top 10 + WSTG)</td></tr>
+                  <tr><th scope="row">Justificar con una métrica cuánto se ha cubierto</th><td>OSSTMM</td></tr>
+                  <tr><th scope="row">Simular una amenaza real o evaluar detección (red/blue team)</th><td>MITRE ATT&amp;CK</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">No son excluyentes: un mismo informe puede seguir las fases de PTES, usar el checklist de OWASP durante la fase de explotación web y citar técnicas de ATT&amp;CK en los hallazgos para dar contexto de cómo las usan atacantes reales.</p>
+          </div>
+        </section>
+        <!-- 7. Otros marcos y normas -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Otros marcos y normas</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">NIST SP 800-115</th><td>guía técnica de pruebas de seguridad de la administración de EE. UU.</td></tr>
+                  <tr><th scope="row">ISSAF</th><td><em>Information Systems Security Assessment Framework</em>, precursor de PTES</td></tr>
+                  <tr><th scope="row">CVSS</th><td>no es un marco de proceso, sino la escala (0-10) para puntuar la gravedad de cada hallazgo</td></tr>
+                  <tr><th scope="row">ISO/IEC 27001</th><td>norma de gestión de la seguridad de la información; el pentest es una pieza dentro de ella</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para una auditoría de nivel estudiante o de empresa pequeña, con PTES + OWASP ya se cubre la mayoría de lo necesario; CVSS se usa casi siempre para puntuar los hallazgos en el informe.</p>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="pentest.html">← Pentest</a><a class="siguiente" href="inyeccion-sql.html">Inyección SQL →</a></nav>
+      <footer class="pie"><a href="http://www.pentest-standard.org/">PTES</a> · <a href="https://owasp.org/www-project-web-security-testing-guide/">OWASP WSTG</a> · <a href="https://www.isecom.org/OSSTMM.3.pdf">OSSTMM</a> · <a href="https://attack.mitre.org/">MITRE ATT&amp;CK</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
