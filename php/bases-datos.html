@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bases de datos con PDO · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="php">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">PHP</a><span aria-hidden="true">›</span><span>Bases de datos</span></nav>
+          <h1>Bases de datos con PDO</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Conectar PHP con MySQL, MariaDB, PostgreSQL o SQLite mediante PDO: consultas preparadas, recoger resultados, insertar, modificar y borrar, transacciones, inyección SQL y contraseñas.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de PHP">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="formularios.html">Formularios</a><a href="cookies-sesiones.html">Cookies y sesiones</a><a href="poo.html">POO</a><a href="bases-datos.html" aria-current="page">Bases de datos</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>PDO o mysqli</a><a href="#s2"><b>2</b>Conectar</a><a href="#s3"><b>3</b>Un fichero de conexión</a><a href="#s4"><b>4</b>Consultas sin parámetros</a><a href="#s5"><b>5</b>Consultas preparadas</a><a href="#s6"><b>6</b>Recoger los resultados</a><a href="#s7"><b>7</b>Insertar, modificar y borrar</a><a href="#s8"><b>8</b>Inyección SQL</a><a href="#s9"><b>9</b>LIKE, IN y LIMIT</a><a href="#s10"><b>10</b>Transacciones</a><a href="#s11"><b>11</b>Pintar una tabla HTML</a><a href="#s12"><b>12</b>Un CRUD completo</a><a href="#s13"><b>13</b>Contraseñas y login</a><a href="#s14"><b>14</b>Una clase repositorio</a><a href="#s15"><b>15</b>Errores habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Los tres pasos de toda consulta</p>
+        <div class="flujo">
+          <div class="caja caja-1">prepare()<small>SQL con huecos ? o :nombre</small></div>
+          <div class="flecha"><span class="ida">los datos van aparte</span><br><span class="linea">──────▶</span><br><span class="vuelta">nunca dentro del SQL</span></div>
+          <div class="caja caja-2">execute([...])<small>rellena los huecos y ejecuta</small></div>
+          <div class="flecha"><span class="ida">si es un SELECT</span><br><span class="linea">──────▶</span><br><span class="vuelta">fila a fila o todas</span></div>
+          <div class="caja caja-3">fetch() / fetchAll()<small>arrays u objetos</small></div>
+        </div>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La tabla de ejemplo</p>
+            <figure class="codigo"><pre data-lang="sql"><code><span class="tok-clave">CREATE TABLE</span> productos (
+  id        <span class="tok-tipo">INT</span> <span class="tok-clave">AUTO_INCREMENT PRIMARY KEY</span>,
+  nombre    <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">100</span>) <span class="tok-clave">NOT NULL</span>,
+  precio    <span class="tok-tipo">DECIMAL</span>(<span class="tok-numero">8</span>,<span class="tok-numero">2</span>) <span class="tok-clave">NOT NULL</span>,
+  stock     <span class="tok-tipo">INT</span> <span class="tok-clave">NOT NULL DEFAULT</span> <span class="tok-numero">0</span>,
+  categoria <span class="tok-tipo">VARCHAR</span>(<span class="tok-numero">50</span>)
+);</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Todo junto</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-variable">$pdo</span> = <span class="tok-clave">new</span> <span class="tok-tipo">PDO</span>(<span class="tok-texto">'mysql:host=localhost;dbname=tienda;charset=utf8mb4'</span>, <span class="tok-texto">'usuario'</span>, <span class="tok-texto">'clave'</span>, [
+    <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ATTR_ERRMODE</span>            =&gt; <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ERRMODE_EXCEPTION</span>,
+    <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ATTR_DEFAULT_FETCH_MODE</span> =&gt; <span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_ASSOC</span>,
+]);
+
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM productos WHERE precio &lt; ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-numero">20</span>]);
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$st</span> <span class="tok-clave">as</span> <span class="tok-variable">$fila</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-variable">$fila</span>[<span class="tok-texto">'nombre'</span>], <span class="tok-texto">': '</span>, <span class="tok-variable">$fila</span>[<span class="tok-texto">'precio'</span>], <span class="tok-texto">"\n"</span>;
+}</code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. PDO o mysqli -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>PDO o mysqli</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><strong>PDO</strong></th><td>la misma forma de trabajar con MySQL, MariaDB, PostgreSQL, SQLite, SQL Server... Orientado a objetos. Parámetros con nombre. <strong>La recomendada</strong></td></tr>
+                  <tr><th scope="row"><strong>mysqli</strong></th><td>solo MySQL y MariaDB. Tiene versión de funciones y de objetos. Aparece mucho en código antiguo</td></tr>
+                  <tr><th scope="row"><strong>mysql_*</strong></th><td>eliminada en PHP 7. Si ves <code>mysql_query</code>, el código es muy antiguo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">PDO necesita el <strong>driver</strong> de cada base de datos activado en <code>php.ini</code>: <code>extension=pdo_mysql</code>, <code>pdo_pgsql</code> o <code>pdo_sqlite</code>. Para ver cuáles hay:</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-funcion">print_r</span>(<span class="tok-tipo">PDO</span>::<span class="tok-funcion">getAvailableDrivers</span>());   <span class="tok-coment">// [mysql, sqlite, ...]</span></code></pre></figure>
+            <p class="nota">El lenguaje SQL está en <a href="../bases-datos/sql.html">SQL</a>. Aquí se ve cómo lanzarlo desde PHP.</p>
+          </div>
+        </section>
+        <!-- 2. Conectar -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Conectar</h2>
+          <div class="cuerpo">
+            <p class="txt">Un objeto <code>PDO</code> es una conexión. Se crea con un <strong>DSN</strong> (qué base de datos y dónde), usuario, contraseña y opciones.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-variable">$dsn</span> = <span class="tok-texto">'mysql:host=localhost;port=3306;dbname=tienda;charset=utf8mb4'</span>;
+<span class="tok-variable">$opciones</span> = [
+    <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ATTR_ERRMODE</span>            =&gt; <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ERRMODE_EXCEPTION</span>,   <span class="tok-coment">// errores como excepciones</span>
+    <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ATTR_DEFAULT_FETCH_MODE</span> =&gt; <span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_ASSOC</span>,         <span class="tok-coment">// filas como arrays asociativos</span>
+    <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ATTR_EMULATE_PREPARES</span>   =&gt; <span class="tok-clave">false</span>,                    <span class="tok-coment">// preparadas reales en el servidor</span>
+];
+
+<span class="tok-clave">try</span> {
+    <span class="tok-variable">$pdo</span> = <span class="tok-clave">new</span> <span class="tok-tipo">PDO</span>(<span class="tok-variable">$dsn</span>, <span class="tok-texto">'usuario'</span>, <span class="tok-texto">'clave'</span>, <span class="tok-variable">$opciones</span>);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">PDOException</span> <span class="tok-variable">$e</span>) {
+    <span class="tok-funcion">error_log</span>(<span class="tok-variable">$e</span>-&gt;<span class="tok-funcion">getMessage</span>());                 <span class="tok-coment">// el detalle, al registro</span>
+    <span class="tok-clave">exit</span>(<span class="tok-texto">'No se pudo conectar con la base de datos'</span>);   <span class="tok-coment">// al usuario, un mensaje genérico</span>
+}
+
+<span class="tok-coment">// cerrar: basta con que deje de existir la variable (o al acabar el script)</span>
+<span class="tok-variable">$pdo</span> = <span class="tok-clave">null</span>;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">MySQL / MariaDB</th><td><code>mysql:host=localhost;dbname=tienda;charset=utf8mb4</code></td></tr>
+                  <tr><th scope="row">PostgreSQL</th><td><code>pgsql:host=localhost;port=5432;dbname=tienda</code></td></tr>
+                  <tr><th scope="row">SQLite</th><td><code>sqlite:/ruta/datos.db</code> o <code>sqlite::memory:</code> (sin usuario ni clave)</td></tr>
+                  <tr><th scope="row">SQL Server</th><td><code>sqlsrv:Server=localhost;Database=tienda</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ATTR_ERRMODE</code></th><td><code>ERRMODE_EXCEPTION</code>: lanza <code>PDOException</code> (por defecto desde PHP 8)</td></tr>
+                  <tr><th scope="row"><code>ATTR_DEFAULT_FETCH_MODE</code></th><td>cómo se devuelven las filas si no se indica (sección 6)</td></tr>
+                  <tr><th scope="row"><code>ATTR_EMULATE_PREPARES</code></th><td><code>false</code>: el servidor recibe la consulta y los datos por separado; los números vuelven como números</td></tr>
+                  <tr><th scope="row"><code>ATTR_PERSISTENT</code></th><td><code>true</code>: reutiliza conexiones entre peticiones</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Pon siempre <code>charset=utf8mb4</code></strong> en el DSN de MySQL: sin él, las tildes y los emojis se guardan mal. <code>utf8</code> a secas en MySQL solo admite 3 bytes por carácter.</p>
+          </div>
+        </section>
+        <!-- 3. Un fichero de conexión -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Un fichero de conexión</h2>
+          <div class="cuerpo">
+            <p class="txt">La conexión se escribe una vez y se incluye donde haga falta. Los datos de acceso, fuera de la carpeta pública y fuera del control de versiones.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// config.php (fuera de public/, en .gitignore)</span>
+<span class="tok-clave">return</span> [
+    <span class="tok-texto">'dsn'</span>   =&gt; <span class="tok-texto">'mysql:host=localhost;dbname=tienda;charset=utf8mb4'</span>,
+    <span class="tok-texto">'user'</span>  =&gt; <span class="tok-texto">'tienda_app'</span>,
+    <span class="tok-texto">'clave'</span> =&gt; <span class="tok-texto">'S3cr3ta!'</span>,
+];</code></pre></figure>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// conexion.php</span>
+<span class="tok-clave">function</span> <span class="tok-funcion">conectar</span>(): <span class="tok-tipo">PDO</span>
+{
+    <span class="tok-clave">static</span> <span class="tok-variable">$pdo</span> = <span class="tok-clave">null</span>;                      <span class="tok-coment">// se crea una vez por petición</span>
+    <span class="tok-clave">if</span> (<span class="tok-variable">$pdo</span> === <span class="tok-clave">null</span>) {
+        <span class="tok-variable">$cfg</span> = <span class="tok-clave">require</span> __DIR__ . <span class="tok-texto">'/../config.php'</span>;
+        <span class="tok-variable">$pdo</span> = <span class="tok-clave">new</span> <span class="tok-tipo">PDO</span>(<span class="tok-variable">$cfg</span>[<span class="tok-texto">'dsn'</span>], <span class="tok-variable">$cfg</span>[<span class="tok-texto">'user'</span>], <span class="tok-variable">$cfg</span>[<span class="tok-texto">'clave'</span>], [
+            <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ATTR_ERRMODE</span>            =&gt; <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ERRMODE_EXCEPTION</span>,
+            <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ATTR_DEFAULT_FETCH_MODE</span> =&gt; <span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_ASSOC</span>,
+            <span class="tok-tipo">PDO</span>::<span class="tok-tipo">ATTR_EMULATE_PREPARES</span>   =&gt; <span class="tok-clave">false</span>,
+        ]);
+    }
+    <span class="tok-clave">return</span> <span class="tok-variable">$pdo</span>;
+}
+
+<span class="tok-coment">// en cualquier página</span>
+<span class="tok-clave">require_once</span> __DIR__ . <span class="tok-texto">'/conexion.php'</span>;
+<span class="tok-variable">$pdo</span> = <span class="tok-funcion">conectar</span>();</code></pre></figure>
+            <p class="nota">Crea un usuario de base de datos solo para la aplicación, con los permisos justos (<code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code> sobre su base de datos). Nunca <code>root</code>. Ver <a href="../bases-datos/sql-dcl.html">SQL: DCL</a>.</p>
+          </div>
+        </section>
+        <!-- 4. Consultas sin parámetros -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Consultas sin parámetros</h2>
+          <div class="cuerpo">
+            <p class="txt">Si la consulta <strong>no lleva ningún dato de fuera</strong>, se puede lanzar directamente.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// SELECT: query devuelve un PDOStatement con los resultados</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">'SELECT id, nombre, precio FROM productos ORDER BY nombre'</span>);
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$st</span> <span class="tok-clave">as</span> <span class="tok-variable">$fila</span>) {                    <span class="tok-coment">// se puede recorrer directamente</span>
+    <span class="tok-clave">echo</span> <span class="tok-texto">"{$fila['id']}. {$fila['nombre']}\n"</span>;
+}
+
+<span class="tok-variable">$total</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">'SELECT COUNT(*) FROM productos'</span>)-&gt;<span class="tok-funcion">fetchColumn</span>();
+
+<span class="tok-coment">// INSERT, UPDATE, DELETE, CREATE...: exec devuelve las filas afectadas</span>
+<span class="tok-variable">$borradas</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">exec</span>(<span class="tok-texto">'DELETE FROM productos WHERE stock = 0'</span>);
+<span class="tok-clave">echo</span> <span class="tok-texto">"$borradas productos borrados"</span>;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>$pdo-&gt;query($sql)</code></th><td>ejecuta y devuelve un <code>PDOStatement</code> (para <code>SELECT</code>)</td></tr>
+                  <tr><th scope="row"><code>$pdo-&gt;exec($sql)</code></th><td>ejecuta y devuelve el número de filas afectadas</td></tr>
+                  <tr><th scope="row"><code>$pdo-&gt;prepare($sql)</code></th><td>prepara una consulta con huecos (sección 5)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>En cuanto haya una variable en el SQL</strong> (un dato de un formulario, de la URL, de la sesión...), <code>query</code> y <code>exec</code> están prohibidos: usa <code>prepare</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Consultas preparadas -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Consultas preparadas</h2>
+          <div class="cuerpo">
+            <p class="txt">El SQL se envía con <strong>huecos</strong> y los datos van aparte. La base de datos nunca confunde un dato con una orden, así que no hay inyección SQL posible.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// huecos posicionales: ?</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM productos WHERE categoria = ? AND precio &lt;= ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-texto">'teclados'</span>, <span class="tok-numero">50</span>]);           <span class="tok-coment">// en el mismo orden que los ?</span>
+<span class="tok-variable">$productos</span> = <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetchAll</span>();
+
+<span class="tok-coment">// huecos con nombre: :nombre (más claros cuando hay muchos)</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM productos WHERE categoria = :cat AND precio &lt;= :max'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-texto">'cat'</span> =&gt; <span class="tok-texto">'teclados'</span>, <span class="tok-texto">'max'</span> =&gt; <span class="tok-numero">50</span>]);
+
+<span class="tok-coment">// una fila por id</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM productos WHERE id = ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$_GET</span>[<span class="tok-texto">'id'</span>] ?? <span class="tok-numero">0</span>]);
+<span class="tok-variable">$producto</span> = <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetch</span>();                 <span class="tok-coment">// false si no existe</span>
+<span class="tok-clave">if</span> (!<span class="tok-variable">$producto</span>) {
+    <span class="tok-funcion">http_response_code</span>(<span class="tok-numero">404</span>);
+    <span class="tok-clave">exit</span>(<span class="tok-texto">'Producto no encontrado'</span>);
+}
+
+<span class="tok-coment">// la misma consulta preparada, ejecutada muchas veces</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'INSERT INTO productos (nombre, precio) VALUES (?, ?)'</span>);
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$nuevos</span> <span class="tok-clave">as</span> [<span class="tok-variable">$nombre</span>, <span class="tok-variable">$precio</span>]) {
+    <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$nombre</span>, <span class="tok-variable">$precio</span>]);
+}
+
+<span class="tok-coment">// bindValue: indicar el tipo de cada dato</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM productos LIMIT :n OFFSET :desde'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">bindValue</span>(<span class="tok-texto">':n'</span>, <span class="tok-numero">10</span>, <span class="tok-tipo">PDO</span>::<span class="tok-tipo">PARAM_INT</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">bindValue</span>(<span class="tok-texto">':desde'</span>, <span class="tok-numero">20</span>, <span class="tok-tipo">PDO</span>::<span class="tok-tipo">PARAM_INT</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>execute([...])</code></th><td>rellena los huecos (todos como texto) y ejecuta</td></tr>
+                  <tr><th scope="row"><code>bindValue(hueco, valor, tipo)</code></th><td>asigna un valor con su tipo: <code>PDO::PARAM_INT</code>, <code>PARAM_STR</code>, <code>PARAM_BOOL</code>, <code>PARAM_NULL</code></td></tr>
+                  <tr><th scope="row"><code>bindParam(hueco, $var)</code></th><td>enlaza una <em>variable</em>: se lee su valor al hacer <code>execute</code></td></tr>
+                  <tr><th scope="row"><code>?</code></th><td>se numeran desde 1 en <code>bindValue(1, ...)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Los huecos son solo para valores.</strong> No sirven para nombres de tablas o columnas, ni para <code>ASC</code>/<code>DESC</code>. Si el usuario elige por qué columna ordenar, compruébalo contra una lista blanca: <code>in_array($orden, ['nombre', 'precio'], true)</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Recoger los resultados -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Recoger los resultados</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT id, nombre, precio FROM productos WHERE stock &gt; ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-numero">0</span>]);
+
+<span class="tok-coment">// de una en una (bueno para muchos resultados)</span>
+<span class="tok-clave">while</span> (<span class="tok-variable">$fila</span> = <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetch</span>()) {
+    <span class="tok-clave">echo</span> <span class="tok-variable">$fila</span>[<span class="tok-texto">'nombre'</span>];
+}
+
+<span class="tok-coment">// todas a la vez en un array</span>
+<span class="tok-variable">$todas</span> = <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetchAll</span>();                 <span class="tok-coment">// [[id=&gt;1, nombre=&gt;..., precio=&gt;...], ...]</span>
+
+<span class="tok-coment">// un solo valor</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT COUNT(*) FROM productos WHERE categoria = ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-texto">'ratones'</span>]);
+<span class="tok-variable">$n</span> = <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetchColumn</span>();
+
+<span class="tok-coment">// una columna entera como lista</span>
+<span class="tok-variable">$nombres</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">'SELECT nombre FROM productos'</span>)-&gt;<span class="tok-funcion">fetchAll</span>(<span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_COLUMN</span>);
+
+<span class="tok-coment">// pares clave =&gt; valor, ideal para un &lt;select&gt;</span>
+<span class="tok-variable">$opciones</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">'SELECT id, nombre FROM categorias'</span>)-&gt;<span class="tok-funcion">fetchAll</span>(<span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_KEY_PAIR</span>);
+
+<span class="tok-coment">// como objetos de una clase tuya</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">'SELECT id, nombre, precio FROM productos'</span>);
+<span class="tok-variable">$productos</span> = <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetchAll</span>(<span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_CLASS</span>, <span class="tok-tipo">Producto</span>::<span class="tok-clave">class</span>);
+
+<span class="tok-coment">// agrupados por la primera columna</span>
+<span class="tok-variable">$porCategoria</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">'SELECT categoria, nombre FROM productos'</span>)
+                    -&gt;<span class="tok-funcion">fetchAll</span>(<span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_GROUP</span> | <span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_COLUMN</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>PDO::FETCH_ASSOC</code></th><td>array con los nombres de columna: <code>$f['nombre']</code></td></tr>
+                  <tr><th scope="row"><code>PDO::FETCH_NUM</code></th><td>array por posición: <code>$f[0]</code></td></tr>
+                  <tr><th scope="row"><code>PDO::FETCH_BOTH</code></th><td>las dos cosas (por defecto si no se configura)</td></tr>
+                  <tr><th scope="row"><code>PDO::FETCH_OBJ</code></th><td>objeto genérico: <code>$f-&gt;nombre</code></td></tr>
+                  <tr><th scope="row"><code>PDO::FETCH_CLASS</code></th><td>objeto de tu clase; rellena las propiedades con el mismo nombre que las columnas</td></tr>
+                  <tr><th scope="row"><code>PDO::FETCH_COLUMN</code></th><td>solo una columna</td></tr>
+                  <tr><th scope="row"><code>PDO::FETCH_KEY_PAIR</code></th><td>primera columna como clave, segunda como valor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>fetch()</code></th><td>la siguiente fila, o <code>false</code> si no quedan</td></tr>
+                  <tr><th scope="row"><code>fetchAll()</code></th><td>todas las filas; array vacío si no hay</td></tr>
+                  <tr><th scope="row"><code>fetchColumn(n)</code></th><td>la columna n (por defecto 0) de la siguiente fila</td></tr>
+                  <tr><th scope="row"><code>fetchObject(Clase)</code></th><td>la siguiente fila como objeto</td></tr>
+                  <tr><th scope="row"><code>rowCount()</code></th><td>filas afectadas por un <code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code> (no fiable con <code>SELECT</code>)</td></tr>
+                  <tr><th scope="row"><code>columnCount()</code></th><td>número de columnas del resultado</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 7. Insertar, modificar y borrar -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Insertar, modificar y borrar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// INSERT y el id generado</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'INSERT INTO productos (nombre, precio, stock) VALUES (:nombre, :precio, :stock)'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-texto">'nombre'</span> =&gt; <span class="tok-texto">'Ratón'</span>, <span class="tok-texto">'precio'</span> =&gt; <span class="tok-numero">12.90</span>, <span class="tok-texto">'stock'</span> =&gt; <span class="tok-numero">30</span>]);
+<span class="tok-variable">$id</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">lastInsertId</span>();               <span class="tok-coment">// el AUTO_INCREMENT asignado (como texto)</span>
+
+<span class="tok-coment">// UPDATE: cuántas filas cambiaron</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'UPDATE productos SET precio = ? WHERE id = ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-numero">10.50</span>, <span class="tok-variable">$id</span>]);
+<span class="tok-clave">if</span> (<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">rowCount</span>() === <span class="tok-numero">0</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-texto">'No existe o ya tenía ese precio'</span>;
+}
+
+<span class="tok-coment">// DELETE</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'DELETE FROM productos WHERE id = ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$id</span>]);
+
+<span class="tok-coment">// NULL: se pasa null tal cual</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'UPDATE productos SET categoria = ? WHERE id = ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-clave">null</span>, <span class="tok-variable">$id</span>]);
+
+<span class="tok-coment">// clave duplicada (código SQLSTATE 23000)</span>
+<span class="tok-clave">try</span> {
+    <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([...]);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">PDOException</span> <span class="tok-variable">$e</span>) {
+    <span class="tok-clave">if</span> (<span class="tok-variable">$e</span>-&gt;<span class="tok-funcion">getCode</span>() === <span class="tok-texto">'23000'</span>) {
+        <span class="tok-variable">$errores</span>[<span class="tok-texto">'email'</span>] = <span class="tok-texto">'Ese email ya está registrado'</span>;
+    } <span class="tok-clave">else</span> {
+        <span class="tok-clave">throw</span> <span class="tok-variable">$e</span>;
+    }
+}</code></pre></figure>
+            <p class="nota">En MySQL, <code>rowCount()</code> cuenta las filas que <em>cambiaron</em>: un <code>UPDATE</code> que pone el mismo valor que ya había da 0. En PostgreSQL no existe <code>lastInsertId()</code> sin secuencia: se usa <code>INSERT ... RETURNING id</code> y <code>fetchColumn()</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Inyección SQL -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Inyección SQL</h2>
+          <div class="cuerpo">
+            <p class="txt">Pasa cuando un dato de fuera se pega dentro del SQL: el atacante escribe un trozo de SQL en vez de un dato y cambia la consulta.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// ✗ VULNERABLE: el dato se concatena en la consulta</span>
+<span class="tok-variable">$usuario</span> = <span class="tok-variable">$_POST</span>[<span class="tok-texto">'usuario'</span>];        <span class="tok-coment">// el atacante escribe:  ' OR '1'='1</span>
+<span class="tok-variable">$sql</span> = <span class="tok-texto">"SELECT * FROM usuarios WHERE usuario = '$usuario'"</span>;
+<span class="tok-coment">// queda: SELECT * FROM usuarios WHERE usuario = '' OR '1'='1'   → devuelve todos</span>
+<span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">query</span>(<span class="tok-variable">$sql</span>);
+
+<span class="tok-coment">// ✓ SEGURO: el dato va aparte y nunca se interpreta como SQL</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM usuarios WHERE usuario = ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$_POST</span>[<span class="tok-texto">'usuario'</span>]]);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Valores (texto, números, fechas)</th><td>siempre con <code>?</code> o <code>:nombre</code></td></tr>
+                  <tr><th scope="row" class="larga">Nombres de columnas o tablas, ASC/DESC</th><td>lista blanca de valores permitidos</td></tr>
+                  <tr><th scope="row" class="larga"><code>addslashes</code>, <code>$pdo-&gt;quote()</code></th><td>no los uses en lugar de las preparadas</td></tr>
+                  <tr><th scope="row" class="larga">Mensajes de error</th><td>no muestres <code>$e-&gt;getMessage()</code> al usuario: da pistas sobre la base de datos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Cómo se explota y cómo se detecta, en <a href="../hacking/inyeccion-sql.html">Inyección SQL</a> y <a href="../hacking/sqlmap.html">sqlmap</a>.</p>
+          </div>
+        </section>
+        <!-- 9. LIKE, IN y LIMIT -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>LIKE, IN y LIMIT</h2>
+          <div class="cuerpo">
+            <p class="txt">Tres casos en los que el hueco no es tan evidente.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// LIKE: el % va en el dato, no en el SQL</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM productos WHERE nombre LIKE ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-texto">'%'</span> . <span class="tok-variable">$busqueda</span> . <span class="tok-texto">'%'</span>]);
+
+<span class="tok-coment">// IN con una lista de longitud variable: un ? por elemento</span>
+<span class="tok-variable">$ids</span> = [<span class="tok-numero">3</span>, <span class="tok-numero">7</span>, <span class="tok-numero">12</span>];
+<span class="tok-variable">$huecos</span> = <span class="tok-funcion">implode</span>(<span class="tok-texto">','</span>, <span class="tok-funcion">array_fill</span>(<span class="tok-numero">0</span>, <span class="tok-funcion">count</span>(<span class="tok-variable">$ids</span>), <span class="tok-texto">'?'</span>));     <span class="tok-coment">// "?,?,?"</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">"SELECT * FROM productos WHERE id IN ($huecos)"</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>(<span class="tok-variable">$ids</span>);
+
+<span class="tok-coment">// LIMIT / OFFSET: con EMULATE_PREPARES activado hay que forzar el tipo entero</span>
+<span class="tok-variable">$porPagina</span> = <span class="tok-numero">10</span>;
+<span class="tok-variable">$pagina</span> = <span class="tok-funcion">max</span>(<span class="tok-numero">1</span>, (<span class="tok-tipo">int</span>) (<span class="tok-variable">$_GET</span>[<span class="tok-texto">'pagina'</span>] ?? <span class="tok-numero">1</span>));
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM productos ORDER BY nombre LIMIT ? OFFSET ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">bindValue</span>(<span class="tok-numero">1</span>, <span class="tok-variable">$porPagina</span>, <span class="tok-tipo">PDO</span>::<span class="tok-tipo">PARAM_INT</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">bindValue</span>(<span class="tok-numero">2</span>, (<span class="tok-variable">$pagina</span> - <span class="tok-numero">1</span>) * <span class="tok-variable">$porPagina</span>, <span class="tok-tipo">PDO</span>::<span class="tok-tipo">PARAM_INT</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>();
+
+<span class="tok-coment">// ORDER BY elegido por el usuario: lista blanca</span>
+<span class="tok-variable">$columnas</span> = [<span class="tok-texto">'nombre'</span>, <span class="tok-texto">'precio'</span>, <span class="tok-texto">'stock'</span>];
+<span class="tok-variable">$orden</span> = <span class="tok-funcion">in_array</span>(<span class="tok-variable">$_GET</span>[<span class="tok-texto">'orden'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-variable">$columnas</span>, <span class="tok-clave">true</span>) ? <span class="tok-variable">$_GET</span>[<span class="tok-texto">'orden'</span>] : <span class="tok-texto">'nombre'</span>;
+<span class="tok-variable">$dir</span> = (<span class="tok-variable">$_GET</span>[<span class="tok-texto">'dir'</span>] ?? <span class="tok-texto">''</span>) === <span class="tok-texto">'desc'</span> ? <span class="tok-texto">'DESC'</span> : <span class="tok-texto">'ASC'</span>;
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">"SELECT * FROM productos ORDER BY $orden $dir"</span>);</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Transacciones -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Transacciones</h2>
+          <div class="cuerpo">
+            <p class="txt">Varias operaciones que tienen que hacerse <strong>todas o ninguna</strong>: si falla una, se deshacen las anteriores. Teoría en <a href="../bases-datos/sql-tcl.html">SQL: TCL</a>.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// hacer un pedido: crear el pedido, sus líneas y descontar stock</span>
+<span class="tok-clave">try</span> {
+    <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">beginTransaction</span>();
+
+    <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'INSERT INTO pedidos (cliente_id, fecha) VALUES (?, NOW())'</span>)
+        -&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$clienteId</span>]);
+    <span class="tok-variable">$pedidoId</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">lastInsertId</span>();
+
+    <span class="tok-variable">$linea</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'INSERT INTO lineas (pedido_id, producto_id, cantidad) VALUES (?, ?, ?)'</span>);
+    <span class="tok-variable">$stock</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'UPDATE productos SET stock = stock - ? WHERE id = ? AND stock &gt;= ?'</span>);
+
+    <span class="tok-clave">foreach</span> (<span class="tok-variable">$carrito</span> <span class="tok-clave">as</span> <span class="tok-variable">$productoId</span> =&gt; <span class="tok-variable">$cantidad</span>) {
+        <span class="tok-variable">$linea</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$pedidoId</span>, <span class="tok-variable">$productoId</span>, <span class="tok-variable">$cantidad</span>]);
+        <span class="tok-variable">$stock</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$cantidad</span>, <span class="tok-variable">$productoId</span>, <span class="tok-variable">$cantidad</span>]);
+        <span class="tok-clave">if</span> (<span class="tok-variable">$stock</span>-&gt;<span class="tok-funcion">rowCount</span>() === <span class="tok-numero">0</span>) {
+            <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">RuntimeException</span>(<span class="tok-texto">"Sin stock del producto $productoId"</span>);
+        }
+    }
+
+    <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">commit</span>();                   <span class="tok-coment">// todo bien: se guarda</span>
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">Throwable</span> <span class="tok-variable">$e</span>) {
+    <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">rollBack</span>();                 <span class="tok-coment">// algo falló: se deshace todo</span>
+    <span class="tok-clave">throw</span> <span class="tok-variable">$e</span>;
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>beginTransaction()</code></th><td>desactiva el guardado automático hasta el <code>commit</code></td></tr>
+                  <tr><th scope="row"><code>commit()</code></th><td>confirma todos los cambios</td></tr>
+                  <tr><th scope="row"><code>rollBack()</code></th><td>los deshace</td></tr>
+                  <tr><th scope="row"><code>inTransaction()</code></th><td>si hay una transacción abierta</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">En MySQL las transacciones solo funcionan con tablas <strong>InnoDB</strong> (el motor por defecto). Las sentencias <code>CREATE</code>, <code>ALTER</code> y <code>DROP</code> hacen <code>commit</code> automático.</p>
+          </div>
+        </section>
+        <!-- 11. Pintar una tabla HTML -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Pintar una tabla HTML</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">require_once</span> <span class="tok-texto">'conexion.php'</span>;
+<span class="tok-variable">$productos</span> = <span class="tok-funcion">conectar</span>()-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">'SELECT id, nombre, precio, stock FROM productos ORDER BY nombre'</span>)
+                       -&gt;<span class="tok-funcion">fetchAll</span>();
+<span class="tok-etiqueta">?&gt;</span>
+<span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">if</span> (!<span class="tok-variable">$productos</span>): <span class="tok-etiqueta">?&gt;</span>
+  <span class="tok-etiqueta">&lt;p</span><span class="tok-etiqueta">&gt;</span>No hay productos.<span class="tok-etiqueta">&lt;/p</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">else</span>: <span class="tok-etiqueta">?&gt;</span>
+  <span class="tok-etiqueta">&lt;table</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;tr</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;th</span><span class="tok-etiqueta">&gt;</span>Nombre<span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;th</span><span class="tok-etiqueta">&gt;</span>Precio<span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;th</span><span class="tok-etiqueta">&gt;</span>Stock<span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;th</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/th</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/tr</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">foreach</span> (<span class="tok-variable">$productos</span> <span class="tok-clave">as</span> <span class="tok-variable">$p</span>): <span class="tok-etiqueta">?&gt;</span>
+      <span class="tok-etiqueta">&lt;tr</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;td</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$p</span>[<span class="tok-texto">'nombre'</span>]) <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/td</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;td</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">number_format</span>(<span class="tok-variable">$p</span>[<span class="tok-texto">'precio'</span>], <span class="tok-numero">2</span>, <span class="tok-texto">','</span>, <span class="tok-texto">'.'</span>) <span class="tok-etiqueta">?&gt;</span> €<span class="tok-etiqueta">&lt;/td</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;td</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$p</span>[<span class="tok-texto">'stock'</span>] <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/td</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;td</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>="editar.php?<span class="tok-atributo">id</span>=<span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$p</span>[<span class="tok-texto">'id'</span>] <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>Editar<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;/td</span><span class="tok-etiqueta">&gt;</span>
+      <span class="tok-etiqueta">&lt;/tr</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">endforeach</span>; <span class="tok-etiqueta">?&gt;</span>
+  <span class="tok-etiqueta">&lt;/table</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">endif</span>; <span class="tok-etiqueta">?&gt;</span></code></pre></figure>
+            <p class="nota">Lo que viene de la base de datos también se escapa con <code>htmlspecialchars</code>: alguien pudo guardar un <code>&lt;script&gt;</code> a través de un formulario. Ver <a href="formularios.html#s8">Formularios › XSS</a>.</p>
+          </div>
+        </section>
+        <!-- 12. Un CRUD completo -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Un CRUD completo</h2>
+          <div class="cuerpo">
+            <p class="txt">Crear y editar con el mismo formulario: si llega un <code>id</code>, se edita; si no, se crea. Junta todo lo de <a href="formularios.html">Formularios</a> con esta página.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// editar.php</span>
+<span class="tok-clave">require_once</span> <span class="tok-texto">'conexion.php'</span>;
+<span class="tok-variable">$pdo</span> = <span class="tok-funcion">conectar</span>();
+<span class="tok-variable">$id</span> = <span class="tok-funcion">filter_input</span>(<span class="tok-tipo">INPUT_GET</span>, <span class="tok-texto">'id'</span>, <span class="tok-tipo">FILTER_VALIDATE_INT</span>) ?: <span class="tok-clave">null</span>;
+<span class="tok-variable">$errores</span> = [];
+<span class="tok-variable">$p</span> = [<span class="tok-texto">'nombre'</span> =&gt; <span class="tok-texto">''</span>, <span class="tok-texto">'precio'</span> =&gt; <span class="tok-texto">''</span>, <span class="tok-texto">'stock'</span> =&gt; <span class="tok-numero">0</span>];
+
+<span class="tok-clave">if</span> (<span class="tok-variable">$id</span>) {                                           <span class="tok-coment">// cargar el existente</span>
+    <span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT * FROM productos WHERE id = ?'</span>);
+    <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$id</span>]);
+    <span class="tok-variable">$p</span> = <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetch</span>() ?: <span class="tok-clave">exit</span>(<span class="tok-texto">'No existe'</span>);
+}
+
+<span class="tok-clave">if</span> (<span class="tok-variable">$_SERVER</span>[<span class="tok-texto">'REQUEST_METHOD'</span>] === <span class="tok-texto">'POST'</span>) {
+    <span class="tok-variable">$p</span>[<span class="tok-texto">'nombre'</span>] = <span class="tok-funcion">trim</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'nombre'</span>] ?? <span class="tok-texto">''</span>);
+    <span class="tok-variable">$p</span>[<span class="tok-texto">'precio'</span>] = <span class="tok-funcion">filter_var</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'precio'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-tipo">FILTER_VALIDATE_FLOAT</span>);
+    <span class="tok-variable">$p</span>[<span class="tok-texto">'stock'</span>]  = <span class="tok-funcion">filter_var</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'stock'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-tipo">FILTER_VALIDATE_INT</span>);
+
+    <span class="tok-clave">if</span> (<span class="tok-variable">$p</span>[<span class="tok-texto">'nombre'</span>] === <span class="tok-texto">''</span>)  <span class="tok-variable">$errores</span>[<span class="tok-texto">'nombre'</span>] = <span class="tok-texto">'Obligatorio'</span>;
+    <span class="tok-clave">if</span> (<span class="tok-variable">$p</span>[<span class="tok-texto">'precio'</span>] === <span class="tok-clave">false</span> || <span class="tok-variable">$p</span>[<span class="tok-texto">'precio'</span>] &lt; <span class="tok-numero">0</span>) <span class="tok-variable">$errores</span>[<span class="tok-texto">'precio'</span>] = <span class="tok-texto">'Precio no válido'</span>;
+    <span class="tok-clave">if</span> (<span class="tok-variable">$p</span>[<span class="tok-texto">'stock'</span>] === <span class="tok-clave">false</span>) <span class="tok-variable">$errores</span>[<span class="tok-texto">'stock'</span>] = <span class="tok-texto">'Stock no válido'</span>;
+
+    <span class="tok-clave">if</span> (!<span class="tok-variable">$errores</span>) {
+        <span class="tok-variable">$datos</span> = [<span class="tok-variable">$p</span>[<span class="tok-texto">'nombre'</span>], <span class="tok-variable">$p</span>[<span class="tok-texto">'precio'</span>], <span class="tok-variable">$p</span>[<span class="tok-texto">'stock'</span>]];
+        <span class="tok-clave">if</span> (<span class="tok-variable">$id</span>) {
+            <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'UPDATE productos SET nombre = ?, precio = ?, stock = ? WHERE id = ?'</span>)
+                -&gt;<span class="tok-funcion">execute</span>([...<span class="tok-variable">$datos</span>, <span class="tok-variable">$id</span>]);
+        } <span class="tok-clave">else</span> {
+            <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'INSERT INTO productos (nombre, precio, stock) VALUES (?, ?, ?)'</span>)
+                -&gt;<span class="tok-funcion">execute</span>(<span class="tok-variable">$datos</span>);
+        }
+        <span class="tok-funcion">header</span>(<span class="tok-texto">'Location: productos.php'</span>, <span class="tok-clave">true</span>, <span class="tok-numero">303</span>);
+        <span class="tok-clave">exit</span>;
+    }
+}
+<span class="tok-etiqueta">?&gt;</span>
+<span class="tok-etiqueta">&lt;form</span> <span class="tok-atributo">method</span>=<span class="tok-texto">"post"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"nombre"</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$p</span>[<span class="tok-texto">'nombre'</span>]) <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span> <span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$errores</span>[<span class="tok-texto">'nombre'</span>] ?? <span class="tok-texto">''</span> <span class="tok-etiqueta">?&gt;</span>
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"precio"</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">htmlspecialchars</span>((<span class="tok-tipo">string</span>) <span class="tok-variable">$p</span>[<span class="tok-texto">'precio'</span>]) <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span> <span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$errores</span>[<span class="tok-texto">'precio'</span>] ?? <span class="tok-texto">''</span> <span class="tok-etiqueta">?&gt;</span>
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"stock"</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"number"</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> (<span class="tok-tipo">int</span>) <span class="tok-variable">$p</span>[<span class="tok-texto">'stock'</span>] <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;button</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$id</span> ? <span class="tok-texto">'Guardar cambios'</span> : <span class="tok-texto">'Crear'</span> <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/button</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/form</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-coment">&lt;!-- borrar: por POST, nunca con un enlace GET --&gt;</span>
+<span class="tok-etiqueta">&lt;form</span> <span class="tok-atributo">method</span>=<span class="tok-texto">"post"</span> <span class="tok-atributo">action</span>=<span class="tok-texto">"borrar.php"</span> <span class="tok-atributo">onsubmit</span>=<span class="tok-texto">"return confirm('¿Seguro?')"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"hidden"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"id"</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$id</span> <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;button</span><span class="tok-etiqueta">&gt;</span>Borrar<span class="tok-etiqueta">&lt;/button</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/form</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 13. Contraseñas y login -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Contraseñas y login</h2>
+          <div class="cuerpo">
+            <p class="txt">Las contraseñas no se guardan nunca en claro, ni con <code>md5</code> o <code>sha1</code>. Se guarda un <strong>hash</strong> lento con sal, y al entrar se compara.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// registro: guardar el hash (columna VARCHAR(255))</span>
+<span class="tok-variable">$hash</span> = <span class="tok-funcion">password_hash</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'clave'</span>], <span class="tok-tipo">PASSWORD_DEFAULT</span>);   <span class="tok-coment">// "$2y$10$..." (bcrypt, con sal)</span>
+<span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'INSERT INTO usuarios (email, clave) VALUES (?, ?)'</span>)
+    -&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$_POST</span>[<span class="tok-texto">'email'</span>], <span class="tok-variable">$hash</span>]);
+
+<span class="tok-coment">// login: buscar por email y verificar</span>
+<span class="tok-variable">$st</span> = <span class="tok-variable">$pdo</span>-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT id, nombre, clave FROM usuarios WHERE email = ?'</span>);
+<span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$_POST</span>[<span class="tok-texto">'email'</span>] ?? <span class="tok-texto">''</span>]);
+<span class="tok-variable">$u</span> = <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetch</span>();
+
+<span class="tok-clave">if</span> (<span class="tok-variable">$u</span> &amp;&amp; <span class="tok-funcion">password_verify</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'clave'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-variable">$u</span>[<span class="tok-texto">'clave'</span>])) {
+    <span class="tok-funcion">session_start</span>();
+    <span class="tok-funcion">session_regenerate_id</span>(<span class="tok-clave">true</span>);               <span class="tok-coment">// evita la fijación de sesión</span>
+    <span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'usuario_id'</span>] = <span class="tok-variable">$u</span>[<span class="tok-texto">'id'</span>];
+    <span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'nombre'</span>] = <span class="tok-variable">$u</span>[<span class="tok-texto">'nombre'</span>];
+    <span class="tok-funcion">header</span>(<span class="tok-texto">'Location: panel.php'</span>, <span class="tok-clave">true</span>, <span class="tok-numero">303</span>);
+    <span class="tok-clave">exit</span>;
+}
+<span class="tok-variable">$error</span> = <span class="tok-texto">'Email o contraseña incorrectos'</span>;      <span class="tok-coment">// mismo mensaje en los dos casos</span>
+
+<span class="tok-coment">// en cada página protegida</span>
+<span class="tok-funcion">session_start</span>();
+<span class="tok-clave">if</span> (!<span class="tok-clave">isset</span>(<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'usuario_id'</span>])) {
+    <span class="tok-funcion">header</span>(<span class="tok-texto">'Location: login.php'</span>);
+    <span class="tok-clave">exit</span>;
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>password_hash($clave, PASSWORD_DEFAULT)</code></th><td>genera el hash con una sal aleatoria; cada vez sale distinto</td></tr>
+                  <tr><th scope="row"><code>password_verify($clave, $hash)</code></th><td>comprueba una contraseña contra su hash</td></tr>
+                  <tr><th scope="row"><code>password_needs_rehash($hash, ...)</code></th><td>si conviene recalcularlo con un algoritmo o coste más nuevo</td></tr>
+                  <tr><th scope="row"><code>PASSWORD_ARGON2ID</code></th><td>algoritmo alternativo, si el PHP lo tiene</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Sesiones en <a href="cookies-sesiones.html">Cookies y sesiones</a>. Por qué hay que usar hash lentos en <a href="../seguridad/criptografia.html">Criptografía</a> y <a href="../hacking/fuerza-bruta.html">Fuerza bruta</a>.</p>
+          </div>
+        </section>
+        <!-- 14. Una clase repositorio -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Una clase repositorio</h2>
+          <div class="cuerpo">
+            <p class="txt">Cuando el proyecto crece, el SQL se agrupa en una clase por tabla y las páginas solo llaman a sus métodos. Combina esta página con <a href="poo.html">POO</a>.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Producto</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-tipo">int</span> <span class="tok-variable">$id</span>;
+    <span class="tok-clave">public</span> <span class="tok-tipo">string</span> <span class="tok-variable">$nombre</span>;
+    <span class="tok-clave">public</span> <span class="tok-tipo">float</span> <span class="tok-variable">$precio</span>;
+    <span class="tok-clave">public</span> <span class="tok-tipo">int</span> <span class="tok-variable">$stock</span>;
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">ProductoRepositorio</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">private</span> <span class="tok-tipo">PDO</span> <span class="tok-variable">$pdo</span>) {}
+
+    <span class="tok-coment">/** @return Producto[] */</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">todos</span>(): <span class="tok-tipo">array</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;pdo-&gt;<span class="tok-funcion">query</span>(<span class="tok-texto">'SELECT id, nombre, precio, stock FROM productos ORDER BY nombre'</span>)
+                         -&gt;<span class="tok-funcion">fetchAll</span>(<span class="tok-tipo">PDO</span>::<span class="tok-tipo">FETCH_CLASS</span>, <span class="tok-tipo">Producto</span>::<span class="tok-clave">class</span>);
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">buscar</span>(<span class="tok-tipo">int</span> <span class="tok-variable">$id</span>): ?<span class="tok-tipo">Producto</span>
+    {
+        <span class="tok-variable">$st</span> = <span class="tok-variable">$this</span>-&gt;pdo-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'SELECT id, nombre, precio, stock FROM productos WHERE id = ?'</span>);
+        <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$id</span>]);
+        <span class="tok-clave">return</span> <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">fetchObject</span>(<span class="tok-tipo">Producto</span>::<span class="tok-clave">class</span>) ?: <span class="tok-clave">null</span>;
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">guardar</span>(<span class="tok-tipo">Producto</span> <span class="tok-variable">$p</span>): <span class="tok-tipo">void</span>
+    {
+        <span class="tok-clave">if</span> (<span class="tok-clave">isset</span>(<span class="tok-variable">$p</span>-&gt;id)) {
+            <span class="tok-variable">$this</span>-&gt;pdo-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'UPDATE productos SET nombre = ?, precio = ?, stock = ? WHERE id = ?'</span>)
+                      -&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$p</span>-&gt;nombre, <span class="tok-variable">$p</span>-&gt;precio, <span class="tok-variable">$p</span>-&gt;stock, <span class="tok-variable">$p</span>-&gt;id]);
+        } <span class="tok-clave">else</span> {
+            <span class="tok-variable">$this</span>-&gt;pdo-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'INSERT INTO productos (nombre, precio, stock) VALUES (?, ?, ?)'</span>)
+                      -&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$p</span>-&gt;nombre, <span class="tok-variable">$p</span>-&gt;precio, <span class="tok-variable">$p</span>-&gt;stock]);
+            <span class="tok-variable">$p</span>-&gt;id = (<span class="tok-tipo">int</span>) <span class="tok-variable">$this</span>-&gt;pdo-&gt;<span class="tok-funcion">lastInsertId</span>();
+        }
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">borrar</span>(<span class="tok-tipo">int</span> <span class="tok-variable">$id</span>): <span class="tok-tipo">bool</span>
+    {
+        <span class="tok-variable">$st</span> = <span class="tok-variable">$this</span>-&gt;pdo-&gt;<span class="tok-funcion">prepare</span>(<span class="tok-texto">'DELETE FROM productos WHERE id = ?'</span>);
+        <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">execute</span>([<span class="tok-variable">$id</span>]);
+        <span class="tok-clave">return</span> <span class="tok-variable">$st</span>-&gt;<span class="tok-funcion">rowCount</span>() &gt; <span class="tok-numero">0</span>;
+    }
+}
+
+<span class="tok-coment">// en la página</span>
+<span class="tok-variable">$repo</span> = <span class="tok-clave">new</span> <span class="tok-tipo">ProductoRepositorio</span>(<span class="tok-funcion">conectar</span>());
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$repo</span>-&gt;<span class="tok-funcion">todos</span>() <span class="tok-clave">as</span> <span class="tok-variable">$p</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-variable">$p</span>-&gt;nombre;
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 15. Errores habituales -->
+        <section id="s15" class="tarjeta">
+          <h2><span class="num">15</span>Errores habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>could not find driver</code></th><td>falta activar <code>extension=pdo_mysql</code> (o el que toque) en <code>php.ini</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>SQLSTATE[HY000] [2002] Connection refused</code></th><td>el servidor de base de datos no está arrancado, o host / puerto incorrectos</td></tr>
+                  <tr><th scope="row" class="larga"><code>[1045] Access denied</code></th><td>usuario o contraseña incorrectos, o sin permiso desde ese host</td></tr>
+                  <tr><th scope="row" class="larga"><code>[1049] Unknown database</code></th><td>la base de datos del DSN no existe</td></tr>
+                  <tr><th scope="row" class="larga"><code>[42S02] Table doesn't exist</code></th><td>nombre de tabla mal escrito o base de datos equivocada</td></tr>
+                  <tr><th scope="row" class="larga"><code>[HY093] Invalid parameter number</code></th><td>no coinciden los huecos con los datos de <code>execute</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>[23000] Duplicate entry</code></th><td>se viola una clave única o primaria</td></tr>
+                  <tr><th scope="row" class="larga">Comillas alrededor de <code>?</code></th><td><code>WHERE nombre = '?'</code> busca el texto "?": los huecos van sin comillas</td></tr>
+                  <tr><th scope="row" class="larga">No sale ningún error, pero no funciona</th><td>falta <code>ERRMODE_EXCEPTION</code> (antes de PHP 8 no era el modo por defecto)</td></tr>
+                  <tr><th scope="row" class="larga">Tildes como Ã¡ o ?</th><td>falta <code>charset=utf8mb4</code> en el DSN, o la tabla no está en <code>utf8mb4</code></td></tr>
+                  <tr><th scope="row" class="larga">Mostrar el error de PDO al usuario</th><td>da pistas al atacante: regístralo con <code>error_log</code> y enseña un mensaje genérico</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="poo.html">← POO</a><span></span></nav>
+      <footer class="pie">El lenguaje SQL está en <a href="../bases-datos/sql.html">SQL</a>. Documentación: <a href="https://www.php.net/manual/es/book.pdo.php">PDO</a> en php.net.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

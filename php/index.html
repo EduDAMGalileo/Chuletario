@@ -16,7 +16,7 @@
           <h1>PHP</h1>
         </div>
         <div class="apoyo">
-          <p class="sub">El lenguaje del lado del servidor para páginas web dinámicas.</p>
+          <p class="sub">El lenguaje del lado del servidor para páginas web dinámicas. De la sintaxis básica a los formularios, las sesiones, la orientación a objetos y las bases de datos.</p>
           <div class="herramientas">
       <button type="button" data-accion="tema">Tema oscuro</button>
       <button type="button" data-accion="imprimir">Imprimir</button>
@@ -25,10 +25,46 @@
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de PHP">
-      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="cookies-sesiones.html">Cookies y sesiones</a></div>
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="formularios.html">Formularios</a><a href="cookies-sesiones.html">Cookies y sesiones</a><a href="poo.html">POO</a><a href="bases-datos.html">Bases de datos</a></div>
     </nav>
     <main class="wrap">
-      <div class="fichas"><a class="ficha" href="sintaxis.html" style="--color-tema: #4F5B93"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, cadenas, operadores, control de flujo, arrays y funciones.</span></a><a class="ficha" href="cookies-sesiones.html" style="--color-tema: #4F5B93"><span class="nombre">Cookies y sesiones</span><span class="desc">Mantener el estado en la web y verlo en el navegador.</span></a></div>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt"><strong>PHP</strong> se ejecuta en el <strong>servidor</strong>: cuando el navegador pide una página <code>.php</code>, el servidor ejecuta el script y devuelve el HTML que este genera. El navegador nunca ve el código PHP, solo su resultado.</p>
+            <div class="flujo">
+              <div class="caja caja-1">navegador<small>pide /tienda.php</small></div>
+              <div class="flecha"><span class="ida">petición</span><br><span class="linea">──────▶</span><br><span class="vuelta">GET o POST</span></div>
+              <div class="caja caja-2">PHP<small>lee datos, consulta la BD</small></div>
+              <div class="flecha"><span class="ida">respuesta</span><br><span class="linea">──────▶</span><br><span class="vuelta">solo HTML</span></div>
+              <div class="caja caja-3">navegador<small>muestra la página</small></div>
+            </div>
+          </div>
+          <div>
+            <p class="banda-titulo">Por dónde empezar</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Empezar</th><td><a href="sintaxis.html">Sintaxis básica</a>: variables, arrays, funciones y PHP dentro de HTML</td></tr>
+                  <tr><th scope="row">Recibir datos</th><td><a href="formularios.html">Formularios</a>: GET, POST, validar y escapar</td></tr>
+                  <tr><th scope="row">Recordar al usuario</th><td><a href="cookies-sesiones.html">Cookies y sesiones</a></td></tr>
+                  <tr><th scope="row">Organizar el código</th><td><a href="poo.html">POO</a>: clases, herencia, interfaces y namespaces</td></tr>
+                  <tr><th scope="row">Guardar datos</th><td><a href="bases-datos.html">Bases de datos con PDO</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">php</span> <span class="tok-atributo">-S</span> localhost:<span class="tok-numero">8000</span>     <span class="tok-coment"># servidor de pruebas en la carpeta actual</span></code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <p class="intro">Las chuletas de PHP, agrupadas por temas. Empieza por la <strong>sintaxis</strong>, sigue con lo propio de la <strong>web</strong> (formularios y sesiones) y termina con <strong>objetos y bases de datos</strong>, que es como se organiza una aplicación real.</p>
+      <h3 class="lenguaje">El lenguaje</h3>
+      <div class="fichas"><a class="ficha" href="sintaxis.html" style="--color-tema: #4F5B93"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, cadenas, operadores, control de flujo, arrays y funciones.</span></a><a class="ficha" href="poo.html" style="--color-tema: #4F5B93"><span class="nombre">POO</span><span class="desc">Clases, constructores, visibilidad, herencia, interfaces, traits, enums y namespaces.</span></a></div>
+      <h3 class="lenguaje">La web</h3>
+      <div class="fichas"><a class="ficha" href="formularios.html" style="--color-tema: #4F5B93"><span class="nombre">Formularios</span><span class="desc">GET y POST, $_GET y $_POST, validar, recordar valores, subir ficheros, XSS y CSRF.</span></a><a class="ficha" href="cookies-sesiones.html" style="--color-tema: #4F5B93"><span class="nombre">Cookies y sesiones</span><span class="desc">Mantener el estado en la web y verlo en el navegador.</span></a></div>
+      <h3 class="lenguaje">Datos</h3>
+      <div class="fichas"><a class="ficha" href="bases-datos.html" style="--color-tema: #4F5B93"><span class="nombre">Bases de datos</span><span class="desc">PDO: conectar, consultas preparadas, CRUD, transacciones, inyección SQL y login.</span></a></div>
       <footer class="pie"><a href="../programacion/index.html">← Todos los lenguajes</a></footer>
     </main>
     <script src="../assets/chuletas.js" defer></script>

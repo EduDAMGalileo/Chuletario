@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JSON · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>JSON</span></nav>
+          <h1>JSON</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Acceso a datos, parte 4: convertir objetos en JSON y al revés, y recorrer JSON sin clases, con Jackson, Gson y org.json.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="xml.html">XML</a><a href="json.html" aria-current="page">JSON</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="hilos.html">Hilos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué librería usar</a><a href="#s2"><b>2</b>Dependencias</a><a href="#s3"><b>3</b>Tipos JSON y tipos Java</a><a href="#s4"><b>4</b>Jackson: objetos ↔ JSON</a><a href="#s5"><b>5</b>Jackson: listas, mapas y genéricos</a><a href="#s6"><b>6</b>Jackson: configuración y fechas</a><a href="#s7"><b>7</b>Jackson: anotaciones</a><a href="#s8"><b>8</b>Jackson: el árbol JsonNode</a><a href="#s9"><b>9</b>Gson: objetos ↔ JSON</a><a href="#s10"><b>10</b>Gson: personalizar</a><a href="#s11"><b>11</b>Gson: el árbol JsonObject</a><a href="#s12"><b>12</b>org.json: JSONObject y JSONArray</a><a href="#s13"><b>13</b>JSON de una API web</a><a href="#s14"><b>14</b>Errores habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Las dos formas de trabajar</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">El documento de ejemplo: biblioteca.json</p>
+            <figure class="codigo"><pre data-lang="json"><code>{
+  <span class="tok-atributo">"nombre"</span>: <span class="tok-texto">"Biblioteca municipal"</span>,
+  <span class="tok-atributo">"libros"</span>: [
+    {
+      <span class="tok-atributo">"id"</span>: <span class="tok-texto">"L1"</span>,
+      <span class="tok-atributo">"titulo"</span>: <span class="tok-texto">"Nada"</span>,
+      <span class="tok-atributo">"autor"</span>: <span class="tok-texto">"Carmen Laforet"</span>,
+      <span class="tok-atributo">"precio"</span>: <span class="tok-numero">12.5</span>,
+      <span class="tok-atributo">"disponible"</span>: <span class="tok-clave">true</span>,
+      <span class="tok-atributo">"temas"</span>: [<span class="tok-texto">"posguerra"</span>, <span class="tok-texto">"Barcelona"</span>]
+    },
+    {
+      <span class="tok-atributo">"id"</span>: <span class="tok-texto">"L2"</span>,
+      <span class="tok-atributo">"titulo"</span>: <span class="tok-texto">"El árbol de la ciencia"</span>,
+      <span class="tok-atributo">"autor"</span>: <span class="tok-texto">"Pío Baroja"</span>,
+      <span class="tok-atributo">"precio"</span>: <span class="tok-numero">9.95</span>,
+      <span class="tok-atributo">"disponible"</span>: <span class="tok-clave">false</span>,
+      <span class="tok-atributo">"temas"</span>: []
+    }
+  ]
+}</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Las clases Java que le corresponden</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">record</span> <span class="tok-tipo">Libro</span>(<span class="tok-tipo">String</span> id, <span class="tok-tipo">String</span> titulo, <span class="tok-tipo">String</span> autor,
+             <span class="tok-tipo">double</span> precio, <span class="tok-tipo">boolean</span> disponible, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; temas) {}
+
+<span class="tok-clave">record</span> <span class="tok-tipo">Biblioteca</span>(<span class="tok-tipo">String</span> nombre, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; libros) {}</code></pre></figure>
+            <p class="banda-titulo">Las clases de cada librería</p>
+            <figure class="codigo"><pre data-lang="text"><code>            <span class="tok-clave">Con clases</span>      <span class="tok-clave">Sin clases (árbol)</span>
+<span class="tok-tipo">Jackson</span>     ObjectMapper     JsonNode, ObjectNode, ArrayNode
+<span class="tok-tipo">Gson</span>        Gson             JsonElement, JsonObject, JsonArray
+<span class="tok-tipo">org.json</span>    <span class="tok-coment">(no tiene)</span>       JSONObject, JSONArray</code></pre></figure>
+          </div>
+        </div>
+        <div class="flujo">
+          <div class="caja caja-1">objeto Java<small>new Libro(...)</small></div>
+          <div class="flecha"><span class="ida">serializar</span><br><span class="linea">──────▶</span><br><span class="vuelta">writeValue / toJson</span></div>
+          <div class="caja caja-2">texto JSON<small>fichero, String, red</small></div>
+          <div class="flecha"><span class="ida">deserializar</span><br><span class="linea">──────▶</span><br><span class="vuelta">readValue / fromJson</span></div>
+          <div class="caja caja-3">objeto Java<small>Libro.class</small></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué librería usar -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué librería usar</h2>
+          <div class="cuerpo">
+            <p class="txt">El JDK <strong>no trae</strong> nada para JSON: siempre hace falta una librería externa. Todas hacen lo mismo con nombres distintos.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><strong>Jackson</strong></th><td>la más usada (Spring la trae de serie). Rápida, muy configurable, con anotaciones. Usa getters y setters o constructores</td></tr>
+                  <tr><th scope="row"><strong>Gson</strong></th><td>de Google. Muy sencilla: trabaja directamente con los atributos, sin getters ni constructor vacío</td></tr>
+                  <tr><th scope="row"><strong>org.json</strong></th><td>mínima: solo <code>JSONObject</code> y <code>JSONArray</code>, como mapas y listas. No convierte a tus clases</td></tr>
+                  <tr><th scope="row"><strong>Jakarta JSON-P / JSON-B</strong></th><td>el estándar de Jakarta EE (<code>jakarta.json</code>). Se ve en servidores de aplicaciones</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Guardar y cargar mis objetos</th><td>Jackson <code>ObjectMapper</code> o <code>Gson</code></td></tr>
+                  <tr><th scope="row" class="larga">Leer unos pocos campos de un JSON grande o raro</th><td>árbol: <code>JsonNode</code>, <code>JsonObject</code> o <code>JSONObject</code></td></tr>
+                  <tr><th scope="row" class="larga">Montar un JSON a mano, sin clases</th><td><code>ObjectNode</code>, <code>JsonObject</code> o <code>JSONObject</code></td></tr>
+                  <tr><th scope="row" class="larga">Proyecto Spring Boot</th><td>Jackson, ya incluido</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La sintaxis de JSON (objetos, arrays, tipos) está en <a href="../marcas/json.html">Lenguajes de marcas › JSON</a>.</p>
+          </div>
+        </section>
+        <!-- 2. Dependencias -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Dependencias</h2>
+          <div class="cuerpo">
+            <p class="txt">En el <code>pom.xml</code>, dentro de <code>&lt;dependencies&gt;</code>. Solo la de la librería que vayas a usar. Más sobre esto en <a href="maven.html">Maven</a>.</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-coment">&lt;!-- Jackson (trae también jackson-core y jackson-annotations) --&gt;</span>
+<span class="tok-etiqueta">&lt;dependency</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;groupId</span><span class="tok-etiqueta">&gt;</span>com.fasterxml.jackson.core<span class="tok-etiqueta">&lt;/groupId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;artifactId</span><span class="tok-etiqueta">&gt;</span>jackson-databind<span class="tok-etiqueta">&lt;/artifactId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;version</span><span class="tok-etiqueta">&gt;</span>2.18.2<span class="tok-etiqueta">&lt;/version</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/dependency</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-coment">&lt;!-- Jackson: soporte de LocalDate, LocalDateTime... --&gt;</span>
+<span class="tok-etiqueta">&lt;dependency</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;groupId</span><span class="tok-etiqueta">&gt;</span>com.fasterxml.jackson.datatype<span class="tok-etiqueta">&lt;/groupId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;artifactId</span><span class="tok-etiqueta">&gt;</span>jackson-datatype-jsr310<span class="tok-etiqueta">&lt;/artifactId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;version</span><span class="tok-etiqueta">&gt;</span>2.18.2<span class="tok-etiqueta">&lt;/version</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/dependency</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-coment">&lt;!-- Gson --&gt;</span>
+<span class="tok-etiqueta">&lt;dependency</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;groupId</span><span class="tok-etiqueta">&gt;</span>com.google.code.gson<span class="tok-etiqueta">&lt;/groupId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;artifactId</span><span class="tok-etiqueta">&gt;</span>gson<span class="tok-etiqueta">&lt;/artifactId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;version</span><span class="tok-etiqueta">&gt;</span>2.11.0<span class="tok-etiqueta">&lt;/version</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/dependency</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-coment">&lt;!-- org.json --&gt;</span>
+<span class="tok-etiqueta">&lt;dependency</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;groupId</span><span class="tok-etiqueta">&gt;</span>org.json<span class="tok-etiqueta">&lt;/groupId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;artifactId</span><span class="tok-etiqueta">&gt;</span>json<span class="tok-etiqueta">&lt;/artifactId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;version</span><span class="tok-etiqueta">&gt;</span>20240303<span class="tok-etiqueta">&lt;/version</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/dependency</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota"><strong>Jackson 3</strong> cambia el paquete a <code>tools.jackson.databind</code> (grupo <code>tools.jackson.core</code>), trae las fechas de <code>java.time</code> de serie, se configura con <code>JsonMapper.builder()</code> y sus excepciones dejan de ser comprobadas. Las anotaciones siguen en <code>com.fasterxml.jackson.annotation</code>. Esta chuleta usa Jackson 2, que es lo que encontrarás en casi todos los proyectos.</p>
+          </div>
+        </section>
+        <!-- 3. Tipos JSON y tipos Java -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Tipos JSON y tipos Java</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>{ ... }</code> objeto</th><td>un objeto de tu clase, o <code>Map&lt;String, Object&gt;</code></td></tr>
+                  <tr><th scope="row"><code>[ ... ]</code> array</th><td><code>List&lt;T&gt;</code>, <code>Set&lt;T&gt;</code> o <code>T[]</code></td></tr>
+                  <tr><th scope="row"><code>"texto"</code></th><td><code>String</code>, <code>char</code>, un <code>enum</code> (por su nombre), <code>LocalDate</code> (con soporte)</td></tr>
+                  <tr><th scope="row"><code>12</code>  <code>12.5</code></th><td><code>int</code>, <code>long</code>, <code>double</code>, <code>BigDecimal</code>...</td></tr>
+                  <tr><th scope="row"><code>true</code>  <code>false</code></th><td><code>boolean</code></td></tr>
+                  <tr><th scope="row"><code>null</code></th><td><code>null</code> (en un primitivo, su valor por defecto)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="txt">El nombre de cada clave se empareja con el nombre del atributo (o del getter / setter, o del componente del <code>record</code>). Si no coinciden, se cambia con una anotación.</p>
+            <p class="aviso"><strong>Ojo con los mapas sin tipo:</strong> al leer a <code>Map&lt;String, Object&gt;</code>, Jackson da <code>Integer</code> o <code>Double</code> según el número, pero <strong>Gson da siempre <code>Double</code></strong>: <code>12</code> llega como <code>12.0</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Jackson: objetos ↔ JSON -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Jackson: objetos ↔ JSON</h2>
+          <div class="cuerpo">
+            <p class="txt">Todo pasa por un <code>ObjectMapper</code>. Es seguro entre hilos y costoso de crear: crea uno y reutilízalo.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> com.fasterxml.jackson.databind.<span class="tok-tipo">ObjectMapper</span>;
+
+<span class="tok-tipo">ObjectMapper</span> mapper = <span class="tok-clave">new</span> <span class="tok-tipo">ObjectMapper</span>();
+<span class="tok-tipo">Libro</span> libro = <span class="tok-clave">new</span> <span class="tok-tipo">Libro</span>(<span class="tok-texto">"L1"</span>, <span class="tok-texto">"Nada"</span>, <span class="tok-texto">"Carmen Laforet"</span>, <span class="tok-numero">12.5</span>, <span class="tok-clave">true</span>, <span class="tok-tipo">List</span>.of(<span class="tok-texto">"posguerra"</span>));
+
+<span class="tok-coment">// objeto → JSON</span>
+<span class="tok-tipo">String</span> json = mapper.writeValueAsString(libro);                    <span class="tok-coment">// en una línea</span>
+<span class="tok-tipo">String</span> bonito = mapper.writerWithDefaultPrettyPrinter()
+                      .writeValueAsString(libro);                   <span class="tok-coment">// con sangría</span>
+mapper.writeValue(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"libro.json"</span>), libro);                   <span class="tok-coment">// a un fichero</span>
+mapper.writerWithDefaultPrettyPrinter().writeValue(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"libro.json"</span>), libro);
+
+<span class="tok-coment">// JSON → objeto</span>
+<span class="tok-tipo">Libro</span> l1 = mapper.readValue(json, <span class="tok-tipo">Libro</span>.<span class="tok-clave">class</span>);                     <span class="tok-coment">// de un String</span>
+<span class="tok-tipo">Libro</span> l2 = mapper.readValue(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"libro.json"</span>), <span class="tok-tipo">Libro</span>.<span class="tok-clave">class</span>);   <span class="tok-coment">// de un fichero</span>
+<span class="tok-tipo">Biblioteca</span> b = mapper.readValue(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.json"</span>), <span class="tok-tipo">Biblioteca</span>.<span class="tok-clave">class</span>);
+
+<span class="tok-coment">// también de InputStream, Reader, URL o byte[]</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">Reader</span> r = <span class="tok-tipo">Files</span>.newBufferedReader(<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"libro.json"</span>))) {
+    <span class="tok-tipo">Libro</span> l3 = mapper.readValue(r, <span class="tok-tipo">Libro</span>.<span class="tok-clave">class</span>);
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>writeValueAsString(obj)</code></th><td>a un <code>String</code></td></tr>
+                  <tr><th scope="row"><code>writeValue(destino, obj)</code></th><td>a un <code>File</code>, <code>OutputStream</code> o <code>Writer</code></td></tr>
+                  <tr><th scope="row"><code>writeValueAsBytes(obj)</code></th><td>a un <code>byte[]</code> en UTF-8</td></tr>
+                  <tr><th scope="row"><code>writerWithDefaultPrettyPrinter()</code></th><td>un escritor que pone sangría</td></tr>
+                  <tr><th scope="row"><code>readValue(origen, Clase.class)</code></th><td>lee un objeto de esa clase</td></tr>
+                  <tr><th scope="row"><code>readValue(origen, TypeReference)</code></th><td>lee un tipo genérico (sección 5)</td></tr>
+                  <tr><th scope="row"><code>readTree(origen)</code></th><td>lee a un árbol <code>JsonNode</code> (sección 8)</td></tr>
+                  <tr><th scope="row"><code>convertValue(obj, Clase.class)</code></th><td>convierte sin pasar por texto: de <code>Map</code> a objeto y al revés</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Qué necesita la clase</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>record</code></th><td>funciona tal cual (Jackson 2.12+)</td></tr>
+                  <tr><th scope="row">Para escribir</th><td>getters públicos (<code>getTitulo</code>, <code>isDisponible</code>) o atributos públicos</td></tr>
+                  <tr><th scope="row">Para leer</th><td>constructor sin parámetros + setters, o un constructor con <code>@JsonCreator</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Lanza <code>JsonProcessingException</code> (JSON mal formado o que no encaja con la clase) e <code>IOException</code> al usar ficheros. La primera hereda de la segunda: un <code>catch (IOException e)</code> recoge las dos.</p>
+          </div>
+        </section>
+        <!-- 5. Jackson: listas, mapas y genéricos -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Jackson: listas, mapas y genéricos</h2>
+          <div class="cuerpo">
+            <p class="txt">Por el borrado de tipos, <code>List&lt;Libro&gt;.class</code> no existe. Para leer un tipo genérico se usa una <code>TypeReference</code>: una clase anónima que conserva el tipo completo.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">File</span> f = <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"libros.json"</span>);          <span class="tok-coment">// [ {...}, {...} ]</span>
+
+<span class="tok-coment">// lista de objetos</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; libros = mapper.readValue(f, <span class="tok-clave">new</span> <span class="tok-tipo">TypeReference</span>&lt;<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt;&gt;() {});
+
+<span class="tok-coment">// o como array, sin TypeReference</span>
+<span class="tok-tipo">Libro</span>[] array = mapper.readValue(f, <span class="tok-tipo">Libro</span>[].<span class="tok-clave">class</span>);
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; lista = <span class="tok-tipo">Arrays</span>.asList(array);
+
+<span class="tok-coment">// mapa de objetos</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Libro</span>&gt; porId = mapper.readValue(json, <span class="tok-clave">new</span> <span class="tok-tipo">TypeReference</span>&lt;<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Libro</span>&gt;&gt;() {});
+
+<span class="tok-coment">// JSON sin clase: mapas y listas genéricos</span>
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Object</span>&gt; datos = mapper.readValue(json, <span class="tok-clave">new</span> <span class="tok-tipo">TypeReference</span>&lt;<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Object</span>&gt;&gt;() {});
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Object</span>&gt;&gt; filas = (<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Object</span>&gt;&gt;) datos.get(<span class="tok-texto">"libros"</span>);
+
+<span class="tok-coment">// escribir una lista: no necesita nada especial</span>
+mapper.writeValue(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"libros.json"</span>), libros);
+
+<span class="tok-coment">// de Map a objeto y al revés, sin pasar por texto</span>
+<span class="tok-tipo">Libro</span> l = mapper.convertValue(datos, <span class="tok-tipo">Libro</span>.<span class="tok-clave">class</span>);
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Object</span>&gt; comoMapa = mapper.convertValue(l, <span class="tok-clave">new</span> <span class="tok-tipo">TypeReference</span>&lt;<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Object</span>&gt;&gt;() {});</code></pre></figure>
+            <p class="aviso"><strong>Sin TypeReference:</strong> <code>mapper.readValue(f, List.class)</code> compila, pero dentro no hay <code>Libro</code>, sino <code>LinkedHashMap</code>. Falla después, al hacer <code>libros.get(0).titulo()</code>, con <code>ClassCastException</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Jackson: configuración y fechas -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Jackson: configuración y fechas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">ObjectMapper</span> mapper = <span class="tok-clave">new</span> <span class="tok-tipo">ObjectMapper</span>()
+    .enable(<span class="tok-tipo">SerializationFeature</span>.<span class="tok-tipo">INDENT_OUTPUT</span>)                    <span class="tok-coment">// siempre con sangría</span>
+    .disable(<span class="tok-tipo">DeserializationFeature</span>.<span class="tok-tipo">FAIL_ON_UNKNOWN_PROPERTIES</span>)    <span class="tok-coment">// ignora claves que sobran</span>
+    .setSerializationInclusion(<span class="tok-tipo">JsonInclude</span>.<span class="tok-tipo">Include</span>.<span class="tok-tipo">NON_NULL</span>)       <span class="tok-coment">// no escribe los null</span>
+    .setPropertyNamingStrategy(<span class="tok-tipo">PropertyNamingStrategies</span>.<span class="tok-tipo">SNAKE_CASE</span>); <span class="tok-coment">// fechaAlta → fecha_alta</span>
+
+<span class="tok-coment">// LocalDate, LocalDateTime... (dependencia jackson-datatype-jsr310)</span>
+mapper.registerModule(<span class="tok-clave">new</span> <span class="tok-tipo">JavaTimeModule</span>());
+mapper.disable(<span class="tok-tipo">SerializationFeature</span>.<span class="tok-tipo">WRITE_DATES_AS_TIMESTAMPS</span>);    <span class="tok-coment">// "2024-05-01", no [2024,5,1]</span>
+
+<span class="tok-coment">// o que busque solo los módulos que haya en el classpath</span>
+mapper.findAndRegisterModules();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>SerializationFeature.INDENT_OUTPUT</code></th><td>escribe con sangría</td></tr>
+                  <tr><th scope="row"><code>SerializationFeature.WRITE_DATES_AS_TIMESTAMPS</code></th><td>activa: fechas como números o arrays; desactívala para tener texto ISO</td></tr>
+                  <tr><th scope="row"><code>SerializationFeature.FAIL_ON_EMPTY_BEANS</code></th><td>falla con objetos sin nada que escribir (sin getters)</td></tr>
+                  <tr><th scope="row"><code>DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES</code></th><td>activa por defecto: una clave del JSON que no está en la clase lanza excepción</td></tr>
+                  <tr><th scope="row"><code>DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY</code></th><td>acepta <code>"x"</code> donde se esperaba <code>["x"]</code></td></tr>
+                  <tr><th scope="row"><code>DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES</code></th><td>falla si llega <code>null</code> para un <code>int</code> o <code>double</code></td></tr>
+                  <tr><th scope="row"><code>JsonInclude.Include.NON_NULL</code></th><td>omite los <code>null</code>; <code>NON_EMPTY</code> omite además las listas y textos vacíos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Sin el módulo de fechas</strong>, escribir o leer un <code>LocalDate</code> lanza <code>InvalidDefinitionException: Java 8 date/time type not supported by default</code>.</p>
+          </div>
+        </section>
+        <!-- 7. Jackson: anotaciones -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Jackson: anotaciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> com.fasterxml.jackson.annotation.*;
+
+<span class="tok-atributo">@JsonIgnoreProperties</span>(ignoreUnknown = <span class="tok-clave">true</span>)        <span class="tok-coment">// claves desconocidas: se ignoran</span>
+<span class="tok-atributo">@JsonInclude</span>(<span class="tok-tipo">JsonInclude</span>.<span class="tok-tipo">Include</span>.<span class="tok-tipo">NON_NULL</span>)          <span class="tok-coment">// no escribe los null</span>
+<span class="tok-atributo">@JsonPropertyOrder</span>({ <span class="tok-texto">"id"</span>, <span class="tok-texto">"titulo"</span>, <span class="tok-texto">"autor"</span> })     <span class="tok-coment">// orden de las claves al escribir</span>
+<span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Socio</span> {
+    <span class="tok-clave">private</span> <span class="tok-tipo">int</span> id;
+
+    <span class="tok-atributo">@JsonProperty</span>(<span class="tok-texto">"nombre_completo"</span>)                <span class="tok-coment">// la clave del JSON se llama distinto</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> nombre;
+
+    <span class="tok-atributo">@JsonIgnore</span>                                     <span class="tok-coment">// ni se escribe ni se lee</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> contrasena;
+
+    <span class="tok-atributo">@JsonFormat</span>(shape = <span class="tok-tipo">JsonFormat</span>.<span class="tok-tipo">Shape</span>.<span class="tok-tipo">STRING</span>, pattern = <span class="tok-texto">"dd/MM/yyyy"</span>)
+    <span class="tok-clave">private</span> <span class="tok-tipo">LocalDate</span> alta;                         <span class="tok-coment">// "01/05/2024"</span>
+
+    <span class="tok-atributo">@JsonAlias</span>({ <span class="tok-texto">"mail"</span>, <span class="tok-texto">"correo"</span> })                <span class="tok-coment">// al leer, acepta también estos nombres</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> email;
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">Socio</span>() { }                              <span class="tok-coment">// constructor vacío + getters y setters</span>
+    <span class="tok-coment">// ...</span>
+}
+
+<span class="tok-coment">// clase inmutable: decir qué parámetro corresponde a cada clave</span>
+<span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Prestamo</span> {
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">String</span> libro;
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">int</span> dias;
+
+    <span class="tok-atributo">@JsonCreator</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">Prestamo</span>(<span class="tok-atributo">@JsonProperty</span>(<span class="tok-texto">"libro"</span>) <span class="tok-tipo">String</span> libro, <span class="tok-atributo">@JsonProperty</span>(<span class="tok-texto">"dias"</span>) <span class="tok-tipo">int</span> dias) {
+        <span class="tok-clave">this</span>.libro = libro;
+        <span class="tok-clave">this</span>.dias = dias;
+    }
+    <span class="tok-clave">public</span> <span class="tok-tipo">String</span> getLibro() { <span class="tok-clave">return</span> libro; }
+    <span class="tok-clave">public</span> <span class="tok-tipo">int</span> getDias() { <span class="tok-clave">return</span> dias; }
+}
+
+<span class="tok-coment">// en un record también valen, sobre los componentes</span>
+<span class="tok-clave">record</span> <span class="tok-tipo">Libro</span>(<span class="tok-atributo">@JsonProperty</span>(<span class="tok-texto">"book_id"</span>) <span class="tok-tipo">String</span> id, <span class="tok-tipo">String</span> titulo) {}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>@JsonProperty("n")</code></th><td>nombre de la clave en el JSON</td></tr>
+                  <tr><th scope="row"><code>@JsonAlias({...})</code></th><td>nombres alternativos al leer</td></tr>
+                  <tr><th scope="row"><code>@JsonIgnore</code></th><td>no se escribe ni se lee</td></tr>
+                  <tr><th scope="row"><code>@JsonIgnoreProperties</code></th><td>en la clase: <code>ignoreUnknown = true</code> o una lista de claves a ignorar</td></tr>
+                  <tr><th scope="row"><code>@JsonInclude(NON_NULL)</code></th><td>omite los <code>null</code> de esa clase o atributo</td></tr>
+                  <tr><th scope="row"><code>@JsonPropertyOrder</code></th><td>orden de las claves</td></tr>
+                  <tr><th scope="row"><code>@JsonFormat(pattern)</code></th><td>formato de fechas y números</td></tr>
+                  <tr><th scope="row"><code>@JsonCreator</code></th><td>constructor (o método <code>static</code>) que usa Jackson para crear el objeto</td></tr>
+                  <tr><th scope="row"><code>@JsonValue</code></th><td>el objeto se escribe como lo que devuelve ese método (útil en <code>enum</code>)</td></tr>
+                  <tr><th scope="row"><code>@JsonManagedReference  @JsonBackReference</code></th><td>rompen referencias circulares padre ↔ hijo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 8. Jackson: el árbol JsonNode -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Jackson: el árbol JsonNode</h2>
+          <div class="cuerpo">
+            <p class="txt">Sin clases: el JSON se carga como un árbol de nodos, parecido al DOM de <a href="xml.html">XML</a>. Útil para leer unos pocos campos o para JSON cuya forma no conoces.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">JsonNode</span> raiz = mapper.readTree(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.json"</span>));
+
+<span class="tok-tipo">String</span> nombre = raiz.get(<span class="tok-texto">"nombre"</span>).asText();          <span class="tok-coment">// "Biblioteca municipal"</span>
+<span class="tok-tipo">JsonNode</span> libros = raiz.get(<span class="tok-texto">"libros"</span>);                 <span class="tok-coment">// un ArrayNode</span>
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">JsonNode</span> libro : libros) {                       <span class="tok-coment">// se recorre con for-each</span>
+    <span class="tok-tipo">String</span> titulo = libro.get(<span class="tok-texto">"titulo"</span>).asText();
+    <span class="tok-tipo">double</span> precio = libro.get(<span class="tok-texto">"precio"</span>).asDouble();
+    <span class="tok-tipo">boolean</span> disp = libro.get(<span class="tok-texto">"disponible"</span>).asBoolean();
+    <span class="tok-clave">for</span> (<span class="tok-tipo">JsonNode</span> tema : libro.get(<span class="tok-texto">"temas"</span>)) {
+        <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"  "</span> + tema.asText());
+    }
+}
+
+<span class="tok-coment">// get devuelve null si la clave no existe; path devuelve un nodo "vacío"</span>
+raiz.get(<span class="tok-texto">"telefono"</span>);                                 <span class="tok-coment">// null → NullPointerException al encadenar</span>
+raiz.path(<span class="tok-texto">"telefono"</span>).asText();                       <span class="tok-coment">// ""  (sin excepción)</span>
+raiz.path(<span class="tok-texto">"direccion"</span>).path(<span class="tok-texto">"calle"</span>).asText(<span class="tok-texto">"s/n"</span>);   <span class="tok-coment">// valor por defecto</span>
+
+<span class="tok-coment">// ir directo con un JSON Pointer</span>
+<span class="tok-tipo">String</span> primero = raiz.at(<span class="tok-texto">"/libros/0/titulo"</span>).asText();
+
+<span class="tok-coment">// de nodo a objeto</span>
+<span class="tok-tipo">Libro</span> l = mapper.treeToValue(libros.get(<span class="tok-numero">0</span>), <span class="tok-tipo">Libro</span>.<span class="tok-clave">class</span>);</code></pre></figure>
+            <h3>Crear y modificar</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">ObjectNode</span> libro = mapper.createObjectNode();
+libro.put(<span class="tok-texto">"id"</span>, <span class="tok-texto">"L3"</span>);
+libro.put(<span class="tok-texto">"precio"</span>, <span class="tok-numero">15.0</span>);
+libro.put(<span class="tok-texto">"disponible"</span>, <span class="tok-clave">true</span>);
+libro.putNull(<span class="tok-texto">"isbn"</span>);
+
+<span class="tok-tipo">ArrayNode</span> temas = libro.putArray(<span class="tok-texto">"temas"</span>);            <span class="tok-coment">// crea y cuelga el array</span>
+temas.add(<span class="tok-texto">"guerra"</span>).add(<span class="tok-texto">"memoria"</span>);
+
+<span class="tok-tipo">ObjectNode</span> editorial = libro.putObject(<span class="tok-texto">"editorial"</span>);  <span class="tok-coment">// objeto anidado</span>
+editorial.put(<span class="tok-texto">"nombre"</span>, <span class="tok-texto">"Destino"</span>);
+
+<span class="tok-coment">// añadir el libro al árbol leído antes y guardarlo</span>
+((<span class="tok-tipo">ArrayNode</span>) raiz.get(<span class="tok-texto">"libros"</span>)).add(libro);
+((<span class="tok-tipo">ObjectNode</span>) raiz).put(<span class="tok-texto">"nombre"</span>, <span class="tok-texto">"Biblioteca central"</span>);
+((<span class="tok-tipo">ObjectNode</span>) raiz).remove(<span class="tok-texto">"obsoleto"</span>);
+mapper.writerWithDefaultPrettyPrinter().writeValue(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.json"</span>), raiz);
+
+<span class="tok-coment">// de objeto a nodo</span>
+<span class="tok-tipo">JsonNode</span> nodo = mapper.valueToTree(<span class="tok-clave">new</span> <span class="tok-tipo">Libro</span>(...));</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>get(clave)  get(i)</code></th><td>hijo de un objeto o de un array; <code>null</code> si no existe</td></tr>
+                  <tr><th scope="row"><code>path(clave)</code></th><td>igual, pero nunca <code>null</code></td></tr>
+                  <tr><th scope="row"><code>has(clave)</code></th><td>si existe la clave</td></tr>
+                  <tr><th scope="row"><code>asText()  asInt()  asDouble()  asBoolean()</code></th><td>valor convertido; admiten un valor por defecto</td></tr>
+                  <tr><th scope="row"><code>isObject()  isArray()  isTextual()  isNumber()  isNull()</code></th><td>de qué tipo es</td></tr>
+                  <tr><th scope="row"><code>size()</code></th><td>elementos del array o claves del objeto</td></tr>
+                  <tr><th scope="row"><code>fieldNames()  properties()</code></th><td>las claves, o las parejas clave-nodo, de un objeto</td></tr>
+                  <tr><th scope="row"><code>put  putArray  putObject  set  remove</code></th><td>modificar un <code>ObjectNode</code></td></tr>
+                  <tr><th scope="row"><code>add  insert  set(i, n)  remove(i)</code></th><td>modificar un <code>ArrayNode</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para ficheros enormes existe la API de streaming: <code>JsonParser</code> (lee token a token, como StAX) y <code>JsonGenerator</code> (escribe), que se sacan de <code>mapper.getFactory()</code>.</p>
+          </div>
+        </section>
+        <!-- 9. Gson: objetos ↔ JSON -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Gson: objetos ↔ JSON</h2>
+          <div class="cuerpo">
+            <p class="txt">Dos métodos: <code>toJson</code> y <code>fromJson</code>. Gson lee y escribe los <strong>atributos</strong> directamente, aunque sean privados: no necesita getters, setters ni constructor vacío.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> com.google.gson.<span class="tok-tipo">Gson</span>;
+
+<span class="tok-tipo">Gson</span> gson = <span class="tok-clave">new</span> <span class="tok-tipo">Gson</span>();
+
+<span class="tok-coment">// objeto → JSON</span>
+<span class="tok-tipo">String</span> json = gson.toJson(libro);
+<span class="tok-clave">try</span> (<span class="tok-tipo">Writer</span> w = <span class="tok-tipo">Files</span>.newBufferedWriter(<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"libro.json"</span>))) {
+    gson.toJson(libro, w);                                 <span class="tok-coment">// a un fichero</span>
+}
+
+<span class="tok-coment">// JSON → objeto</span>
+<span class="tok-tipo">Libro</span> l = gson.fromJson(json, <span class="tok-tipo">Libro</span>.<span class="tok-clave">class</span>);
+<span class="tok-clave">try</span> (<span class="tok-tipo">Reader</span> r = <span class="tok-tipo">Files</span>.newBufferedReader(<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"biblioteca.json"</span>))) {
+    <span class="tok-tipo">Biblioteca</span> b = gson.fromJson(r, <span class="tok-tipo">Biblioteca</span>.<span class="tok-clave">class</span>);
+}
+
+<span class="tok-coment">// listas y genéricos: TypeToken, como TypeReference en Jackson</span>
+<span class="tok-tipo">Type</span> tipoLista = <span class="tok-clave">new</span> <span class="tok-tipo">TypeToken</span>&lt;<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt;&gt;() {}.getType();
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; libros = gson.fromJson(json, tipoLista);
+
+<span class="tok-tipo">Type</span> tipoMapa = <span class="tok-clave">new</span> <span class="tok-tipo">TypeToken</span>&lt;<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Libro</span>&gt;&gt;() {}.getType();
+<span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Libro</span>&gt; porId = gson.fromJson(json, tipoMapa);
+
+<span class="tok-coment">// o como array</span>
+<span class="tok-tipo">Libro</span>[] array = gson.fromJson(json, <span class="tok-tipo">Libro</span>[].<span class="tok-clave">class</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>toJson(obj)</code></th><td>a un <code>String</code></td></tr>
+                  <tr><th scope="row"><code>toJson(obj, writer)</code></th><td>a un <code>Writer</code> (o <code>Appendable</code>)</td></tr>
+                  <tr><th scope="row"><code>fromJson(texto, Clase.class)</code></th><td>de un <code>String</code> o un <code>Reader</code></td></tr>
+                  <tr><th scope="row"><code>fromJson(texto, Type)</code></th><td>tipos genéricos con <code>TypeToken</code></td></tr>
+                  <tr><th scope="row"><code>toJsonTree(obj)</code></th><td>a un árbol <code>JsonElement</code></td></tr>
+                  <tr><th scope="row"><code>fromJson(jsonElement, Clase.class)</code></th><td>de un árbol a un objeto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Atributos <code>transient</code> o <code>static</code></th><td>no se guardan</td></tr>
+                  <tr><th scope="row" class="larga">Atributos a <code>null</code></th><td>no se escriben (salvo <code>serializeNulls()</code>)</td></tr>
+                  <tr><th scope="row" class="larga">Claves del JSON que no están en la clase</th><td>se ignoran sin error</td></tr>
+                  <tr><th scope="row" class="larga">Claves de la clase que no están en el JSON</th><td>quedan a <code>null</code>, 0 o <code>false</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>record</code></th><td>funciona desde Gson 2.10</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Gson lanza <code>JsonSyntaxException</code> (JSON mal formado o tipos que no encajan) y <code>JsonIOException</code>. Ambas son <strong>no comprobadas</strong>: el compilador no obliga a capturarlas.</p>
+          </div>
+        </section>
+        <!-- 10. Gson: personalizar -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Gson: personalizar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Gson</span> gson = <span class="tok-clave">new</span> <span class="tok-tipo">GsonBuilder</span>()
+    .setPrettyPrinting()                                   <span class="tok-coment">// con sangría</span>
+    .serializeNulls()                                      <span class="tok-coment">// escribe también los null</span>
+    .setFieldNamingPolicy(<span class="tok-tipo">FieldNamingPolicy</span>.<span class="tok-tipo">LOWER_CASE_WITH_UNDERSCORES</span>)  <span class="tok-coment">// fechaAlta → fecha_alta</span>
+    .disableHtmlEscaping()                                 <span class="tok-coment">// deja &lt; &gt; = tal cual, sin &#92;u003c</span>
+    .registerTypeAdapter(<span class="tok-tipo">LocalDate</span>.<span class="tok-clave">class</span>, <span class="tok-clave">new</span> <span class="tok-tipo">LocalDateAdapter</span>())
+    .create();</code></pre></figure>
+            <h3>Anotaciones</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Socio</span> {
+    <span class="tok-atributo">@SerializedName</span>(<span class="tok-texto">"nombre_completo"</span>)                     <span class="tok-coment">// nombre de la clave</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> nombre;
+
+    <span class="tok-atributo">@SerializedName</span>(value = <span class="tok-texto">"email"</span>, alternate = { <span class="tok-texto">"mail"</span>, <span class="tok-texto">"correo"</span> })
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> email;
+
+    <span class="tok-clave">private</span> transient <span class="tok-tipo">String</span> contrasena;                   <span class="tok-coment">// no se guarda</span>
+
+    <span class="tok-coment">// @Expose solo cuenta si el Gson se creó con .excludeFieldsWithoutExposeAnnotation():</span>
+    <span class="tok-coment">// entonces se guardan únicamente los atributos marcados</span>
+    <span class="tok-atributo">@Expose</span> <span class="tok-clave">private</span> <span class="tok-tipo">int</span> id;
+    <span class="tok-atributo">@Expose</span>(serialize = <span class="tok-clave">false</span>) <span class="tok-clave">private</span> <span class="tok-tipo">String</span> nota;        <span class="tok-coment">// se lee, pero no se escribe</span>
+}</code></pre></figure>
+            <h3>Fechas: hace falta un adaptador</h3>
+            <p class="txt">Gson no conoce <code>LocalDate</code>. Desde Java 17 ni siquiera puede leer sus atributos por reflexión: lanza <code>JsonIOException: Failed making field ... accessible</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">class</span> <span class="tok-tipo">LocalDateAdapter</span> <span class="tok-clave">extends</span> <span class="tok-tipo">TypeAdapter</span>&lt;<span class="tok-tipo">LocalDate</span>&gt; {
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> write(<span class="tok-tipo">JsonWriter</span> out, <span class="tok-tipo">LocalDate</span> fecha) <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+        <span class="tok-clave">if</span> (fecha == <span class="tok-clave">null</span>) out.nullValue();
+        <span class="tok-clave">else</span> out.value(fecha.toString());                  <span class="tok-coment">// "2024-05-01"</span>
+    }
+
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">LocalDate</span> read(<span class="tok-tipo">JsonReader</span> in) <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+        <span class="tok-clave">if</span> (in.peek() == <span class="tok-tipo">JsonToken</span>.<span class="tok-tipo">NULL</span>) { in.nextNull(); <span class="tok-clave">return</span> <span class="tok-clave">null</span>; }
+        <span class="tok-clave">return</span> <span class="tok-tipo">LocalDate</span>.parse(in.nextString());
+    }
+}
+
+<span class="tok-coment">// registrarlo: .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())</span>
+<span class="tok-coment">// o con @JsonAdapter(LocalDateAdapter.class) sobre el atributo</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 11. Gson: el árbol JsonObject -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Gson: el árbol JsonObject</h2>
+          <div class="cuerpo">
+            <p class="txt">Todo es un <code>JsonElement</code>, que puede ser <code>JsonObject</code>, <code>JsonArray</code>, <code>JsonPrimitive</code> o <code>JsonNull</code>. Se pasa de uno a otro con los métodos <code>getAs…</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">JsonObject</span> raiz = <span class="tok-tipo">JsonParser</span>.parseString(json).getAsJsonObject();
+<span class="tok-coment">// de un fichero: JsonParser.parseReader(reader)</span>
+
+<span class="tok-tipo">String</span> nombre = raiz.get(<span class="tok-texto">"nombre"</span>).getAsString();
+<span class="tok-tipo">JsonArray</span> libros = raiz.getAsJsonArray(<span class="tok-texto">"libros"</span>);
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">JsonElement</span> e : libros) {
+    <span class="tok-tipo">JsonObject</span> libro = e.getAsJsonObject();
+    <span class="tok-tipo">String</span> titulo = libro.get(<span class="tok-texto">"titulo"</span>).getAsString();
+    <span class="tok-tipo">double</span> precio = libro.get(<span class="tok-texto">"precio"</span>).getAsDouble();
+    <span class="tok-clave">if</span> (libro.has(<span class="tok-texto">"isbn"</span>) &amp;&amp; !libro.get(<span class="tok-texto">"isbn"</span>).isJsonNull()) {
+        <span class="tok-tipo">IO</span>.println(libro.get(<span class="tok-texto">"isbn"</span>).getAsString());
+    }
+}
+
+<span class="tok-coment">// crear</span>
+<span class="tok-tipo">JsonObject</span> nuevo = <span class="tok-clave">new</span> <span class="tok-tipo">JsonObject</span>();
+nuevo.addProperty(<span class="tok-texto">"id"</span>, <span class="tok-texto">"L3"</span>);                       <span class="tok-coment">// textos, números, booleanos</span>
+nuevo.addProperty(<span class="tok-texto">"precio"</span>, <span class="tok-numero">15.0</span>);
+<span class="tok-tipo">JsonArray</span> temas = <span class="tok-clave">new</span> <span class="tok-tipo">JsonArray</span>();
+temas.add(<span class="tok-texto">"guerra"</span>);
+nuevo.add(<span class="tok-texto">"temas"</span>, temas);                          <span class="tok-coment">// objetos y arrays: add</span>
+libros.add(nuevo);
+raiz.remove(<span class="tok-texto">"obsoleto"</span>);
+
+<span class="tok-tipo">String</span> salida = <span class="tok-clave">new</span> <span class="tok-tipo">GsonBuilder</span>().setPrettyPrinting().create().toJson(raiz);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>get(clave)</code></th><td><code>JsonElement</code>, o <code>null</code> si no existe</td></tr>
+                  <tr><th scope="row"><code>getAsJsonObject(c)  getAsJsonArray(c)</code></th><td>hijo ya convertido</td></tr>
+                  <tr><th scope="row"><code>getAsString()  getAsInt()  getAsDouble()  getAsBoolean()</code></th><td>valor de un primitivo</td></tr>
+                  <tr><th scope="row"><code>has(c)  keySet()  entrySet()  size()</code></th><td>claves de un objeto</td></tr>
+                  <tr><th scope="row"><code>isJsonObject()  isJsonArray()  isJsonPrimitive()  isJsonNull()</code></th><td>qué tipo es</td></tr>
+                  <tr><th scope="row"><code>addProperty(c, v)</code></th><td>añade un valor simple</td></tr>
+                  <tr><th scope="row"><code>add(c, elemento)</code></th><td>añade un objeto o un array</td></tr>
+                  <tr><th scope="row"><code>remove(c)</code></th><td>quita una clave</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 12. org.json: JSONObject y JSONArray -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>org.json: JSONObject y JSONArray</h2>
+          <div class="cuerpo">
+            <p class="txt">La más simple: un <code>JSONObject</code> es como un <code>Map</code> y un <code>JSONArray</code> como una <code>List</code>. No convierte a tus clases: los datos se copian a mano.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> texto = <span class="tok-tipo">Files</span>.readString(<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"biblioteca.json"</span>));
+<span class="tok-tipo">JSONObject</span> raiz = <span class="tok-clave">new</span> <span class="tok-tipo">JSONObject</span>(texto);
+
+<span class="tok-tipo">String</span> nombre = raiz.getString(<span class="tok-texto">"nombre"</span>);
+<span class="tok-tipo">JSONArray</span> libros = raiz.getJSONArray(<span class="tok-texto">"libros"</span>);
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; libros.length(); i++) {
+    <span class="tok-tipo">JSONObject</span> l = libros.getJSONObject(i);
+    <span class="tok-tipo">String</span> titulo = l.getString(<span class="tok-texto">"titulo"</span>);             <span class="tok-coment">// JSONException si no existe</span>
+    <span class="tok-tipo">double</span> precio = l.getDouble(<span class="tok-texto">"precio"</span>);
+    <span class="tok-tipo">String</span> isbn = l.optString(<span class="tok-texto">"isbn"</span>, <span class="tok-texto">"sin ISBN"</span>);     <span class="tok-coment">// opt: valor por defecto, sin excepción</span>
+    <span class="tok-tipo">JSONArray</span> temas = l.getJSONArray(<span class="tok-texto">"temas"</span>);
+}
+
+<span class="tok-coment">// crear: put devuelve el propio objeto, se puede encadenar</span>
+<span class="tok-tipo">JSONObject</span> nuevo = <span class="tok-clave">new</span> <span class="tok-tipo">JSONObject</span>()
+        .put(<span class="tok-texto">"id"</span>, <span class="tok-texto">"L3"</span>)
+        .put(<span class="tok-texto">"precio"</span>, <span class="tok-numero">15.0</span>)
+        .put(<span class="tok-texto">"temas"</span>, <span class="tok-clave">new</span> <span class="tok-tipo">JSONArray</span>().put(<span class="tok-texto">"guerra"</span>).put(<span class="tok-texto">"memoria"</span>));
+libros.put(nuevo);
+
+<span class="tok-tipo">Files</span>.writeString(<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"biblioteca.json"</span>), raiz.toString(<span class="tok-numero">2</span>));   <span class="tok-coment">// 2 = sangría</span>
+
+<span class="tok-coment">// desde un Map o un objeto con getters</span>
+<span class="tok-tipo">JSONObject</span> desdeMapa = <span class="tok-clave">new</span> <span class="tok-tipo">JSONObject</span>(<span class="tok-tipo">Map</span>.of(<span class="tok-texto">"a"</span>, <span class="tok-numero">1</span>, <span class="tok-texto">"b"</span>, <span class="tok-numero">2</span>));</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>getString  getInt  getDouble  getBoolean</code></th><td>valor; lanza <code>JSONException</code> si falta o no es de ese tipo</td></tr>
+                  <tr><th scope="row"><code>optString  optInt...</code></th><td>valor o uno por defecto</td></tr>
+                  <tr><th scope="row"><code>getJSONObject  getJSONArray</code></th><td>hijo objeto o array</td></tr>
+                  <tr><th scope="row"><code>has(c)  isNull(c)  keySet()</code></th><td>comprobar y recorrer claves</td></tr>
+                  <tr><th scope="row"><code>put(c, v)  remove(c)</code></th><td>añadir o cambiar, y quitar</td></tr>
+                  <tr><th scope="row"><code>length()  get(i)  put(v)</code></th><td>en <code>JSONArray</code></td></tr>
+                  <tr><th scope="row"><code>toString()  toString(n)</code></th><td>a texto, en una línea o con <code>n</code> espacios de sangría</td></tr>
+                  <tr><th scope="row"><code>toMap()  toList()</code></th><td>a colecciones de Java</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>JSONObject</code> no guarda el orden de las claves: al escribirlo pueden salir en otro orden.</p>
+          </div>
+        </section>
+        <!-- 13. JSON de una API web -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>JSON de una API web</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo más habitual: pedir datos a un servicio REST con el <code>HttpClient</code> del JDK (Java 11+) y convertir la respuesta con Jackson o Gson.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">HttpClient</span> cliente = <span class="tok-tipo">HttpClient</span>.newHttpClient();
+<span class="tok-tipo">ObjectMapper</span> mapper = <span class="tok-clave">new</span> <span class="tok-tipo">ObjectMapper</span>();
+
+<span class="tok-coment">// GET: leer una lista</span>
+<span class="tok-tipo">HttpRequest</span> get = <span class="tok-tipo">HttpRequest</span>.newBuilder(<span class="tok-tipo">URI</span>.create(<span class="tok-texto">"https://api.ejemplo.com/libros"</span>))
+        .header(<span class="tok-texto">"Accept"</span>, <span class="tok-texto">"application/json"</span>)
+        .build();
+<span class="tok-tipo">HttpResponse</span>&lt;<span class="tok-tipo">String</span>&gt; resp = cliente.send(get, <span class="tok-tipo">HttpResponse</span>.<span class="tok-tipo">BodyHandlers</span>.ofString());
+
+<span class="tok-clave">if</span> (resp.statusCode() == <span class="tok-numero">200</span>) {
+    <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; libros = mapper.readValue(resp.body(), <span class="tok-clave">new</span> <span class="tok-tipo">TypeReference</span>&lt;<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt;&gt;() {});
+}
+
+<span class="tok-coment">// POST: enviar un objeto como JSON</span>
+<span class="tok-tipo">String</span> cuerpo = mapper.writeValueAsString(nuevo);
+<span class="tok-tipo">HttpRequest</span> post = <span class="tok-tipo">HttpRequest</span>.newBuilder(<span class="tok-tipo">URI</span>.create(<span class="tok-texto">"https://api.ejemplo.com/libros"</span>))
+        .header(<span class="tok-texto">"Content-Type"</span>, <span class="tok-texto">"application/json"</span>)
+        .<span class="tok-tipo">POST</span>(<span class="tok-tipo">HttpRequest</span>.<span class="tok-tipo">BodyPublishers</span>.ofString(cuerpo))
+        .build();
+<span class="tok-tipo">HttpResponse</span>&lt;<span class="tok-tipo">String</span>&gt; creado = cliente.send(post, <span class="tok-tipo">HttpResponse</span>.<span class="tok-tipo">BodyHandlers</span>.ofString());
+<span class="tok-tipo">IO</span>.println(creado.statusCode());                    <span class="tok-coment">// 201 si se creó</span>
+
+<span class="tok-coment">// también vale leer directamente de una URL</span>
+<span class="tok-tipo">JsonNode</span> datos = mapper.readTree(<span class="tok-tipo">URI</span>.create(<span class="tok-texto">"https://api.ejemplo.com/estado"</span>).toURL());</code></pre></figure>
+            <p class="nota"><code>send</code> lanza <code>IOException</code> e <code>InterruptedException</code>. Muchas APIs devuelven más campos de los que necesitas: usa <code>@JsonIgnoreProperties(ignoreUnknown = true)</code> o desactiva <code>FAIL_ON_UNKNOWN_PROPERTIES</code>.</p>
+          </div>
+        </section>
+        <!-- 14. Errores habituales -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Errores habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>UnrecognizedPropertyException</code></th><td>Jackson: el JSON trae una clave que la clase no tiene. <code>ignoreUnknown = true</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>MismatchedInputException</code></th><td>Jackson: la forma no encaja, por ejemplo un array <code>[...]</code> leído como objeto</td></tr>
+                  <tr><th scope="row" class="larga"><code>InvalidDefinitionException: no Creators</code></th><td>Jackson: la clase no tiene constructor vacío ni <code>@JsonCreator</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>No serializer found ... no properties</code></th><td>Jackson: atributos privados sin getters; no hay nada que escribir</td></tr>
+                  <tr><th scope="row" class="larga"><code>ClassCastException: LinkedHashMap</code></th><td>Jackson: lista leída sin <code>TypeReference</code> (con Gson, <code>LinkedTreeMap</code> y sin <code>TypeToken</code>)</td></tr>
+                  <tr><th scope="row" class="larga"><code>Java 8 date/time type not supported</code></th><td>Jackson sin <code>JavaTimeModule</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>Expected BEGIN_OBJECT but was BEGIN_ARRAY</code></th><td>Gson: el JSON es una lista y se pidió un objeto, o al revés</td></tr>
+                  <tr><th scope="row" class="larga"><code>StackOverflowError</code> al escribir</th><td>referencias circulares (padre ↔ hijo): ignora un lado o usa <code>@JsonManagedReference</code></td></tr>
+                  <tr><th scope="row" class="larga">Números enteros que llegan como 12.0</th><td>Gson con <code>Map&lt;String, Object&gt;</code>: usa una clase o un <code>TypeToken</code> con el tipo concreto</td></tr>
+                  <tr><th scope="row" class="larga">JSON con comentarios, comillas simples o coma final</th><td>no es JSON válido: falla el análisis</td></tr>
+                  <tr><th scope="row" class="larga">Dinero con double</th><td>usa <code>BigDecimal</code>: ver <a href="math.html">Math</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="xml.html">← XML</a><a class="siguiente" href="fechas.html">Fechas y horas →</a></nav>
+      <footer class="pie">La sintaxis de JSON está en <a href="../marcas/json.html">Lenguajes de marcas</a>. Para guardar los mismos datos en XML, mira <a href="xml.html">XML</a>. Documentación: <a href="https://github.com/FasterXML/jackson-databind">Jackson</a> y <a href="https://github.com/google/gson/blob/main/UserGuide.md">guía de Gson</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>POO en PHP · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="php">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">PHP</a><span aria-hidden="true">›</span><span>POO</span></nav>
+          <h1>Programación orientada a objetos</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Clases, objetos, constructores, visibilidad, herencia, clases abstractas, interfaces, traits, enums, espacios de nombres y autocarga. Los ejemplos son para PHP 8.1 o posterior.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de PHP">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="formularios.html">Formularios</a><a href="cookies-sesiones.html">Cookies y sesiones</a><a href="poo.html" aria-current="page">POO</a><a href="bases-datos.html">Bases de datos</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Clase y objeto</a><a href="#s2"><b>2</b>Constructor y promoción de propiedades</a><a href="#s3"><b>3</b>Visibilidad y encapsulación</a><a href="#s4"><b>4</b>readonly e inmutables</a><a href="#s5"><b>5</b>static, self y constantes</a><a href="#s6"><b>6</b>Herencia</a><a href="#s7"><b>7</b>Clases abstractas</a><a href="#s8"><b>8</b>Interfaces</a><a href="#s9"><b>9</b>Traits</a><a href="#s10"><b>10</b>Enums</a><a href="#s11"><b>11</b>Métodos mágicos</a><a href="#s12"><b>12</b>Comparar, copiar y comprobar tipos</a><a href="#s13"><b>13</b>Excepciones propias</a><a href="#s14"><b>14</b>Namespaces y autocarga</a><a href="#s15"><b>15</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Una clase completa</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Producto</span>
+{
+    <span class="tok-clave">private</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> <span class="tok-variable">$creados</span> = <span class="tok-numero">0</span>;          <span class="tok-coment">// de la clase, no de cada objeto</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">const</span> <span class="tok-tipo">IVA</span> = <span class="tok-numero">0.21</span>;
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(
+        <span class="tok-clave">private</span> <span class="tok-tipo">string</span> <span class="tok-variable">$nombre</span>,               <span class="tok-coment">// propiedad + parámetro a la vez</span>
+        <span class="tok-clave">private</span> <span class="tok-tipo">float</span> <span class="tok-variable">$precio</span>,
+    ) {
+        <span class="tok-clave">self</span>::<span class="tok-variable">$creados</span>++;
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">getNombre</span>(): <span class="tok-tipo">string</span> { <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;nombre; }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">precioConIva</span>(): <span class="tok-tipo">float</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;precio * (<span class="tok-numero">1</span> + <span class="tok-clave">self</span>::<span class="tok-tipo">IVA</span>);
+    }
+}
+
+<span class="tok-variable">$p</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Producto</span>(<span class="tok-texto">'Teclado'</span>, <span class="tok-numero">25.0</span>);
+<span class="tok-clave">echo</span> <span class="tok-variable">$p</span>-&gt;<span class="tok-funcion">getNombre</span>();          <span class="tok-coment">// -&gt; para objetos</span>
+<span class="tok-clave">echo</span> <span class="tok-tipo">Producto</span>::<span class="tok-tipo">IVA</span>;            <span class="tok-coment">// :: para lo estático y constantes</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Los operadores de la POO</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>new Clase(...)</code></th><td>crea un objeto</td></tr>
+                  <tr><th scope="row"><code>$obj-&gt;prop</code></th><td>propiedad de un objeto (sin <code>$</code> delante del nombre)</td></tr>
+                  <tr><th scope="row"><code>$obj-&gt;metodo()</code></th><td>llamar a un método</td></tr>
+                  <tr><th scope="row"><code>$obj?-&gt;metodo()</code></th><td>igual, pero da <code>null</code> si <code>$obj</code> es <code>null</code></td></tr>
+                  <tr><th scope="row"><code>$this</code></th><td>el objeto actual, dentro de sus métodos</td></tr>
+                  <tr><th scope="row"><code>Clase::CONST</code></th><td>constante de clase</td></tr>
+                  <tr><th scope="row"><code>self::$prop  self::metodo()</code></th><td>lo estático de la propia clase</td></tr>
+                  <tr><th scope="row"><code>parent::metodo()</code></th><td>el método de la clase padre</td></tr>
+                  <tr><th scope="row"><code>static::metodo()</code></th><td>la clase con la que se llamó realmente</td></tr>
+                  <tr><th scope="row"><code>$obj instanceof Clase</code></th><td>si es de esa clase o de una hija</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La teoría (los cuatro pilares, qué es encapsular o heredar) es la misma que en <a href="../java/poo.html">Java</a>. Aquí se ve la sintaxis de PHP.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Clase y objeto -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Clase y objeto</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Coche</span>
+{
+    <span class="tok-coment">// propiedades, con tipo y valor inicial opcional</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">string</span> <span class="tok-variable">$marca</span> = <span class="tok-texto">''</span>;
+    <span class="tok-clave">public</span> <span class="tok-tipo">int</span> <span class="tok-variable">$km</span> = <span class="tok-numero">0</span>;
+
+    <span class="tok-coment">// métodos</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">avanzar</span>(<span class="tok-tipo">int</span> <span class="tok-variable">$distancia</span>): <span class="tok-tipo">void</span>
+    {
+        <span class="tok-variable">$this</span>-&gt;km += <span class="tok-variable">$distancia</span>;       <span class="tok-coment">// $this-&gt;km, no $km</span>
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">describir</span>(): <span class="tok-tipo">string</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-texto">"{$this-&gt;marca} con {$this-&gt;km} km"</span>;
+    }
+}
+
+<span class="tok-variable">$c</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Coche</span>();
+<span class="tok-variable">$c</span>-&gt;marca = <span class="tok-texto">'Seat'</span>;
+<span class="tok-variable">$c</span>-&gt;<span class="tok-funcion">avanzar</span>(<span class="tok-numero">120</span>);
+<span class="tok-clave">echo</span> <span class="tok-variable">$c</span>-&gt;<span class="tok-funcion">describir</span>();                 <span class="tok-coment">// Seat con 120 km</span>
+
+<span class="tok-coment">// cada new crea un objeto independiente</span>
+<span class="tok-variable">$otro</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Coche</span>();
+<span class="tok-clave">echo</span> <span class="tok-variable">$otro</span>-&gt;km;                       <span class="tok-coment">// 0</span></code></pre></figure>
+            <p class="nota">Por convenio, una clase por fichero y con el mismo nombre: <code>Coche.php</code>. Las clases en <code>PascalCase</code>, métodos y propiedades en <code>camelCase</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Constructor y promoción de propiedades -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Constructor y promoción de propiedades</h2>
+          <div class="cuerpo">
+            <p class="txt">El constructor se llama <code>__construct</code> y se ejecuta al hacer <code>new</code>. Solo puede haber uno (no hay sobrecarga): para variantes se usan parámetros con valor por defecto o métodos estáticos.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// forma clásica</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Usuario</span>
+{
+    <span class="tok-clave">private</span> <span class="tok-tipo">string</span> <span class="tok-variable">$nombre</span>;
+    <span class="tok-clave">private</span> <span class="tok-tipo">string</span> <span class="tok-variable">$email</span>;
+    <span class="tok-clave">private</span> <span class="tok-tipo">bool</span> <span class="tok-variable">$activo</span>;
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-tipo">string</span> <span class="tok-variable">$nombre</span>, <span class="tok-tipo">string</span> <span class="tok-variable">$email</span>, <span class="tok-tipo">bool</span> <span class="tok-variable">$activo</span> = <span class="tok-clave">true</span>)
+    {
+        <span class="tok-variable">$this</span>-&gt;nombre = <span class="tok-variable">$nombre</span>;
+        <span class="tok-variable">$this</span>-&gt;email = <span class="tok-variable">$email</span>;
+        <span class="tok-variable">$this</span>-&gt;activo = <span class="tok-variable">$activo</span>;
+    }
+}
+
+<span class="tok-coment">// PHP 8: promoción de propiedades. Hace exactamente lo mismo</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Usuario</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(
+        <span class="tok-clave">private</span> <span class="tok-tipo">string</span> <span class="tok-variable">$nombre</span>,
+        <span class="tok-clave">private</span> <span class="tok-tipo">string</span> <span class="tok-variable">$email</span>,
+        <span class="tok-clave">private</span> <span class="tok-tipo">bool</span> <span class="tok-variable">$activo</span> = <span class="tok-clave">true</span>,
+    ) {}
+}
+
+<span class="tok-variable">$u</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Usuario</span>(<span class="tok-texto">'Ana'</span>, <span class="tok-texto">'ana@ejemplo.com'</span>);
+<span class="tok-variable">$u</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Usuario</span>(email: <span class="tok-texto">'ana@ejemplo.com'</span>, nombre: <span class="tok-texto">'Ana'</span>);   <span class="tok-coment">// argumentos con nombre</span>
+
+<span class="tok-coment">// "constructores con nombre": métodos estáticos que devuelven un objeto</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Color</span>
+{
+    <span class="tok-clave">private</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">private</span> <span class="tok-tipo">int</span> <span class="tok-variable">$r</span>, <span class="tok-clave">private</span> <span class="tok-tipo">int</span> <span class="tok-variable">$g</span>, <span class="tok-clave">private</span> <span class="tok-tipo">int</span> <span class="tok-variable">$b</span>) {}
+
+    <span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-clave">function</span> <span class="tok-funcion">desdeHex</span>(<span class="tok-tipo">string</span> <span class="tok-variable">$hex</span>): <span class="tok-clave">static</span>
+    {
+        [<span class="tok-variable">$r</span>, <span class="tok-variable">$g</span>, <span class="tok-variable">$b</span>] = <span class="tok-funcion">sscanf</span>(<span class="tok-variable">$hex</span>, <span class="tok-texto">'#%02x%02x%02x'</span>);
+        <span class="tok-clave">return</span> <span class="tok-clave">new</span> <span class="tok-clave">static</span>(<span class="tok-variable">$r</span>, <span class="tok-variable">$g</span>, <span class="tok-variable">$b</span>);
+    }
+}
+<span class="tok-variable">$rojo</span> = <span class="tok-tipo">Color</span>::<span class="tok-funcion">desdeHex</span>(<span class="tok-texto">'#ff0000'</span>);
+
+<span class="tok-coment">// destructor: se llama al liberar el objeto (casi nunca hace falta)</span>
+<span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__destruct</span>() { <span class="tok-funcion">fclose</span>(<span class="tok-variable">$this</span>-&gt;fichero); }</code></pre></figure>
+          </div>
+        </section>
+        <!-- 3. Visibilidad y encapsulación -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Visibilidad y encapsulación</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>public</code></th><td>accesible desde cualquier sitio (por defecto en los métodos)</td></tr>
+                  <tr><th scope="row"><code>protected</code></th><td>desde la clase y sus hijas</td></tr>
+                  <tr><th scope="row"><code>private</code></th><td>solo desde la propia clase</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Cuenta</span>
+{
+    <span class="tok-clave">private</span> <span class="tok-tipo">float</span> <span class="tok-variable">$saldo</span> = <span class="tok-numero">0</span>;                 <span class="tok-coment">// nadie la toca desde fuera</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">string</span> <span class="tok-variable">$titular</span> = <span class="tok-texto">''</span>;
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">getSaldo</span>(): <span class="tok-tipo">float</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;saldo;
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">ingresar</span>(<span class="tok-tipo">float</span> <span class="tok-variable">$cantidad</span>): <span class="tok-tipo">void</span>
+    {
+        <span class="tok-clave">if</span> (<span class="tok-variable">$cantidad</span> &lt;= <span class="tok-numero">0</span>) {
+            <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">InvalidArgumentException</span>(<span class="tok-texto">'La cantidad debe ser positiva'</span>);
+        }
+        <span class="tok-variable">$this</span>-&gt;saldo += <span class="tok-variable">$cantidad</span>;            <span class="tok-coment">// las reglas se cumplen siempre</span>
+    }
+
+    <span class="tok-coment">// setter que devuelve $this: permite encadenar</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">setTitular</span>(<span class="tok-tipo">string</span> <span class="tok-variable">$t</span>): <span class="tok-clave">static</span>
+    {
+        <span class="tok-variable">$this</span>-&gt;titular = <span class="tok-variable">$t</span>;
+        <span class="tok-clave">return</span> <span class="tok-variable">$this</span>;
+    }
+}
+
+<span class="tok-variable">$c</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Cuenta</span>();
+<span class="tok-variable">$c</span>-&gt;<span class="tok-funcion">ingresar</span>(<span class="tok-numero">100</span>);
+<span class="tok-clave">echo</span> <span class="tok-variable">$c</span>-&gt;<span class="tok-funcion">getSaldo</span>();
+<span class="tok-variable">$c</span>-&gt;saldo = <span class="tok-numero">1000000</span>;     <span class="tok-coment">// Error: Cannot access private property Cuenta::$saldo</span></code></pre></figure>
+            <p class="nota">Desde PHP 8.4 existen los <em>property hooks</em> (<code>get</code> y <code>set</code> dentro de la propiedad) y la visibilidad asimétrica (<code>public private(set)</code>), que evitan escribir muchos getters y setters.</p>
+          </div>
+        </section>
+        <!-- 4. readonly e inmutables -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>readonly e inmutables</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// PHP 8.1: se asigna una sola vez (en el constructor) y ya no cambia</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Punto</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(
+        <span class="tok-clave">public</span> <span class="tok-clave">readonly</span> <span class="tok-tipo">float</span> <span class="tok-variable">$x</span>,
+        <span class="tok-clave">public</span> <span class="tok-clave">readonly</span> <span class="tok-tipo">float</span> <span class="tok-variable">$y</span>,
+    ) {}
+
+    <span class="tok-coment">// "modificar" un inmutable = devolver uno nuevo</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">mover</span>(<span class="tok-tipo">float</span> <span class="tok-variable">$dx</span>, <span class="tok-tipo">float</span> <span class="tok-variable">$dy</span>): <span class="tok-clave">static</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-clave">new</span> <span class="tok-clave">static</span>(<span class="tok-variable">$this</span>-&gt;x + <span class="tok-variable">$dx</span>, <span class="tok-variable">$this</span>-&gt;y + <span class="tok-variable">$dy</span>);
+    }
+}
+
+<span class="tok-variable">$p</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>);
+<span class="tok-clave">echo</span> <span class="tok-variable">$p</span>-&gt;x;              <span class="tok-coment">// se puede leer aunque no haya getter</span>
+<span class="tok-variable">$p</span>-&gt;x = <span class="tok-numero">5</span>;               <span class="tok-coment">// Error: Cannot modify readonly property</span>
+<span class="tok-variable">$q</span> = <span class="tok-variable">$p</span>-&gt;<span class="tok-funcion">mover</span>(<span class="tok-numero">1</span>, <span class="tok-numero">1</span>);    <span class="tok-coment">// Punto(2, 3); $p sigue igual</span>
+
+<span class="tok-coment">// PHP 8.2: toda la clase readonly</span>
+<span class="tok-clave">readonly</span> <span class="tok-clave">class</span> <span class="tok-tipo">Dinero</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">public</span> <span class="tok-tipo">int</span> <span class="tok-variable">$centimos</span>, <span class="tok-clave">public</span> <span class="tok-tipo">string</span> <span class="tok-variable">$moneda</span>) {}
+}</code></pre></figure>
+            <p class="nota">Una propiedad <code>readonly</code> pública hace el papel de un getter sin escribirlo. Es lo más parecido a un <code>record</code> de Java.</p>
+          </div>
+        </section>
+        <!-- 5. static, self y constantes -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>static, self y constantes</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Contador</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">const</span> <span class="tok-tipo">MAXIMO</span> = <span class="tok-numero">100</span>;               <span class="tok-coment">// constante de clase</span>
+    <span class="tok-clave">private</span> <span class="tok-clave">static</span> <span class="tok-tipo">int</span> <span class="tok-variable">$total</span> = <span class="tok-numero">0</span>;           <span class="tok-coment">// una sola para todos los objetos</span>
+
+    <span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-clave">function</span> <span class="tok-funcion">incrementar</span>(): <span class="tok-tipo">int</span>
+    {
+        <span class="tok-clave">return</span> ++<span class="tok-clave">self</span>::<span class="tok-variable">$total</span>;               <span class="tok-coment">// en métodos static no hay $this</span>
+    }
+}
+
+<span class="tok-tipo">Contador</span>::<span class="tok-funcion">incrementar</span>();
+<span class="tok-clave">echo</span> <span class="tok-tipo">Contador</span>::<span class="tok-tipo">MAXIMO</span>;
+
+<span class="tok-coment">// self frente a static</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Modelo</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-clave">function</span> <span class="tok-funcion">crear</span>(): <span class="tok-clave">static</span> { <span class="tok-clave">return</span> <span class="tok-clave">new</span> <span class="tok-clave">static</span>(); }   <span class="tok-coment">// la clase real</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">static</span> <span class="tok-clave">function</span> <span class="tok-funcion">crearSelf</span>(): <span class="tok-clave">self</span> { <span class="tok-clave">return</span> <span class="tok-clave">new</span> <span class="tok-clave">self</span>(); }    <span class="tok-coment">// siempre Modelo</span>
+}
+<span class="tok-clave">class</span> <span class="tok-tipo">Cliente</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Modelo</span> {}
+
+<span class="tok-tipo">Cliente</span>::<span class="tok-funcion">crear</span>();       <span class="tok-coment">// un Cliente</span>
+<span class="tok-tipo">Cliente</span>::<span class="tok-funcion">crearSelf</span>();   <span class="tok-coment">// un Modelo</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>self::</code></th><td>la clase donde está escrito el código</td></tr>
+                  <tr><th scope="row"><code>static::</code></th><td>la clase con la que se llamó (enlace estático tardío)</td></tr>
+                  <tr><th scope="row"><code>parent::</code></th><td>la clase padre</td></tr>
+                  <tr><th scope="row"><code>Clase::class</code></th><td>el nombre completo de la clase como texto, con su namespace</td></tr>
+                  <tr><th scope="row"><code>$obj::class</code></th><td>la clase de un objeto (PHP 8)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 6. Herencia -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Herencia</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Empleado</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(
+        <span class="tok-clave">protected</span> <span class="tok-tipo">string</span> <span class="tok-variable">$nombre</span>,
+        <span class="tok-clave">protected</span> <span class="tok-tipo">float</span> <span class="tok-variable">$sueldo</span>,
+    ) {}
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">salarioAnual</span>(): <span class="tok-tipo">float</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;sueldo * <span class="tok-numero">14</span>;
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__toString</span>(): <span class="tok-tipo">string</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-texto">"{$this-&gt;nombre}: {$this-&gt;salarioAnual()} €"</span>;
+    }
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Jefe</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Empleado</span>                     <span class="tok-coment">// solo se hereda de UNA clase</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-tipo">string</span> <span class="tok-variable">$nombre</span>, <span class="tok-tipo">float</span> <span class="tok-variable">$sueldo</span>, <span class="tok-clave">private</span> <span class="tok-tipo">float</span> <span class="tok-variable">$plus</span>)
+    {
+        <span class="tok-clave">parent</span>::<span class="tok-funcion">__construct</span>(<span class="tok-variable">$nombre</span>, <span class="tok-variable">$sueldo</span>);  <span class="tok-coment">// el del padre no se llama solo</span>
+    }
+
+    <span class="tok-atributo">#[\Override]</span>                                <span class="tok-coment">// PHP 8.3: error si no sobrescribe nada</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">salarioAnual</span>(): <span class="tok-tipo">float</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-clave">parent</span>::<span class="tok-funcion">salarioAnual</span>() + <span class="tok-variable">$this</span>-&gt;plus;
+    }
+}
+
+<span class="tok-variable">$plantilla</span> = [<span class="tok-clave">new</span> <span class="tok-tipo">Empleado</span>(<span class="tok-texto">'Ana'</span>, <span class="tok-numero">1800</span>), <span class="tok-clave">new</span> <span class="tok-tipo">Jefe</span>(<span class="tok-texto">'Luis'</span>, <span class="tok-numero">2500</span>, <span class="tok-numero">6000</span>)];
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$plantilla</span> <span class="tok-clave">as</span> <span class="tok-variable">$e</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-variable">$e</span>, <span class="tok-texto">"\n"</span>;                              <span class="tok-coment">// polimorfismo: cada uno usa su salarioAnual</span>
+}
+
+<span class="tok-coment">// final: impedir que se herede o se sobrescriba</span>
+<span class="tok-clave">final</span> <span class="tok-clave">class</span> <span class="tok-tipo">Configuracion</span> { }
+<span class="tok-clave">class</span> <span class="tok-tipo">Base</span> { <span class="tok-clave">final</span> <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">id</span>(): <span class="tok-tipo">int</span> { <span class="tok-clave">return</span> <span class="tok-numero">1</span>; } }</code></pre></figure>
+            <p class="aviso"><strong>El constructor del padre no se ejecuta solo</strong> si la hija tiene el suyo: hay que llamar a <code>parent::__construct(...)</code>. Si la hija no define constructor, se usa el del padre.</p>
+          </div>
+        </section>
+        <!-- 7. Clases abstractas -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Clases abstractas</h2>
+          <div class="cuerpo">
+            <p class="txt">No se pueden instanciar: son una plantilla con parte del código hecho y métodos <code>abstract</code> que cada hija está obligada a escribir.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">abstract</span> <span class="tok-clave">class</span> <span class="tok-tipo">Figura</span>
+{
+    <span class="tok-clave">abstract</span> <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">area</span>(): <span class="tok-tipo">float</span>;            <span class="tok-coment">// sin cuerpo</span>
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">describir</span>(): <span class="tok-tipo">string</span>                <span class="tok-coment">// con cuerpo, se hereda</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-clave">static</span>::<span class="tok-clave">class</span> . <span class="tok-texto">' de área '</span> . <span class="tok-funcion">round</span>(<span class="tok-variable">$this</span>-&gt;<span class="tok-funcion">area</span>(), <span class="tok-numero">2</span>);
+    }
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Circulo</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Figura</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">private</span> <span class="tok-tipo">float</span> <span class="tok-variable">$radio</span>) {}
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">area</span>(): <span class="tok-tipo">float</span> { <span class="tok-clave">return</span> <span class="tok-tipo">M_PI</span> * <span class="tok-variable">$this</span>-&gt;radio ** <span class="tok-numero">2</span>; }
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Rectangulo</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Figura</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">private</span> <span class="tok-tipo">float</span> <span class="tok-variable">$base</span>, <span class="tok-clave">private</span> <span class="tok-tipo">float</span> <span class="tok-variable">$altura</span>) {}
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">area</span>(): <span class="tok-tipo">float</span> { <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;base * <span class="tok-variable">$this</span>-&gt;altura; }
+}
+
+<span class="tok-variable">$figuras</span> = [<span class="tok-clave">new</span> <span class="tok-tipo">Circulo</span>(<span class="tok-numero">1</span>), <span class="tok-clave">new</span> <span class="tok-tipo">Rectangulo</span>(<span class="tok-numero">2</span>, <span class="tok-numero">3</span>)];
+<span class="tok-clave">foreach</span> (<span class="tok-variable">$figuras</span> <span class="tok-clave">as</span> <span class="tok-variable">$f</span>) <span class="tok-clave">echo</span> <span class="tok-variable">$f</span>-&gt;<span class="tok-funcion">describir</span>(), <span class="tok-texto">"\n"</span>;
+<span class="tok-clave">new</span> <span class="tok-tipo">Figura</span>();     <span class="tok-coment">// Error: Cannot instantiate abstract class</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 8. Interfaces -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Interfaces</h2>
+          <div class="cuerpo">
+            <p class="txt">Un contrato: qué métodos públicos debe tener una clase, sin decir cómo. Una clase puede implementar <strong>varias</strong> interfaces.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">interface</span> <span class="tok-tipo">Exportable</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">const</span> <span class="tok-tipo">FORMATO</span> = <span class="tok-texto">'json'</span>;                 <span class="tok-coment">// admiten constantes</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">exportar</span>(): <span class="tok-tipo">string</span>;
+}
+
+<span class="tok-clave">interface</span> <span class="tok-tipo">Imprimible</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">imprimir</span>(): <span class="tok-tipo">void</span>;
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Factura</span> <span class="tok-clave">implements</span> <span class="tok-tipo">Exportable</span>, <span class="tok-tipo">Imprimible</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">private</span> <span class="tok-tipo">int</span> <span class="tok-variable">$numero</span>, <span class="tok-clave">private</span> <span class="tok-tipo">float</span> <span class="tok-variable">$total</span>) {}
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">exportar</span>(): <span class="tok-tipo">string</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-funcion">json_encode</span>([<span class="tok-texto">'numero'</span> =&gt; <span class="tok-variable">$this</span>-&gt;numero, <span class="tok-texto">'total'</span> =&gt; <span class="tok-variable">$this</span>-&gt;total]);
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">imprimir</span>(): <span class="tok-tipo">void</span>
+    {
+        <span class="tok-clave">echo</span> <span class="tok-texto">"Factura {$this-&gt;numero}: {$this-&gt;total} €\n"</span>;
+    }
+}
+
+<span class="tok-coment">// programar contra la interfaz: vale cualquier clase que la cumpla</span>
+<span class="tok-clave">function</span> <span class="tok-funcion">guardar</span>(<span class="tok-tipo">Exportable</span> <span class="tok-variable">$e</span>): <span class="tok-tipo">void</span>
+{
+    <span class="tok-funcion">file_put_contents</span>(<span class="tok-texto">'salida.json'</span>, <span class="tok-variable">$e</span>-&gt;<span class="tok-funcion">exportar</span>());
+}
+
+<span class="tok-coment">// interfaces del propio PHP muy útiles</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Carrito</span> <span class="tok-clave">implements</span> <span class="tok-tipo">Countable</span>, <span class="tok-tipo">IteratorAggregate</span>, <span class="tok-tipo">JsonSerializable</span>
+{
+    <span class="tok-clave">private</span> <span class="tok-tipo">array</span> <span class="tok-variable">$lineas</span> = [];
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">count</span>(): <span class="tok-tipo">int</span> { <span class="tok-clave">return</span> <span class="tok-funcion">count</span>(<span class="tok-variable">$this</span>-&gt;lineas); }               <span class="tok-coment">// count($carrito)</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">getIterator</span>(): <span class="tok-tipo">Iterator</span> { <span class="tok-clave">return</span> <span class="tok-clave">new</span> <span class="tok-tipo">ArrayIterator</span>(<span class="tok-variable">$this</span>-&gt;lineas); } <span class="tok-coment">// foreach</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">jsonSerialize</span>(): <span class="tok-tipo">mixed</span> { <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;lineas; }            <span class="tok-coment">// json_encode</span>
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Abstracta</th><td>puede tener propiedades y código; solo se hereda de una</td></tr>
+                  <tr><th scope="row" class="larga">Interfaz</th><td>solo firmas de métodos públicos y constantes; se implementan varias</td></tr>
+                  <tr><th scope="row" class="larga">Usa una abstracta si...</th><td>las clases comparten código y son "del mismo tipo"</td></tr>
+                  <tr><th scope="row" class="larga">Usa una interfaz si...</th><td>clases sin relación deben poder hacer lo mismo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 9. Traits -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Traits</h2>
+          <div class="cuerpo">
+            <p class="txt">Un bloque de propiedades y métodos que se "pega" dentro de varias clases. Sirve para reutilizar código entre clases que no tienen un padre común.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">trait</span> <span class="tok-tipo">ConFechas</span>
+{
+    <span class="tok-clave">private</span> ?<span class="tok-tipo">DateTimeImmutable</span> <span class="tok-variable">$creado</span> = <span class="tok-clave">null</span>;
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">marcarCreado</span>(): <span class="tok-tipo">void</span>
+    {
+        <span class="tok-variable">$this</span>-&gt;creado = <span class="tok-clave">new</span> <span class="tok-tipo">DateTimeImmutable</span>();
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">getCreado</span>(): ?<span class="tok-tipo">DateTimeImmutable</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;creado;
+    }
+}
+
+<span class="tok-clave">trait</span> <span class="tok-tipo">Saluda</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">hola</span>(): <span class="tok-tipo">string</span> { <span class="tok-clave">return</span> <span class="tok-texto">'Hola desde '</span> . <span class="tok-clave">static</span>::<span class="tok-clave">class</span>; }
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Articulo</span> { <span class="tok-clave">use</span> <span class="tok-tipo">ConFechas</span>, <span class="tok-tipo">Saluda</span>; }
+<span class="tok-clave">class</span> <span class="tok-tipo">Comentario</span> { <span class="tok-clave">use</span> <span class="tok-tipo">ConFechas</span>; }
+
+<span class="tok-variable">$a</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Articulo</span>();
+<span class="tok-variable">$a</span>-&gt;<span class="tok-funcion">marcarCreado</span>();
+<span class="tok-clave">echo</span> <span class="tok-variable">$a</span>-&gt;<span class="tok-funcion">hola</span>();
+
+<span class="tok-coment">// si dos traits tienen un método con el mismo nombre</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Mixta</span> {
+    <span class="tok-clave">use</span> <span class="tok-tipo">A</span>, <span class="tok-tipo">B</span> {
+        <span class="tok-tipo">A</span>::hola insteadof <span class="tok-tipo">B</span>;     <span class="tok-coment">// usar el de A</span>
+        <span class="tok-tipo">B</span>::hola <span class="tok-clave">as</span> holaB;        <span class="tok-coment">// y el de B con otro nombre</span>
+    }
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 10. Enums -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Enums</h2>
+          <div class="cuerpo">
+            <p class="txt">PHP 8.1: un tipo con un conjunto cerrado de valores. Mejor que constantes sueltas o cadenas mágicas.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// enum puro</span>
+<span class="tok-clave">enum</span> <span class="tok-tipo">Palo</span>
+{
+    <span class="tok-clave">case</span> <span class="tok-tipo">Oros</span>;
+    <span class="tok-clave">case</span> <span class="tok-tipo">Copas</span>;
+    <span class="tok-clave">case</span> <span class="tok-tipo">Espadas</span>;
+    <span class="tok-clave">case</span> <span class="tok-tipo">Bastos</span>;
+}
+
+<span class="tok-coment">// enum respaldado: cada caso tiene un valor (int o string), útil para guardar en BD</span>
+<span class="tok-clave">enum</span> <span class="tok-tipo">Estado</span>: <span class="tok-tipo">string</span>
+{
+    <span class="tok-clave">case</span> <span class="tok-tipo">Pendiente</span> = <span class="tok-texto">'P'</span>;
+    <span class="tok-clave">case</span> <span class="tok-tipo">Enviado</span> = <span class="tok-texto">'E'</span>;
+    <span class="tok-clave">case</span> <span class="tok-tipo">Entregado</span> = <span class="tok-texto">'D'</span>;
+
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">etiqueta</span>(): <span class="tok-tipo">string</span>           <span class="tok-coment">// pueden tener métodos</span>
+    {
+        <span class="tok-clave">return</span> <span class="tok-clave">match</span> (<span class="tok-variable">$this</span>) {
+            <span class="tok-tipo">Estado</span>::<span class="tok-tipo">Pendiente</span> =&gt; <span class="tok-texto">'Pendiente de envío'</span>,
+            <span class="tok-tipo">Estado</span>::<span class="tok-tipo">Enviado</span>   =&gt; <span class="tok-texto">'En camino'</span>,
+            <span class="tok-tipo">Estado</span>::<span class="tok-tipo">Entregado</span> =&gt; <span class="tok-texto">'Entregado'</span>,
+        };
+    }
+}
+
+<span class="tok-variable">$e</span> = <span class="tok-tipo">Estado</span>::<span class="tok-tipo">Enviado</span>;
+<span class="tok-clave">echo</span> <span class="tok-variable">$e</span>-&gt;value;                  <span class="tok-coment">// 'E'</span>
+<span class="tok-clave">echo</span> <span class="tok-variable">$e</span>-&gt;name;                   <span class="tok-coment">// 'Enviado'</span>
+<span class="tok-clave">echo</span> <span class="tok-variable">$e</span>-&gt;<span class="tok-funcion">etiqueta</span>();
+
+<span class="tok-variable">$desdeBd</span> = <span class="tok-tipo">Estado</span>::<span class="tok-funcion">from</span>(<span class="tok-texto">'D'</span>);    <span class="tok-coment">// Estado::Entregado; error si no existe</span>
+<span class="tok-variable">$quizas</span>  = <span class="tok-tipo">Estado</span>::<span class="tok-funcion">tryFrom</span>(<span class="tok-texto">'X'</span>); <span class="tok-coment">// null si no existe</span>
+<span class="tok-tipo">Estado</span>::<span class="tok-funcion">cases</span>();                 <span class="tok-coment">// todos los casos, para un &lt;select&gt;</span>
+
+<span class="tok-clave">function</span> <span class="tok-funcion">enviar</span>(<span class="tok-tipo">Pedido</span> <span class="tok-variable">$p</span>, <span class="tok-tipo">Estado</span> <span class="tok-variable">$nuevo</span>): <span class="tok-tipo">void</span> { ... }   <span class="tok-coment">// solo admite valores válidos</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 11. Métodos mágicos -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Métodos mágicos</h2>
+          <div class="cuerpo">
+            <p class="txt">Métodos con doble guion bajo que PHP llama solo en ciertas situaciones.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>__construct()</code></th><td>al crear con <code>new</code></td></tr>
+                  <tr><th scope="row"><code>__destruct()</code></th><td>al liberar el objeto</td></tr>
+                  <tr><th scope="row"><code>__toString()</code></th><td>al usarlo como texto: <code>echo $obj</code>, <code>"$obj"</code></td></tr>
+                  <tr><th scope="row"><code>__get($n)  __set($n, $v)</code></th><td>al leer o escribir una propiedad que no existe o no es accesible</td></tr>
+                  <tr><th scope="row"><code>__isset($n)  __unset($n)</code></th><td>al usar <code>isset</code> o <code>unset</code> sobre ellas</td></tr>
+                  <tr><th scope="row"><code>__call($m, $args)</code></th><td>al llamar a un método que no existe</td></tr>
+                  <tr><th scope="row"><code>__callStatic($m, $args)</code></th><td>lo mismo, de forma estática</td></tr>
+                  <tr><th scope="row"><code>__invoke(...)</code></th><td>al usar el objeto como función: <code>$obj(5)</code></td></tr>
+                  <tr><th scope="row"><code>__clone()</code></th><td>tras copiar con <code>clone</code></td></tr>
+                  <tr><th scope="row"><code>__serialize()  __unserialize()</code></th><td>al serializar con <code>serialize</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Config</span>
+{
+    <span class="tok-clave">private</span> <span class="tok-tipo">array</span> <span class="tok-variable">$datos</span> = [];
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__get</span>(<span class="tok-tipo">string</span> <span class="tok-variable">$clave</span>): <span class="tok-tipo">mixed</span> { <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;datos[<span class="tok-variable">$clave</span>] ?? <span class="tok-clave">null</span>; }
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__set</span>(<span class="tok-tipo">string</span> <span class="tok-variable">$clave</span>, <span class="tok-tipo">mixed</span> <span class="tok-variable">$valor</span>): <span class="tok-tipo">void</span> { <span class="tok-variable">$this</span>-&gt;datos[<span class="tok-variable">$clave</span>] = <span class="tok-variable">$valor</span>; }
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__isset</span>(<span class="tok-tipo">string</span> <span class="tok-variable">$clave</span>): <span class="tok-tipo">bool</span> { <span class="tok-clave">return</span> <span class="tok-clave">isset</span>(<span class="tok-variable">$this</span>-&gt;datos[<span class="tok-variable">$clave</span>]); }
+}
+
+<span class="tok-variable">$c</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Config</span>();
+<span class="tok-variable">$c</span>-&gt;tema = <span class="tok-texto">'oscuro'</span>;       <span class="tok-coment">// llama a __set</span>
+<span class="tok-clave">echo</span> <span class="tok-variable">$c</span>-&gt;tema;             <span class="tok-coment">// llama a __get</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 12. Comparar, copiar y comprobar tipos -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Comparar, copiar y comprobar tipos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-variable">$a</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>);
+<span class="tok-variable">$b</span> = <span class="tok-variable">$a</span>;                 <span class="tok-coment">// NO copia: las dos variables apuntan al mismo objeto</span>
+<span class="tok-variable">$c</span> = <span class="tok-clave">clone</span> <span class="tok-variable">$a</span>;           <span class="tok-coment">// copia (superficial)</span>
+<span class="tok-variable">$d</span> = <span class="tok-clave">new</span> <span class="tok-tipo">Punto</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>);
+
+<span class="tok-variable">$a</span> == <span class="tok-variable">$d</span>;                <span class="tok-coment">// true: misma clase y mismas propiedades</span>
+<span class="tok-variable">$a</span> === <span class="tok-variable">$d</span>;               <span class="tok-coment">// false: son objetos distintos</span>
+<span class="tok-variable">$a</span> === <span class="tok-variable">$b</span>;               <span class="tok-coment">// true: es el mismo objeto</span>
+
+<span class="tok-coment">// los objetos se pasan a las funciones "por referencia al objeto"</span>
+<span class="tok-clave">function</span> <span class="tok-funcion">reiniciar</span>(<span class="tok-tipo">Coche</span> <span class="tok-variable">$c</span>): <span class="tok-tipo">void</span> { <span class="tok-variable">$c</span>-&gt;km = <span class="tok-numero">0</span>; }
+<span class="tok-funcion">reiniciar</span>(<span class="tok-variable">$miCoche</span>);     <span class="tok-coment">// $miCoche queda con 0 km</span>
+
+<span class="tok-coment">// clone superficial: los objetos de dentro se comparten. Copia profunda con __clone</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Pedido</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">public</span> <span class="tok-tipo">Cliente</span> <span class="tok-variable">$cliente</span>) {}
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__clone</span>() { <span class="tok-variable">$this</span>-&gt;cliente = <span class="tok-clave">clone</span> <span class="tok-variable">$this</span>-&gt;cliente; }
+}
+
+<span class="tok-coment">// comprobar tipos</span>
+<span class="tok-variable">$f</span> <span class="tok-clave">instanceof</span> <span class="tok-tipo">Figura</span>;    <span class="tok-coment">// true si es Figura o hija</span>
+<span class="tok-funcion">get_class</span>(<span class="tok-variable">$f</span>);           <span class="tok-coment">// "Circulo"</span>
+<span class="tok-variable">$f</span>::<span class="tok-clave">class</span>;               <span class="tok-coment">// "Circulo"</span>
+<span class="tok-funcion">method_exists</span>(<span class="tok-variable">$f</span>, <span class="tok-texto">'area'</span>);
+<span class="tok-funcion">property_exists</span>(<span class="tok-variable">$f</span>, <span class="tok-texto">'radio'</span>);</code></pre></figure>
+          </div>
+        </section>
+        <!-- 13. Excepciones propias -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Excepciones propias</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">SaldoInsuficienteException</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Exception</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">private</span> <span class="tok-tipo">float</span> <span class="tok-variable">$falta</span>)
+    {
+        <span class="tok-clave">parent</span>::<span class="tok-funcion">__construct</span>(<span class="tok-texto">"Faltan $falta €"</span>);
+    }
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">getFalta</span>(): <span class="tok-tipo">float</span> { <span class="tok-clave">return</span> <span class="tok-variable">$this</span>-&gt;falta; }
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Cuenta</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">retirar</span>(<span class="tok-tipo">float</span> <span class="tok-variable">$cantidad</span>): <span class="tok-tipo">void</span>
+    {
+        <span class="tok-clave">if</span> (<span class="tok-variable">$cantidad</span> &gt; <span class="tok-variable">$this</span>-&gt;saldo) {
+            <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">SaldoInsuficienteException</span>(<span class="tok-variable">$cantidad</span> - <span class="tok-variable">$this</span>-&gt;saldo);
+        }
+        <span class="tok-variable">$this</span>-&gt;saldo -= <span class="tok-variable">$cantidad</span>;
+    }
+}
+
+<span class="tok-clave">try</span> {
+    <span class="tok-variable">$cuenta</span>-&gt;<span class="tok-funcion">retirar</span>(<span class="tok-numero">500</span>);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">SaldoInsuficienteException</span> <span class="tok-variable">$e</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-variable">$e</span>-&gt;<span class="tok-funcion">getMessage</span>();                    <span class="tok-coment">// Faltan 120 €</span>
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">InvalidArgumentException</span> | <span class="tok-tipo">TypeError</span> <span class="tok-variable">$e</span>) {
+    <span class="tok-clave">echo</span> <span class="tok-texto">'Dato no válido'</span>;
+} <span class="tok-clave">finally</span> {
+    <span class="tok-funcion">registrar</span>(<span class="tok-texto">'intento de retirada'</span>);
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Throwable</code></th><td>interfaz común a todo lo que se puede lanzar</td></tr>
+                  <tr><th scope="row"><code>Exception</code></th><td>errores de la aplicación: hereda de aquí</td></tr>
+                  <tr><th scope="row"><code>Error</code></th><td>errores del motor: <code>TypeError</code>, <code>DivisionByZeroError</code>...</td></tr>
+                  <tr><th scope="row"><code>InvalidArgumentException</code></th><td>argumento no válido</td></tr>
+                  <tr><th scope="row"><code>RuntimeException  LogicException</code></th><td>errores en ejecución / de programación</td></tr>
+                  <tr><th scope="row"><code>PDOException</code></th><td>errores de base de datos (ver <a href="bases-datos.html">Bases de datos</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 14. Namespaces y autocarga -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Namespaces y autocarga</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>namespace</strong> agrupa clases como una carpeta y evita choques de nombres. La <strong>autocarga</strong> hace el <code>require</code> de cada clase solo cuando se usa por primera vez.</p>
+            <figure class="codigo"><pre data-lang="text"><code>proyecto/
+├── composer.json
+├── public/index.php
+└── src/
+    ├── Modelo/Producto.php        <span class="tok-coment">namespace App\Modelo;</span>
+    └── Repositorio/ProductoRepo.php  <span class="tok-coment">namespace App\Repositorio;</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// src/Modelo/Producto.php</span>
+<span class="tok-clave">namespace</span> <span class="tok-tipo">App</span>\<span class="tok-tipo">Modelo</span>;                 <span class="tok-coment">// primera instrucción del fichero</span>
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Producto</span> { ... }
+
+<span class="tok-coment">// src/Repositorio/ProductoRepo.php</span>
+<span class="tok-clave">namespace</span> <span class="tok-tipo">App</span>\<span class="tok-tipo">Repositorio</span>;
+
+<span class="tok-clave">use</span> <span class="tok-tipo">App</span>\<span class="tok-tipo">Modelo</span>\<span class="tok-tipo">Producto</span>;              <span class="tok-coment">// importar para usar el nombre corto</span>
+<span class="tok-clave">use</span> <span class="tok-tipo">PDO</span>;                              <span class="tok-coment">// las clases globales también, o escribir \PDO</span>
+
+<span class="tok-clave">class</span> <span class="tok-tipo">ProductoRepo</span>
+{
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">__construct</span>(<span class="tok-clave">private</span> <span class="tok-tipo">PDO</span> <span class="tok-variable">$pdo</span>) {}
+    <span class="tok-clave">public</span> <span class="tok-clave">function</span> <span class="tok-funcion">buscar</span>(<span class="tok-tipo">int</span> <span class="tok-variable">$id</span>): ?<span class="tok-tipo">Producto</span> { ... }
+}
+
+<span class="tok-coment">// public/index.php: autocarga con Composer</span>
+<span class="tok-clave">require</span> __DIR__ . <span class="tok-texto">'/../vendor/autoload.php'</span>;
+
+<span class="tok-clave">use</span> <span class="tok-tipo">App</span>\<span class="tok-tipo">Repositorio</span>\<span class="tok-tipo">ProductoRepo</span>;
+<span class="tok-variable">$repo</span> = <span class="tok-clave">new</span> <span class="tok-tipo">ProductoRepo</span>(<span class="tok-variable">$pdo</span>);       <span class="tok-coment">// Composer hace el require de ProductoRepo.php solo</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="json"><code>{
+  <span class="tok-atributo">"autoload"</span>: {
+    <span class="tok-atributo">"psr-4"</span>: { <span class="tok-atributo">"App\\"</span>: <span class="tok-texto">"src/"</span> }
+  }
+}</code></pre></figure>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// sin Composer: autocarga propia (App\Modelo\Producto → src/Modelo/Producto.php)</span>
+<span class="tok-funcion">spl_autoload_register</span>(<span class="tok-clave">function</span> (<span class="tok-tipo">string</span> <span class="tok-variable">$clase</span>) {
+    <span class="tok-variable">$ruta</span> = __DIR__ . <span class="tok-texto">'/src/'</span> . <span class="tok-funcion">str_replace</span>([<span class="tok-texto">'App\\'</span>, <span class="tok-texto">'\\'</span>], [<span class="tok-texto">''</span>, <span class="tok-texto">'/'</span>], <span class="tok-variable">$clase</span>) . <span class="tok-texto">'.php'</span>;
+    <span class="tok-clave">if</span> (<span class="tok-funcion">is_file</span>(<span class="tok-variable">$ruta</span>)) <span class="tok-clave">require</span> <span class="tok-variable">$ruta</span>;
+});</code></pre></figure>
+            <p class="nota">Tras cambiar el <code>composer.json</code> se ejecuta <code>composer dump-autoload</code>. Con PSR-4, el namespace debe coincidir con la carpeta y el nombre de la clase con el del fichero.</p>
+          </div>
+        </section>
+        <!-- 15. Despistes habituales -->
+        <section id="s15" class="tarjeta">
+          <h2><span class="num">15</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>$this-&gt;$nombre</code></th><td>es una propiedad "variable": se escribe <code>$this-&gt;nombre</code>, sin el segundo <code>$</code></td></tr>
+                  <tr><th scope="row" class="larga">Usar <code>$nombre</code> dentro de un método</th><td>es una variable local, no la propiedad: hace falta <code>$this-&gt;</code></td></tr>
+                  <tr><th scope="row" class="larga">Usar <code>.</code> en vez de <code>-&gt;</code></th><td>el punto concatena textos; para objetos, <code>-&gt;</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>$this</code> en un método <code>static</code></th><td>no existe: usa <code>self::</code></td></tr>
+                  <tr><th scope="row" class="larga">Olvidar <code>parent::__construct()</code></th><td>las propiedades del padre quedan sin inicializar</td></tr>
+                  <tr><th scope="row" class="larga"><code>Typed property must not be accessed before initialization</code></th><td>propiedad con tipo sin valor: dale uno por defecto o asígnala en el constructor</td></tr>
+                  <tr><th scope="row" class="larga"><code>$b = $a</code> para copiar</th><td>es el mismo objeto: usa <code>clone</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>Class "X" not found</code></th><td>falta el <code>require</code>, el <code>use</code> del namespace o ejecutar <code>composer dump-autoload</code></td></tr>
+                  <tr><th scope="row" class="larga">Clase global dentro de un namespace</th><td><code>new PDO</code> busca <code>App\PDO</code>: pon <code>use PDO;</code> o <code>new \PDO</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="cookies-sesiones.html">← Cookies y sesiones</a><a class="siguiente" href="bases-datos.html">Bases de datos →</a></nav>
+      <footer class="pie">La teoría de la orientación a objetos está en <a href="../java/poo.html">Fundamentos de POO</a> (Java). Documentación: <a href="https://www.php.net/manual/es/language.oop5.php">clases y objetos</a> en php.net.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

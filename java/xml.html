@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>XML · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>XML</span></nav>
+          <h1>XML</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Acceso a datos, parte 3: leer, crear, modificar y guardar documentos XML con DOM, SAX, StAX y JAXB, consultarlos con XPath y validarlos con XSD.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="xml.html" aria-current="page">XML</a><a href="json.html">JSON</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="hilos.html">Hilos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Qué API usar</a><a href="#s2"><b>2</b>DOM: el árbol de nodos</a><a href="#s3"><b>3</b>Leer con DOM</a><a href="#s4"><b>4</b>Métodos de Node y Element</a><a href="#s5"><b>5</b>Crear un documento con DOM</a><a href="#s6"><b>6</b>Guardar con Transformer</a><a href="#s7"><b>7</b>Modificar y borrar nodos</a><a href="#s8"><b>8</b>SAX: leer por eventos</a><a href="#s9"><b>9</b>StAX: leer y escribir con cursor</a><a href="#s10"><b>10</b>Consultar con XPath</a><a href="#s11"><b>11</b>Validar con XSD</a><a href="#s12"><b>12</b>JAXB: objetos ↔ XML</a><a href="#s13"><b>13</b>Anotaciones de JAXB</a><a href="#s14"><b>14</b>Errores habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Mapa de las APIs de XML</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Paquetes y clases principales (todas en el JDK salvo JAXB)</p>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">DOM</span>    javax.xml.parsers   DocumentBuilderFactory, DocumentBuilder
+       org.w3c.dom         Document, Element, Node, NodeList, Attr, Text
+<span class="tok-clave">SAX</span>    javax.xml.parsers   SAXParserFactory, SAXParser
+       org.xml.sax         DefaultHandler, Attributes, SAXException
+<span class="tok-clave">StAX</span>   javax.xml.stream    XMLInputFactory, XMLStreamReader
+                           XMLOutputFactory, XMLStreamWriter
+<span class="tok-clave">Salida</span> javax.xml.transform TransformerFactory, Transformer, OutputKeys
+                           DOMSource, StreamSource, StreamResult
+<span class="tok-clave">XPath</span>  javax.xml.xpath     XPathFactory, XPath, XPathConstants
+<span class="tok-clave">XSD</span>    javax.xml.validation SchemaFactory, Schema, Validator
+<span class="tok-clave">JAXB</span>   jakarta.xml.bind    JAXBContext, Marshaller, Unmarshaller
+       <span class="tok-coment">(dependencia aparte desde Java 11)</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">El documento de ejemplo: biblioteca.xml</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-clave">&lt;?xml</span> <span class="tok-atributo">version</span>=<span class="tok-texto">"1.0"</span> <span class="tok-atributo">encoding</span>=<span class="tok-texto">"UTF-8"</span><span class="tok-clave">?&gt;</span>
+<span class="tok-etiqueta">&lt;biblioteca</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L1"</span> <span class="tok-atributo">categoria</span>=<span class="tok-texto">"novela"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;titulo</span><span class="tok-etiqueta">&gt;</span>Nada<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;autor</span><span class="tok-etiqueta">&gt;</span>Carmen Laforet<span class="tok-etiqueta">&lt;/autor</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;precio</span><span class="tok-etiqueta">&gt;</span>12.50<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L2"</span> <span class="tok-atributo">categoria</span>=<span class="tok-texto">"ensayo"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;titulo</span><span class="tok-etiqueta">&gt;</span>El árbol de la ciencia<span class="tok-etiqueta">&lt;/titulo</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;autor</span><span class="tok-etiqueta">&gt;</span>Pío Baroja<span class="tok-etiqueta">&lt;/autor</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;precio</span><span class="tok-etiqueta">&gt;</span>9.95<span class="tok-etiqueta">&lt;/precio</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/biblioteca</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// la clase Java que le corresponde</span>
+<span class="tok-clave">record</span> <span class="tok-tipo">Libro</span>(<span class="tok-tipo">String</span> id, <span class="tok-tipo">String</span> categoria, <span class="tok-tipo">String</span> titulo, <span class="tok-tipo">String</span> autor, <span class="tok-tipo">double</span> precio) {}</code></pre></figure>
+          </div>
+        </div>
+        <p class="banda-titulo">Cómo trabaja cada API</p>
+        <div class="flujo">
+          <div class="caja caja-1">DOM<small>carga todo el árbol en memoria</small></div>
+          <div class="flecha"><span class="ida">SAX</span><br><span class="linea">──────▶</span><br><span class="vuelta">te avisa de cada etiqueta</span></div>
+          <div class="caja caja-2">SAX<small>eventos, solo lectura</small></div>
+          <div class="flecha"><span class="ida">StAX</span><br><span class="linea">──────▶</span><br><span class="vuelta">tú pides la siguiente</span></div>
+          <div class="caja caja-3">StAX<small>cursor, lee y escribe</small></div>
+          <div class="flecha"><span class="ida">JAXB</span><br><span class="linea">──────▶</span><br><span class="vuelta">anotaciones en clases</span></div>
+          <div class="caja caja-4">JAXB<small>XML ↔ objetos</small></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Qué API usar -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Qué API usar</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Leer, recorrer en cualquier orden y modificar</th><td><strong>DOM</strong>: el documento entero queda en memoria como un árbol</td></tr>
+                  <tr><th scope="row" class="larga">Crear un XML desde cero, sin clases propias</th><td><strong>DOM</strong> + <code>Transformer</code> para guardarlo</td></tr>
+                  <tr><th scope="row" class="larga">Leer un XML enorme sin cargarlo entero</th><td><strong>SAX</strong> (te avisa) o <strong>StAX</strong> (tú preguntas)</td></tr>
+                  <tr><th scope="row" class="larga">Escribir un XML enorme sin montarlo en memoria</th><td><strong>StAX</strong> con <code>XMLStreamWriter</code></td></tr>
+                  <tr><th scope="row" class="larga">Convertir objetos en XML y al revés</th><td><strong>JAXB</strong>: menos código, pero necesita la dependencia</td></tr>
+                  <tr><th scope="row" class="larga">Sacar datos concretos con una expresión</th><td><strong>XPath</strong> sobre un <code>Document</code> de DOM</td></tr>
+                  <tr><th scope="row" class="larga">Comprobar que cumple un esquema</th><td><code>Validator</code> con un <strong>XSD</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><strong>DOM</strong></th><td>memoria: alta · acceso: aleatorio · lee y escribe · fácil</td></tr>
+                  <tr><th scope="row"><strong>SAX</strong></th><td>memoria: mínima · acceso: secuencial · solo lee · hay que guardar el estado a mano</td></tr>
+                  <tr><th scope="row"><strong>StAX</strong></th><td>memoria: mínima · acceso: secuencial · lee y escribe · más cómodo que SAX</td></tr>
+                  <tr><th scope="row"><strong>JAXB</strong></th><td>memoria: alta · trabaja con objetos · lee y escribe · casi sin código</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La sintaxis de XML, DTD, XSD y XPath está en <a href="../marcas/index.html">Lenguajes de marcas</a>. Aquí solo se ve cómo manejarlos desde Java.</p>
+          </div>
+        </section>
+        <!-- 2. DOM: el árbol de nodos -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>DOM: el árbol de nodos</h2>
+          <div class="cuerpo">
+            <p class="txt">DOM (<em>Document Object Model</em>) convierte el fichero en un árbol. <strong>Todo es un <code>Node</code></strong>: el documento, cada etiqueta, cada atributo y cada trozo de texto, incluidos los saltos de línea y espacios entre etiquetas.</p>
+            <figure class="codigo"><pre data-lang="text"><code>Document                         <span class="tok-coment">el documento entero</span>
+└── Element  biblioteca          <span class="tok-coment">getDocumentElement()</span>
+    ├── Text  "\n  "             <span class="tok-coment">¡el espacio también es un nodo!</span>
+    ├── Element  libro           <span class="tok-coment">atributos: id, categoria</span>
+    │   ├── Text  "\n    "
+    │   ├── Element  titulo
+    │   │   └── Text  "Nada"     <span class="tok-coment">el contenido es un hijo Text</span>
+    │   ├── ...
+    └── Element  libro</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Node</code></th><td>interfaz base de todo: nombre, tipo, padre, hijos</td></tr>
+                  <tr><th scope="row"><code>Document</code></th><td>la raíz del árbol; crea elementos y nodos nuevos</td></tr>
+                  <tr><th scope="row"><code>Element</code></th><td>una etiqueta; tiene atributos</td></tr>
+                  <tr><th scope="row"><code>Attr</code></th><td>un atributo (casi nunca hace falta: <code>getAttribute</code> basta)</td></tr>
+                  <tr><th scope="row"><code>Text</code></th><td>el texto entre etiquetas</td></tr>
+                  <tr><th scope="row"><code>NodeList</code></th><td>lista de nodos: <code>getLength()</code> e <code>item(i)</code>. No es una <code>List</code></td></tr>
+                  <tr><th scope="row"><code>NamedNodeMap</code></th><td>los atributos de un elemento, con <code>getAttributes()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Tipos de nodo</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Node.ELEMENT_NODE</code></th><td>1 · nombre: la etiqueta</td></tr>
+                  <tr><th scope="row"><code>Node.ATTRIBUTE_NODE</code></th><td>2 · nombre: el atributo</td></tr>
+                  <tr><th scope="row"><code>Node.TEXT_NODE</code></th><td>3 · nombre: <code>#text</code></td></tr>
+                  <tr><th scope="row"><code>Node.CDATA_SECTION_NODE</code></th><td>4 · nombre: <code>#cdata-section</code></td></tr>
+                  <tr><th scope="row"><code>Node.COMMENT_NODE</code></th><td>8 · nombre: <code>#comment</code></td></tr>
+                  <tr><th scope="row"><code>Node.DOCUMENT_NODE</code></th><td>9 · nombre: <code>#document</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 3. Leer con DOM -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Leer con DOM</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// 1. fábrica → constructor → documento</span>
+<span class="tok-tipo">DocumentBuilderFactory</span> dbf = <span class="tok-tipo">DocumentBuilderFactory</span>.newInstance();
+<span class="tok-tipo">DocumentBuilder</span> db = dbf.newDocumentBuilder();
+<span class="tok-tipo">Document</span> doc = db.parse(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>));   <span class="tok-coment">// también un InputStream o una URI</span>
+doc.getDocumentElement().normalize();                 <span class="tok-coment">// junta textos partidos</span>
+
+<span class="tok-coment">// 2. la raíz</span>
+<span class="tok-tipo">Element</span> raiz = doc.getDocumentElement();
+<span class="tok-tipo">IO</span>.println(raiz.getNodeName());                       <span class="tok-coment">// biblioteca</span>
+
+<span class="tok-coment">// 3. buscar elementos por nombre, a cualquier profundidad</span>
+<span class="tok-tipo">NodeList</span> libros = doc.getElementsByTagName(<span class="tok-texto">"libro"</span>);
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; lista = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; libros.getLength(); i++) {
+    <span class="tok-tipo">Element</span> libro = (<span class="tok-tipo">Element</span>) libros.item(i);         <span class="tok-coment">// item devuelve Node: hay que convertir</span>
+    <span class="tok-tipo">String</span> id = libro.getAttribute(<span class="tok-texto">"id"</span>);             <span class="tok-coment">// "" si no existe</span>
+    <span class="tok-tipo">String</span> titulo = texto(libro, <span class="tok-texto">"titulo"</span>);
+    <span class="tok-tipo">double</span> precio = <span class="tok-tipo">Double</span>.parseDouble(texto(libro, <span class="tok-texto">"precio"</span>));
+    lista.add(<span class="tok-clave">new</span> <span class="tok-tipo">Libro</span>(id, libro.getAttribute(<span class="tok-texto">"categoria"</span>), titulo, texto(libro, <span class="tok-texto">"autor"</span>), precio));
+}
+
+<span class="tok-coment">// ayudante: texto del primer hijo con esa etiqueta</span>
+<span class="tok-clave">static</span> <span class="tok-tipo">String</span> texto(<span class="tok-tipo">Element</span> padre, <span class="tok-tipo">String</span> etiqueta) {
+    <span class="tok-tipo">Node</span> n = padre.getElementsByTagName(etiqueta).item(<span class="tok-numero">0</span>);
+    <span class="tok-clave">return</span> n == <span class="tok-clave">null</span> ? <span class="tok-clave">null</span> : n.getTextContent().trim();
+}</code></pre></figure>
+            <h3>Recorrer los hijos uno a uno</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">NodeList</span> hijos = raiz.getChildNodes();               <span class="tok-coment">// solo los hijos directos</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; hijos.getLength(); i++) {
+    <span class="tok-tipo">Node</span> n = hijos.item(i);
+    <span class="tok-clave">if</span> (n.getNodeType() == <span class="tok-tipo">Node</span>.<span class="tok-tipo">ELEMENT_NODE</span>) {        <span class="tok-coment">// salta los #text de espacios</span>
+        <span class="tok-tipo">Element</span> e = (<span class="tok-tipo">Element</span>) n;
+        <span class="tok-tipo">IO</span>.println(e.getTagName() + <span class="tok-texto">" → "</span> + e.getAttribute(<span class="tok-texto">"id"</span>));
+    }
+}
+
+<span class="tok-coment">// recorrido recursivo de todo el árbol</span>
+<span class="tok-clave">static</span> <span class="tok-clave">void</span> mostrar(<span class="tok-tipo">Node</span> n, <span class="tok-tipo">int</span> nivel) {
+    <span class="tok-clave">if</span> (n.getNodeType() == <span class="tok-tipo">Node</span>.<span class="tok-tipo">ELEMENT_NODE</span>) {
+        <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"  "</span>.repeat(nivel) + n.getNodeName());
+    }
+    <span class="tok-tipo">NodeList</span> hijos = n.getChildNodes();
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; hijos.getLength(); i++) {
+        mostrar(hijos.item(i), nivel + <span class="tok-numero">1</span>);
+    }
+}
+
+<span class="tok-coment">// todos los atributos de un elemento</span>
+<span class="tok-tipo">NamedNodeMap</span> atts = libro.getAttributes();
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; atts.getLength(); i++) {
+    <span class="tok-tipo">Node</span> a = atts.item(i);
+    <span class="tok-tipo">IO</span>.println(a.getNodeName() + <span class="tok-texto">" = "</span> + a.getNodeValue());
+}</code></pre></figure>
+            <p class="nota"><code>parse</code> lanza <code>ParserConfigurationException</code> (al crear el constructor), <code>SAXException</code> (XML mal formado) e <code>IOException</code> (no se puede leer). Se suelen capturar juntas: <code>catch (ParserConfigurationException | SAXException | IOException e)</code>.</p>
+          </div>
+        </section>
+        <!-- 4. Métodos de Node y Element -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Métodos de Node y Element</h2>
+          <div class="cuerpo">
+            <h3>Node: navegar</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>getNodeName()</code></th><td>nombre de la etiqueta, del atributo o <code>#text</code></td></tr>
+                  <tr><th scope="row"><code>getNodeType()</code></th><td>tipo de nodo, como <code>short</code>: compáralo con <code>Node.ELEMENT_NODE</code>...</td></tr>
+                  <tr><th scope="row"><code>getNodeValue()</code></th><td>texto de un nodo <code>Text</code> o <code>Attr</code>; en un <code>Element</code> da <code>null</code></td></tr>
+                  <tr><th scope="row"><code>getTextContent()</code></th><td>todo el texto de dentro, juntando el de los descendientes</td></tr>
+                  <tr><th scope="row"><code>getParentNode()</code></th><td>el padre</td></tr>
+                  <tr><th scope="row"><code>getChildNodes()</code></th><td>hijos directos, con los <code>#text</code> incluidos</td></tr>
+                  <tr><th scope="row"><code>getFirstChild()  getLastChild()</code></th><td>primer y último hijo (a menudo un <code>#text</code>)</td></tr>
+                  <tr><th scope="row"><code>getNextSibling()  getPreviousSibling()</code></th><td>hermano siguiente y anterior</td></tr>
+                  <tr><th scope="row"><code>hasChildNodes()  hasAttributes()</code></th><td>si tiene hijos o atributos</td></tr>
+                  <tr><th scope="row"><code>getOwnerDocument()</code></th><td>el <code>Document</code> al que pertenece</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Node: modificar</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>appendChild(hijo)</code></th><td>añade al final de los hijos (si ya estaba en otro sitio, lo mueve)</td></tr>
+                  <tr><th scope="row"><code>insertBefore(nuevo, ref)</code></th><td>inserta delante de <code>ref</code></td></tr>
+                  <tr><th scope="row"><code>replaceChild(nuevo, viejo)</code></th><td>sustituye un hijo</td></tr>
+                  <tr><th scope="row"><code>removeChild(hijo)</code></th><td>quita un hijo; se llama sobre el <strong>padre</strong></td></tr>
+                  <tr><th scope="row"><code>setTextContent(s)</code></th><td>borra los hijos y deja solo ese texto</td></tr>
+                  <tr><th scope="row"><code>cloneNode(true)</code></th><td>copia el nodo; con <code>true</code>, también sus descendientes</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Element y Document</h3>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>getTagName()</code></th><td>nombre de la etiqueta</td></tr>
+                  <tr><th scope="row"><code>getAttribute(n)</code></th><td>valor del atributo; cadena vacía si no está</td></tr>
+                  <tr><th scope="row"><code>hasAttribute(n)</code></th><td>si lo tiene</td></tr>
+                  <tr><th scope="row"><code>setAttribute(n, v)</code></th><td>crea o cambia un atributo</td></tr>
+                  <tr><th scope="row"><code>removeAttribute(n)</code></th><td>lo quita</td></tr>
+                  <tr><th scope="row"><code>getElementsByTagName(n)</code></th><td>descendientes con ese nombre, en orden de documento; <code>"*"</code> para todos</td></tr>
+                  <tr><th scope="row"><code>doc.getDocumentElement()</code></th><td>el elemento raíz</td></tr>
+                  <tr><th scope="row"><code>doc.createElement(n)</code></th><td>elemento nuevo, aún sin colgar del árbol</td></tr>
+                  <tr><th scope="row"><code>doc.createTextNode(s)</code></th><td>nodo de texto</td></tr>
+                  <tr><th scope="row"><code>doc.createComment(s)</code></th><td>comentario</td></tr>
+                  <tr><th scope="row"><code>doc.createCDATASection(s)</code></th><td>bloque <code>&lt;![CDATA[...]]&gt;</code></td></tr>
+                  <tr><th scope="row"><code>doc.importNode(n, true)</code></th><td>trae un nodo de otro documento</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Crear un documento con DOM -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Crear un documento con DOM</h2>
+          <div class="cuerpo">
+            <p class="txt">El <code>Document</code> es la fábrica de nodos: se crea cada nodo con él y luego se cuelga de su padre con <code>appendChild</code>. Un nodo creado y no colgado no aparece en el fichero.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Document</span> doc = <span class="tok-tipo">DocumentBuilderFactory</span>.newInstance()
+                                     .newDocumentBuilder()
+                                     .newDocument();          <span class="tok-coment">// documento vacío</span>
+
+<span class="tok-tipo">Element</span> raiz = doc.createElement(<span class="tok-texto">"biblioteca"</span>);
+doc.appendChild(raiz);                                       <span class="tok-coment">// solo puede haber una raíz</span>
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">Libro</span> l : libros) {
+    <span class="tok-tipo">Element</span> libro = doc.createElement(<span class="tok-texto">"libro"</span>);
+    libro.setAttribute(<span class="tok-texto">"id"</span>, l.id());
+    libro.setAttribute(<span class="tok-texto">"categoria"</span>, l.categoria());
+    raiz.appendChild(libro);
+
+    hijo(doc, libro, <span class="tok-texto">"titulo"</span>, l.titulo());
+    hijo(doc, libro, <span class="tok-texto">"autor"</span>, l.autor());
+    hijo(doc, libro, <span class="tok-texto">"precio"</span>, <span class="tok-tipo">String</span>.valueOf(l.precio()));
+}
+
+<span class="tok-coment">// ayudante: &lt;nombre&gt;texto&lt;/nombre&gt; dentro de padre</span>
+<span class="tok-clave">static</span> <span class="tok-clave">void</span> hijo(<span class="tok-tipo">Document</span> doc, <span class="tok-tipo">Element</span> padre, <span class="tok-tipo">String</span> nombre, <span class="tok-tipo">String</span> texto) {
+    <span class="tok-tipo">Element</span> e = doc.createElement(nombre);
+    e.appendChild(doc.createTextNode(texto));                <span class="tok-coment">// o e.setTextContent(texto)</span>
+    padre.appendChild(e);
+}
+
+<span class="tok-coment">// comentarios y CDATA</span>
+raiz.appendChild(doc.createComment(<span class="tok-texto">" generado por la aplicación "</span>));
+libro.appendChild(doc.createCDATASection(<span class="tok-texto">"texto con &lt; y &amp; sin escapar"</span>));</code></pre></figure>
+            <p class="nota">No hace falta escapar <code>&lt;</code>, <code>&gt;</code> ni <code>&amp;</code> en los textos ni en los atributos: el <code>Transformer</code> lo hace al guardar.</p>
+          </div>
+        </section>
+        <!-- 6. Guardar con Transformer -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Guardar con Transformer</h2>
+          <div class="cuerpo">
+            <p class="txt">DOM no sabe escribirse a sí mismo. Se usa un <code>Transformer</code> sin hoja de estilos, que copia el origen (<code>DOMSource</code>) en el destino (<code>StreamResult</code>).</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Transformer</span> t = <span class="tok-tipo">TransformerFactory</span>.newInstance().newTransformer();
+t.setOutputProperty(<span class="tok-tipo">OutputKeys</span>.<span class="tok-tipo">INDENT</span>, <span class="tok-texto">"yes"</span>);                         <span class="tok-coment">// con sangría</span>
+t.setOutputProperty(<span class="tok-texto">"{http://xml.apache.org/xslt}indent-amount"</span>, <span class="tok-texto">"2"</span>); <span class="tok-coment">// de 2 espacios</span>
+t.setOutputProperty(<span class="tok-tipo">OutputKeys</span>.<span class="tok-tipo">ENCODING</span>, <span class="tok-texto">"UTF-8"</span>);
+
+<span class="tok-tipo">DOMSource</span> origen = <span class="tok-clave">new</span> <span class="tok-tipo">DOMSource</span>(doc);
+
+t.transform(origen, <span class="tok-clave">new</span> <span class="tok-tipo">StreamResult</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"salida.xml"</span>)));        <span class="tok-coment">// a un fichero</span>
+t.transform(origen, <span class="tok-clave">new</span> <span class="tok-tipo">StreamResult</span>(<span class="tok-tipo">System</span>.out));                    <span class="tok-coment">// a la consola</span>
+
+<span class="tok-tipo">StringWriter</span> sw = <span class="tok-clave">new</span> <span class="tok-tipo">StringWriter</span>();                                 <span class="tok-coment">// a un String</span>
+t.transform(origen, <span class="tok-clave">new</span> <span class="tok-tipo">StreamResult</span>(sw));
+<span class="tok-tipo">String</span> xml = sw.toString();
+
+<span class="tok-coment">// aplicar una hoja XSLT: el mismo método con otro Transformer</span>
+<span class="tok-tipo">Transformer</span> xslt = <span class="tok-tipo">TransformerFactory</span>.newInstance()
+        .newTransformer(<span class="tok-clave">new</span> <span class="tok-tipo">StreamSource</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"estilo.xsl"</span>)));
+xslt.transform(<span class="tok-clave">new</span> <span class="tok-tipo">StreamSource</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>)),
+               <span class="tok-clave">new</span> <span class="tok-tipo">StreamResult</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.html"</span>)));</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>OutputKeys.INDENT</code></th><td><code>"yes"</code>: un elemento por línea, con sangría</td></tr>
+                  <tr><th scope="row"><code>OutputKeys.ENCODING</code></th><td>codificación de la declaración y del fichero</td></tr>
+                  <tr><th scope="row"><code>OutputKeys.OMIT_XML_DECLARATION</code></th><td><code>"yes"</code>: sin la línea <code>&lt;?xml ...?&gt;</code></td></tr>
+                  <tr><th scope="row"><code>OutputKeys.STANDALONE</code></th><td><code>"yes"</code>: añade <code>standalone="yes"</code> (y evita que la declaración se pegue a la raíz)</td></tr>
+                  <tr><th scope="row"><code>OutputKeys.DOCTYPE_SYSTEM</code></th><td>añade un <code>&lt;!DOCTYPE&gt;</code> que apunta a una DTD</td></tr>
+                  <tr><th scope="row"><code>OutputKeys.METHOD</code></th><td><code>"xml"</code>, <code>"html"</code> o <code>"text"</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Líneas en blanco de más:</strong> si el documento se leyó de un fichero que ya tenía sangría, al guardarlo con <code>INDENT</code> aparecen líneas vacías, porque los nodos <code>#text</code> de espacios se conservan. Quítalos antes de guardar:</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">XPath</span> xp = <span class="tok-tipo">XPathFactory</span>.newInstance().newXPath();
+<span class="tok-tipo">NodeList</span> vacios = (<span class="tok-tipo">NodeList</span>) xp.evaluate(<span class="tok-texto">"//text()[normalize-space()='']"</span>, doc, <span class="tok-tipo">XPathConstants</span>.<span class="tok-tipo">NODESET</span>);
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; vacios.getLength(); i++) {
+    <span class="tok-tipo">Node</span> n = vacios.item(i);
+    n.getParentNode().removeChild(n);
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 7. Modificar y borrar nodos -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Modificar y borrar nodos</h2>
+          <div class="cuerpo">
+            <p class="txt">Se carga el documento, se cambia el árbol en memoria y se vuelve a guardar con el <code>Transformer</code>. Hasta guardar, el fichero no cambia.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Document</span> doc = db.parse(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>));
+<span class="tok-tipo">NodeList</span> libros = doc.getElementsByTagName(<span class="tok-texto">"libro"</span>);
+
+<span class="tok-coment">// cambiar un atributo y un texto</span>
+<span class="tok-tipo">Element</span> primero = (<span class="tok-tipo">Element</span>) libros.item(<span class="tok-numero">0</span>);
+primero.setAttribute(<span class="tok-texto">"categoria"</span>, <span class="tok-texto">"clásico"</span>);
+primero.getElementsByTagName(<span class="tok-texto">"precio"</span>).item(<span class="tok-numero">0</span>).setTextContent(<span class="tok-texto">"10.00"</span>);
+
+<span class="tok-coment">// añadir un elemento hijo nuevo</span>
+<span class="tok-tipo">Element</span> stock = doc.createElement(<span class="tok-texto">"stock"</span>);
+stock.setTextContent(<span class="tok-texto">"3"</span>);
+primero.appendChild(stock);
+
+<span class="tok-coment">// insertar un libro antes del primero</span>
+<span class="tok-tipo">Element</span> nuevo = doc.createElement(<span class="tok-texto">"libro"</span>);
+nuevo.setAttribute(<span class="tok-texto">"id"</span>, <span class="tok-texto">"L0"</span>);
+doc.getDocumentElement().insertBefore(nuevo, primero);
+
+<span class="tok-coment">// borrar: se pide al padre</span>
+primero.getParentNode().removeChild(primero);
+
+<span class="tok-coment">// borrar varios: de atrás hacia delante, porque la NodeList es "viva"</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = libros.getLength() - <span class="tok-numero">1</span>; i &gt;= <span class="tok-numero">0</span>; i--) {
+    <span class="tok-tipo">Element</span> l = (<span class="tok-tipo">Element</span>) libros.item(i);
+    <span class="tok-clave">if</span> (<span class="tok-tipo">Double</span>.parseDouble(texto(l, <span class="tok-texto">"precio"</span>)) &lt; <span class="tok-numero">10</span>) {
+        l.getParentNode().removeChild(l);
+    }
+}
+
+<span class="tok-coment">// renombrar un elemento</span>
+doc.renameNode(stock, <span class="tok-clave">null</span>, <span class="tok-texto">"existencias"</span>);
+
+guardar(doc, <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>));    <span class="tok-coment">// con el Transformer de la sección 6</span></code></pre></figure>
+            <p class="aviso"><strong>Cuidado:</strong> la <code>NodeList</code> de <code>getElementsByTagName</code> y <code>getChildNodes</code> se actualiza sola al tocar el árbol. Si borras recorriéndola hacia delante, te saltas elementos: los índices se desplazan.</p>
+          </div>
+        </section>
+        <!-- 8. SAX: leer por eventos -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>SAX: leer por eventos</h2>
+          <div class="cuerpo">
+            <p class="txt">SAX (<em>Simple API for XML</em>) lee el fichero de principio a fin y llama a métodos de tu <strong>manejador</strong> cada vez que encuentra algo. No guarda nada: lo que quieras conservar lo guardas tú en atributos de la clase.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">class</span> <span class="tok-tipo">LibrosHandler</span> <span class="tok-clave">extends</span> <span class="tok-tipo">DefaultHandler</span> {
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; libros = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">StringBuilder</span> texto = <span class="tok-clave">new</span> <span class="tok-tipo">StringBuilder</span>();
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> id, categoria, titulo, autor;
+    <span class="tok-clave">private</span> <span class="tok-tipo">double</span> precio;
+
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> startElement(<span class="tok-tipo">String</span> uri, <span class="tok-tipo">String</span> localName, <span class="tok-tipo">String</span> qName, <span class="tok-tipo">Attributes</span> atts) {
+        texto.setLength(<span class="tok-numero">0</span>);                          <span class="tok-coment">// empieza un elemento: texto nuevo</span>
+        <span class="tok-clave">if</span> (qName.equals(<span class="tok-texto">"libro"</span>)) {
+            id = atts.getValue(<span class="tok-texto">"id"</span>);                <span class="tok-coment">// null si no existe</span>
+            categoria = atts.getValue(<span class="tok-texto">"categoria"</span>);
+        }
+    }
+
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> characters(<span class="tok-tipo">char</span>[] ch, <span class="tok-tipo">int</span> inicio, <span class="tok-tipo">int</span> longitud) {
+        texto.append(ch, inicio, longitud);          <span class="tok-coment">// puede llamarse varias veces por elemento</span>
+    }
+
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> endElement(<span class="tok-tipo">String</span> uri, <span class="tok-tipo">String</span> localName, <span class="tok-tipo">String</span> qName) {
+        <span class="tok-tipo">String</span> valor = texto.toString().trim();
+        <span class="tok-clave">switch</span> (qName) {
+            <span class="tok-clave">case</span> <span class="tok-texto">"titulo"</span> -&gt; titulo = valor;
+            <span class="tok-clave">case</span> <span class="tok-texto">"autor"</span>  -&gt; autor = valor;
+            <span class="tok-clave">case</span> <span class="tok-texto">"precio"</span> -&gt; precio = <span class="tok-tipo">Double</span>.parseDouble(valor);
+            <span class="tok-clave">case</span> <span class="tok-texto">"libro"</span>  -&gt; libros.add(<span class="tok-clave">new</span> <span class="tok-tipo">Libro</span>(id, categoria, titulo, autor, precio));
+        }
+    }
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; getLibros() { <span class="tok-clave">return</span> libros; }
+}
+
+<span class="tok-coment">// usarlo</span>
+<span class="tok-tipo">SAXParser</span> parser = <span class="tok-tipo">SAXParserFactory</span>.newInstance().newSAXParser();
+<span class="tok-tipo">LibrosHandler</span> manejador = <span class="tok-clave">new</span> <span class="tok-tipo">LibrosHandler</span>();
+parser.parse(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>), manejador);
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; libros = manejador.getLibros();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>startDocument()</code></th><td>al empezar el documento</td></tr>
+                  <tr><th scope="row"><code>endDocument()</code></th><td>al terminar</td></tr>
+                  <tr><th scope="row"><code>startElement(uri, local, qName, atts)</code></th><td>etiqueta de apertura; <code>qName</code> es el nombre tal cual aparece</td></tr>
+                  <tr><th scope="row"><code>endElement(uri, local, qName)</code></th><td>etiqueta de cierre</td></tr>
+                  <tr><th scope="row"><code>characters(ch, inicio, lon)</code></th><td>un trozo de texto (también los espacios entre etiquetas)</td></tr>
+                  <tr><th scope="row"><code>warning  error  fatalError</code></th><td>problemas al analizar; <code>fatalError</code> lanza la excepción</td></tr>
+                  <tr><th scope="row"><code>atts.getValue("id")</code></th><td>valor de un atributo</td></tr>
+                  <tr><th scope="row"><code>atts.getLength()  getQName(i)  getValue(i)</code></th><td>recorrer todos los atributos</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota"><code>DefaultHandler</code> implementa todos los métodos vacíos: solo sobrescribes los que necesitas. Para parar a mitad, lanza una <code>SAXException</code> desde el manejador.</p>
+          </div>
+        </section>
+        <!-- 9. StAX: leer y escribir con cursor -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>StAX: leer y escribir con cursor</h2>
+          <div class="cuerpo">
+            <p class="txt">StAX (<em>Streaming API for XML</em>) también lee en secuencia, pero al revés que SAX: es tu bucle el que pide el siguiente evento con <code>next()</code>. El estado queda en variables locales.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">XMLInputFactory</span> fabrica = <span class="tok-tipo">XMLInputFactory</span>.newInstance();
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Libro</span>&gt; libros = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+
+<span class="tok-clave">try</span> (<span class="tok-tipo">InputStream</span> in = <span class="tok-clave">new</span> <span class="tok-tipo">FileInputStream</span>(<span class="tok-texto">"biblioteca.xml"</span>)) {
+    <span class="tok-tipo">XMLStreamReader</span> r = fabrica.createXMLStreamReader(in);
+    <span class="tok-tipo">String</span> id = <span class="tok-clave">null</span>, categoria = <span class="tok-clave">null</span>, titulo = <span class="tok-clave">null</span>, autor = <span class="tok-clave">null</span>;
+    <span class="tok-tipo">double</span> precio = <span class="tok-numero">0</span>;
+
+    <span class="tok-clave">while</span> (r.hasNext()) {
+        <span class="tok-tipo">int</span> evento = r.next();
+        <span class="tok-clave">if</span> (evento == <span class="tok-tipo">XMLStreamConstants</span>.<span class="tok-tipo">START_ELEMENT</span>) {
+            <span class="tok-clave">switch</span> (r.getLocalName()) {
+                <span class="tok-clave">case</span> <span class="tok-texto">"libro"</span> -&gt; {
+                    id = r.getAttributeValue(<span class="tok-clave">null</span>, <span class="tok-texto">"id"</span>);
+                    categoria = r.getAttributeValue(<span class="tok-clave">null</span>, <span class="tok-texto">"categoria"</span>);
+                }
+                <span class="tok-clave">case</span> <span class="tok-texto">"titulo"</span> -&gt; titulo = r.getElementText();   <span class="tok-coment">// lee el texto y avanza al cierre</span>
+                <span class="tok-clave">case</span> <span class="tok-texto">"autor"</span>  -&gt; autor = r.getElementText();
+                <span class="tok-clave">case</span> <span class="tok-texto">"precio"</span> -&gt; precio = <span class="tok-tipo">Double</span>.parseDouble(r.getElementText());
+            }
+        } <span class="tok-clave">else</span> <span class="tok-clave">if</span> (evento == <span class="tok-tipo">XMLStreamConstants</span>.<span class="tok-tipo">END_ELEMENT</span>
+                   &amp;&amp; r.getLocalName().equals(<span class="tok-texto">"libro"</span>)) {
+            libros.add(<span class="tok-clave">new</span> <span class="tok-tipo">Libro</span>(id, categoria, titulo, autor, precio));
+        }
+    }
+    r.close();
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>hasNext()  next()</code></th><td>si quedan eventos; avanza y devuelve el tipo</td></tr>
+                  <tr><th scope="row"><code>START_ELEMENT  END_ELEMENT</code></th><td>apertura y cierre de etiqueta</td></tr>
+                  <tr><th scope="row"><code>CHARACTERS</code></th><td>texto; se lee con <code>getText()</code></td></tr>
+                  <tr><th scope="row"><code>START_DOCUMENT  END_DOCUMENT</code></th><td>principio y fin</td></tr>
+                  <tr><th scope="row"><code>getLocalName()</code></th><td>nombre de la etiqueta actual</td></tr>
+                  <tr><th scope="row"><code>getAttributeValue(null, n)</code></th><td>atributo por nombre (el primer parámetro es el espacio de nombres)</td></tr>
+                  <tr><th scope="row"><code>getAttributeCount()  getAttributeLocalName(i)</code></th><td>recorrer los atributos</td></tr>
+                  <tr><th scope="row"><code>getElementText()</code></th><td>todo el texto del elemento; solo vale para elementos sin hijos</td></tr>
+                  <tr><th scope="row"><code>nextTag()</code></th><td>salta espacios y comentarios hasta la siguiente etiqueta</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Escribir con XMLStreamWriter</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> (<span class="tok-tipo">OutputStream</span> out = <span class="tok-clave">new</span> <span class="tok-tipo">FileOutputStream</span>(<span class="tok-texto">"salida.xml"</span>)) {
+    <span class="tok-tipo">XMLStreamWriter</span> w = <span class="tok-tipo">XMLOutputFactory</span>.newInstance().createXMLStreamWriter(out, <span class="tok-texto">"UTF-8"</span>);
+    w.writeStartDocument(<span class="tok-texto">"UTF-8"</span>, <span class="tok-texto">"1.0"</span>);
+    w.writeStartElement(<span class="tok-texto">"biblioteca"</span>);
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Libro</span> l : libros) {
+        w.writeStartElement(<span class="tok-texto">"libro"</span>);
+        w.writeAttribute(<span class="tok-texto">"id"</span>, l.id());                <span class="tok-coment">// atributos justo tras abrir</span>
+        w.writeStartElement(<span class="tok-texto">"titulo"</span>);
+        w.writeCharacters(l.titulo());                 <span class="tok-coment">// escapa &lt; y &amp; solo</span>
+        w.writeEndElement();
+        w.writeEndElement();                           <span class="tok-coment">// cierra libro</span>
+    }
+    w.writeEndElement();                               <span class="tok-coment">// cierra biblioteca</span>
+    w.writeEndDocument();
+    w.close();                                         <span class="tok-coment">// no cierra el OutputStream</span>
+}</code></pre></figure>
+            <p class="nota"><code>XMLStreamWriter</code> no pone sangría: escribe todo en una línea. Si la necesitas, mete tú los saltos con <code>writeCharacters("\n  ")</code>. Existe también la variante con objetos, <code>XMLEventReader</code> / <code>XMLEventWriter</code>, más cómoda para filtrar pero más lenta.</p>
+          </div>
+        </section>
+        <!-- 10. Consultar con XPath -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Consultar con XPath</h2>
+          <div class="cuerpo">
+            <p class="txt">Se carga el documento con DOM y se le hacen consultas en <a href="../marcas/xpath.html">XPath</a>. Evita los bucles anidados de <code>getElementsByTagName</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Document</span> doc = db.parse(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>));
+<span class="tok-tipo">XPath</span> xp = <span class="tok-tipo">XPathFactory</span>.newInstance().newXPath();
+
+<span class="tok-coment">// un texto (el tipo por defecto es STRING)</span>
+<span class="tok-tipo">String</span> titulo = xp.evaluate(<span class="tok-texto">"/biblioteca/libro[@id='L1']/titulo"</span>, doc);
+
+<span class="tok-coment">// varios nodos</span>
+<span class="tok-tipo">NodeList</span> baratos = (<span class="tok-tipo">NodeList</span>) xp.evaluate(<span class="tok-texto">"//libro[precio &lt; 10]"</span>, doc, <span class="tok-tipo">XPathConstants</span>.<span class="tok-tipo">NODESET</span>);
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; baratos.getLength(); i++) {
+    <span class="tok-tipo">Element</span> l = (<span class="tok-tipo">Element</span>) baratos.item(i);
+    <span class="tok-tipo">IO</span>.println(l.getAttribute(<span class="tok-texto">"id"</span>));
+}
+
+<span class="tok-coment">// un número o un booleano</span>
+<span class="tok-tipo">double</span> total = (<span class="tok-tipo">Double</span>) xp.evaluate(<span class="tok-texto">"sum(//precio)"</span>, doc, <span class="tok-tipo">XPathConstants</span>.<span class="tok-tipo">NUMBER</span>);
+<span class="tok-tipo">boolean</span> hay = (<span class="tok-tipo">Boolean</span>) xp.evaluate(<span class="tok-texto">"boolean(//libro[autor='Pío Baroja'])"</span>, doc, <span class="tok-tipo">XPathConstants</span>.<span class="tok-tipo">BOOLEAN</span>);
+
+<span class="tok-coment">// relativo a un nodo: sin la barra inicial</span>
+<span class="tok-tipo">String</span> autor = xp.evaluate(<span class="tok-texto">"autor"</span>, l);
+
+<span class="tok-coment">// precompilar si se usa muchas veces</span>
+<span class="tok-tipo">XPathExpression</span> porCategoria = xp.compile(<span class="tok-texto">"//libro[@categoria='novela']/titulo"</span>);
+<span class="tok-tipo">NodeList</span> novelas = (<span class="tok-tipo">NodeList</span>) porCategoria.evaluate(doc, <span class="tok-tipo">XPathConstants</span>.<span class="tok-tipo">NODESET</span>);
+
+<span class="tok-coment">// Java 9+: el tipo con una clase, sin conversión</span>
+<span class="tok-tipo">int</span> n = xp.evaluateExpression(<span class="tok-texto">"count(//libro)"</span>, doc, <span class="tok-tipo">Integer</span>.<span class="tok-clave">class</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>XPathConstants.STRING</code></th><td><code>String</code>: el texto del primer nodo</td></tr>
+                  <tr><th scope="row"><code>XPathConstants.NUMBER</code></th><td><code>Double</code></td></tr>
+                  <tr><th scope="row"><code>XPathConstants.BOOLEAN</code></th><td><code>Boolean</code></td></tr>
+                  <tr><th scope="row"><code>XPathConstants.NODE</code></th><td><code>Node</code>: el primero que cumpla, o <code>null</code></td></tr>
+                  <tr><th scope="row"><code>XPathConstants.NODESET</code></th><td><code>NodeList</code>: todos los que cumplan</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Se lanza <code>XPathExpressionException</code> si la expresión está mal escrita. El JDK solo implementa XPath 1.0: nada de funciones de XPath 2.0 como <code>upper-case</code>.</p>
+          </div>
+        </section>
+        <!-- 11. Validar con XSD -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Validar con XSD</h2>
+          <div class="cuerpo">
+            <p class="txt">Un documento <strong>bien formado</strong> cumple las reglas de XML (lo comprueba cualquier <code>parse</code>). Uno <strong>válido</strong> además cumple un esquema: eso se comprueba aparte. La sintaxis del esquema está en <a href="../marcas/xsd.html">XSD</a>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">SchemaFactory</span> sf = <span class="tok-tipo">SchemaFactory</span>.newInstance(<span class="tok-tipo">XMLConstants</span>.<span class="tok-tipo">W3C_XML_SCHEMA_NS_URI</span>);
+<span class="tok-tipo">Schema</span> esquema = sf.newSchema(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xsd"</span>));
+<span class="tok-tipo">Validator</span> v = esquema.newValidator();
+
+<span class="tok-clave">try</span> {
+    v.validate(<span class="tok-clave">new</span> <span class="tok-tipo">StreamSource</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>)));
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Válido"</span>);
+} <span class="tok-clave">catch</span> (<span class="tok-tipo">SAXParseException</span> e) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Línea "</span> + e.getLineNumber() + <span class="tok-texto">": "</span> + e.getMessage());
+}
+
+<span class="tok-coment">// validar un Document que ya está en memoria</span>
+v.validate(<span class="tok-clave">new</span> <span class="tok-tipo">DOMSource</span>(doc));
+
+<span class="tok-coment">// validar mientras se lee con DOM o SAX</span>
+dbf.setSchema(esquema);     <span class="tok-coment">// DocumentBuilderFactory</span>
+spf.setSchema(esquema);     <span class="tok-coment">// SAXParserFactory</span></code></pre></figure>
+            <h3>Ver todos los errores, no solo el primero</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; errores = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+v.setErrorHandler(<span class="tok-clave">new</span> <span class="tok-tipo">ErrorHandler</span>() {
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> warning(<span class="tok-tipo">SAXParseException</span> e)    { }
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> error(<span class="tok-tipo">SAXParseException</span> e)      { errores.add(e.getLineNumber() + <span class="tok-texto">": "</span> + e.getMessage()); }
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> fatalError(<span class="tok-tipo">SAXParseException</span> e) <span class="tok-clave">throws</span> <span class="tok-tipo">SAXException</span> { <span class="tok-clave">throw</span> e; }
+});
+v.validate(<span class="tok-clave">new</span> <span class="tok-tipo">StreamSource</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>)));
+errores.forEach(<span class="tok-tipo">IO</span>::println);</code></pre></figure>
+            <p class="aviso"><strong>Al validar con <code>setSchema</code> o con DTD</strong> (<code>dbf.setValidating(true)</code>), los errores de validación no lanzan excepción por defecto: solo se escriben en la consola y el documento se carga igual. Pon un <code>ErrorHandler</code> en el <code>DocumentBuilder</code> que los lance o los recoja.</p>
+          </div>
+        </section>
+        <!-- 12. JAXB: objetos ↔ XML -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>JAXB: objetos ↔ XML</h2>
+          <div class="cuerpo">
+            <p class="txt">JAXB (<em>Jakarta XML Binding</em>) convierte objetos en XML (<strong>marshalling</strong>) y XML en objetos (<strong>unmarshalling</strong>) a partir de anotaciones en las clases. Salió del JDK en Java 11: hay que añadirlo con Maven.</p>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;dependency</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;groupId</span><span class="tok-etiqueta">&gt;</span>jakarta.xml.bind<span class="tok-etiqueta">&lt;/groupId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;artifactId</span><span class="tok-etiqueta">&gt;</span>jakarta.xml.bind-api<span class="tok-etiqueta">&lt;/artifactId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;version</span><span class="tok-etiqueta">&gt;</span>4.0.2<span class="tok-etiqueta">&lt;/version</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/dependency</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;dependency</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;groupId</span><span class="tok-etiqueta">&gt;</span>org.glassfish.jaxb<span class="tok-etiqueta">&lt;/groupId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;artifactId</span><span class="tok-etiqueta">&gt;</span>jaxb-runtime<span class="tok-etiqueta">&lt;/artifactId</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;version</span><span class="tok-etiqueta">&gt;</span>4.0.5<span class="tok-etiqueta">&lt;/version</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/dependency</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <h3>Las clases</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> jakarta.xml.bind.annotation.*;
+
+<span class="tok-atributo">@XmlRootElement</span>(name = <span class="tok-texto">"biblioteca"</span>)         <span class="tok-coment">// puede ser la raíz del documento</span>
+<span class="tok-atributo">@XmlAccessorType</span>(<span class="tok-tipo">XmlAccessType</span>.<span class="tok-tipo">FIELD</span>)        <span class="tok-coment">// mapea los atributos de la clase</span>
+<span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Biblioteca</span> {
+    <span class="tok-atributo">@XmlElement</span>(name = <span class="tok-texto">"libro"</span>)              <span class="tok-coment">// cada elemento de la lista → &lt;libro&gt;</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">LibroXml</span>&gt; libros = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">Biblioteca</span>() { }                  <span class="tok-coment">// obligatorio: JAXB lo usa al leer</span>
+    <span class="tok-clave">public</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">LibroXml</span>&gt; getLibros() { <span class="tok-clave">return</span> libros; }
+}
+
+<span class="tok-atributo">@XmlAccessorType</span>(<span class="tok-tipo">XmlAccessType</span>.<span class="tok-tipo">FIELD</span>)
+<span class="tok-atributo">@XmlType</span>(propOrder = { <span class="tok-texto">"titulo"</span>, <span class="tok-texto">"autor"</span>, <span class="tok-texto">"precio"</span> })   <span class="tok-coment">// orden de los hijos</span>
+<span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">LibroXml</span> {
+    <span class="tok-atributo">@XmlAttribute</span> <span class="tok-clave">private</span> <span class="tok-tipo">String</span> id;         <span class="tok-coment">// id="..." en vez de &lt;id&gt;</span>
+    <span class="tok-atributo">@XmlAttribute</span> <span class="tok-clave">private</span> <span class="tok-tipo">String</span> categoria;
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> titulo;                   <span class="tok-coment">// sin anotación: &lt;titulo&gt;</span>
+    <span class="tok-clave">private</span> <span class="tok-tipo">String</span> autor;
+    <span class="tok-clave">private</span> <span class="tok-tipo">double</span> precio;
+    <span class="tok-atributo">@XmlTransient</span> <span class="tok-clave">private</span> <span class="tok-tipo">int</span> vecesPrestado; <span class="tok-coment">// no se guarda</span>
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">LibroXml</span>() { }
+    <span class="tok-coment">// constructor con parámetros, getters y setters...</span>
+}</code></pre></figure>
+            <h3>Leer y escribir</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">JAXBContext</span> ctx = <span class="tok-tipo">JAXBContext</span>.newInstance(<span class="tok-tipo">Biblioteca</span>.<span class="tok-clave">class</span>);   <span class="tok-coment">// costoso: créalo una vez</span>
+
+<span class="tok-coment">// XML → objetos</span>
+<span class="tok-tipo">Unmarshaller</span> u = ctx.createUnmarshaller();
+<span class="tok-tipo">Biblioteca</span> b = (<span class="tok-tipo">Biblioteca</span>) u.unmarshal(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"biblioteca.xml"</span>));
+b.getLibros().forEach(l -&gt; <span class="tok-tipo">IO</span>.println(l.getTitulo()));
+
+<span class="tok-coment">// objetos → XML</span>
+<span class="tok-tipo">Marshaller</span> m = ctx.createMarshaller();
+m.setProperty(<span class="tok-tipo">Marshaller</span>.<span class="tok-tipo">JAXB_FORMATTED_OUTPUT</span>, <span class="tok-clave">true</span>);         <span class="tok-coment">// con sangría</span>
+m.setProperty(<span class="tok-tipo">Marshaller</span>.<span class="tok-tipo">JAXB_ENCODING</span>, <span class="tok-texto">"UTF-8"</span>);
+m.marshal(b, <span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"salida.xml"</span>));
+m.marshal(b, <span class="tok-tipo">System</span>.out);
+
+<span class="tok-coment">// validar contra un XSD al leer</span>
+u.setSchema(esquema);</code></pre></figure>
+            <p class="nota">JAXB lanza <code>JAXBException</code>. Antes de Java 11 venía en el JDK con el paquete <code>javax.xml.bind</code>; con Jakarta (JAXB 3 y 4) el paquete es <code>jakarta.xml.bind</code>. No mezcles los dos.</p>
+            <p class="aviso"><strong>Cuidado:</strong> JAXB no funciona con <code>record</code>: necesita un constructor sin parámetros y atributos que pueda rellenar. Usa clases normales (o convierte entre la clase JAXB y el <code>record</code>).</p>
+          </div>
+        </section>
+        <!-- 13. Anotaciones de JAXB -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Anotaciones de JAXB</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>@XmlRootElement(name)</code></th><td>la clase puede ser el elemento raíz</td></tr>
+                  <tr><th scope="row"><code>@XmlAccessorType(FIELD)</code></th><td>mapea los atributos de la clase, aunque sean privados. Sin ella (<code>PUBLIC_MEMBER</code>) usa los getters y setters públicos</td></tr>
+                  <tr><th scope="row"><code>@XmlType(propOrder)</code></th><td>orden de los elementos hijos</td></tr>
+                  <tr><th scope="row"><code>@XmlElement(name)</code></th><td>se guarda como elemento hijo, con otro nombre si se indica; <code>required = true</code> para el XSD</td></tr>
+                  <tr><th scope="row"><code>@XmlAttribute(name)</code></th><td>se guarda como atributo</td></tr>
+                  <tr><th scope="row"><code>@XmlValue</code></th><td>se guarda como texto del propio elemento: <code>&lt;precio moneda="EUR"&gt;12.5&lt;/precio&gt;</code></td></tr>
+                  <tr><th scope="row"><code>@XmlTransient</code></th><td>no se guarda</td></tr>
+                  <tr><th scope="row"><code>@XmlElementWrapper(name)</code></th><td>envuelve una lista: <code>&lt;libros&gt;&lt;libro/&gt;&lt;libro/&gt;&lt;/libros&gt;</code></td></tr>
+                  <tr><th scope="row"><code>@XmlJavaTypeAdapter(A.class)</code></th><td>conversión propia para tipos que JAXB no conoce, como <code>LocalDate</code></td></tr>
+                  <tr><th scope="row"><code>@XmlEnumValue("v")</code></th><td>texto con el que se guarda una constante de un <code>enum</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Fechas con un adaptador</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">LocalDateAdapter</span> <span class="tok-clave">extends</span> <span class="tok-tipo">XmlAdapter</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">LocalDate</span>&gt; {
+    <span class="tok-atributo">@Override</span> <span class="tok-clave">public</span> <span class="tok-tipo">LocalDate</span> unmarshal(<span class="tok-tipo">String</span> s) { <span class="tok-clave">return</span> <span class="tok-tipo">LocalDate</span>.parse(s); }
+    <span class="tok-atributo">@Override</span> <span class="tok-clave">public</span> <span class="tok-tipo">String</span> marshal(<span class="tok-tipo">LocalDate</span> f)   { <span class="tok-clave">return</span> f.toString(); }
+}
+
+<span class="tok-atributo">@XmlJavaTypeAdapter</span>(<span class="tok-tipo">LocalDateAdapter</span>.<span class="tok-clave">class</span>)
+<span class="tok-clave">private</span> <span class="tok-tipo">LocalDate</span> publicado;                      <span class="tok-coment">// &lt;publicado&gt;1945-01-06&lt;/publicado&gt;</span></code></pre></figure>
+            <h3>Lista con envoltorio</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-atributo">@XmlElementWrapper</span>(name = <span class="tok-texto">"libros"</span>)
+<span class="tok-atributo">@XmlElement</span>(name = <span class="tok-texto">"libro"</span>)
+<span class="tok-clave">private</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">LibroXml</span>&gt; libros;</code></pre></figure>
+            <figure class="codigo"><pre data-lang="xml"><code><span class="tok-etiqueta">&lt;biblioteca</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;libros</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L1"</span><span class="tok-etiqueta">&gt;</span>...<span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;libro</span> <span class="tok-atributo">id</span>=<span class="tok-texto">"L2"</span><span class="tok-etiqueta">&gt;</span>...<span class="tok-etiqueta">&lt;/libro</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/libros</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/biblioteca</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 14. Errores habituales -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Errores habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Contar los hijos con getChildNodes</th><td>salen también los <code>#text</code> de espacios: filtra por <code>Node.ELEMENT_NODE</code></td></tr>
+                  <tr><th scope="row" class="larga">getFirstChild() para coger el primer elemento</th><td>suele ser un salto de línea; usa <code>getElementsByTagName(n).item(0)</code></td></tr>
+                  <tr><th scope="row" class="larga">getNodeValue() sobre un Element</th><td>da <code>null</code>: usa <code>getTextContent()</code></td></tr>
+                  <tr><th scope="row" class="larga">getElementsByTagName busca solo en los hijos</th><td>no: busca en <strong>todos</strong> los descendientes, a cualquier nivel</td></tr>
+                  <tr><th scope="row" class="larga">Olvidar convertir item(i) a Element</th><td><code>Node</code> no tiene <code>getAttribute</code>: <code>(Element) lista.item(i)</code></td></tr>
+                  <tr><th scope="row" class="larga">Borrar mientras se recorre hacia delante</th><td>la <code>NodeList</code> es viva: recorre al revés</td></tr>
+                  <tr><th scope="row" class="larga">Crear un nodo y no colgarlo</th><td>falta el <code>appendChild</code>: no aparece en el fichero</td></tr>
+                  <tr><th scope="row" class="larga">Modificar el Document y no guardar</th><td>los cambios solo están en memoria: hace falta el <code>Transformer</code></td></tr>
+                  <tr><th scope="row" class="larga">En SAX, quedarse con un solo characters()</th><td>el texto puede llegar troceado: acumula en un <code>StringBuilder</code></td></tr>
+                  <tr><th scope="row" class="larga">Mezclar javax.xml.bind y jakarta.xml.bind</th><td>las anotaciones de uno no las ve el otro: el XML sale vacío o falla</td></tr>
+                  <tr><th scope="row" class="larga">Clase JAXB sin constructor vacío</th><td><code>IllegalAnnotationsException</code> al crear el <code>JAXBContext</code></td></tr>
+                  <tr><th scope="row" class="larga">Leer XML de fuera sin protegerse</th><td>ataques XXE: desactiva las DTD externas (abajo)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// XML de origen no fiable: prohibir DOCTYPE evita XXE y "bombas" de entidades</span>
+<span class="tok-tipo">DocumentBuilderFactory</span> dbf = <span class="tok-tipo">DocumentBuilderFactory</span>.newInstance();
+dbf.setFeature(<span class="tok-texto">"http://apache.org/xml/features/disallow-doctype-decl"</span>, <span class="tok-clave">true</span>);
+dbf.setXIncludeAware(<span class="tok-clave">false</span>);
+dbf.setExpandEntityReferences(<span class="tok-clave">false</span>);</code></pre></figure>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="lectura-escritura.html">← Lectura y escritura</a><a class="siguiente" href="json.html">JSON →</a></nav>
+      <footer class="pie">La sintaxis de XML, <a href="../marcas/dtd.html">DTD</a>, <a href="../marcas/xsd.html">XSD</a> y <a href="../marcas/xpath.html">XPath</a> está en Lenguajes de marcas. Para guardar los mismos datos en JSON, mira <a href="json.html">JSON</a>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

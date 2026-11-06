@@ -16,7 +16,7 @@
           <h1>Kotlin</h1>
         </div>
         <div class="apoyo">
-          <p class="sub">Lenguaje moderno sobre la JVM, conciso y seguro frente a nulos. El preferido para Android.</p>
+          <p class="sub">Lenguaje moderno sobre la JVM, conciso y seguro frente a nulos. Se usa con las mismas librerías que Java y es el lenguaje oficial de Android.</p>
           <div class="herramientas">
       <button type="button" data-accion="tema">Tema oscuro</button>
       <button type="button" data-accion="imprimir">Imprimir</button>
@@ -25,11 +25,54 @@
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de Kotlin">
-      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a></div>
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="poo.html">Clases y objetos</a><a href="colecciones-lambdas.html">Lambdas y colecciones</a></div>
     </nav>
     <main class="wrap">
-      <div class="fichas"><a class="ficha" href="sintaxis.html" style="--color-tema: #7F52FF"><span class="nombre">Sintaxis básica</span><span class="desc">Variables, tipos, control de flujo, colecciones, funciones y nulos.</span></a></div>
-      <footer class="pie"><a href="../programacion/index.html">← Todos los lenguajes</a></footer>
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">La idea</p>
+            <p class="txt"><strong>Kotlin</strong> compila al mismo bytecode que Java y se ejecuta en la misma JVM: puede usar cualquier clase de Java y mezclarse con ella en el mismo proyecto. Lo que cambia es la forma de escribir: menos código repetitivo, <code>null</code> controlado por el compilador y mucho estilo funcional.</p>
+            <p class="banda-titulo">Por dónde empezar</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Empezar</th><td><a href="sintaxis.html">Sintaxis básica</a>: <code>val</code> y <code>var</code>, <code>when</code>, funciones y nulos</td></tr>
+                  <tr><th scope="row">Estructurar</th><td><a href="poo.html">Clases y objetos</a>: <code>data class</code>, <code>sealed</code>, <code>object</code>, extensiones</td></tr>
+                  <tr><th scope="row">Manejar datos</th><td><a href="colecciones-lambdas.html">Lambdas y colecciones</a>: <code>map</code>, <code>filter</code>, <code>groupBy</code>, <code>let</code>, <code>apply</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-clave">kotlinc</span> Hola.kt <span class="tok-atributo">-include-runtime</span> <span class="tok-atributo">-d</span> hola.jar   <span class="tok-coment"># compilar</span>
+<span class="tok-clave">java</span> <span class="tok-atributo">-jar</span> hola.jar                             <span class="tok-coment"># ejecutar</span></code></pre></figure>
+            <p class="nota">Sin instalar nada: <a href="https://play.kotlinlang.org/">play.kotlinlang.org</a>. En un proyecto, lo normal es Gradle o Maven con IntelliJ IDEA.</p>
+          </div>
+          <div>
+            <p class="banda-titulo">Si vienes de Java</p>
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">Java</span><span class="b">Kotlin</span></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>final String s = "a";</code></div><div class="cmp-b"><code>val s = "a"</code></div><div class="cmp-nota">sin punto y coma, tipo deducido</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>String s = null;</code></div><div class="cmp-b"><code>val s: String? = null</code></div><div class="cmp-nota">solo los tipos con ? admiten null</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>if (s != null) s.length()</code></div><div class="cmp-b"><code>s?.length ?: 0</code></div><div class="cmp-nota">llamada segura y elvis</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>new Persona("Ana")</code></div><div class="cmp-b"><code>Persona("Ana")</code></div><div class="cmp-nota">sin new</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>record Punto(int x, int y)</code></div><div class="cmp-b"><code>data class Punto(val x: Int, val y: Int)</code></div><div class="cmp-nota">equals, toString y copy</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>switch (x) { case 1 -&gt; ... }</code></div><div class="cmp-b"><code>when (x) { 1 -&gt; ... }</code></div><div class="cmp-nota">when también es una expresión</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>"Hola " + nombre</code></div><div class="cmp-b"><code>"Hola $nombre"</code></div><div class="cmp-nota">plantillas de texto</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>list.stream().filter(...).toList()</code></div><div class="cmp-b"><code>list.filter { ... }</code></div><div class="cmp-nota">operaciones directas en la colección</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>static int contar()</code></div><div class="cmp-b"><code>companion object { fun contar() }</code></div><div class="cmp-nota">o una función de nivel superior</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>class A extends B</code></div><div class="cmp-b"><code>class A : B()</code></div><div class="cmp-nota">B tiene que ser open</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>for (int i = 0; i &lt; n; i++)</code></div><div class="cmp-b"><code>for (i in 0 until n)</code></div><div class="cmp-nota">rangos</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>void</code></div><div class="cmp-b"><code>Unit</code></div><div class="cmp-nota">y se puede omitir</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="intro">Las chuletas de Kotlin. Si ya sabes Java, empieza por la <strong>sintaxis</strong> fijándote en lo que cambia y salta a las <strong>clases</strong> y las <strong>colecciones</strong>, que es donde Kotlin más se aleja de Java.</p>
+      <h3 class="lenguaje">El lenguaje</h3>
+      <div class="fichas"><a class="ficha" href="sintaxis.html" style="--color-tema: #7F52FF"><span class="nombre">Sintaxis básica</span><span class="desc">Variables y tipos, control de flujo, colecciones, funciones y seguridad frente a nulos.</span></a><a class="ficha" href="poo.html" style="--color-tema: #7F52FF"><span class="nombre">Clases y objetos</span><span class="desc">Constructores, propiedades, open, data class, enum, sealed, object, extensiones y delegación.</span></a></div>
+      <h3 class="lenguaje">Datos</h3>
+      <div class="fichas"><a class="ficha" href="colecciones-lambdas.html" style="--color-tema: #7F52FF"><span class="nombre">Lambdas y colecciones</span><span class="desc">Lambdas, map, filter, groupBy, ordenar, mapas, secuencias y let, apply, also, run, with.</span></a></div>
+      <footer class="pie"><a href="../programacion/index.html">← Todos los lenguajes</a> · <a href="../java/index.html">Chuletas de Java</a></footer>
     </main>
     <script src="../assets/chuletas.js" defer></script>
   </body>

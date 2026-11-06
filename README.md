@@ -34,12 +34,14 @@ chuletario/
 │                           poo-avanzada, excepciones; colecciones
 │                           (índice, y genericos/listas/sets/mapas/
 │                           pilas-colas), streams; acceso a datos
-│                           (ficheros-directorios, lectura-escritura);
+│                           (ficheros-directorios, lectura-escritura,
+│                           xml, json);
 │                           clases útiles (fechas, math, random);
-│                           procesos; maven, junit
+│                           procesos, hilos; maven, junit
 ├── python/                 sintaxis
-├── kotlin/                 sintaxis
-├── php/                    sintaxis, cookies-sesiones
+├── kotlin/                 sintaxis, poo, colecciones-lambdas
+├── php/                    sintaxis, formularios, cookies-sesiones,
+│                           poo, bases-datos
 ├── bases-datos/            introduccion, er-eer, relacional, postgresql;
 │                           sql (índice, y sql-ddl/-dml/-consultas/-dcl/-tcl)
 ├── web/                    html, css

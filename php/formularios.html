@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formularios · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="php">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">PHP</a><span aria-hidden="true">›</span><span>Formularios</span></nav>
+          <h1>Formularios</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Cómo viajan los datos de un formulario HTML hasta PHP: GET y POST, <code>$_GET</code> y <code>$_POST</code>, cada tipo de campo, validar, volver a mostrar errores, subir ficheros y protegerse de XSS y CSRF.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de PHP">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="formularios.html" aria-current="page">Formularios</a><a href="cookies-sesiones.html">Cookies y sesiones</a><a href="poo.html">POO</a><a href="bases-datos.html">Bases de datos</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Anatomía de un formulario</a><a href="#s2"><b>2</b>GET y POST</a><a href="#s3"><b>3</b>Leer los datos en PHP</a><a href="#s4"><b>4</b>Cada tipo de campo</a><a href="#s5"><b>5</b>Formulario que se procesa a sí mismo</a><a href="#s6"><b>6</b>Validar los datos</a><a href="#s7"><b>7</b>Mostrar errores y recordar valores</a><a href="#s8"><b>8</b>Escapar la salida: XSS</a><a href="#s9"><b>9</b>Post/Redirect/Get</a><a href="#s10"><b>10</b>Subir ficheros</a><a href="#s11"><b>11</b>Enlaces con parámetros</a><a href="#s12"><b>12</b>Protección CSRF</a><a href="#s13"><b>13</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">El viaje de un formulario</p>
+        <div class="flujo">
+          <div class="caja caja-1">navegador<small>el usuario rellena y envía</small></div>
+          <div class="flecha"><span class="ida">petición GET o POST</span><br><span class="linea">──────▶</span><br><span class="vuelta">nombre=Ana&amp;edad=20</span></div>
+          <div class="caja caja-2">servidor web<small>Apache, nginx, php -S</small></div>
+          <div class="flecha"><span class="ida">PHP rellena</span><br><span class="linea">──────▶</span><br><span class="vuelta">$_GET / $_POST / $_FILES</span></div>
+          <div class="caja caja-3">tu script<small>valida, guarda, responde</small></div>
+          <div class="flecha"><span class="ida">HTML de vuelta</span><br><span class="linea">──────▶</span><br><span class="vuelta">o una redirección</span></div>
+          <div class="caja caja-4">navegador<small>muestra el resultado</small></div>
+        </div>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">El formulario (HTML)</p>
+            <figure class="codigo"><pre data-lang="php"><code>&lt;form action=<span class="tok-texto">"guardar.php"</span> method=<span class="tok-texto">"post"</span>&gt;
+  &lt;label&gt;<span class="tok-tipo">Nombre</span> &lt;input type=<span class="tok-texto">"text"</span> name=<span class="tok-texto">"nombre"</span>&gt;&lt;/label&gt;
+  &lt;label&gt;<span class="tok-tipo">Edad</span> &lt;input type=<span class="tok-texto">"number"</span> name=<span class="tok-texto">"edad"</span>&gt;&lt;/label&gt;
+  &lt;button type=<span class="tok-texto">"submit"</span>&gt;<span class="tok-tipo">Enviar</span>&lt;/button&gt;
+&lt;/form&gt;</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Lo que recibe guardar.php</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// la clave del array es el atributo name del campo</span>
+<span class="tok-variable">$nombre</span> = <span class="tok-variable">$_POST</span>[<span class="tok-texto">'nombre'</span>] ?? <span class="tok-texto">''</span>;   <span class="tok-coment">// "Ana"</span>
+<span class="tok-variable">$edad</span>   = <span class="tok-variable">$_POST</span>[<span class="tok-texto">'edad'</span>] ?? <span class="tok-texto">''</span>;     <span class="tok-coment">// "20" ← siempre llega como texto</span>
+
+<span class="tok-clave">echo</span> <span class="tok-texto">"Hola, "</span> . <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$nombre</span>);</code></pre></figure>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Anatomía de un formulario -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Anatomía de un formulario</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>action</code></th><td>a qué script se envían los datos; vacío o ausente: a la misma página</td></tr>
+                  <tr><th scope="row"><code>method</code></th><td><code>get</code> (por defecto) o <code>post</code></td></tr>
+                  <tr><th scope="row"><code>enctype</code></th><td><code>multipart/form-data</code> para subir ficheros (sección 10)</td></tr>
+                  <tr><th scope="row"><code>name</code></th><td>en cada campo: es la <strong>clave</strong> con la que llega a PHP. Sin <code>name</code>, el campo no se envía</td></tr>
+                  <tr><th scope="row"><code>value</code></th><td>el valor que se envía (o el inicial, en los de texto)</td></tr>
+                  <tr><th scope="row"><code>id</code> + <code>&lt;label for&gt;</code></th><td>enlazan la etiqueta con el campo; PHP no los ve</td></tr>
+                  <tr><th scope="row"><code>required  min  max  pattern</code></th><td>validación del navegador: cómoda, pero se salta fácilmente. Hay que validar también en PHP</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">La sintaxis de los campos de HTML está en <a href="../web/html.html">HTML</a>. Aquí se ve lo que pasa cuando llegan al servidor.</p>
+          </div>
+        </section>
+        <!-- 2. GET y POST -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>GET y POST</h2>
+          <div class="cuerpo">
+            <p class="txt">Son dos <a href="../redes/http.html">métodos de HTTP</a>. Cambia <strong>por dónde</strong> viajan los datos y, sobre todo, <strong>para qué</strong> se usan.</p>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">GET</span>  los datos van en la URL (la "query string")
+GET /buscar.php?q=gatos&amp;pagina=2 HTTP/1.1
+Host: ejemplo.com
+
+<span class="tok-clave">POST</span> los datos van en el cuerpo de la petición
+POST /guardar.php HTTP/1.1
+Host: ejemplo.com
+Content-Type: application/x-www-form-urlencoded
+
+nombre=Ana&amp;edad=20</code></pre></figure>
+            <div class="cmp">
+              <div class="cmp-leyenda"><span class="a">GET</span><span class="b">POST</span></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>en la URL, visibles</code></div><div class="cmp-b"><code>en el cuerpo, no se ven en la URL</code></div><div class="cmp-nota">dónde viajan</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>se guardan en historial y favoritos</code></div><div class="cmp-b"><code>no se guardan</code></div><div class="cmp-nota">rastro que dejan</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>unos pocos KB</code></div><div class="cmp-b"><code>lo que permita post_max_size</code></div><div class="cmp-nota">tamaño</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>solo texto</code></div><div class="cmp-b"><code>texto y ficheros</code></div><div class="cmp-nota">qué se puede mandar</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>repetirla no cambia nada</code></div><div class="cmp-b"><code>F5 pregunta si reenviar</code></div><div class="cmp-nota">recargar la página</div></div>
+              <div class="cmp-fila"><div class="cmp-a"><code>$_GET</code></div><div class="cmp-b"><code>$_POST</code></div><div class="cmp-nota">en PHP</div></div>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Buscar, filtrar, ordenar, paginar</th><td><strong>GET</strong>: la URL se puede compartir y guardar</td></tr>
+                  <tr><th scope="row" class="larga">Ver un elemento: <code>producto.php?id=7</code></th><td><strong>GET</strong></td></tr>
+                  <tr><th scope="row" class="larga">Crear, modificar o borrar datos</th><td><strong>POST</strong>: no debe repetirse por recargar</td></tr>
+                  <tr><th scope="row" class="larga">Login, contraseñas, datos personales</th><td><strong>POST</strong> (y HTTPS)</td></tr>
+                  <tr><th scope="row" class="larga">Subir ficheros</th><td><strong>POST</strong> con <code>multipart/form-data</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>POST no es seguro por sí mismo:</strong> los datos no se ven en la URL, pero viajan en claro si no hay HTTPS, y cualquiera puede verlos y cambiarlos con las herramientas del navegador. Lo que protege es HTTPS y validar en el servidor.</p>
+          </div>
+        </section>
+        <!-- 3. Leer los datos en PHP -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Leer los datos en PHP</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// ¿se ha enviado el formulario?</span>
+<span class="tok-clave">if</span> (<span class="tok-variable">$_SERVER</span>[<span class="tok-texto">'REQUEST_METHOD'</span>] === <span class="tok-texto">'POST'</span>) {
+    <span class="tok-variable">$nombre</span> = <span class="tok-funcion">trim</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'nombre'</span>] ?? <span class="tok-texto">''</span>);     <span class="tok-coment">// ?? da '' si el campo no ha llegado</span>
+    <span class="tok-variable">$edad</span>   = (<span class="tok-tipo">int</span>) (<span class="tok-variable">$_POST</span>[<span class="tok-texto">'edad'</span>] ?? <span class="tok-numero">0</span>);      <span class="tok-coment">// llega como texto: convertir</span>
+}
+
+<span class="tok-coment">// parámetros de la URL: buscar.php?q=gatos&amp;pagina=2</span>
+<span class="tok-variable">$q</span>      = <span class="tok-variable">$_GET</span>[<span class="tok-texto">'q'</span>] ?? <span class="tok-texto">''</span>;
+<span class="tok-variable">$pagina</span> = <span class="tok-funcion">max</span>(<span class="tok-numero">1</span>, (<span class="tok-tipo">int</span>) (<span class="tok-variable">$_GET</span>[<span class="tok-texto">'pagina'</span>] ?? <span class="tok-numero">1</span>));
+
+<span class="tok-coment">// comprobar si existe o si viene vacío</span>
+<span class="tok-clave">isset</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'acepto'</span>]);    <span class="tok-coment">// true si existe y no es null</span>
+<span class="tok-clave">empty</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'nombre'</span>]);    <span class="tok-coment">// true si no existe, o es "", "0", 0, [] ...</span>
+<span class="tok-funcion">array_key_exists</span>(<span class="tok-texto">'nombre'</span>, <span class="tok-variable">$_POST</span>);
+
+<span class="tok-coment">// ver todo lo que ha llegado (para depurar)</span>
+<span class="tok-funcion">var_dump</span>(<span class="tok-variable">$_POST</span>);
+<span class="tok-clave">echo</span> <span class="tok-texto">'&lt;pre&gt;'</span> . <span class="tok-funcion">print_r</span>(<span class="tok-variable">$_GET</span>, <span class="tok-clave">true</span>) . <span class="tok-texto">'&lt;/pre&gt;'</span>;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>$_GET</code></th><td>parámetros de la URL (aunque la petición sea POST)</td></tr>
+                  <tr><th scope="row"><code>$_POST</code></th><td>campos de un formulario enviado por POST</td></tr>
+                  <tr><th scope="row"><code>$_FILES</code></th><td>ficheros subidos</td></tr>
+                  <tr><th scope="row"><code>$_REQUEST</code></th><td>mezcla de GET, POST y cookies: mejor no usarlo, no sabes de dónde viene cada dato</td></tr>
+                  <tr><th scope="row"><code>$_SERVER['REQUEST_METHOD']</code></th><td><code>"GET"</code>, <code>"POST"</code>...</td></tr>
+                  <tr><th scope="row"><code>$_SERVER['QUERY_STRING']</code></th><td>la parte de la URL tras el <code>?</code>, sin decodificar</td></tr>
+                  <tr><th scope="row"><code>file_get_contents('php://input')</code></th><td>el cuerpo en bruto, por ejemplo un JSON: <code>json_decode(..., true)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Todo llega como <code>string</code></strong> (o como array, con <code>name="x[]"</code>). Un <code>type="number"</code> llega como <code>"20"</code>, y un campo que no se rellenó llega como <code>""</code>. Convierte y valida siempre.</p>
+          </div>
+        </section>
+        <!-- 4. Cada tipo de campo -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Cada tipo de campo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code>&lt;form method=<span class="tok-texto">"post"</span>&gt;
+  &lt;input type=<span class="tok-texto">"text"</span> name=<span class="tok-texto">"nombre"</span>&gt;
+  &lt;input type=<span class="tok-texto">"email"</span> name=<span class="tok-texto">"email"</span>&gt;
+  &lt;input type=<span class="tok-texto">"password"</span> name=<span class="tok-texto">"clave"</span>&gt;
+  &lt;input type=<span class="tok-texto">"date"</span> name=<span class="tok-texto">"nacimiento"</span>&gt;
+  &lt;textarea name=<span class="tok-texto">"comentario"</span>&gt;&lt;/textarea&gt;
+  &lt;input type=<span class="tok-texto">"hidden"</span> name=<span class="tok-texto">"id"</span> value=<span class="tok-texto">"7"</span>&gt;
+
+  &lt;!-- radio: mismo name, se envía solo el marcado --&gt;
+  &lt;input type=<span class="tok-texto">"radio"</span> name=<span class="tok-texto">"turno"</span> value=<span class="tok-texto">"m"</span>&gt; <span class="tok-tipo">Mañana</span>
+  &lt;input type=<span class="tok-texto">"radio"</span> name=<span class="tok-texto">"turno"</span> value=<span class="tok-texto">"t"</span>&gt; <span class="tok-tipo">Tarde</span>
+
+  &lt;!-- checkbox suelto: solo llega si está marcado --&gt;
+  &lt;input type=<span class="tok-texto">"checkbox"</span> name=<span class="tok-texto">"acepto"</span> value=<span class="tok-texto">"1"</span>&gt; <span class="tok-tipo">Acepto</span>
+
+  &lt;!-- varios checkbox: [] en el name para recibir un <span class="tok-tipo">array</span> --&gt;
+  &lt;input type=<span class="tok-texto">"checkbox"</span> name=<span class="tok-texto">"aficiones[]"</span> value=<span class="tok-texto">"leer"</span>&gt; <span class="tok-tipo">Leer</span>
+  &lt;input type=<span class="tok-texto">"checkbox"</span> name=<span class="tok-texto">"aficiones[]"</span> value=<span class="tok-texto">"cine"</span>&gt; <span class="tok-tipo">Cine</span>
+
+  &lt;select name=<span class="tok-texto">"pais"</span>&gt;
+    &lt;option value=<span class="tok-texto">"es"</span>&gt;<span class="tok-tipo">España</span>&lt;/option&gt;
+    &lt;option value=<span class="tok-texto">"pt"</span>&gt;<span class="tok-tipo">Portugal</span>&lt;/option&gt;
+  &lt;/select&gt;
+
+  &lt;select name=<span class="tok-texto">"idiomas[]"</span> multiple&gt; ... &lt;/select&gt;
+&lt;/form&gt;</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>text  email  password  date  textarea</code></th><td><code>string</code>; vacío si no se rellenó. <code>date</code> llega como <code>"2026-05-01"</code></td></tr>
+                  <tr><th scope="row"><code>number</code></th><td><code>string</code>: convertir con <code>(int)</code> o validar con <code>filter_var</code></td></tr>
+                  <tr><th scope="row"><code>hidden</code></th><td>como un texto, pero el usuario no lo ve. Puede modificarlo igualmente</td></tr>
+                  <tr><th scope="row"><code>radio</code></th><td>el <code>value</code> del marcado; <strong>no llega</strong> si no se marcó ninguno</td></tr>
+                  <tr><th scope="row"><code>checkbox</code></th><td>su <code>value</code> (o <code>"on"</code> si no tiene); <strong>no llega</strong> si está desmarcado</td></tr>
+                  <tr><th scope="row"><code>name="x[]"</code></th><td>array con los marcados: <code>$_POST['aficiones']</code> es <code>["leer", "cine"]</code></td></tr>
+                  <tr><th scope="row"><code>name="dir[calle]"</code></th><td>array asociativo: <code>$_POST['dir']['calle']</code></td></tr>
+                  <tr><th scope="row"><code>select</code></th><td>el <code>value</code> de la opción elegida; con <code>multiple</code> y <code>[]</code>, un array</td></tr>
+                  <tr><th scope="row">botón con <code>name</code></th><td>llega solo el botón pulsado: sirve para saber qué acción se eligió</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-variable">$acepto</span>     = <span class="tok-clave">isset</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'acepto'</span>]);              <span class="tok-coment">// checkbox: true / false</span>
+<span class="tok-variable">$turno</span>      = <span class="tok-variable">$_POST</span>[<span class="tok-texto">'turno'</span>] ?? <span class="tok-clave">null</span>;              <span class="tok-coment">// radio: null si no eligió</span>
+<span class="tok-variable">$aficiones</span>  = <span class="tok-variable">$_POST</span>[<span class="tok-texto">'aficiones'</span>] ?? [];            <span class="tok-coment">// varios checkbox: array (quizá vacío)</span>
+
+<span class="tok-coment">// comprobar que el valor es uno de los permitidos</span>
+<span class="tok-variable">$paises</span> = [<span class="tok-texto">'es'</span> =&gt; <span class="tok-texto">'España'</span>, <span class="tok-texto">'pt'</span> =&gt; <span class="tok-texto">'Portugal'</span>];
+<span class="tok-clave">if</span> (!<span class="tok-funcion">array_key_exists</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'pais'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-variable">$paises</span>)) {
+    <span class="tok-variable">$errores</span>[<span class="tok-texto">'pais'</span>] = <span class="tok-texto">'País no válido'</span>;
+}
+
+<span class="tok-coment">// qué botón se pulsó: &lt;button name="accion" value="borrar"&gt;</span>
+<span class="tok-clave">match</span> (<span class="tok-variable">$_POST</span>[<span class="tok-texto">'accion'</span>] ?? <span class="tok-texto">''</span>) {
+    <span class="tok-texto">'guardar'</span> =&gt; <span class="tok-funcion">guardar</span>(),
+    <span class="tok-texto">'borrar'</span>  =&gt; <span class="tok-funcion">borrar</span>(),
+    <span class="tok-clave">default</span>   =&gt; <span class="tok-clave">null</span>,
+};</code></pre></figure>
+          </div>
+        </section>
+        <!-- 5. Formulario que se procesa a sí mismo -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Formulario que se procesa a sí mismo</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo más habitual: un solo fichero que muestra el formulario y, cuando se envía, lo procesa. Así se pueden volver a mostrar los errores y los datos que escribió el usuario.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// contacto.php</span>
+<span class="tok-variable">$errores</span> = [];
+<span class="tok-variable">$nombre</span> = <span class="tok-variable">$email</span> = <span class="tok-texto">''</span>;
+
+<span class="tok-clave">if</span> (<span class="tok-variable">$_SERVER</span>[<span class="tok-texto">'REQUEST_METHOD'</span>] === <span class="tok-texto">'POST'</span>) {
+    <span class="tok-coment">// 1. recoger</span>
+    <span class="tok-variable">$nombre</span> = <span class="tok-funcion">trim</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'nombre'</span>] ?? <span class="tok-texto">''</span>);
+    <span class="tok-variable">$email</span>  = <span class="tok-funcion">trim</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'email'</span>] ?? <span class="tok-texto">''</span>);
+
+    <span class="tok-coment">// 2. validar</span>
+    <span class="tok-clave">if</span> (<span class="tok-variable">$nombre</span> === <span class="tok-texto">''</span>) {
+        <span class="tok-variable">$errores</span>[<span class="tok-texto">'nombre'</span>] = <span class="tok-texto">'El nombre es obligatorio'</span>;
+    }
+    <span class="tok-clave">if</span> (!<span class="tok-funcion">filter_var</span>(<span class="tok-variable">$email</span>, <span class="tok-tipo">FILTER_VALIDATE_EMAIL</span>)) {
+        <span class="tok-variable">$errores</span>[<span class="tok-texto">'email'</span>] = <span class="tok-texto">'Email no válido'</span>;
+    }
+
+    <span class="tok-coment">// 3. si todo está bien, actuar y redirigir</span>
+    <span class="tok-clave">if</span> (!<span class="tok-variable">$errores</span>) {
+        <span class="tok-funcion">guardarMensaje</span>(<span class="tok-variable">$nombre</span>, <span class="tok-variable">$email</span>);
+        <span class="tok-funcion">header</span>(<span class="tok-texto">'Location: gracias.php'</span>);
+        <span class="tok-clave">exit</span>;
+    }
+}
+<span class="tok-coment">// 4. si no se envió, o hubo errores, se muestra el formulario (abajo)</span>
+<span class="tok-etiqueta">?&gt;</span>
+<span class="tok-etiqueta">&lt;form</span> <span class="tok-atributo">method</span>=<span class="tok-texto">"post"</span><span class="tok-etiqueta">&gt;</span>           <span class="tok-coment">&lt;!-- sin action: se envía a sí mismo --&gt;</span>
+  ...
+<span class="tok-etiqueta">&lt;/form</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota">Si quieres poner <code>action</code>, no uses <code>$_SERVER['PHP_SELF']</code> tal cual: se puede manipular desde la URL. Déjalo vacío o escribe el nombre del fichero.</p>
+          </div>
+        </section>
+        <!-- 6. Validar los datos -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Validar los datos</h2>
+          <div class="cuerpo">
+            <p class="txt">El navegador valida por comodidad; el servidor valida por <strong>seguridad</strong>. Cualquiera puede enviar una petición sin pasar por tu formulario.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// filter_var: valida y convierte. Devuelve false (o null) si no es válido</span>
+<span class="tok-variable">$email</span> = <span class="tok-funcion">filter_var</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'email'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-tipo">FILTER_VALIDATE_EMAIL</span>);
+<span class="tok-variable">$edad</span>  = <span class="tok-funcion">filter_var</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'edad'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-tipo">FILTER_VALIDATE_INT</span>,
+                    [<span class="tok-texto">'options'</span> =&gt; [<span class="tok-texto">'min_range'</span> =&gt; <span class="tok-numero">0</span>, <span class="tok-texto">'max_range'</span> =&gt; <span class="tok-numero">120</span>]]);
+<span class="tok-variable">$precio</span> = <span class="tok-funcion">filter_var</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'precio'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-tipo">FILTER_VALIDATE_FLOAT</span>);
+<span class="tok-variable">$web</span>    = <span class="tok-funcion">filter_var</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'web'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-tipo">FILTER_VALIDATE_URL</span>);
+<span class="tok-variable">$activo</span> = <span class="tok-funcion">filter_var</span>(<span class="tok-variable">$_POST</span>[<span class="tok-texto">'activo'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-tipo">FILTER_VALIDATE_BOOLEAN</span>);   <span class="tok-coment">// "1", "on", "yes", "true"</span>
+
+<span class="tok-clave">if</span> (<span class="tok-variable">$edad</span> === <span class="tok-clave">false</span>) {                 <span class="tok-coment">// ¡con ===! la edad 0 también es "falsa"</span>
+    <span class="tok-variable">$errores</span>[<span class="tok-texto">'edad'</span>] = <span class="tok-texto">'Edad entre 0 y 120'</span>;
+}
+
+<span class="tok-coment">// filter_input: lo mismo, leyendo directamente de la petición</span>
+<span class="tok-variable">$id</span> = <span class="tok-funcion">filter_input</span>(<span class="tok-tipo">INPUT_GET</span>, <span class="tok-texto">'id'</span>, <span class="tok-tipo">FILTER_VALIDATE_INT</span>);   <span class="tok-coment">// null si no llegó, false si no es válido</span>
+
+<span class="tok-coment">// otras comprobaciones típicas</span>
+<span class="tok-funcion">mb_strlen</span>(<span class="tok-variable">$nombre</span>) &gt;= <span class="tok-numero">3</span> &amp;&amp; <span class="tok-funcion">mb_strlen</span>(<span class="tok-variable">$nombre</span>) &lt;= <span class="tok-numero">50</span>;        <span class="tok-coment">// longitud (con tildes: mb_)</span>
+<span class="tok-funcion">preg_match</span>(<span class="tok-texto">'/^[0-9]{5}$/'</span>, <span class="tok-variable">$cp</span>);                           <span class="tok-coment">// código postal</span>
+<span class="tok-funcion">in_array</span>(<span class="tok-variable">$talla</span>, [<span class="tok-texto">'S'</span>, <span class="tok-texto">'M'</span>, <span class="tok-texto">'L'</span>], <span class="tok-clave">true</span>);                   <span class="tok-coment">// valor de una lista</span>
+<span class="tok-tipo">DateTime</span>::<span class="tok-funcion">createFromFormat</span>(<span class="tok-texto">'Y-m-d'</span>, <span class="tok-variable">$fecha</span>) !== <span class="tok-clave">false</span>;      <span class="tok-coment">// fecha válida</span>
+<span class="tok-funcion">ctype_digit</span>(<span class="tok-variable">$telefono</span>);                                    <span class="tok-coment">// solo dígitos</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>FILTER_VALIDATE_INT</code></th><td>entero; opciones <code>min_range</code> y <code>max_range</code></td></tr>
+                  <tr><th scope="row"><code>FILTER_VALIDATE_FLOAT</code></th><td>decimal (con punto)</td></tr>
+                  <tr><th scope="row"><code>FILTER_VALIDATE_EMAIL</code></th><td>formato de correo</td></tr>
+                  <tr><th scope="row"><code>FILTER_VALIDATE_URL</code></th><td>URL completa con esquema</td></tr>
+                  <tr><th scope="row"><code>FILTER_VALIDATE_BOOLEAN</code></th><td><code>true</code> para "1", "true", "on", "yes"</td></tr>
+                  <tr><th scope="row"><code>FILTER_VALIDATE_REGEXP</code></th><td>con la opción <code>regexp</code></td></tr>
+                  <tr><th scope="row"><code>FILTER_NULL_ON_FAILURE</code></th><td>flag: devuelve <code>null</code> en vez de <code>false</code> al fallar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Valida al <strong>recibir</strong> (¿es lo que espero?) y escapa al <strong>mostrar</strong> (sección 8) o al guardar en la base de datos (con <a href="bases-datos.html#s5">consultas preparadas</a>). No "limpies" los datos quitando caracteres: guárdalos tal cual y escápalos según donde vayan.</p>
+          </div>
+        </section>
+        <!-- 7. Mostrar errores y recordar valores -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Mostrar errores y recordar valores</h2>
+          <div class="cuerpo">
+            <p class="txt">Si hay errores, se vuelve a pintar el formulario con lo que el usuario escribió, para que no tenga que empezar de cero, y con cada error junto a su campo.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;form</span> <span class="tok-atributo">method</span>=<span class="tok-texto">"post"</span> novalidate<span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;label</span><span class="tok-etiqueta">&gt;</span>Nombre
+    <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"text"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"nombre"</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$nombre</span>) <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;/label</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">if</span> (<span class="tok-clave">isset</span>(<span class="tok-variable">$errores</span>[<span class="tok-texto">'nombre'</span>])): <span class="tok-etiqueta">?&gt;</span>
+    <span class="tok-etiqueta">&lt;p</span> <span class="tok-atributo">class</span>=<span class="tok-texto">"error"</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$errores</span>[<span class="tok-texto">'nombre'</span>] <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/p</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">endif</span>; <span class="tok-etiqueta">?&gt;</span>
+
+  <span class="tok-coment">&lt;!-- radio y checkbox: marcar el que estaba elegido --&gt;</span>
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"radio"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"turno"</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"m"</span> <span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$turno</span> === <span class="tok-texto">'m'</span> ? <span class="tok-texto">'checked'</span> : <span class="tok-texto">''</span> <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&gt;</span> Mañana
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"radio"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"turno"</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"t"</span> <span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$turno</span> === <span class="tok-texto">'t'</span> ? <span class="tok-texto">'checked'</span> : <span class="tok-texto">''</span> <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&gt;</span> Tarde
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"checkbox"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"aficiones[]"</span> <span class="tok-atributo">value</span>=<span class="tok-texto">"cine"</span>
+         <span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">in_array</span>(<span class="tok-texto">'cine'</span>, <span class="tok-variable">$aficiones</span>) ? <span class="tok-texto">'checked'</span> : <span class="tok-texto">''</span> <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&gt;</span> Cine
+
+  <span class="tok-coment">&lt;!-- select: generar las opciones y marcar la elegida --&gt;</span>
+  <span class="tok-etiqueta">&lt;select</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"pais"</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">foreach</span> (<span class="tok-variable">$paises</span> <span class="tok-clave">as</span> <span class="tok-variable">$codigo</span> =&gt; <span class="tok-variable">$texto</span>): <span class="tok-etiqueta">?&gt;</span>
+      <span class="tok-etiqueta">&lt;option</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$codigo</span> <span class="tok-etiqueta">?&gt;</span>" <span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$codigo</span> === <span class="tok-variable">$pais</span> ? <span class="tok-texto">'selected'</span> : <span class="tok-texto">''</span> <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&gt;</span>
+        <span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$texto</span>) <span class="tok-etiqueta">?&gt;</span>
+      <span class="tok-etiqueta">&lt;/option</span><span class="tok-etiqueta">&gt;</span>
+    <span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">endforeach</span>; <span class="tok-etiqueta">?&gt;</span>
+  <span class="tok-etiqueta">&lt;/select</span><span class="tok-etiqueta">&gt;</span>
+
+  <span class="tok-etiqueta">&lt;textarea</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"comentario"</span><span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$comentario</span>) <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/textarea</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;button</span><span class="tok-etiqueta">&gt;</span>Enviar<span class="tok-etiqueta">&lt;/button</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/form</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <p class="nota"><code>novalidate</code> desactiva la validación del navegador: útil mientras pruebas que la de PHP funciona. Los campos <code>password</code> no se suelen rellenar de nuevo.</p>
+          </div>
+        </section>
+        <!-- 8. Escapar la salida: XSS -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Escapar la salida: XSS</h2>
+          <div class="cuerpo">
+            <p class="txt">Si muestras en la página algo que escribió el usuario sin escaparlo, puede meter HTML y JavaScript que se ejecutará en el navegador de quien lo vea: es un ataque <strong>XSS</strong> (<em>cross-site scripting</em>).</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-variable">$nombre</span> = <span class="tok-variable">$_GET</span>[<span class="tok-texto">'nombre'</span>];   <span class="tok-coment">// el atacante envía: &lt;script&gt;robar(document.cookie)&lt;/script&gt;</span>
+
+<span class="tok-clave">echo</span> <span class="tok-texto">"Hola, $nombre"</span>;                              <span class="tok-coment">// ✗ el script se ejecuta</span>
+<span class="tok-clave">echo</span> <span class="tok-texto">"Hola, "</span> . <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$nombre</span>);         <span class="tok-coment">// ✓ se ve como texto: &amp;lt;script&amp;gt;...</span>
+
+<span class="tok-coment">// atajo para no escribirlo cada vez</span>
+<span class="tok-clave">function</span> <span class="tok-funcion">e</span>(?<span class="tok-tipo">string</span> <span class="tok-variable">$texto</span>): <span class="tok-tipo">string</span> {
+    <span class="tok-clave">return</span> <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$texto</span> ?? <span class="tok-texto">''</span>, <span class="tok-tipo">ENT_QUOTES</span>, <span class="tok-texto">'UTF-8'</span>);
+}
+<span class="tok-etiqueta">?&gt;</span>
+<span class="tok-etiqueta">&lt;p</span><span class="tok-etiqueta">&gt;</span>Hola, <span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">e</span>(<span class="tok-variable">$nombre</span>) <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/p</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">e</span>(<span class="tok-variable">$nombre</span>) <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>="perfil.php?<span class="tok-atributo">u</span>=<span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">urlencode</span>(<span class="tok-variable">$usuario</span>) <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>Perfil<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Dentro de HTML o de un atributo</th><td><code>htmlspecialchars($x)</code>: cambia <code>&lt; &gt; &amp; " '</code> por entidades</td></tr>
+                  <tr><th scope="row" class="larga">Como parámetro de una URL</th><td><code>urlencode($x)</code> (y <code>htmlspecialchars</code> encima si va en un atributo)</td></tr>
+                  <tr><th scope="row" class="larga">Dentro de JavaScript</th><td><code>json_encode($x)</code></td></tr>
+                  <tr><th scope="row" class="larga">En una consulta SQL</th><td>nada de escapar a mano: <a href="bases-datos.html#s5">consultas preparadas</a></td></tr>
+                  <tr><th scope="row" class="larga">Quitar etiquetas</th><td><code>strip_tags($x)</code>: no sustituye a escapar</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Regla:</strong> todo lo que venga de fuera (formularios, URL, cookies, base de datos) se escapa <strong>al mostrarlo</strong>. Desde PHP 8.1, <code>htmlspecialchars</code> ya escapa las comillas simples y usa UTF-8 por defecto.</p>
+          </div>
+        </section>
+        <!-- 9. Post/Redirect/Get -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Post/Redirect/Get</h2>
+          <div class="cuerpo">
+            <p class="txt">Si después de un POST se muestra la página directamente, al pulsar F5 el navegador vuelve a enviar el formulario: un pedido doble, un mensaje duplicado. La solución es <strong>redirigir</strong> tras procesar.</p>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">Sin PRG</span>   POST /pedido.php  →  200 "Pedido hecho"     F5 → ¡otro pedido!
+<span class="tok-clave">Con PRG</span>   POST /pedido.php  →  303 Location: ok.php
+          GET  /ok.php      →  200 "Pedido hecho"     F5 → solo repite el GET</code></pre></figure>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-funcion">session_start</span>();
+
+<span class="tok-clave">if</span> (<span class="tok-variable">$_SERVER</span>[<span class="tok-texto">'REQUEST_METHOD'</span>] === <span class="tok-texto">'POST'</span> &amp;&amp; !<span class="tok-variable">$errores</span>) {
+    <span class="tok-variable">$id</span> = <span class="tok-funcion">crearPedido</span>(<span class="tok-variable">$datos</span>);
+    <span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'aviso'</span>] = <span class="tok-texto">"Pedido $id registrado"</span>;   <span class="tok-coment">// mensaje "flash" para la siguiente página</span>
+    <span class="tok-funcion">header</span>(<span class="tok-texto">'Location: pedidos.php'</span>, <span class="tok-clave">true</span>, <span class="tok-numero">303</span>);
+    <span class="tok-clave">exit</span>;                                           <span class="tok-coment">// ¡imprescindible! si no, el script sigue</span>
+}
+
+<span class="tok-coment">// pedidos.php: mostrar el aviso una sola vez</span>
+<span class="tok-clave">if</span> (<span class="tok-clave">isset</span>(<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'aviso'</span>])) {
+    <span class="tok-clave">echo</span> <span class="tok-texto">'&lt;p class="ok"&gt;'</span> . <span class="tok-funcion">htmlspecialchars</span>(<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'aviso'</span>]) . <span class="tok-texto">'&lt;/p&gt;'</span>;
+    <span class="tok-clave">unset</span>(<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'aviso'</span>]);
+}</code></pre></figure>
+            <p class="aviso"><strong><code>header()</code> antes de cualquier salida:</strong> si ya se ha escrito algo (un <code>echo</code>, HTML, incluso un espacio antes de <code>&lt;?php</code>), da el error <em>headers already sent</em>. Sesiones en <a href="cookies-sesiones.html">Cookies y sesiones</a>.</p>
+          </div>
+        </section>
+        <!-- 10. Subir ficheros -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Subir ficheros</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="php"><code>&lt;form method=<span class="tok-texto">"post"</span> enctype=<span class="tok-texto">"multipart/form-data"</span>&gt;   &lt;!-- sin enctype no llega el fichero --&gt;
+  &lt;input type=<span class="tok-texto">"file"</span> name=<span class="tok-texto">"foto"</span> accept=<span class="tok-texto">"image/*"</span>&gt;
+  &lt;input type=<span class="tok-texto">"file"</span> name=<span class="tok-texto">"adjuntos[]"</span> multiple&gt;
+  &lt;button&gt;<span class="tok-tipo">Subir</span>&lt;/button&gt;
+&lt;/form&gt;</code></pre></figure>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-variable">$f</span> = <span class="tok-variable">$_FILES</span>[<span class="tok-texto">'foto'</span>];
+
+<span class="tok-clave">if</span> (<span class="tok-variable">$f</span>[<span class="tok-texto">'error'</span>] !== <span class="tok-tipo">UPLOAD_ERR_OK</span>) {
+    <span class="tok-clave">exit</span>(<span class="tok-texto">'Error al subir: código '</span> . <span class="tok-variable">$f</span>[<span class="tok-texto">'error'</span>]);
+}
+<span class="tok-clave">if</span> (<span class="tok-variable">$f</span>[<span class="tok-texto">'size'</span>] &gt; <span class="tok-numero">2</span> * <span class="tok-numero">1024</span> * <span class="tok-numero">1024</span>) {
+    <span class="tok-clave">exit</span>(<span class="tok-texto">'Máximo 2 MB'</span>);
+}
+
+<span class="tok-coment">// el tipo de $f['type'] lo dice el navegador: no fiarse. Comprobar el contenido real</span>
+<span class="tok-variable">$tipo</span> = (<span class="tok-clave">new</span> <span class="tok-funcion">finfo</span>(<span class="tok-tipo">FILEINFO_MIME_TYPE</span>))-&gt;<span class="tok-funcion">file</span>(<span class="tok-variable">$f</span>[<span class="tok-texto">'tmp_name'</span>]);
+<span class="tok-variable">$permitidos</span> = [<span class="tok-texto">'image/jpeg'</span> =&gt; <span class="tok-texto">'jpg'</span>, <span class="tok-texto">'image/png'</span> =&gt; <span class="tok-texto">'png'</span>, <span class="tok-texto">'image/webp'</span> =&gt; <span class="tok-texto">'webp'</span>];
+<span class="tok-clave">if</span> (!<span class="tok-clave">isset</span>(<span class="tok-variable">$permitidos</span>[<span class="tok-variable">$tipo</span>])) {
+    <span class="tok-clave">exit</span>(<span class="tok-texto">'Solo JPG, PNG o WEBP'</span>);
+}
+
+<span class="tok-coment">// nombre propio: nunca el que manda el usuario</span>
+<span class="tok-variable">$nombre</span> = <span class="tok-funcion">bin2hex</span>(<span class="tok-funcion">random_bytes</span>(<span class="tok-numero">16</span>)) . <span class="tok-texto">'.'</span> . <span class="tok-variable">$permitidos</span>[<span class="tok-variable">$tipo</span>];
+<span class="tok-funcion">move_uploaded_file</span>(<span class="tok-variable">$f</span>[<span class="tok-texto">'tmp_name'</span>], __DIR__ . <span class="tok-texto">'/subidas/'</span> . <span class="tok-variable">$nombre</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>['name']</code></th><td>nombre original en el equipo del usuario (no fiable)</td></tr>
+                  <tr><th scope="row"><code>['type']</code></th><td>tipo MIME que dice el navegador (no fiable)</td></tr>
+                  <tr><th scope="row"><code>['tmp_name']</code></th><td>ruta temporal en el servidor; se borra al acabar el script</td></tr>
+                  <tr><th scope="row"><code>['size']</code></th><td>tamaño en bytes</td></tr>
+                  <tr><th scope="row"><code>['error']</code></th><td><code>UPLOAD_ERR_OK</code> (0), <code>UPLOAD_ERR_INI_SIZE</code> (1, demasiado grande), <code>UPLOAD_ERR_NO_FILE</code> (4, no se eligió)...</td></tr>
+                  <tr><th scope="row"><code>move_uploaded_file(tmp, dest)</code></th><td>mueve el temporal a su sitio definitivo</td></tr>
+                  <tr><th scope="row"><code>upload_max_filesize  post_max_size</code></th><td>límites en <code>php.ini</code> (por defecto 2 MB y 8 MB)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Con <code>name="adjuntos[]" multiple</code>, <code>$_FILES['adjuntos']['name']</code> es un array, igual que <code>['tmp_name']</code>, <code>['error']</code>... Se recorren con el mismo índice: <code>foreach ($_FILES['adjuntos']['tmp_name'] as $i =&gt; $tmp)</code>.</p>
+            <p class="aviso"><strong>Nunca guardes las subidas en una carpeta donde se ejecute PHP</strong> con el nombre original: alguien puede subir <code>shell.php</code> y ejecutarlo. Ver <a href="../hacking/shells.html">Shells</a>.</p>
+          </div>
+        </section>
+        <!-- 11. Enlaces con parámetros -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Enlaces con parámetros</h2>
+          <div class="cuerpo">
+            <p class="txt">Un enlace también hace una petición GET: es la forma de pasar datos sin formulario (ver un producto, cambiar de página, ordenar).</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">foreach</span> (<span class="tok-variable">$productos</span> <span class="tok-clave">as</span> <span class="tok-variable">$p</span>): <span class="tok-etiqueta">?&gt;</span>
+  <span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>="producto.php?<span class="tok-atributo">id</span>=<span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$p</span>[<span class="tok-texto">'id'</span>] <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span><span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">e</span>(<span class="tok-variable">$p</span>[<span class="tok-texto">'nombre'</span>]) <span class="tok-etiqueta">?&gt;</span><span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;?php</span> <span class="tok-clave">endforeach</span>; <span class="tok-etiqueta">?&gt;</span>
+
+<span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// montar la query string con varios parámetros (ya codificados)</span>
+<span class="tok-variable">$url</span> = <span class="tok-texto">'buscar.php?'</span> . <span class="tok-funcion">http_build_query</span>([<span class="tok-texto">'q'</span> =&gt; <span class="tok-texto">'café con leche'</span>, <span class="tok-texto">'pagina'</span> =&gt; <span class="tok-numero">2</span>]);
+<span class="tok-coment">// buscar.php?q=caf%C3%A9+con+leche&amp;pagina=2</span>
+
+<span class="tok-coment">// mantener los parámetros actuales y cambiar solo uno</span>
+<span class="tok-variable">$siguiente</span> = <span class="tok-texto">'?'</span> . <span class="tok-funcion">http_build_query</span>(<span class="tok-funcion">array_merge</span>(<span class="tok-variable">$_GET</span>, [<span class="tok-texto">'pagina'</span> =&gt; <span class="tok-variable">$pagina</span> + <span class="tok-numero">1</span>]));
+<span class="tok-etiqueta">?&gt;</span>
+<span class="tok-etiqueta">&lt;a</span> <span class="tok-atributo">href</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">e</span>(<span class="tok-variable">$siguiente</span>) <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>Siguiente →<span class="tok-etiqueta">&lt;/a</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-coment">&lt;!-- formulario de búsqueda por GET: la URL resultante se puede compartir --&gt;</span>
+<span class="tok-etiqueta">&lt;form</span> <span class="tok-atributo">action</span>=<span class="tok-texto">"buscar.php"</span> <span class="tok-atributo">method</span>=<span class="tok-texto">"get"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"search"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"q"</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-funcion">e</span>(<span class="tok-variable">$_GET</span>[<span class="tok-texto">'q'</span>] ?? <span class="tok-texto">''</span>) <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>
+<span class="tok-etiqueta">&lt;/form</span><span class="tok-etiqueta">&gt;</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>urlencode($x)</code></th><td>codifica un valor para la URL (espacio → <code>+</code>)</td></tr>
+                  <tr><th scope="row"><code>rawurlencode($x)</code></th><td>igual, con espacio → <code>%20</code> (para rutas)</td></tr>
+                  <tr><th scope="row"><code>http_build_query($array)</code></th><td>monta <code>a=1&amp;b=2</code> codificando cada valor</td></tr>
+                  <tr><th scope="row"><code>parse_str($qs, $array)</code></th><td>al revés: de query string a array</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>No uses GET para borrar:</strong> un enlace <code>borrar.php?id=7</code> lo puede activar un buscador al rastrear o una imagen en otra web. Las acciones que cambian datos van por POST, con un botón dentro de un formulario.</p>
+          </div>
+        </section>
+        <!-- 12. Protección CSRF -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Protección CSRF</h2>
+          <div class="cuerpo">
+            <p class="txt">En un ataque <strong>CSRF</strong> (<em>cross-site request forgery</em>), otra web envía un formulario a la tuya aprovechando que el usuario ya ha iniciado sesión. Se evita con un <strong>token</strong> secreto que solo tu formulario conoce.</p>
+            <figure class="codigo"><pre data-lang="php"><code><span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-funcion">session_start</span>();
+<span class="tok-coment">// 1. generar el token una vez por sesión</span>
+<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'csrf'</span>] ??= <span class="tok-funcion">bin2hex</span>(<span class="tok-funcion">random_bytes</span>(<span class="tok-numero">32</span>));
+<span class="tok-etiqueta">?&gt;</span>
+<span class="tok-coment">&lt;!-- 2. meterlo en cada formulario POST --&gt;</span>
+<span class="tok-etiqueta">&lt;form</span> <span class="tok-atributo">method</span>=<span class="tok-texto">"post"</span><span class="tok-etiqueta">&gt;</span>
+  <span class="tok-etiqueta">&lt;input</span> <span class="tok-atributo">type</span>=<span class="tok-texto">"hidden"</span> <span class="tok-atributo">name</span>=<span class="tok-texto">"csrf"</span> <span class="tok-atributo">value</span>="<span class="tok-etiqueta">&lt;?=</span> <span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'csrf'</span>] <span class="tok-etiqueta">?&gt;</span>"<span class="tok-etiqueta">&gt;</span>
+  ...
+<span class="tok-etiqueta">&lt;/form</span><span class="tok-etiqueta">&gt;</span>
+
+<span class="tok-etiqueta">&lt;?php</span>
+<span class="tok-coment">// 3. comprobarlo al recibir</span>
+<span class="tok-clave">if</span> (<span class="tok-variable">$_SERVER</span>[<span class="tok-texto">'REQUEST_METHOD'</span>] === <span class="tok-texto">'POST'</span>) {
+    <span class="tok-clave">if</span> (!<span class="tok-funcion">hash_equals</span>(<span class="tok-variable">$_SESSION</span>[<span class="tok-texto">'csrf'</span>] ?? <span class="tok-texto">''</span>, <span class="tok-variable">$_POST</span>[<span class="tok-texto">'csrf'</span>] ?? <span class="tok-texto">''</span>)) {
+        <span class="tok-funcion">http_response_code</span>(<span class="tok-numero">403</span>);
+        <span class="tok-clave">exit</span>(<span class="tok-texto">'Petición no válida'</span>);
+    }
+    <span class="tok-coment">// ... procesar</span>
+}</code></pre></figure>
+            <p class="nota"><code>hash_equals</code> compara en tiempo constante: no deja adivinar el token midiendo cuánto tarda la comparación. Las cookies de sesión con <code>SameSite=Lax</code> también ayudan (ver <a href="cookies-sesiones.html">Cookies y sesiones</a>).</p>
+          </div>
+        </section>
+        <!-- 13. Despistes habituales -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">El campo no llega</th><td>le falta el atributo <code>name</code>, o es un checkbox / radio sin marcar</td></tr>
+                  <tr><th scope="row" class="larga"><code>Warning: Undefined array key</code></th><td>se leyó <code>$_POST['x']</code> sin comprobar: usa <code>?? ''</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>$_POST</code> vacío</th><td>el formulario no tiene <code>method="post"</code> (por defecto es GET), o se superó <code>post_max_size</code></td></tr>
+                  <tr><th scope="row" class="larga">Solo llega un checkbox de varios</th><td>falta el <code>[]</code> en el <code>name</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>$_FILES</code> vacío</th><td>falta <code>enctype="multipart/form-data"</code></td></tr>
+                  <tr><th scope="row" class="larga">Comparar números como texto</th><td><code>"10" &lt; "9"</code> según el caso; convierte con <code>(int)</code> o <code>filter_var</code></td></tr>
+                  <tr><th scope="row" class="larga">Validar solo con HTML</th><td><code>required</code> se salta con las herramientas del navegador o con <code>curl</code></td></tr>
+                  <tr><th scope="row" class="larga">Mostrar datos sin <code>htmlspecialchars</code></th><td>XSS</td></tr>
+                  <tr><th scope="row" class="larga">Olvidar <code>exit</code> tras <code>header('Location')</code></th><td>el resto del script se ejecuta igualmente</td></tr>
+                  <tr><th scope="row" class="larga"><code>headers already sent</code></th><td>salida antes de <code>header()</code> o <code>session_start()</code>: espacios, BOM, <code>echo</code></td></tr>
+                  <tr><th scope="row" class="larga">Pedido duplicado al recargar</th><td>falta el Post/Redirect/Get</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="bash"><code><span class="tok-coment"># probar un formulario sin navegador</span>
+<span class="tok-clave">curl</span> <span class="tok-texto">"http://localhost:8000/buscar.php?q=gatos"</span>
+<span class="tok-clave">curl</span> <span class="tok-atributo">-X</span> POST <span class="tok-atributo">-d</span> <span class="tok-texto">"nombre=Ana&amp;edad=20"</span> http://localhost:8000/guardar.php
+<span class="tok-clave">curl</span> <span class="tok-atributo">-F</span> <span class="tok-texto">"foto=@gato.jpg"</span> http://localhost:8000/subir.php</code></pre></figure>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sintaxis.html">← Sintaxis básica</a><a class="siguiente" href="cookies-sesiones.html">Cookies y sesiones →</a></nav>
+      <footer class="pie">Los campos de HTML están en <a href="../web/html.html">HTML</a> y los métodos de HTTP en <a href="../redes/http.html">HTTP</a>. Documentación: <a href="https://www.php.net/manual/es/tutorial.forms.php">formularios</a> y <a href="https://www.php.net/manual/es/book.filter.php">filtros</a> en php.net.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

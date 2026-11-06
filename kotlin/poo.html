@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clases y objetos · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="kotlin">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Kotlin</a><span aria-hidden="true">›</span><span>Clases y objetos</span></nav>
+          <h1>Clases y objetos</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">La orientación a objetos en Kotlin: constructores, propiedades, herencia con <code>open</code>, interfaces, <code>data class</code>, <code>enum</code>, <code>sealed</code>, <code>object</code>, <code>companion object</code>, extensiones y delegación.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Kotlin">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="poo.html" aria-current="page">Clases y objetos</a><a href="colecciones-lambdas.html">Lambdas y colecciones</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Clases y constructores</a><a href="#s2"><b>2</b>Propiedades</a><a href="#s3"><b>3</b>Visibilidad</a><a href="#s4"><b>4</b>Herencia: open y override</a><a href="#s5"><b>5</b>Clases abstractas e interfaces</a><a href="#s6"><b>6</b>data class</a><a href="#s7"><b>7</b>enum class</a><a href="#s8"><b>8</b>sealed: jerarquías cerradas</a><a href="#s9"><b>9</b>object y companion object</a><a href="#s10"><b>10</b>Funciones de extensión</a><a href="#s11"><b>11</b>Delegación con by</a><a href="#s12"><b>12</b>Clases anidadas y value class</a><a href="#s13"><b>13</b>Genéricos</a><a href="#s14"><b>14</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">La misma clase en Java y en Kotlin</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Java</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">public</span> <span class="tok-clave">class</span> <span class="tok-tipo">Persona</span> {
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">String</span> nombre;
+    <span class="tok-clave">private</span> <span class="tok-tipo">int</span> edad;
+
+    <span class="tok-clave">public</span> <span class="tok-tipo">Persona</span>(<span class="tok-tipo">String</span> nombre, <span class="tok-tipo">int</span> edad) {
+        <span class="tok-clave">this</span>.nombre = nombre;
+        <span class="tok-clave">this</span>.edad = edad;
+    }
+    <span class="tok-clave">public</span> <span class="tok-tipo">String</span> getNombre() { <span class="tok-clave">return</span> nombre; }
+    <span class="tok-clave">public</span> <span class="tok-tipo">int</span> getEdad() { <span class="tok-clave">return</span> edad; }
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> setEdad(<span class="tok-tipo">int</span> edad) { <span class="tok-clave">this</span>.edad = edad; }
+}</code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Kotlin</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">class</span> <span class="tok-tipo">Persona</span>(<span class="tok-clave">val</span> nombre: <span class="tok-tipo">String</span>, <span class="tok-clave">var</span> edad: <span class="tok-tipo">Int</span>)
+
+<span class="tok-coment">// val → propiedad de solo lectura (getter)</span>
+<span class="tok-coment">// var → propiedad modificable (getter y setter)</span>
+
+<span class="tok-clave">val</span> p = <span class="tok-tipo">Persona</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">20</span>)     <span class="tok-coment">// sin new</span>
+<span class="tok-funcion">println</span>(p.nombre)              <span class="tok-coment">// llama al getter</span>
+p.edad = <span class="tok-numero">21</span>                    <span class="tok-coment">// llama al setter</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Por defecto</th><td>todo es <code>public</code> y <code>final</code>: para heredar hace falta <code>open</code></td></tr>
+                  <tr><th scope="row">Sin <code>new</code></th><td>se crea un objeto llamando a la clase como una función</td></tr>
+                  <tr><th scope="row">Sin getters ni setters</th><td>las propiedades los generan solas</td></tr>
+                  <tr><th scope="row">Sin <code>static</code></th><td>se usa <code>object</code> o <code>companion object</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Clases y constructores -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Clases y constructores</h2>
+          <div class="cuerpo">
+            <p class="txt">El <strong>constructor primario</strong> va en la cabecera de la clase. Con <code>val</code> o <code>var</code> delante, el parámetro se convierte además en propiedad.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">class</span> <span class="tok-tipo">Producto</span>(
+    <span class="tok-clave">val</span> nombre: <span class="tok-tipo">String</span>,              <span class="tok-coment">// propiedad</span>
+    <span class="tok-clave">var</span> precio: <span class="tok-tipo">Double</span>,              <span class="tok-coment">// propiedad modificable</span>
+    stockInicial: <span class="tok-tipo">Int</span> = <span class="tok-numero">0</span>,           <span class="tok-coment">// solo parámetro (sin val/var), con valor por defecto</span>
+) {
+    <span class="tok-clave">var</span> stock = stockInicial         <span class="tok-coment">// propiedad inicializada con el parámetro</span>
+
+    <span class="tok-clave">init</span> {                           <span class="tok-coment">// código del constructor: se ejecuta al crear</span>
+        <span class="tok-funcion">require</span>(precio &gt;= <span class="tok-numero">0</span>) { <span class="tok-texto">"El precio no puede ser negativo"</span> }
+    }
+
+    <span class="tok-coment">// constructor secundario: tiene que llamar al primario con this(...)</span>
+    <span class="tok-clave">constructor</span>(nombre: <span class="tok-tipo">String</span>) : <span class="tok-clave">this</span>(nombre, <span class="tok-numero">0.0</span>)
+
+    <span class="tok-clave">fun</span> <span class="tok-funcion">conIva</span>() = precio * <span class="tok-numero">1.21</span>
+}
+
+<span class="tok-clave">val</span> a = <span class="tok-tipo">Producto</span>(<span class="tok-texto">"Teclado"</span>, <span class="tok-numero">25.0</span>)
+<span class="tok-clave">val</span> b = <span class="tok-tipo">Producto</span>(<span class="tok-texto">"Ratón"</span>, <span class="tok-numero">12.0</span>, stockInicial = <span class="tok-numero">30</span>)   <span class="tok-coment">// argumentos con nombre</span>
+<span class="tok-clave">val</span> c = <span class="tok-tipo">Producto</span>(nombre = <span class="tok-texto">"Cable"</span>, precio = <span class="tok-numero">3.5</span>)
+<span class="tok-clave">val</span> d = <span class="tok-tipo">Producto</span>(<span class="tok-texto">"Regalo"</span>)</code></pre></figure>
+            <p class="nota">Gracias a los valores por defecto y a los argumentos con nombre, casi nunca hacen falta constructores secundarios ni sobrecargas, como en Java.</p>
+          </div>
+        </section>
+        <!-- 2. Propiedades -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Propiedades</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">class</span> <span class="tok-tipo">Rectangulo</span>(<span class="tok-clave">val</span> ancho: <span class="tok-tipo">Double</span>, <span class="tok-clave">val</span> alto: <span class="tok-tipo">Double</span>) {
+    <span class="tok-coment">// propiedad calculada: sin valor guardado, se calcula cada vez</span>
+    <span class="tok-clave">val</span> area: <span class="tok-tipo">Double</span>
+        <span class="tok-funcion">get</span>() = ancho * alto
+
+    <span class="tok-coment">// getter y setter propios; field es el valor guardado</span>
+    <span class="tok-clave">var</span> nombre: <span class="tok-tipo">String</span> = <span class="tok-texto">""</span>
+        <span class="tok-funcion">set</span>(valor) {
+            field = valor.<span class="tok-funcion">trim</span>().<span class="tok-funcion">uppercase</span>()
+        }
+
+    <span class="tok-coment">// se puede leer desde fuera pero solo cambiar desde dentro</span>
+    <span class="tok-clave">var</span> cambios: <span class="tok-tipo">Int</span> = <span class="tok-numero">0</span>
+        <span class="tok-clave">private</span> set
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Pantalla</span> {
+    <span class="tok-coment">// lateinit: se asigna más tarde (no admite tipos primitivos ni null)</span>
+    <span class="tok-clave">lateinit</span> <span class="tok-clave">var</span> titulo: <span class="tok-tipo">String</span>
+
+    <span class="tok-coment">// by lazy: se calcula la primera vez que se usa, y se guarda</span>
+    <span class="tok-clave">val</span> config: <span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">String</span>&gt; <span class="tok-clave">by</span> <span class="tok-funcion">lazy</span> { <span class="tok-funcion">leerConfiguracion</span>() }
+
+    <span class="tok-clave">fun</span> <span class="tok-funcion">mostrar</span>() {
+        <span class="tok-clave">if</span> (::titulo.isInitialized) <span class="tok-funcion">println</span>(titulo)
+    }
+}
+
+<span class="tok-coment">// constante en tiempo de compilación: solo en object, companion o nivel superior</span>
+<span class="tok-clave">const</span> <span class="tok-clave">val</span> <span class="tok-tipo">VERSION</span> = <span class="tok-texto">"2.1"</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>val</code></th><td>solo lectura: genera un getter</td></tr>
+                  <tr><th scope="row"><code>var</code></th><td>lectura y escritura: getter y setter</td></tr>
+                  <tr><th scope="row"><code>get() = ...</code></th><td>getter propio; sin <code>field</code>, la propiedad no guarda nada</td></tr>
+                  <tr><th scope="row"><code>set(v) { field = v }</code></th><td>setter propio; <code>field</code> es el valor guardado</td></tr>
+                  <tr><th scope="row"><code>private set</code></th><td>pública para leer, privada para escribir</td></tr>
+                  <tr><th scope="row"><code>lateinit var</code></th><td>no nula, pero se inicializa después; leerla antes lanza <code>UninitializedPropertyAccessException</code></td></tr>
+                  <tr><th scope="row"><code>by lazy { }</code></th><td>se calcula una sola vez, al primer acceso</td></tr>
+                  <tr><th scope="row"><code>const val</code></th><td>constante de tipo básico o <code>String</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Dentro del setter usa <code>field</code>,</strong> no el nombre de la propiedad: <code>nombre = valor</code> volvería a llamar al setter, y así hasta un <code>StackOverflowError</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Visibilidad -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Visibilidad</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>public</code></th><td>desde cualquier sitio. <strong>Es el valor por defecto</strong></td></tr>
+                  <tr><th scope="row"><code>internal</code></th><td>desde el mismo módulo (el mismo proyecto de Gradle o Maven)</td></tr>
+                  <tr><th scope="row"><code>protected</code></th><td>desde la clase y sus hijas (no desde el mismo paquete, como en Java)</td></tr>
+                  <tr><th scope="row"><code>private</code></th><td>desde la clase; si está en el nivel superior, desde el mismo fichero</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">class</span> <span class="tok-tipo">Cuenta</span>(<span class="tok-clave">private</span> <span class="tok-clave">var</span> saldo: <span class="tok-tipo">Double</span> = <span class="tok-numero">0.0</span>) {
+    <span class="tok-clave">fun</span> <span class="tok-funcion">ingresar</span>(cantidad: <span class="tok-tipo">Double</span>) {
+        <span class="tok-funcion">require</span>(cantidad &gt; <span class="tok-numero">0</span>) { <span class="tok-texto">"Cantidad positiva"</span> }
+        saldo += cantidad
+    }
+    <span class="tok-clave">fun</span> <span class="tok-funcion">saldo</span>() = saldo
+}
+
+<span class="tok-coment">// constructor privado: solo se crean objetos desde dentro</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Token</span> <span class="tok-clave">private</span> <span class="tok-clave">constructor</span>(<span class="tok-clave">val</span> valor: <span class="tok-tipo">String</span>) {
+    <span class="tok-clave">companion</span> <span class="tok-clave">object</span> {
+        <span class="tok-clave">fun</span> <span class="tok-funcion">nuevo</span>() = <span class="tok-tipo">Token</span>(java.util.<span class="tok-tipo">UUID</span>.<span class="tok-funcion">randomUUID</span>().<span class="tok-funcion">toString</span>())
+    }
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 4. Herencia: open y override -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Herencia: open y override</h2>
+          <div class="cuerpo">
+            <p class="txt">En Kotlin las clases y los métodos son <strong>finales por defecto</strong>. Hay que marcar con <code>open</code> lo que se permite heredar o sobrescribir, y con <code>override</code> lo que se sobrescribe.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">open</span> <span class="tok-clave">class</span> <span class="tok-tipo">Empleado</span>(<span class="tok-clave">val</span> nombre: <span class="tok-tipo">String</span>, <span class="tok-clave">protected</span> <span class="tok-clave">val</span> sueldo: <span class="tok-tipo">Double</span>) {
+    <span class="tok-clave">open</span> <span class="tok-clave">fun</span> <span class="tok-funcion">salarioAnual</span>() = sueldo * <span class="tok-numero">14</span>         <span class="tok-coment">// se puede sobrescribir</span>
+    <span class="tok-clave">fun</span> <span class="tok-funcion">ficha</span>() = <span class="tok-texto">"$nombre: ${salarioAnual()} €"</span>  <span class="tok-coment">// no se puede (no es open)</span>
+
+    <span class="tok-clave">override</span> <span class="tok-clave">fun</span> <span class="tok-funcion">toString</span>() = <span class="tok-texto">"Empleado($nombre)"</span>
+}
+
+<span class="tok-coment">// ": Empleado(...)" hereda y llama al constructor del padre</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Jefe</span>(nombre: <span class="tok-tipo">String</span>, sueldo: <span class="tok-tipo">Double</span>, <span class="tok-clave">val</span> plus: <span class="tok-tipo">Double</span>) : <span class="tok-tipo">Empleado</span>(nombre, sueldo) {
+    <span class="tok-clave">override</span> <span class="tok-clave">fun</span> <span class="tok-funcion">salarioAnual</span>() = <span class="tok-clave">super</span>.<span class="tok-funcion">salarioAnual</span>() + plus
+
+    <span class="tok-coment">// final override: las hijas de Jefe ya no pueden sobrescribirlo</span>
+}
+
+<span class="tok-clave">val</span> plantilla: <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Empleado</span>&gt; = <span class="tok-funcion">listOf</span>(<span class="tok-tipo">Empleado</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-numero">1800.0</span>), <span class="tok-tipo">Jefe</span>(<span class="tok-texto">"Luis"</span>, <span class="tok-numero">2500.0</span>, <span class="tok-numero">6000.0</span>))
+plantilla.<span class="tok-funcion">forEach</span> { <span class="tok-funcion">println</span>(it.<span class="tok-funcion">ficha</span>()) }         <span class="tok-coment">// polimorfismo</span>
+
+<span class="tok-coment">// comprobar el tipo: is hace además la conversión automática (smart cast)</span>
+<span class="tok-clave">val</span> e: <span class="tok-tipo">Empleado</span> = plantilla[<span class="tok-numero">1</span>]
+<span class="tok-clave">if</span> (e <span class="tok-clave">is</span> <span class="tok-tipo">Jefe</span>) <span class="tok-funcion">println</span>(e.plus)                    <span class="tok-coment">// aquí e ya es Jefe</span>
+<span class="tok-clave">val</span> j = e <span class="tok-clave">as</span>? <span class="tok-tipo">Jefe</span>                                <span class="tok-coment">// conversión segura: null si no lo es</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>open class</code></th><td>se puede heredar</td></tr>
+                  <tr><th scope="row"><code>open fun / open val</code></th><td>se puede sobrescribir</td></tr>
+                  <tr><th scope="row"><code>override</code></th><td>obligatorio al sobrescribir (no es una anotación opcional)</td></tr>
+                  <tr><th scope="row"><code>super.metodo()</code></th><td>llama a la versión del padre</td></tr>
+                  <tr><th scope="row"><code>is  !is</code></th><td>como <code>instanceof</code>, con conversión automática</td></tr>
+                  <tr><th scope="row"><code>as  as?</code></th><td>conversión; <code>as?</code> da <code>null</code> en vez de excepción</td></tr>
+                  <tr><th scope="row"><code>Any</code></th><td>la raíz de todas las clases (el <code>Object</code> de Java)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Clases abstractas e interfaces -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Clases abstractas e interfaces</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">abstract</span> <span class="tok-clave">class</span> <span class="tok-tipo">Figura</span> {
+    <span class="tok-clave">abstract</span> <span class="tok-clave">val</span> nombre: <span class="tok-tipo">String</span>                  <span class="tok-coment">// propiedades abstractas también</span>
+    <span class="tok-clave">abstract</span> <span class="tok-clave">fun</span> <span class="tok-funcion">area</span>(): <span class="tok-tipo">Double</span>
+    <span class="tok-clave">fun</span> <span class="tok-funcion">describir</span>() = <span class="tok-texto">"$nombre de área "</span> + <span class="tok-texto">"%.2f"</span>.<span class="tok-funcion">format</span>(<span class="tok-funcion">area</span>())
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Circulo</span>(<span class="tok-clave">val</span> radio: <span class="tok-tipo">Double</span>) : <span class="tok-tipo">Figura</span>() {
+    <span class="tok-clave">override</span> <span class="tok-clave">val</span> nombre = <span class="tok-texto">"Círculo"</span>
+    <span class="tok-clave">override</span> <span class="tok-clave">fun</span> <span class="tok-funcion">area</span>() = <span class="tok-tipo">Math</span>.<span class="tok-tipo">PI</span> * radio * radio
+}
+
+<span class="tok-coment">// interfaces: pueden traer métodos con cuerpo y propiedades sin valor guardado</span>
+<span class="tok-clave">interface</span> <span class="tok-tipo">Dibujable</span> {
+    <span class="tok-clave">val</span> color: <span class="tok-tipo">String</span>                            <span class="tok-coment">// la clase debe darle valor</span>
+    <span class="tok-clave">fun</span> <span class="tok-funcion">dibujar</span>()                                <span class="tok-coment">// abstracto</span>
+    <span class="tok-clave">fun</span> <span class="tok-funcion">borde</span>() = <span class="tok-texto">"Borde $color"</span>                 <span class="tok-coment">// con implementación por defecto</span>
+}
+
+<span class="tok-clave">interface</span> <span class="tok-tipo">Escalable</span> {
+    <span class="tok-clave">fun</span> <span class="tok-funcion">escalar</span>(factor: <span class="tok-tipo">Double</span>): <span class="tok-tipo">Figura</span>
+}
+
+<span class="tok-clave">class</span> <span class="tok-tipo">Cuadrado</span>(<span class="tok-clave">val</span> lado: <span class="tok-tipo">Double</span>, <span class="tok-clave">override</span> <span class="tok-clave">val</span> color: <span class="tok-tipo">String</span> = <span class="tok-texto">"negro"</span>)
+    : <span class="tok-tipo">Figura</span>(), <span class="tok-tipo">Dibujable</span>, <span class="tok-tipo">Escalable</span> {           <span class="tok-coment">// una clase y varias interfaces</span>
+    <span class="tok-clave">override</span> <span class="tok-clave">val</span> nombre = <span class="tok-texto">"Cuadrado"</span>
+    <span class="tok-clave">override</span> <span class="tok-clave">fun</span> <span class="tok-funcion">area</span>() = lado * lado
+    <span class="tok-clave">override</span> <span class="tok-clave">fun</span> <span class="tok-funcion">dibujar</span>() = <span class="tok-funcion">println</span>(<span class="tok-texto">"□ $lado"</span>)
+    <span class="tok-clave">override</span> <span class="tok-clave">fun</span> <span class="tok-funcion">escalar</span>(factor: <span class="tok-tipo">Double</span>) = <span class="tok-tipo">Cuadrado</span>(lado * factor, color)
+}
+
+<span class="tok-coment">// interfaz funcional (un solo método): admite lambda</span>
+<span class="tok-clave">fun</span> <span class="tok-clave">interface</span> <span class="tok-tipo">Validador</span> { <span class="tok-clave">fun</span> <span class="tok-funcion">valida</span>(texto: <span class="tok-tipo">String</span>): <span class="tok-tipo">Boolean</span> }
+<span class="tok-clave">val</span> noVacio = <span class="tok-tipo">Validador</span> { it.<span class="tok-funcion">isNotBlank</span>() }</code></pre></figure>
+            <p class="nota">Al heredar de una clase se ponen paréntesis (se llama a su constructor): <code>: Figura()</code>. Las interfaces van sin paréntesis: <code>: Dibujable</code>.</p>
+          </div>
+        </section>
+        <!-- 6. data class -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>data class</h2>
+          <div class="cuerpo">
+            <p class="txt">Para clases que sobre todo guardan datos. Kotlin genera <code>equals</code>, <code>hashCode</code>, <code>toString</code>, <code>copy</code> y la desestructuración a partir de las propiedades del constructor primario.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">data</span> <span class="tok-clave">class</span> <span class="tok-tipo">Libro</span>(<span class="tok-clave">val</span> titulo: <span class="tok-tipo">String</span>, <span class="tok-clave">val</span> autor: <span class="tok-tipo">String</span>, <span class="tok-clave">val</span> precio: <span class="tok-tipo">Double</span> = <span class="tok-numero">0.0</span>)
+
+<span class="tok-clave">val</span> a = <span class="tok-tipo">Libro</span>(<span class="tok-texto">"Nada"</span>, <span class="tok-texto">"Carmen Laforet"</span>, <span class="tok-numero">12.5</span>)
+<span class="tok-clave">val</span> b = <span class="tok-tipo">Libro</span>(<span class="tok-texto">"Nada"</span>, <span class="tok-texto">"Carmen Laforet"</span>, <span class="tok-numero">12.5</span>)
+
+<span class="tok-funcion">println</span>(a)                       <span class="tok-coment">// Libro(titulo=Nada, autor=Carmen Laforet, precio=12.5)</span>
+a == b                           <span class="tok-coment">// true: compara el contenido (equals)</span>
+a === b                          <span class="tok-coment">// false: son objetos distintos</span>
+
+<span class="tok-clave">val</span> rebajado = a.<span class="tok-funcion">copy</span>(precio = <span class="tok-numero">9.9</span>)            <span class="tok-coment">// copia cambiando solo algo</span>
+
+<span class="tok-clave">val</span> (titulo, autor) = a                        <span class="tok-coment">// desestructuración, por posición</span>
+<span class="tok-clave">for</span> ((t, _, p) <span class="tok-clave">in</span> <span class="tok-funcion">listOf</span>(a, rebajado)) {       <span class="tok-coment">// _ ignora un componente</span>
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"$t: $p"</span>)
+}
+
+<span class="tok-coment">// como clave de mapas y en sets funciona bien, gracias a hashCode</span>
+<span class="tok-clave">val</span> stock = <span class="tok-funcion">mutableMapOf</span>(a to <span class="tok-numero">3</span>)</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Constructor primario</th><td>al menos un parámetro, todos con <code>val</code> o <code>var</code></td></tr>
+                  <tr><th scope="row" class="larga">Propiedades declaradas en el cuerpo</th><td>no entran en <code>equals</code>, <code>toString</code> ni <code>copy</code></td></tr>
+                  <tr><th scope="row" class="larga">No puede ser</th><td><code>abstract</code>, <code>open</code>, <code>sealed</code> ni <code>inner</code></td></tr>
+                  <tr><th scope="row" class="larga">Equivalente en Java</th><td>un <code>record</code> (ver <a href="../java/poo-avanzada.html">POO avanzada</a>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Usa <code>val</code> siempre que puedas: un objeto inmutable se "modifica" con <code>copy</code> y no da sorpresas si se comparte o se usa como clave.</p>
+          </div>
+        </section>
+        <!-- 7. enum class -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>enum class</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">enum</span> <span class="tok-clave">class</span> <span class="tok-tipo">Estado</span>(<span class="tok-clave">val</span> etiqueta: <span class="tok-tipo">String</span>) {
+    <span class="tok-tipo">PENDIENTE</span>(<span class="tok-texto">"Pendiente de envío"</span>),
+    <span class="tok-tipo">ENVIADO</span>(<span class="tok-texto">"En camino"</span>),
+    <span class="tok-tipo">ENTREGADO</span>(<span class="tok-texto">"Entregado"</span>);                    <span class="tok-coment">// ; antes de los miembros</span>
+
+    <span class="tok-clave">fun</span> <span class="tok-funcion">siguiente</span>(): <span class="tok-tipo">Estado</span>? = entries.<span class="tok-funcion">getOrNull</span>(ordinal + <span class="tok-numero">1</span>)
+}
+
+<span class="tok-clave">val</span> e = <span class="tok-tipo">Estado</span>.<span class="tok-tipo">ENVIADO</span>
+<span class="tok-funcion">println</span>(e.name)                  <span class="tok-coment">// "ENVIADO"</span>
+<span class="tok-funcion">println</span>(e.ordinal)               <span class="tok-coment">// 1</span>
+<span class="tok-funcion">println</span>(e.etiqueta)              <span class="tok-coment">// "En camino"</span>
+<span class="tok-tipo">Estado</span>.<span class="tok-funcion">valueOf</span>(<span class="tok-texto">"ENTREGADO"</span>)      <span class="tok-coment">// desde texto; IllegalArgumentException si no existe</span>
+<span class="tok-tipo">Estado</span>.entries                   <span class="tok-coment">// todos los valores (Kotlin 1.9+; antes values())</span>
+
+<span class="tok-coment">// when con un enum: si cubre todos los casos, no hace falta else</span>
+<span class="tok-clave">fun</span> <span class="tok-funcion">icono</span>(e: <span class="tok-tipo">Estado</span>) = <span class="tok-clave">when</span> (e) {
+    <span class="tok-tipo">Estado</span>.<span class="tok-tipo">PENDIENTE</span> -&gt; <span class="tok-texto">"⏳"</span>
+    <span class="tok-tipo">Estado</span>.<span class="tok-tipo">ENVIADO</span>   -&gt; <span class="tok-texto">"🚚"</span>
+    <span class="tok-tipo">Estado</span>.<span class="tok-tipo">ENTREGADO</span> -&gt; <span class="tok-texto">"✅"</span>
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 8. sealed -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>sealed: jerarquías cerradas</h2>
+          <div class="cuerpo">
+            <p class="txt">Una clase o interfaz <code>sealed</code> solo puede tener las hijas declaradas en su mismo paquete y módulo. El compilador las conoce todas, así que un <code>when</code> puede comprobar que no falta ninguna. Es como un <code>enum</code> cuyos casos llevan datos distintos.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">sealed</span> <span class="tok-clave">interface</span> <span class="tok-tipo">Resultado</span> {
+    <span class="tok-clave">data</span> <span class="tok-clave">class</span> <span class="tok-tipo">Exito</span>(<span class="tok-clave">val</span> datos: <span class="tok-tipo">String</span>) : <span class="tok-tipo">Resultado</span>
+    <span class="tok-clave">data</span> <span class="tok-clave">class</span> <span class="tok-tipo">Error</span>(<span class="tok-clave">val</span> codigo: <span class="tok-tipo">Int</span>, <span class="tok-clave">val</span> mensaje: <span class="tok-tipo">String</span>) : <span class="tok-tipo">Resultado</span>
+    <span class="tok-clave">data</span> <span class="tok-clave">object</span> <span class="tok-tipo">Cargando</span> : <span class="tok-tipo">Resultado</span>            <span class="tok-coment">// caso sin datos</span>
+}
+
+<span class="tok-clave">fun</span> <span class="tok-funcion">mostrar</span>(r: <span class="tok-tipo">Resultado</span>) = <span class="tok-clave">when</span> (r) {          <span class="tok-coment">// sin else: si falta un caso, no compila</span>
+    <span class="tok-clave">is</span> <span class="tok-tipo">Resultado</span>.<span class="tok-tipo">Exito</span>    -&gt; <span class="tok-texto">"Datos: ${r.datos}"</span>           <span class="tok-coment">// smart cast a Exito</span>
+    <span class="tok-clave">is</span> <span class="tok-tipo">Resultado</span>.<span class="tok-tipo">Error</span>    -&gt; <span class="tok-texto">"Error ${r.codigo}: ${r.mensaje}"</span>
+    <span class="tok-tipo">Resultado</span>.<span class="tok-tipo">Cargando</span>    -&gt; <span class="tok-texto">"Cargando..."</span>
+}
+
+<span class="tok-clave">fun</span> <span class="tok-funcion">descargar</span>(url: <span class="tok-tipo">String</span>): <span class="tok-tipo">Resultado</span> =
+    <span class="tok-clave">try</span> {
+        <span class="tok-tipo">Resultado</span>.<span class="tok-tipo">Exito</span>(<span class="tok-funcion">leer</span>(url))
+    } <span class="tok-clave">catch</span> (e: <span class="tok-tipo">IOException</span>) {
+        <span class="tok-tipo">Resultado</span>.<span class="tok-tipo">Error</span>(<span class="tok-numero">500</span>, e.message ?: <span class="tok-texto">"desconocido"</span>)
+    }</code></pre></figure>
+            <p class="nota">Si mañana se añade <code>Resultado.SinConexion</code>, todos los <code>when</code> que no lo traten dejan de compilar: el compilador te dice dónde tienes que tocar.</p>
+          </div>
+        </section>
+        <!-- 9. object y companion object -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>object y companion object</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// object: una clase con un único ejemplar (singleton), creado la primera vez que se usa</span>
+<span class="tok-clave">object</span> <span class="tok-tipo">Registro</span> {
+    <span class="tok-clave">private</span> <span class="tok-clave">val</span> lineas = <span class="tok-funcion">mutableListOf</span>&lt;String&gt;()
+    <span class="tok-clave">fun</span> <span class="tok-funcion">log</span>(texto: <span class="tok-tipo">String</span>) { lineas += texto }
+    <span class="tok-clave">fun</span> <span class="tok-funcion">total</span>() = lineas.size
+}
+<span class="tok-tipo">Registro</span>.<span class="tok-funcion">log</span>(<span class="tok-texto">"arranque"</span>)
+
+<span class="tok-coment">// companion object: lo "estático" de una clase</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Usuario</span> <span class="tok-clave">private</span> <span class="tok-clave">constructor</span>(<span class="tok-clave">val</span> email: <span class="tok-tipo">String</span>) {
+    <span class="tok-clave">companion</span> <span class="tok-clave">object</span> {
+        <span class="tok-clave">const</span> <span class="tok-clave">val</span> <span class="tok-tipo">MAX_LONGITUD</span> = <span class="tok-numero">100</span>
+        <span class="tok-clave">private</span> <span class="tok-clave">var</span> creados = <span class="tok-numero">0</span>
+
+        <span class="tok-clave">fun</span> <span class="tok-funcion">crear</span>(email: <span class="tok-tipo">String</span>): <span class="tok-tipo">Usuario</span> {          <span class="tok-coment">// método de fábrica</span>
+            <span class="tok-funcion">require</span>(<span class="tok-texto">"@"</span> <span class="tok-clave">in</span> email) { <span class="tok-texto">"Email no válido"</span> }
+            creados++
+            <span class="tok-clave">return</span> <span class="tok-tipo">Usuario</span>(email)
+        }
+    }
+}
+<span class="tok-clave">val</span> u = <span class="tok-tipo">Usuario</span>.<span class="tok-funcion">crear</span>(<span class="tok-texto">"ana@ejemplo.com"</span>)
+<span class="tok-funcion">println</span>(<span class="tok-tipo">Usuario</span>.<span class="tok-tipo">MAX_LONGITUD</span>)
+
+<span class="tok-coment">// expresión object: un objeto anónimo (como una clase anónima de Java)</span>
+<span class="tok-clave">val</span> comparador = <span class="tok-clave">object</span> : <span class="tok-tipo">Comparator</span>&lt;String&gt; {
+    <span class="tok-clave">override</span> <span class="tok-clave">fun</span> <span class="tok-funcion">compare</span>(a: <span class="tok-tipo">String</span>, b: <span class="tok-tipo">String</span>) = a.length - b.length
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>object Nombre</code></th><td>singleton con nombre</td></tr>
+                  <tr><th scope="row"><code>companion object</code></th><td>miembros de la clase, no de cada objeto: <code>Clase.metodo()</code></td></tr>
+                  <tr><th scope="row"><code>object : Tipo { }</code></th><td>objeto anónimo que hereda o implementa algo</td></tr>
+                  <tr><th scope="row"><code>@JvmStatic</code></th><td>para que desde Java se vea como un <code>static</code> de verdad</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para funciones sueltas no hace falta ninguna clase: en Kotlin se pueden declarar funciones y propiedades en el <strong>nivel superior</strong> del fichero.</p>
+          </div>
+        </section>
+        <!-- 10. Funciones de extensión -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Funciones de extensión</h2>
+          <div class="cuerpo">
+            <p class="txt">Añaden métodos a una clase que no es tuya (incluso <code>String</code> o <code>List</code>) sin heredar de ella. Dentro, <code>this</code> es el objeto sobre el que se llama.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">fun</span> <span class="tok-tipo">String</span>.<span class="tok-funcion">esPalindromo</span>(): <span class="tok-tipo">Boolean</span> {
+    <span class="tok-clave">val</span> limpio = <span class="tok-clave">this</span>.<span class="tok-funcion">lowercase</span>().<span class="tok-funcion">filter</span> { it.<span class="tok-funcion">isLetter</span>() }
+    <span class="tok-clave">return</span> limpio == limpio.<span class="tok-funcion">reversed</span>()
+}
+<span class="tok-texto">"Anita lava la tina"</span>.<span class="tok-funcion">esPalindromo</span>()     <span class="tok-coment">// true</span>
+
+<span class="tok-clave">fun</span> <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Double</span>&gt;.<span class="tok-funcion">media</span>() = <span class="tok-clave">if</span> (<span class="tok-funcion">isEmpty</span>()) <span class="tok-numero">0.0</span> <span class="tok-clave">else</span> <span class="tok-funcion">sum</span>() / size
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">7.0</span>, <span class="tok-numero">8.5</span>, <span class="tok-numero">9.0</span>).<span class="tok-funcion">media</span>()
+
+<span class="tok-coment">// propiedades de extensión</span>
+<span class="tok-clave">val</span> <span class="tok-tipo">String</span>.iniciales: <span class="tok-tipo">String</span>
+    <span class="tok-funcion">get</span>() = <span class="tok-funcion">split</span>(<span class="tok-texto">" "</span>).<span class="tok-funcion">filter</span> { it.<span class="tok-funcion">isNotEmpty</span>() }.<span class="tok-funcion">joinToString</span>(<span class="tok-texto">""</span>) { it.<span class="tok-funcion">first</span>().<span class="tok-funcion">uppercase</span>() }
+<span class="tok-texto">"carmen laforet"</span>.iniciales               <span class="tok-coment">// "CL"</span>
+
+<span class="tok-coment">// sobre tipos que admiten null</span>
+<span class="tok-clave">fun</span> <span class="tok-tipo">String</span>?.<span class="tok-funcion">oVacio</span>() = <span class="tok-clave">this</span> ?: <span class="tok-texto">""</span></code></pre></figure>
+            <p class="nota">Las extensiones no modifican la clase ni ven sus miembros <code>private</code>: son funciones normales con una sintaxis cómoda. Gran parte de la librería de Kotlin (<code>map</code>, <code>filter</code>, <code>let</code>...) son extensiones.</p>
+          </div>
+        </section>
+        <!-- 11. Delegación con by -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Delegación con by</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// delegar una interfaz entera en otro objeto (composición sin escribir los métodos)</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">ListaConContador</span>&lt;T&gt;(<span class="tok-clave">private</span> <span class="tok-clave">val</span> interna: <span class="tok-tipo">MutableList</span>&lt;<span class="tok-tipo">T</span>&gt; = <span class="tok-funcion">mutableListOf</span>())
+    : <span class="tok-tipo">MutableList</span>&lt;<span class="tok-tipo">T</span>&gt; <span class="tok-clave">by</span> <span class="tok-funcion">interna</span> {           <span class="tok-coment">// todos los métodos van a "interna"...</span>
+    <span class="tok-clave">var</span> insertados = <span class="tok-numero">0</span>
+    <span class="tok-clave">override</span> <span class="tok-clave">fun</span> <span class="tok-funcion">add</span>(element: <span class="tok-tipo">T</span>): <span class="tok-tipo">Boolean</span> { <span class="tok-coment">// ...menos los que sobrescribas</span>
+        insertados++
+        <span class="tok-clave">return</span> interna.<span class="tok-funcion">add</span>(element)
+    }
+}
+
+<span class="tok-coment">// delegar propiedades</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Ajustes</span> {
+    <span class="tok-clave">val</span> caro <span class="tok-clave">by</span> <span class="tok-funcion">lazy</span> { <span class="tok-funcion">calcular</span>() }                         <span class="tok-coment">// una sola vez</span>
+    <span class="tok-clave">var</span> nombre: <span class="tok-tipo">String</span> <span class="tok-clave">by</span> <span class="tok-tipo">Delegates</span>.<span class="tok-funcion">observable</span>(<span class="tok-texto">""</span>) { _, viejo, nuevo -&gt;
+        <span class="tok-funcion">println</span>(<span class="tok-texto">"$viejo → $nuevo"</span>)                          <span class="tok-coment">// aviso en cada cambio</span>
+    }
+    <span class="tok-clave">var</span> edad: <span class="tok-tipo">Int</span> <span class="tok-clave">by</span> <span class="tok-tipo">Delegates</span>.<span class="tok-funcion">vetoable</span>(<span class="tok-numero">0</span>) { _, _, nuevo -&gt; nuevo &gt;= <span class="tok-numero">0</span> }   <span class="tok-coment">// rechaza negativos</span>
+}
+
+<span class="tok-coment">// propiedades guardadas en un mapa (útil con JSON)</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Fila</span>(mapa: <span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Any</span>?&gt;) {
+    <span class="tok-clave">val</span> id: <span class="tok-tipo">Int</span> <span class="tok-clave">by</span> mapa
+    <span class="tok-clave">val</span> nombre: <span class="tok-tipo">String</span> <span class="tok-clave">by</span> mapa
+}
+<span class="tok-clave">val</span> f = <span class="tok-tipo">Fila</span>(<span class="tok-funcion">mapOf</span>(<span class="tok-texto">"id"</span> to <span class="tok-numero">1</span>, <span class="tok-texto">"nombre"</span> to <span class="tok-texto">"Ana"</span>))</code></pre></figure>
+          </div>
+        </section>
+        <!-- 12. Clases anidadas y value class -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Clases anidadas y value class</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">class</span> <span class="tok-tipo">Exterior</span>(<span class="tok-clave">val</span> nombre: <span class="tok-tipo">String</span>) {
+    <span class="tok-clave">class</span> <span class="tok-tipo">Anidada</span> {                         <span class="tok-coment">// como static en Java: no ve a Exterior</span>
+        <span class="tok-clave">fun</span> <span class="tok-funcion">hola</span>() = <span class="tok-texto">"anidada"</span>
+    }
+    inner <span class="tok-clave">class</span> <span class="tok-tipo">Interna</span> {                   <span class="tok-coment">// inner: ve las propiedades de Exterior</span>
+        <span class="tok-clave">fun</span> <span class="tok-funcion">hola</span>() = <span class="tok-texto">"interna de $nombre"</span>
+    }
+}
+<span class="tok-tipo">Exterior</span>.<span class="tok-tipo">Anidada</span>().<span class="tok-funcion">hola</span>()
+<span class="tok-tipo">Exterior</span>(<span class="tok-texto">"A"</span>).<span class="tok-tipo">Interna</span>().<span class="tok-funcion">hola</span>()
+
+<span class="tok-coment">// value class: envuelve un solo valor sin coste extra en ejecución</span>
+<span class="tok-atributo">@JvmInline</span>
+<span class="tok-clave">value</span> <span class="tok-clave">class</span> <span class="tok-tipo">Email</span>(<span class="tok-clave">val</span> valor: <span class="tok-tipo">String</span>) {
+    <span class="tok-clave">init</span> { <span class="tok-funcion">require</span>(<span class="tok-texto">"@"</span> <span class="tok-clave">in</span> valor) }
+}
+<span class="tok-clave">fun</span> <span class="tok-funcion">enviar</span>(destino: <span class="tok-tipo">Email</span>, asunto: <span class="tok-tipo">String</span>) { }
+<span class="tok-funcion">enviar</span>(<span class="tok-tipo">Email</span>(<span class="tok-texto">"ana@ejemplo.com"</span>), <span class="tok-texto">"Hola"</span>)    <span class="tok-coment">// no se puede confundir con un String cualquiera</span></code></pre></figure>
+            <p class="aviso"><strong>Al revés que en Java:</strong> una clase dentro de otra es "estática" por defecto. Para que acceda al objeto exterior hay que marcarla <code>inner</code>.</p>
+          </div>
+        </section>
+        <!-- 13. Genéricos -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Genéricos</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">class</span> <span class="tok-tipo">Caja</span>&lt;T&gt;(<span class="tok-clave">val</span> contenido: <span class="tok-tipo">T</span>) {
+    <span class="tok-clave">fun</span> &lt;<span class="tok-tipo">R</span>&gt; <span class="tok-funcion">transformar</span>(f: (<span class="tok-tipo">T</span>) -&gt; <span class="tok-tipo">R</span>) = <span class="tok-tipo">Caja</span>(<span class="tok-funcion">f</span>(contenido))
+}
+<span class="tok-clave">val</span> c = <span class="tok-tipo">Caja</span>(<span class="tok-texto">"hola"</span>)                 <span class="tok-coment">// Caja&lt;String&gt;, el tipo se deduce</span>
+<span class="tok-clave">val</span> n = c.<span class="tok-funcion">transformar</span> { it.length }  <span class="tok-coment">// Caja&lt;Int&gt;</span>
+
+<span class="tok-coment">// límite superior: T tiene que ser comparable</span>
+<span class="tok-clave">fun</span> &lt;<span class="tok-tipo">T</span> : <span class="tok-tipo">Comparable</span>&lt;<span class="tok-tipo">T</span>&gt;&gt; <span class="tok-funcion">mayor</span>(a: <span class="tok-tipo">T</span>, b: <span class="tok-tipo">T</span>) = <span class="tok-clave">if</span> (a &gt; b) a <span class="tok-clave">else</span> b
+
+<span class="tok-coment">// varianza: out = solo se lee (productor), in = solo se escribe (consumidor)</span>
+<span class="tok-clave">interface</span> <span class="tok-tipo">Fuente</span>&lt;out T&gt; { <span class="tok-clave">fun</span> <span class="tok-funcion">siguiente</span>(): <span class="tok-tipo">T</span> }
+<span class="tok-clave">interface</span> <span class="tok-tipo">Destino</span>&lt;in T&gt; { <span class="tok-clave">fun</span> <span class="tok-funcion">enviar</span>(x: <span class="tok-tipo">T</span>) }
+
+<span class="tok-coment">// reified: el tipo existe en ejecución (solo en funciones inline)</span>
+<span class="tok-clave">inline</span> <span class="tok-clave">fun</span> &lt;reified <span class="tok-tipo">T</span>&gt; <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Any</span>&gt;.<span class="tok-funcion">deTipo</span>(): <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">T</span>&gt; = <span class="tok-funcion">filterIsInstance</span>&lt;T&gt;()
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-texto">"a"</span>, <span class="tok-numero">2</span>).<span class="tok-funcion">deTipo</span>&lt;Int&gt;()     <span class="tok-coment">// [1, 2]</span></code></pre></figure>
+            <p class="nota"><code>out</code> e <code>in</code> son el equivalente de <code>? extends</code> y <code>? super</code> en Java. Ver <a href="../java/genericos.html">Genéricos</a>.</p>
+          </div>
+        </section>
+        <!-- 14. Despistes habituales -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>This type is final, so it cannot be inherited from</code></th><td>falta <code>open</code> en la clase padre</td></tr>
+                  <tr><th scope="row" class="larga"><code>'x' hides member of supertype</code></th><td>falta <code>override</code> (y <code>open</code> en el padre)</td></tr>
+                  <tr><th scope="row" class="larga">Parámetro sin <code>val</code> que no se ve en los métodos</th><td>sin <code>val</code>/<code>var</code> solo es un parámetro del constructor, no una propiedad</td></tr>
+                  <tr><th scope="row" class="larga"><code>: Interfaz()</code> con paréntesis</th><td>las interfaces no tienen constructor: <code>: Interfaz</code></td></tr>
+                  <tr><th scope="row" class="larga">Usar el nombre de la propiedad en su setter</th><td>recursión infinita: usa <code>field</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>lateinit</code> con <code>Int</code> o con <code>val</code></th><td>no se permite: usa <code>by lazy</code>, un valor inicial o un tipo nullable</td></tr>
+                  <tr><th scope="row" class="larga">Comparar objetos con <code>==</code> en una clase normal</th><td>compara referencias (no hay <code>equals</code> propio): usa <code>data class</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>when</code> sin <code>else</code> que no compila</th><td>el tipo no es <code>sealed</code> ni <code>enum</code>, o falta un caso</td></tr>
+                  <tr><th scope="row" class="larga">Buscar <code>static</code></th><td>no existe: <code>companion object</code>, <code>object</code> o funciones de nivel superior</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="sintaxis.html">← Sintaxis básica</a><a class="siguiente" href="colecciones-lambdas.html">Lambdas y colecciones →</a></nav>
+      <footer class="pie">La teoría de la orientación a objetos está en <a href="../java/poo.html">Fundamentos de POO</a> (Java). Documentación: <a href="https://kotlinlang.org/docs/classes.html">clases</a> en kotlinlang.org.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

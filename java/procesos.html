@@ -8,6 +8,7 @@
     <link rel="icon" href="../assets/favicon.svg">
   </head>
   <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
     <header class="top">
       <div class="wrap">
         <div class="titulo">
@@ -15,201 +16,629 @@
           <h1>Procesos</h1>
         </div>
         <div class="apoyo">
-          <p class="sub">Lanzar y controlar programas del sistema desde Java con ProcessBuilder y la API Process: leer su salida, esperar, y las diferencias entre Windows y Linux.</p>
+          <p class="sub">Lanzar programas desde Java con <code>ProcessBuilder</code>, conectar la entrada y las salidas del padre con las del hijo para que se comuniquen, y ejecutar varios procesos en secuencia, en paralelo o encadenados en tubería.</p>
           <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
         </div>
       </div>
     </header>
     <nav class="nav-tema" aria-label="Chuletas de Java">
-      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html" aria-current="page">Procesos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="xml.html">XML</a><a href="json.html">JSON</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html" aria-current="page">Procesos</a><a href="hilos.html">Hilos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
     </nav>
     <main class="wrap">
-      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Proceso, no hilo</a><a href="#s2"><b>2</b>ProcessBuilder</a><a href="#s3"><b>3</b>Leer la salida</a><a href="#s4"><b>4</b>Esperar y código de salida</a><a href="#s5"><b>5</b>Runtime.exec</a><a href="#s6"><b>6</b>La API Process</a><a href="#s7"><b>7</b>Windows vs Linux</a><a href="#s8"><b>8</b>Buenas prácticas</a></nav>
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Proceso, hilo y programa</a><a href="#s2"><b>2</b>ProcessBuilder: preparar y lanzar</a><a href="#s3"><b>3</b>Los tres canales padre ↔ hijo</a><a href="#s4"><b>4</b>Leer lo que escribe el hijo</a><a href="#s5"><b>5</b>Escribir en la entrada del hijo</a><a href="#s6"><b>6</b>Conversación: pregunta y respuesta</a><a href="#s7"><b>7</b>Redirecciones</a><a href="#s8"><b>8</b>Salida y error a la vez, sin bloqueos</a><a href="#s9"><b>9</b>Esperar, código de salida y terminar</a><a href="#s10"><b>10</b>Lanzar en secuencia</a><a href="#s11"><b>11</b>Lanzar en paralelo</a><a href="#s12"><b>12</b>Tuberías: la salida de uno, entrada del otro</a><a href="#s13"><b>13</b>Formas de pasar datos</a><a href="#s14"><b>14</b>Process y ProcessHandle</a><a href="#s15"><b>15</b>Windows frente a Linux</a><a href="#s16"><b>16</b>Errores habituales</a></nav>
+      <!-- Banda destacada -->
       <div class="banda">
+        <p class="banda-titulo">Cómo se conectan el padre y el hijo</p>
         <div class="cols">
           <div>
-            <p class="banda-titulo">La idea</p>
-            <p class="txt">Java puede lanzar otros programas del sistema operativo (un comando, un script, otro ejecutable) y comunicarse con ellos. La herramienta recomendada es <strong>ProcessBuilder</strong>; cada programa lanzado es un objeto <code>Process</code>.</p>
+            <p class="banda-titulo">Tres tuberías y un código de salida</p>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">PADRE</span> (tu programa)                  <span class="tok-clave">HIJO</span> (el proceso lanzado)
+
+p.getOutputStream()  ── escribe ──▶  stdin   <span class="tok-coment">System.in</span>
+p.getInputStream()   ◀── lee ──────  stdout  <span class="tok-coment">System.out</span>
+p.getErrorStream()   ◀── lee ──────  stderr  <span class="tok-coment">System.err</span>
+p.waitFor()          ◀── código ───  <span class="tok-coment">System.exit(n)</span>
+
+<span class="tok-coment">Los nombres van desde el punto de vista del PADRE:</span>
+<span class="tok-coment">"Input" es lo que el padre lee = la salida del hijo.</span>
+<span class="tok-coment">"Output" es lo que el padre escribe = la entrada del hijo.</span></code></pre></figure>
           </div>
           <div>
-            <p class="banda-titulo">Las piezas</p>
-            <div class="tabla-scroll">
-              <table class="ref ">
-                <tbody>
-                  <tr><th scope="row"><code>ProcessBuilder</code></th><td>configura y arranca el proceso</td></tr>
-                  <tr><th scope="row"><code>Process</code></th><td>el proceso ya en marcha</td></tr>
-                  <tr><th scope="row"><code>Runtime.exec</code></th><td>la forma antigua, más limitada</td></tr>
-                </tbody>
-              </table>
-            </div>
+            <p class="banda-titulo">Secuencial frente a paralelo</p>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">Secuencial</span>   start → waitFor, start → waitFor...
+  A ████████
+            B ████
+                 C ██████        <span class="tok-coment">total = A + B + C</span>
+
+<span class="tok-clave">Paralelo</span>     start, start, start → waitFor todos
+  A ████████
+  B ████
+  C ██████                       <span class="tok-coment">total ≈ el más lento</span>
+
+<span class="tok-clave">Tubería</span>      A | B | C  <span class="tok-coment">(a la vez, conectados)</span>
+  A ████████ ─▶ B ████████ ─▶ C ████████</code></pre></figure>
           </div>
         </div>
+        <p class="banda-titulo">El ciclo de vida de un proceso hijo</p>
+        <div class="flujo">
+          <div class="caja caja-1">ProcessBuilder<small>comando, carpeta, entorno, redirecciones</small></div>
+          <div class="flecha"><span class="ida">start()</span><br><span class="linea">──────▶</span><br><span class="vuelta">el SO lo crea</span></div>
+          <div class="caja caja-2">Process<small>vivo: escribir y leer</small></div>
+          <div class="flecha"><span class="ida">waitFor()</span><br><span class="linea">──────▶</span><br><span class="vuelta">el padre espera</span></div>
+          <div class="caja caja-3">terminado<small>código de salida</small></div>
+        </div>
       </div>
+      <!-- Secciones -->
       <div class="rejilla">
-        <!-- 1 -->
+        <!-- 1. Proceso, hilo y programa -->
         <section id="s1" class="tarjeta">
-          <h2><span class="num">1</span>Proceso, no hilo</h2>
+          <h2><span class="num">1</span>Proceso, hilo y programa</h2>
           <div class="cuerpo">
-            <p class="txt">Conviene no confundirlos: un <strong>proceso</strong> es un programa independiente del sistema operativo; un <strong>hilo</strong> es una línea de ejecución dentro de tu propio programa.</p>
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row">Proceso</th><td>otro programa (un <code>.exe</code>, un comando); memoria separada</td></tr>
-                  <tr><th scope="row">Hilo</th><td>ejecución concurrente dentro de tu JVM; memoria compartida</td></tr>
-                  <tr><th scope="row">Esta chuleta</th><td>lanzar <em>procesos</em> externos desde Java</td></tr>
-                  <tr><th scope="row">Paquete</th><td><code>java.lang</code> (Process y ProcessBuilder no necesitan import)</td></tr>
+                  <tr><th scope="row">Programa</th><td>el fichero ejecutable en disco: algo estático</td></tr>
+                  <tr><th scope="row">Proceso</th><td>un programa en ejecución, con su propia memoria, su PID y sus tres canales (entrada, salida, error)</td></tr>
+                  <tr><th scope="row">Hilo</th><td>una línea de ejecución <em>dentro</em> de un proceso; los hilos comparten la memoria. Ver <a href="hilos.html">Hilos</a></td></tr>
+                  <tr><th scope="row">Padre e hijo</th><td>el proceso que llama a <code>start()</code> es el padre; el que se crea, el hijo</td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="nota">Lanzar procesos sirve para invocar herramientas del sistema (git, ffmpeg, un script) desde una aplicación Java, cuando no hay una librería que lo haga directamente.</p>
+            <p class="txt">Dos procesos <strong>no comparten memoria</strong>: un hijo no puede leer las variables del padre. Solo se comunican por lo que el sistema les da: argumentos, variables de entorno, sus canales estándar, ficheros, sockets y el código de salida.</p>
+            <p class="nota"><code>Process</code>, <code>ProcessBuilder</code> y <code>ProcessHandle</code> están en <code>java.lang</code>: no necesitan <code>import</code>.</p>
           </div>
         </section>
-        <!-- 2 -->
+        <!-- 2. ProcessBuilder: preparar y lanzar -->
         <section id="s2" class="tarjeta">
-          <h2><span class="num">2</span>ProcessBuilder</h2>
+          <h2><span class="num">2</span>ProcessBuilder: preparar y lanzar</h2>
           <div class="cuerpo">
-            <p class="txt">Cada argumento va por separado (no una cadena única): así se evitan problemas con espacios y comillas.</p>
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">ProcessBuilder</span> pb = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"ls"</span>, <span class="tok-texto">"-l"</span>, <span class="tok-texto">"/tmp"</span>);
-pb.<span class="tok-funcion">directory</span>(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"/home/ana"</span>));   <span class="tok-coment">// carpeta de trabajo</span>
-pb.<span class="tok-funcion">redirectErrorStream</span>(<span class="tok-clave">true</span>);          <span class="tok-coment">// mezcla error con salida</span>
-<span class="tok-tipo">Process</span> p = pb.<span class="tok-funcion">start</span>();                     <span class="tok-coment">// arranca el proceso</span></code></pre></figure>
+            <p class="txt">Primero se configura todo en el <code>ProcessBuilder</code> y luego <code>start()</code> crea el proceso. El mismo <code>ProcessBuilder</code> sirve para lanzar el comando varias veces.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">ProcessBuilder</span> pb = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"ls"</span>, <span class="tok-texto">"-l"</span>, <span class="tok-texto">"/tmp"</span>);   <span class="tok-coment">// comando y argumentos, uno a uno</span>
+pb.directory(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"/home/ana"</span>));                           <span class="tok-coment">// carpeta de trabajo del hijo</span>
+pb.environment().put(<span class="tok-texto">"MODO"</span>, <span class="tok-texto">"prueba"</span>);                        <span class="tok-coment">// variable de entorno solo para el hijo</span>
+pb.redirectErrorStream(<span class="tok-clave">true</span>);                                  <span class="tok-coment">// stderr se mezcla con stdout</span>
+
+<span class="tok-tipo">Process</span> p = pb.start();                                        <span class="tok-coment">// arranca y sigue: NO espera</span>
+
+<span class="tok-coment">// el comando también se puede montar como lista</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; cmd = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;(<span class="tok-tipo">List</span>.of(<span class="tok-texto">"javac"</span>, <span class="tok-texto">"-d"</span>, <span class="tok-texto">"out"</span>));
+cmd.addAll(ficheros);
+<span class="tok-tipo">Process</span> compilar = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(cmd).start();
+
+<span class="tok-coment">// lanzar otro programa Java con la misma JVM que el padre</span>
+<span class="tok-tipo">String</span> java = <span class="tok-tipo">Path</span>.of(<span class="tok-tipo">System</span>.getProperty(<span class="tok-texto">"java.home"</span>), <span class="tok-texto">"bin"</span>, <span class="tok-texto">"java"</span>).toString();
+<span class="tok-tipo">Process</span> hijo = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(java, <span class="tok-texto">"Hijo.java"</span>, <span class="tok-texto">"arg1"</span>).start();          <span class="tok-coment">// un solo fichero fuente (Java 11+)</span>
+<span class="tok-tipo">Process</span> otro = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(java, <span class="tok-texto">"-cp"</span>, <span class="tok-texto">"out"</span>, <span class="tok-texto">"paquete.Hijo"</span>).start(); <span class="tok-coment">// clases ya compiladas</span></code></pre></figure>
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row"><code>new ProcessBuilder(cmd, arg...)</code></th><td>el comando y sus argumentos, uno por uno</td></tr>
-                  <tr><th scope="row"><code>directory(File)</code></th><td>carpeta desde la que se ejecuta</td></tr>
-                  <tr><th scope="row"><code>environment()</code></th><td>Map con las variables de entorno (editable)</td></tr>
-                  <tr><th scope="row"><code>redirectErrorStream(true)</code></th><td>junta la salida de error con la normal</td></tr>
-                  <tr><th scope="row"><code>inheritIO()</code></th><td>usa la consola del programa padre</td></tr>
-                  <tr><th scope="row"><code>start()</code></th><td>lanza y devuelve el <code>Process</code></td></tr>
+                  <tr><th scope="row"><code>new ProcessBuilder(cmd, arg...)</code></th><td>el comando y sus argumentos; también admite una <code>List&lt;String&gt;</code></td></tr>
+                  <tr><th scope="row"><code>command(...)</code></th><td>cambiar el comando; sin parámetros, devuelve la lista editable</td></tr>
+                  <tr><th scope="row"><code>directory(File)</code></th><td>carpeta desde la que se ejecuta; por defecto, la del padre</td></tr>
+                  <tr><th scope="row"><code>environment()</code></th><td><code>Map</code> editable con el entorno del hijo (copia del del padre)</td></tr>
+                  <tr><th scope="row"><code>redirectErrorStream(true)</code></th><td>junta stderr con stdout</td></tr>
+                  <tr><th scope="row"><code>redirectInput / Output / Error</code></th><td>conectar cada canal a un fichero o a la consola (sección 7)</td></tr>
+                  <tr><th scope="row"><code>inheritIO()</code></th><td>el hijo usa la misma consola que el padre</td></tr>
+                  <tr><th scope="row"><code>start()</code></th><td>lanza y devuelve el <code>Process</code>; <code>IOException</code> si no encuentra el programa</td></tr>
+                  <tr><th scope="row"><code>startPipeline(lista)</code></th><td>lanza varios conectados en tubería (sección 12)</td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="nota">Pasar los argumentos separados es más seguro que montar una sola cadena: no hay que preocuparse de escapar espacios ni caracteres especiales del shell.</p>
+            <h3>Runtime.exec: la forma antigua</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Process</span> p = <span class="tok-tipo">Runtime</span>.getRuntime().exec(<span class="tok-clave">new</span> <span class="tok-tipo">String</span>[] { <span class="tok-texto">"ls"</span>, <span class="tok-texto">"-l"</span> });   <span class="tok-coment">// equivale a new ProcessBuilder(...).start()</span></code></pre></figure>
+            <p class="nota">Funciona, pero no permite configurar redirecciones de forma cómoda, y la versión con una sola cadena (<code>exec("mi programa")</code>, obsoleta desde Java 18) parte mal las rutas con espacios. Usa <code>ProcessBuilder</code>.</p>
           </div>
         </section>
-        <!-- 3 -->
+        <!-- 3. Los tres canales padre ↔ hijo -->
         <section id="s3" class="tarjeta">
-          <h2><span class="num">3</span>Leer la salida</h2>
+          <h2><span class="num">3</span>Los tres canales padre ↔ hijo</h2>
           <div class="cuerpo">
-            <p class="txt">La salida del proceso se lee desde su <em>input stream</em> (lo que el proceso escribe, tu programa lo lee como entrada).</p>
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Process</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"git"</span>, <span class="tok-texto">"status"</span>).<span class="tok-funcion">start</span>();
-<span class="tok-clave">try</span> (<span class="tok-tipo">var</span> br = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(
-        <span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(p.<span class="tok-funcion">getInputStream</span>()))) {
+            <p class="txt">Por defecto (<code>Redirect.PIPE</code>) cada canal estándar del hijo se conecta a una <strong>tubería</strong> con el padre. El padre obtiene el otro extremo con estos métodos:</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>p.getOutputStream()</code></th><td><code>OutputStream</code>: lo que el padre escribe llega al <strong>stdin</strong> del hijo</td></tr>
+                  <tr><th scope="row"><code>p.getInputStream()</code></th><td><code>InputStream</code>: el padre lee el <strong>stdout</strong> del hijo</td></tr>
+                  <tr><th scope="row"><code>p.getErrorStream()</code></th><td><code>InputStream</code>: el padre lee el <strong>stderr</strong> del hijo</td></tr>
+                  <tr><th scope="row"><code>p.outputWriter()</code></th><td>Java 17+: lo mismo que <code>getOutputStream</code>, ya como <code>BufferedWriter</code></td></tr>
+                  <tr><th scope="row"><code>p.inputReader()</code></th><td>Java 17+: stdout del hijo como <code>BufferedReader</code></td></tr>
+                  <tr><th scope="row"><code>p.errorReader()</code></th><td>Java 17+: stderr del hijo como <code>BufferedReader</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// antes de Java 17: envolver a mano (ver Lectura y escritura)</span>
+<span class="tok-tipo">BufferedReader</span> salida = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(p.getInputStream()));
+<span class="tok-tipo">BufferedReader</span> error  = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(p.getErrorStream()));
+<span class="tok-tipo">PrintWriter</span> entrada   = <span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(<span class="tok-clave">new</span> <span class="tok-tipo">OutputStreamWriter</span>(p.getOutputStream()));
+
+<span class="tok-coment">// Java 17+: ya vienen envueltos; se puede indicar la codificación</span>
+<span class="tok-tipo">BufferedReader</span> salida = p.inputReader(<span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);
+<span class="tok-tipo">BufferedWriter</span> entrada = p.outputWriter();</code></pre></figure>
+            <p class="aviso"><strong>Ojo al nombre:</strong> <code>getInputStream()</code> es lo que el padre <em>lee</em>, es decir, la <em>salida</em> del hijo. Los nombres van siempre desde el punto de vista del padre. Cómo envolver flujos en <a href="lectura-escritura.html#s2">Lectura y escritura</a>.</p>
+          </div>
+        </section>
+        <!-- 4. Leer lo que escribe el hijo -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Leer lo que escribe el hijo</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Process</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"git"</span>, <span class="tok-texto">"status"</span>, <span class="tok-texto">"--short"</span>)
+        .redirectErrorStream(<span class="tok-clave">true</span>)
+        .start();
+
+<span class="tok-coment">// línea a línea, según van llegando</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">BufferedReader</span> br = p.inputReader()) {
     <span class="tok-tipo">String</span> linea;
-    <span class="tok-clave">while</span> ((linea = br.<span class="tok-funcion">readLine</span>()) != <span class="tok-clave">null</span>) {
-        <span class="tok-tipo">System</span>.out.<span class="tok-funcion">println</span>(linea);
+    <span class="tok-clave">while</span> ((linea = br.readLine()) != <span class="tok-clave">null</span>) {       <span class="tok-coment">// null cuando el hijo cierra su salida</span>
+        <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"hijo dice: "</span> + linea);
+    }
+}
+<span class="tok-tipo">int</span> codigo = p.waitFor();
+
+<span class="tok-coment">// todas las líneas en una lista</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; lineas = p.inputReader().lines().toList();
+
+<span class="tok-coment">// todo de una vez, como texto</span>
+<span class="tok-tipo">String</span> texto = <span class="tok-clave">new</span> <span class="tok-tipo">String</span>(p.getInputStream().readAllBytes(), <span class="tok-tipo">StandardCharsets</span>.<span class="tok-tipo">UTF_8</span>);
+
+<span class="tok-coment">// copiar la salida del hijo tal cual a la consola del padre</span>
+p.getInputStream().transferTo(<span class="tok-tipo">System</span>.out);</code></pre></figure>
+            <p class="nota"><code>readLine()</code> se queda esperando mientras el hijo siga vivo y no haya escrito una línea completa. Devuelve <code>null</code> solo cuando el hijo cierra su salida, normalmente al terminar.</p>
+          </div>
+        </section>
+        <!-- 5. Escribir en la entrada del hijo -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Escribir en la entrada del hijo</h2>
+          <div class="cuerpo">
+            <p class="txt">Lo que el padre escribe en <code>getOutputStream()</code> lo recibe el hijo por <code>System.in</code>, como si alguien lo tecleara. Dos reglas: <strong><code>flush()</code></strong> para que salga del búfer y <strong><code>close()</code></strong> para que el hijo vea el final de la entrada.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// mandarle todo y después leer la respuesta: ordenar con el comando sort</span>
+<span class="tok-tipo">Process</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"sort"</span>).start();
+
+<span class="tok-clave">try</span> (<span class="tok-tipo">PrintWriter</span> aHijo = <span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(p.outputWriter())) {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">String</span> nombre : <span class="tok-tipo">List</span>.of(<span class="tok-texto">"Pedro"</span>, <span class="tok-texto">"Ana"</span>, <span class="tok-texto">"Luis"</span>)) {
+        aHijo.println(nombre);
+    }
+}   <span class="tok-coment">// close: el hijo recibe EOF (fin de entrada) y sort empieza a escribir</span>
+
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; ordenados = p.inputReader().lines().toList();   <span class="tok-coment">// [Ana, Luis, Pedro]</span>
+p.waitFor();
+
+<span class="tok-coment">// mandarle el contenido de un fichero</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">OutputStream</span> aHijo = p.getOutputStream()) {
+    <span class="tok-tipo">Files</span>.copy(<span class="tok-tipo">Path</span>.of(<span class="tok-texto">"datos.txt"</span>), aHijo);
+}</code></pre></figure>
+            <h3>El hijo, si es un programa Java</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// Mayusculas.java: lee líneas de su entrada y las devuelve en mayúsculas</span>
+<span class="tok-clave">void</span> main() <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+    <span class="tok-tipo">BufferedReader</span> in = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(<span class="tok-tipo">System</span>.in));
+    <span class="tok-tipo">String</span> linea;
+    <span class="tok-clave">while</span> ((linea = in.readLine()) != <span class="tok-clave">null</span>) {     <span class="tok-coment">// null cuando el padre cierra</span>
+        <span class="tok-tipo">System</span>.out.println(linea.toUpperCase());  <span class="tok-coment">// println vacía el búfer</span>
+    }
+    <span class="tok-tipo">System</span>.exit(<span class="tok-numero">0</span>);                               <span class="tok-coment">// código de salida para el padre</span>
+}</code></pre></figure>
+            <p class="aviso"><strong>Si no cierras la entrada</strong>, un hijo que lee hasta el final (como <code>sort</code> o el bucle de arriba) se queda esperando para siempre, y el padre también, en su <code>readLine()</code> o en su <code>waitFor()</code>.</p>
+          </div>
+        </section>
+        <!-- 6. Conversación: pregunta y respuesta -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Conversación: pregunta y respuesta</h2>
+          <div class="cuerpo">
+            <p class="txt">Para hablar por turnos, el padre escribe una línea, hace <code>flush</code>, lee una línea de respuesta y repite. Los dos lados tienen que estar de acuerdo en el <strong>protocolo</strong>: una línea por mensaje y una respuesta por pregunta.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// Cuadrado.java (el hijo): por cada número recibido, devuelve su cuadrado</span>
+<span class="tok-clave">void</span> main() <span class="tok-clave">throws</span> <span class="tok-tipo">IOException</span> {
+    <span class="tok-tipo">BufferedReader</span> in = <span class="tok-clave">new</span> <span class="tok-tipo">BufferedReader</span>(<span class="tok-clave">new</span> <span class="tok-tipo">InputStreamReader</span>(<span class="tok-tipo">System</span>.in));
+    <span class="tok-tipo">String</span> linea;
+    <span class="tok-clave">while</span> ((linea = in.readLine()) != <span class="tok-clave">null</span>) {
+        <span class="tok-clave">if</span> (linea.equals(<span class="tok-texto">"FIN"</span>)) <span class="tok-clave">break</span>;           <span class="tok-coment">// orden de terminar</span>
+        <span class="tok-tipo">int</span> n = <span class="tok-tipo">Integer</span>.parseInt(linea.trim());
+        <span class="tok-tipo">System</span>.out.println(n * n);                <span class="tok-coment">// una línea de respuesta por pregunta</span>
     }
 }</code></pre></figure>
-            <div class="tabla-scroll">
-              <table class="ref ">
-                <tbody>
-                  <tr><th scope="row"><code>getInputStream()</code></th><td>lo que el proceso escribe en su salida estándar</td></tr>
-                  <tr><th scope="row"><code>getErrorStream()</code></th><td>su salida de error</td></tr>
-                  <tr><th scope="row"><code>getOutputStream()</code></th><td>para <em>enviarle</em> entrada al proceso</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="aviso"><strong>Ojo al nombre:</strong> <code>getInputStream()</code> es lo que <em>lees</em> del proceso (su salida), no lo que le mandas. Se llama así desde el punto de vista de tu programa. Ver <a href="lectura-escritura.html">Lectura y escritura</a>.</p>
-          </div>
-        </section>
-        <!-- 4 -->
-        <section id="s4" class="tarjeta">
-          <h2><span class="num">4</span>Esperar y código de salida</h2>
-          <div class="cuerpo">
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">int</span> codigo = p.<span class="tok-funcion">waitFor</span>();          <span class="tok-coment">// espera a que termine</span>
-<span class="tok-clave">if</span> (codigo == <span class="tok-numero">0</span>) {
-    <span class="tok-tipo">System</span>.out.<span class="tok-funcion">println</span>(<span class="tok-texto">"Todo bien"</span>);
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// el padre</span>
+<span class="tok-tipo">String</span> java = <span class="tok-tipo">Path</span>.of(<span class="tok-tipo">System</span>.getProperty(<span class="tok-texto">"java.home"</span>), <span class="tok-texto">"bin"</span>, <span class="tok-texto">"java"</span>).toString();
+<span class="tok-tipo">Process</span> hijo = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(java, <span class="tok-texto">"Cuadrado.java"</span>).start();
+
+<span class="tok-clave">try</span> (<span class="tok-tipo">BufferedWriter</span> aHijo = hijo.outputWriter();
+     <span class="tok-tipo">BufferedReader</span> deHijo = hijo.inputReader()) {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> n = <span class="tok-numero">1</span>; n &lt;= <span class="tok-numero">5</span>; n++) {
+        aHijo.write(<span class="tok-tipo">String</span>.valueOf(n));
+        aHijo.newLine();
+        aHijo.flush();                            <span class="tok-coment">// ¡sin esto el hijo no recibe nada!</span>
+        <span class="tok-tipo">String</span> respuesta = deHijo.readLine();     <span class="tok-coment">// espera a que conteste</span>
+        <span class="tok-tipo">IO</span>.println(n + <span class="tok-texto">"² = "</span> + respuesta);
+    }
+    aHijo.write(<span class="tok-texto">"FIN"</span>);
+    aHijo.newLine();
+    aHijo.flush();
 }
-<span class="tok-coment">// con límite de tiempo</span>
-<span class="tok-clave">boolean</span> aTiempo = p.<span class="tok-funcion">waitFor</span>(<span class="tok-numero">5</span>, <span class="tok-tipo">TimeUnit</span>.SECONDS);</code></pre></figure>
+<span class="tok-tipo">int</span> codigo = hijo.waitFor();</code></pre></figure>
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row"><code>waitFor()</code></th><td>bloquea hasta que termina; devuelve el código de salida</td></tr>
-                  <tr><th scope="row"><code>waitFor(t, unidad)</code></th><td>espera como mucho ese tiempo; <code>true</code> si terminó</td></tr>
-                  <tr><th scope="row"><code>exitValue()</code></th><td>el código de salida (si ya terminó)</td></tr>
-                  <tr><th scope="row">Código 0</th><td>convenio: éxito; distinto de 0, algún error</td></tr>
+                  <tr><th scope="row" class="larga">El padre no hace <code>flush</code></th><td>el mensaje se queda en su búfer: los dos esperan para siempre</td></tr>
+                  <tr><th scope="row" class="larga">El hijo usa <code>print</code> sin salto de línea</th><td>el padre, en <code>readLine</code>, espera un <code>\n</code> que no llega</td></tr>
+                  <tr><th scope="row" class="larga">El hijo no vacía su salida</th><td>en Java, <code>System.out.println</code> ya vacía; con <code>print</code>, llama a <code>System.out.flush()</code></td></tr>
+                  <tr><th scope="row" class="larga">El hijo es Python, C...</th><td>con salida a una tubería usan búfer de bloque: <code>python -u</code> o <code>flush=True</code>, <code>fflush(stdout)</code></td></tr>
+                  <tr><th scope="row" class="larga">El hijo contesta varias líneas</th><td>acuerda una marca de fin (línea vacía, <code>"OK"</code>) o manda antes cuántas líneas van</td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="aviso"><strong>Interbloqueo clásico:</strong> si el proceso genera mucha salida y no la vas leyendo, su buffer se llena y se queda parado, y tu <code>waitFor()</code> nunca vuelve. Lee la salida (sección 3) <em>antes o a la vez</em> que esperas.</p>
           </div>
         </section>
-        <!-- 5 -->
-        <section id="s5" class="tarjeta">
-          <h2><span class="num">5</span>Runtime.exec</h2>
-          <div class="cuerpo">
-            <p class="txt">La forma clásica, anterior a ProcessBuilder. Funciona, pero es más propensa a errores (parte la cadena por espacios).</p>
-            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Process</span> p = <span class="tok-tipo">Runtime</span>.<span class="tok-funcion">getRuntime</span>().<span class="tok-funcion">exec</span>(<span class="tok-clave">new</span> <span class="tok-tipo">String</span>[]{<span class="tok-texto">"ls"</span>, <span class="tok-texto">"-l"</span>});</code></pre></figure>
-            <p class="nota">Prefiere <code>ProcessBuilder</code>: da más control (carpeta, entorno, redirección) y evita el problema de <code>exec("mi programa")</code>, que parte mal las rutas con espacios. Pásale siempre un array de argumentos, no una cadena.</p>
-          </div>
-        </section>
-        <!-- 6 -->
-        <section id="s6" class="tarjeta">
-          <h2><span class="num">6</span>La API Process</h2>
-          <div class="cuerpo">
-            <div class="tabla-scroll">
-              <table class="ref ">
-                <tbody>
-                  <tr><th scope="row"><code>isAlive()</code></th><td>¿sigue en marcha?</td></tr>
-                  <tr><th scope="row"><code>pid()</code></th><td>el identificador de proceso del sistema</td></tr>
-                  <tr><th scope="row"><code>destroy()</code></th><td>pide que termine (suave)</td></tr>
-                  <tr><th scope="row"><code>destroyForcibly()</code></th><td>lo mata a la fuerza</td></tr>
-                  <tr><th scope="row"><code>onExit()</code></th><td>un <code>CompletableFuture</code> que completa al terminar</td></tr>
-                  <tr><th scope="row"><code>info()</code></th><td>datos del proceso (comando, inicio, usuario)</td></tr>
-                  <tr><th scope="row"><code>ProcessHandle.current()</code></th><td>el propio proceso Java; <code>allProcesses()</code> lista todos</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="nota"><code>onExit()</code> permite reaccionar cuando el proceso acaba sin bloquear el hilo: <code>p.onExit().thenRun(() -&gt; ...)</code>.</p>
-          </div>
-        </section>
-        <!-- 7 -->
+        <!-- 7. Redirecciones -->
         <section id="s7" class="tarjeta">
-          <h2><span class="num">7</span>Windows vs Linux</h2>
+          <h2><span class="num">7</span>Redirecciones</h2>
           <div class="cuerpo">
-            <p class="txt">El mayor escollo al lanzar procesos es que el comando cambia según el sistema. Java corre en ambos, pero el <em>programa que invocas</em> no.</p>
+            <p class="txt">En vez de una tubería con el padre, cada canal del hijo se puede conectar a un fichero o a la consola del padre. Es como <code>&lt;</code>, <code>&gt;</code>, <code>&gt;&gt;</code> y <code>2&gt;</code> en la terminal, pero sin shell.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">import</span> java.lang.<span class="tok-tipo">ProcessBuilder</span>.<span class="tok-tipo">Redirect</span>;
+
+<span class="tok-tipo">ProcessBuilder</span> pb = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"sort"</span>);
+pb.redirectInput(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"nombres.txt"</span>));                    <span class="tok-coment">// sort &lt; nombres.txt</span>
+pb.redirectOutput(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"ordenados.txt"</span>));                 <span class="tok-coment">// sort &gt; ordenados.txt</span>
+pb.redirectError(<span class="tok-tipo">Redirect</span>.appendTo(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"errores.log"</span>))); <span class="tok-coment">// 2&gt;&gt; errores.log</span>
+pb.start().waitFor();
+
+<span class="tok-coment">// que el hijo escriba directamente en la consola del padre</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"mvn"</span>, <span class="tok-texto">"package"</span>).inheritIO().start().waitFor();
+
+<span class="tok-coment">// solo la salida a la consola; el error, a la basura (Java 9+)</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"ping"</span>, <span class="tok-texto">"-c"</span>, <span class="tok-texto">"3"</span>, <span class="tok-texto">"localhost"</span>)
+        .redirectOutput(<span class="tok-tipo">Redirect</span>.<span class="tok-tipo">INHERIT</span>)
+        .redirectError(<span class="tok-tipo">Redirect</span>.<span class="tok-tipo">DISCARD</span>)
+        .start();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>Redirect.PIPE</code></th><td>por defecto: tubería con el padre (<code>getInputStream</code>...)</td></tr>
+                  <tr><th scope="row"><code>Redirect.INHERIT</code></th><td>el mismo canal que el padre: su consola</td></tr>
+                  <tr><th scope="row"><code>Redirect.DISCARD</code></th><td>se tira la salida (Java 9+)</td></tr>
+                  <tr><th scope="row"><code>Redirect.to(f)</code></th><td>a un fichero, sobrescribiendo; también vale pasar el <code>File</code> directamente</td></tr>
+                  <tr><th scope="row"><code>Redirect.appendTo(f)</code></th><td>a un fichero, añadiendo al final</td></tr>
+                  <tr><th scope="row"><code>Redirect.from(f)</code></th><td>la entrada sale de un fichero</td></tr>
+                  <tr><th scope="row"><code>redirectErrorStream(true)</code></th><td>stderr va al mismo sitio que stdout</td></tr>
+                  <tr><th scope="row"><code>inheritIO()</code></th><td>los tres canales en <code>INHERIT</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si un canal está redirigido, su método en el padre devuelve un flujo vacío: <code>getInputStream()</code> no da nada si la salida va a un fichero. Con <code>inheritIO()</code> la salida del hijo se ve en la consola, pero el padre no puede leerla.</p>
+          </div>
+        </section>
+        <!-- 8. Salida y error a la vez, sin bloqueos -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Salida y error a la vez, sin bloqueos</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada tubería tiene un búfer pequeño (unos pocos KB). Si el hijo lo llena y el padre no lo vacía, el hijo se queda parado al escribir. Si a la vez el padre espera otra cosa del hijo, ninguno avanza: <strong>interbloqueo</strong>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga"><code>waitFor()</code> sin leer la salida</th><td>el hijo llena stdout y espera; el padre espera a que termine</td></tr>
+                  <tr><th scope="row" class="larga">Leer toda la salida y luego el error</th><td>el hijo llena stderr y espera; el padre espera más stdout</td></tr>
+                  <tr><th scope="row" class="larga">Escribir mucho sin leer nada</th><td>el hijo llena stdout y deja de leer stdin; el padre se queda en <code>write</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// solución 1: un solo canal (lo más simple)</span>
+pb.redirectErrorStream(<span class="tok-clave">true</span>);
+
+<span class="tok-coment">// solución 2: lo que no necesites, a un fichero o a la basura</span>
+pb.redirectError(<span class="tok-tipo">Redirect</span>.<span class="tok-tipo">DISCARD</span>);
+
+<span class="tok-coment">// solución 3: leer el error en otro hilo mientras este lee la salida</span>
+<span class="tok-tipo">Process</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"javac"</span>, <span class="tok-texto">"Prueba.java"</span>).start();
+<span class="tok-tipo">CompletableFuture</span>&lt;<span class="tok-tipo">String</span>&gt; error = <span class="tok-tipo">CompletableFuture</span>.supplyAsync(() -&gt; leerTodo(p.getErrorStream()));
+<span class="tok-tipo">String</span> salida = leerTodo(p.getInputStream());
+<span class="tok-tipo">int</span> codigo = p.waitFor();
+<span class="tok-tipo">String</span> errores = error.join();
+
+<span class="tok-clave">static</span> <span class="tok-tipo">String</span> leerTodo(<span class="tok-tipo">InputStream</span> in) {
+    <span class="tok-clave">try</span> (in) {
+        <span class="tok-clave">return</span> <span class="tok-clave">new</span> <span class="tok-tipo">String</span>(in.readAllBytes());
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">IOException</span> e) {
+        <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">UncheckedIOException</span>(e);
+    }
+}
+
+<span class="tok-coment">// mandar mucha entrada sin bloquearse: escribir desde otro hilo</span>
+<span class="tok-tipo">Thread</span>.startVirtualThread(() -&gt; {
+    <span class="tok-clave">try</span> (<span class="tok-tipo">PrintWriter</span> w = <span class="tok-clave">new</span> <span class="tok-tipo">PrintWriter</span>(p.outputWriter())) {
+        datos.forEach(w::println);
+    }
+});</code></pre></figure>
+          </div>
+        </section>
+        <!-- 9. Esperar, código de salida y terminar -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Esperar, código de salida y terminar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">int</span> codigo = p.waitFor();                       <span class="tok-coment">// bloquea hasta que termina</span>
+<span class="tok-clave">if</span> (codigo != <span class="tok-numero">0</span>) {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"El hijo falló con código "</span> + codigo);
+}
+
+<span class="tok-coment">// con límite de tiempo</span>
+<span class="tok-clave">if</span> (!p.waitFor(<span class="tok-numero">10</span>, <span class="tok-tipo">TimeUnit</span>.<span class="tok-tipo">SECONDS</span>)) {
+    p.destroy();                                <span class="tok-coment">// pide que termine</span>
+    <span class="tok-clave">if</span> (!p.waitFor(<span class="tok-numero">2</span>, <span class="tok-tipo">TimeUnit</span>.<span class="tok-tipo">SECONDS</span>)) {
+        p.destroyForcibly();                    <span class="tok-coment">// lo mata</span>
+    }
+}
+
+<span class="tok-coment">// sin bloquear: reaccionar cuando acabe</span>
+p.onExit().thenAccept(pr -&gt; <span class="tok-tipo">IO</span>.println(pr.pid() + <span class="tok-texto">" terminó con "</span> + pr.exitValue()));
+
+<span class="tok-coment">// en el hijo: devolver un código al padre</span>
+<span class="tok-tipo">System</span>.exit(<span class="tok-numero">3</span>);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>waitFor()</code></th><td>espera y devuelve el código de salida; lanza <code>InterruptedException</code></td></tr>
+                  <tr><th scope="row"><code>waitFor(t, unidad)</code></th><td>espera como mucho ese tiempo; <code>true</code> si terminó</td></tr>
+                  <tr><th scope="row"><code>exitValue()</code></th><td>el código; <code>IllegalThreadStateException</code> si aún no ha terminado</td></tr>
+                  <tr><th scope="row"><code>isAlive()</code></th><td>si sigue en marcha</td></tr>
+                  <tr><th scope="row"><code>destroy()</code></th><td>pide terminar (SIGTERM en Linux); en Windows mata directamente</td></tr>
+                  <tr><th scope="row"><code>destroyForcibly()</code></th><td>lo mata (SIGKILL)</td></tr>
+                  <tr><th scope="row"><code>onExit()</code></th><td><code>CompletableFuture&lt;Process&gt;</code> que se completa al terminar</td></tr>
+                  <tr><th scope="row">Código 0</th><td>por convenio, éxito; cualquier otro, error. Un proceso matado suele dar 137 (Linux) o 1 (Windows)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 10. Lanzar en secuencia -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Lanzar en secuencia</h2>
+          <div class="cuerpo">
+            <p class="txt">Uno detrás de otro: se lanza, se <strong>espera</strong> con <code>waitFor()</code> y solo entonces se lanza el siguiente. Sirve cuando cada paso necesita que el anterior haya acabado bien.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// como "javac Hola.java &amp;&amp; java Hola" : se para en el primer fallo</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt;&gt; pasos = <span class="tok-tipo">List</span>.of(
+        <span class="tok-tipo">List</span>.of(<span class="tok-texto">"javac"</span>, <span class="tok-texto">"-d"</span>, <span class="tok-texto">"out"</span>, <span class="tok-texto">"Hola.java"</span>),
+        <span class="tok-tipo">List</span>.of(<span class="tok-texto">"java"</span>, <span class="tok-texto">"-cp"</span>, <span class="tok-texto">"out"</span>, <span class="tok-texto">"Hola"</span>));
+
+<span class="tok-clave">for</span> (<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; paso : pasos) {
+    <span class="tok-tipo">Process</span> p = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(paso).inheritIO().start();
+    <span class="tok-tipo">int</span> codigo = p.waitFor();                    <span class="tok-coment">// ← espera antes del siguiente</span>
+    <span class="tok-clave">if</span> (codigo != <span class="tok-numero">0</span>) {
+        <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Falló "</span> + paso + <span class="tok-texto">" (código "</span> + codigo + <span class="tok-texto">")"</span>);
+        <span class="tok-clave">break</span>;
+    }
+}</code></pre></figure>
+            <h3>Pasar la salida de uno como entrada del siguiente</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// 1. el primero termina y su salida se guarda</span>
+<span class="tok-tipo">Process</span> listar = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"ls"</span>, <span class="tok-texto">"/etc"</span>).start();
+<span class="tok-tipo">String</span> lista = <span class="tok-clave">new</span> <span class="tok-tipo">String</span>(listar.getInputStream().readAllBytes());
+listar.waitFor();
+
+<span class="tok-coment">// 2. el segundo la recibe por su entrada</span>
+<span class="tok-tipo">Process</span> contar = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"wc"</span>, <span class="tok-texto">"-l"</span>).start();
+<span class="tok-clave">try</span> (<span class="tok-tipo">Writer</span> w = contar.outputWriter()) {
+    w.write(lista);
+}
+<span class="tok-tipo">String</span> total = contar.inputReader().readLine().trim();
+contar.waitFor();
+
+<span class="tok-coment">// o sin pasar por memoria: el primero escribe en un fichero y el segundo lo lee</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"ls"</span>, <span class="tok-texto">"/etc"</span>).redirectOutput(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"lista.txt"</span>)).start().waitFor();
+<span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"wc"</span>, <span class="tok-texto">"-l"</span>).redirectInput(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"lista.txt"</span>)).inheritIO().start().waitFor();</code></pre></figure>
+            <p class="nota">Así el padre puede revisar o transformar los datos entre un paso y otro. Si no hace falta, es más rápido conectarlos en tubería (sección 12).</p>
+          </div>
+        </section>
+        <!-- 11. Lanzar en paralelo -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Lanzar en paralelo</h2>
+          <div class="cuerpo">
+            <p class="txt">Como <code>start()</code> no espera, basta con <strong>lanzarlos todos primero y esperar después</strong>. Mientras el padre espera al primero, los demás ya están trabajando.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">String</span> java = <span class="tok-tipo">Path</span>.of(<span class="tok-tipo">System</span>.getProperty(<span class="tok-texto">"java.home"</span>), <span class="tok-texto">"bin"</span>, <span class="tok-texto">"java"</span>).toString();
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Process</span>&gt; procesos = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+
+<span class="tok-coment">// 1. lanzar todos: cada uno escribe en su fichero para no bloquearse</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">1</span>; i &lt;= <span class="tok-numero">4</span>; i++) {
+    <span class="tok-tipo">ProcessBuilder</span> pb = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(java, <span class="tok-texto">"Trabajador.java"</span>, <span class="tok-tipo">String</span>.valueOf(i))
+            .redirectOutput(<span class="tok-clave">new</span> <span class="tok-tipo">File</span>(<span class="tok-texto">"salida-"</span> + i + <span class="tok-texto">".txt"</span>))
+            .redirectErrorStream(<span class="tok-clave">true</span>);
+    procesos.add(pb.start());
+}
+
+<span class="tok-coment">// 2. esperar a todos (el orden da igual: el total es lo que tarde el más lento)</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">Process</span> p : procesos) {
+    <span class="tok-tipo">int</span> codigo = p.waitFor();
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"PID "</span> + p.pid() + <span class="tok-texto">" → "</span> + codigo);
+}</code></pre></figure>
+            <h3>Recoger la salida de cada uno</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// leer cada salida en su propio hilo, para que ninguno se quede bloqueado</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">CompletableFuture</span>&lt;<span class="tok-tipo">String</span>&gt;&gt; salidas = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">Process</span> p : procesos) {
+    salidas.add(<span class="tok-tipo">CompletableFuture</span>.supplyAsync(() -&gt; leerTodo(p.getInputStream())));
+}
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; procesos.size(); i++) {
+    procesos.get(i).waitFor();
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Hijo "</span> + (i + <span class="tok-numero">1</span>) + <span class="tok-texto">": "</span> + salidas.get(i).join());
+}
+
+<span class="tok-coment">// avisar de cada uno según vaya acabando, y esperar a que acaben todos</span>
+<span class="tok-tipo">CompletableFuture</span>&lt;?&gt;[] fines = procesos.stream()
+        .map(p -&gt; p.onExit().thenAccept(pr -&gt; <span class="tok-tipo">IO</span>.println(pr.pid() + <span class="tok-texto">" ha terminado"</span>)))
+        .toArray(<span class="tok-tipo">CompletableFuture</span>[]::<span class="tok-clave">new</span>);
+<span class="tok-tipo">CompletableFuture</span>.allOf(fines).join();</code></pre></figure>
+            <h3>Como mucho N a la vez</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> (<span class="tok-tipo">ExecutorService</span> pool = <span class="tok-tipo">Executors</span>.newFixedThreadPool(<span class="tok-numero">3</span>)) {     <span class="tok-coment">// 3 hijos simultáneos</span>
+    <span class="tok-clave">for</span> (<span class="tok-tipo">String</span> fichero : ficheros) {
+        pool.submit(() -&gt; <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"gzip"</span>, fichero).inheritIO().start().waitFor());
+    }
+}   <span class="tok-coment">// close espera a que terminen todas las tareas (Java 19+)</span></code></pre></figure>
+            <p class="aviso"><strong>Error típico:</strong> <code>start()</code> y <code>waitFor()</code> dentro del mismo bucle. Así cada hijo espera al anterior: es secuencial aunque parezca paralelo.</p>
+          </div>
+        </section>
+        <!-- 12. Tuberías -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Tuberías: la salida de uno, entrada del otro</h2>
+          <div class="cuerpo">
+            <p class="txt">Como <code>a | b | c</code> en la terminal: todos se ejecutan <strong>a la vez</strong> y los datos pasan directamente de uno a otro, sin que el padre los toque.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// Java 9+: cat access.log | grep 404 | wc -l</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Process</span>&gt; tuberia = <span class="tok-tipo">ProcessBuilder</span>.startPipeline(<span class="tok-tipo">List</span>.of(
+        <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"cat"</span>, <span class="tok-texto">"access.log"</span>),
+        <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"grep"</span>, <span class="tok-texto">"404"</span>),
+        <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"wc"</span>, <span class="tok-texto">"-l"</span>)));
+
+<span class="tok-tipo">Process</span> ultimo = tuberia.get(tuberia.size() - <span class="tok-numero">1</span>);
+<span class="tok-tipo">String</span> total = <span class="tok-clave">new</span> <span class="tok-tipo">String</span>(ultimo.getInputStream().readAllBytes()).trim();
+<span class="tok-clave">for</span> (<span class="tok-tipo">Process</span> p : tuberia) p.waitFor();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Entrada del primero</th><td>la de su <code>ProcessBuilder</code>: tubería con el padre, un fichero...</td></tr>
+                  <tr><th scope="row" class="larga">Salida del último</th><td>la lee el padre con <code>getInputStream()</code>, o se redirige</td></tr>
+                  <tr><th scope="row" class="larga">Los intermedios</th><td>su salida va al siguiente: no se pueden redirigir</td></tr>
+                  <tr><th scope="row" class="larga">Los errores</th><td>cada uno tiene su stderr: <code>redirectError</code> en cada <code>ProcessBuilder</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Conectar dos procesos a mano</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// antes de Java 9, o si el padre quiere ver los datos al pasar</span>
+<span class="tok-tipo">Process</span> a = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"ls"</span>, <span class="tok-texto">"/etc"</span>).start();
+<span class="tok-tipo">Process</span> b = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"sort"</span>, <span class="tok-texto">"-r"</span>).inheritIO().redirectInput(<span class="tok-tipo">Redirect</span>.<span class="tok-tipo">PIPE</span>).start();
+
+<span class="tok-tipo">Thread</span> puente = <span class="tok-tipo">Thread</span>.ofPlatform().start(() -&gt; {
+    <span class="tok-clave">try</span> (<span class="tok-tipo">InputStream</span> salidaA = a.getInputStream(); <span class="tok-tipo">OutputStream</span> entradaB = b.getOutputStream()) {
+        salidaA.transferTo(entradaB);              <span class="tok-coment">// copia hasta que a termina; cerrar = EOF para b</span>
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">IOException</span> e) {
+        <span class="tok-clave">throw</span> <span class="tok-clave">new</span> <span class="tok-tipo">UncheckedIOException</span>(e);
+    }
+});
+b.waitFor();
+
+<span class="tok-coment">// o dejárselo al shell (aquí sí hace falta el intérprete)</span>
+<span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"sh"</span>, <span class="tok-texto">"-c"</span>, <span class="tok-texto">"ls /etc | sort -r"</span>).inheritIO().start().waitFor();</code></pre></figure>
+          </div>
+        </section>
+        <!-- 13. Formas de pasar datos -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Formas de pasar datos</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Argumentos</th><td>padre: <code>new ProcessBuilder("prog", "a", "b")</code> · hijo: <code>args[0]</code>, <code>args[1]</code>. Solo al arrancar</td></tr>
+                  <tr><th scope="row" class="larga">Variables de entorno</th><td>padre: <code>pb.environment().put("K", "v")</code> · hijo: <code>System.getenv("K")</code>. Solo al arrancar</td></tr>
+                  <tr><th scope="row" class="larga">Entrada estándar</th><td>padre: <code>getOutputStream()</code> · hijo: <code>System.in</code>. Durante toda la ejecución</td></tr>
+                  <tr><th scope="row" class="larga">Salida estándar</th><td>hijo: <code>System.out</code> · padre: <code>getInputStream()</code>. Durante toda la ejecución</td></tr>
+                  <tr><th scope="row" class="larga">Código de salida</th><td>hijo: <code>System.exit(n)</code> · padre: <code>waitFor()</code>. Un número de 0 a 255, al acabar</td></tr>
+                  <tr><th scope="row" class="larga">Ficheros</th><td>uno escribe y otro lee; con redirecciones o con rutas pasadas como argumento</td></tr>
+                  <tr><th scope="row" class="larga">Sockets</th><td>para procesos en máquinas distintas o que no son padre e hijo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// padre</span>
+<span class="tok-tipo">ProcessBuilder</span> pb = <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(java, <span class="tok-texto">"Informe.java"</span>, <span class="tok-texto">"2026"</span>, <span class="tok-texto">"ventas.csv"</span>);
+pb.environment().put(<span class="tok-texto">"NIVEL_LOG"</span>, <span class="tok-texto">"debug"</span>);
+pb.environment().remove(<span class="tok-texto">"CLAVE_SECRETA"</span>);        <span class="tok-coment">// que el hijo no la herede</span>
+
+<span class="tok-coment">// hijo (Informe.java)</span>
+<span class="tok-clave">void</span> main(<span class="tok-tipo">String</span>[] args) {
+    <span class="tok-tipo">int</span> anio = <span class="tok-tipo">Integer</span>.parseInt(args[<span class="tok-numero">0</span>]);         <span class="tok-coment">// "2026"</span>
+    <span class="tok-tipo">String</span> fichero = args[<span class="tok-numero">1</span>];                     <span class="tok-coment">// "ventas.csv"</span>
+    <span class="tok-tipo">String</span> nivel = <span class="tok-tipo">System</span>.getenv().getOrDefault(<span class="tok-texto">"NIVEL_LOG"</span>, <span class="tok-texto">"info"</span>);
+    ...
+    <span class="tok-tipo">System</span>.exit(ok ? <span class="tok-numero">0</span> : <span class="tok-numero">1</span>);
+}</code></pre></figure>
+          </div>
+        </section>
+        <!-- 14. Process y ProcessHandle -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Process y ProcessHandle</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>ProcessHandle</code> (Java 9+) representa cualquier proceso del sistema, no solo los que lanzaste: sirve para consultarlos y terminarlos, pero no para leer sus canales.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">ProcessHandle</span> yo = <span class="tok-tipo">ProcessHandle</span>.current();
+<span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Mi PID: "</span> + yo.pid());
+yo.parent().ifPresent(padre -&gt; <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Mi padre: "</span> + padre.pid()));
+
+<span class="tok-tipo">ProcessHandle</span>.<span class="tok-tipo">Info</span> info = p.toHandle().info();
+info.command().ifPresent(<span class="tok-tipo">IO</span>::println);           <span class="tok-coment">// ruta del ejecutable</span>
+info.arguments().ifPresent(a -&gt; <span class="tok-tipo">IO</span>.println(<span class="tok-tipo">String</span>.join(<span class="tok-texto">" "</span>, a)));
+info.startInstant().ifPresent(<span class="tok-tipo">IO</span>::println);
+info.totalCpuDuration().ifPresent(<span class="tok-tipo">IO</span>::println);
+info.user().ifPresent(<span class="tok-tipo">IO</span>::println);
+
+<span class="tok-coment">// mis hijos y todos sus descendientes</span>
+yo.children().forEach(h -&gt; <span class="tok-tipo">IO</span>.println(h.pid()));
+p.descendants().forEach(<span class="tok-tipo">ProcessHandle</span>::destroy); <span class="tok-coment">// matar también los nietos</span>
+
+<span class="tok-coment">// todos los procesos del sistema con "java" en el comando</span>
+<span class="tok-tipo">ProcessHandle</span>.allProcesses()
+        .filter(h -&gt; h.info().command().orElse(<span class="tok-texto">""</span>).contains(<span class="tok-texto">"java"</span>))
+        .forEach(h -&gt; <span class="tok-tipo">IO</span>.println(h.pid() + <span class="tok-texto">" "</span> + h.info().command().orElse(<span class="tok-texto">""</span>)));
+
+<span class="tok-coment">// buscar uno por PID</span>
+<span class="tok-tipo">ProcessHandle</span>.of(<span class="tok-numero">1234</span>).ifPresent(<span class="tok-tipo">ProcessHandle</span>::destroy);</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>pid()</code></th><td>identificador del proceso en el sistema</td></tr>
+                  <tr><th scope="row"><code>info()</code></th><td>comando, argumentos, usuario, inicio y CPU; todo en <code>Optional</code>, porque el sistema puede no darlo</td></tr>
+                  <tr><th scope="row"><code>parent()  children()  descendants()</code></th><td>el árbol de procesos</td></tr>
+                  <tr><th scope="row"><code>isAlive()  destroy()  onExit()</code></th><td>como en <code>Process</code></td></tr>
+                  <tr><th scope="row"><code>p.toHandle()</code></th><td>de un <code>Process</code> a su <code>ProcessHandle</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Si el padre termina o se mata, sus hijos <strong>no</strong> mueren con él: siguen vivos, huérfanos. Mata los descendientes antes de salir si no deben quedarse.</p>
+          </div>
+        </section>
+        <!-- 15. Windows frente a Linux -->
+        <section id="s15" class="tarjeta">
+          <h2><span class="num">15</span>Windows frente a Linux</h2>
+          <div class="cuerpo">
+            <p class="txt">Java es el mismo en los dos sistemas, pero los <em>programas que lanzas</em> no.</p>
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
                   <tr><th scope="row">Intérprete</th><td>Windows: <code>cmd.exe /c</code> · Linux/Mac: <code>/bin/sh -c</code></td></tr>
-                  <tr><th scope="row">Ejecutables</th><td>Windows: <code>.exe</code>, <code>.bat</code> · Linux: sin extensión, con permiso <code>+x</code></td></tr>
-                  <tr><th scope="row">Rutas</th><td>Windows: <code>C:\ruta</code> (barra invertida) · Linux: <code>/ruta</code></td></tr>
-                  <tr><th scope="row">Separadores</th><td><code>File.separator</code> y <code>File.pathSeparator</code> según el SO</td></tr>
-                  <tr><th scope="row">Fin de línea</th><td>Windows: <code>\r\n</code> · Linux: <code>\n</code> (<code>System.lineSeparator()</code>)</td></tr>
+                  <tr><th scope="row">Comandos internos</th><td><code>dir</code>, <code>echo</code>, <code>type</code>, <code>copy</code> son de <code>cmd</code>: sin <code>cmd /c</code> no existen</td></tr>
+                  <tr><th scope="row">Scripts</th><td>Windows: <code>.bat</code> y <code>.cmd</code> (<code>mvn</code> es <code>mvn.cmd</code>) · Linux: permiso <code>+x</code> y <code>#!</code></td></tr>
+                  <tr><th scope="row">Codificación</th><td>la consola de Windows usa CP850: <code>p.inputReader(Charset.forName("CP850"))</code> para leer bien las tildes de <code>cmd</code></td></tr>
+                  <tr><th scope="row">Fin de línea</th><td>Windows: <code>\r\n</code> · Linux: <code>\n</code>. <code>readLine()</code> entiende los dos</td></tr>
+                  <tr><th scope="row"><code>destroy()</code></th><td>en Windows siempre mata a la fuerza</td></tr>
                 </tbody>
               </table>
             </div>
-            <figure class="codigo"><figcaption>Detectar el sistema y elegir el intérprete</figcaption><pre data-lang="java"><code><span class="tok-tipo">String</span> so = <span class="tok-tipo">System</span>.<span class="tok-funcion">getProperty</span>(<span class="tok-texto">"os.name"</span>).<span class="tok-funcion">toLowerCase</span>();
-<span class="tok-tipo">ProcessBuilder</span> pb = so.<span class="tok-funcion">contains</span>(<span class="tok-texto">"win"</span>)
-    ? <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"cmd.exe"</span>, <span class="tok-texto">"/c"</span>, <span class="tok-texto">"dir"</span>)
-    : <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"/bin/sh"</span>, <span class="tok-texto">"-c"</span>, <span class="tok-texto">"ls -l"</span>);</code></pre></figure>
-            <p class="nota">Necesitas el intérprete (<code>cmd /c</code>, <code>sh -c</code>) cuando quieres tuberías, redirecciones o comandos internos del shell; para un ejecutable suelto, llámalo directamente. Comandos de cada sistema en <a href="../sistemas/terminal-linux.html">Comandos de Linux</a>.</p>
+            <figure class="codigo"><figcaption>Detectar el sistema y elegir el intérprete</figcaption><pre data-lang="java"><code><span class="tok-tipo">boolean</span> windows = <span class="tok-tipo">System</span>.getProperty(<span class="tok-texto">"os.name"</span>).toLowerCase().contains(<span class="tok-texto">"win"</span>);
+
+<span class="tok-tipo">ProcessBuilder</span> pb = windows
+        ? <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"cmd.exe"</span>, <span class="tok-texto">"/c"</span>, <span class="tok-texto">"dir"</span>)
+        : <span class="tok-clave">new</span> <span class="tok-tipo">ProcessBuilder</span>(<span class="tok-texto">"/bin/sh"</span>, <span class="tok-texto">"-c"</span>, <span class="tok-texto">"ls -l"</span>);
+
+<span class="tok-coment">// equivalentes habituales</span>
+<span class="tok-tipo">String</span>[] listar  = windows ? <span class="tok-clave">new</span> <span class="tok-tipo">String</span>[] { <span class="tok-texto">"cmd"</span>, <span class="tok-texto">"/c"</span>, <span class="tok-texto">"dir"</span> }      : <span class="tok-clave">new</span> <span class="tok-tipo">String</span>[] { <span class="tok-texto">"ls"</span>, <span class="tok-texto">"-l"</span> };
+<span class="tok-tipo">String</span>[] ping    = windows ? <span class="tok-clave">new</span> <span class="tok-tipo">String</span>[] { <span class="tok-texto">"ping"</span>, <span class="tok-texto">"-n"</span>, <span class="tok-texto">"3"</span>, <span class="tok-texto">"localhost"</span> } : <span class="tok-clave">new</span> <span class="tok-tipo">String</span>[] { <span class="tok-texto">"ping"</span>, <span class="tok-texto">"-c"</span>, <span class="tok-texto">"3"</span>, <span class="tok-texto">"localhost"</span> };
+<span class="tok-tipo">String</span>[] limpiar = windows ? <span class="tok-clave">new</span> <span class="tok-tipo">String</span>[] { <span class="tok-texto">"cmd"</span>, <span class="tok-texto">"/c"</span>, <span class="tok-texto">"cls"</span> }      : <span class="tok-clave">new</span> <span class="tok-tipo">String</span>[] { <span class="tok-texto">"clear"</span> };</code></pre></figure>
+            <p class="nota">Usa el intérprete solo cuando necesites cosas del shell (tuberías, <code>&gt;</code>, <code>*</code>, comandos internos). Para un ejecutable suelto, llámalo directamente. Comandos de Linux en <a href="../sistemas/terminal-linux.html">Terminal de Linux</a>.</p>
           </div>
         </section>
-        <!-- 8 -->
-        <section id="s8" class="tarjeta">
-          <h2><span class="num">8</span>Buenas prácticas</h2>
+        <!-- 16. Errores habituales -->
+        <section id="s16" class="tarjeta">
+          <h2><span class="num">16</span>Errores habituales</h2>
           <div class="cuerpo">
             <div class="tabla-scroll">
               <table class="ref ">
                 <tbody>
-                  <tr><th scope="row">Argumentos separados</th><td>nunca montes una sola cadena con datos del usuario (inyección de comandos)</td></tr>
-                  <tr><th scope="row">Lee la salida</th><td>consume los streams para no bloquear el proceso</td></tr>
-                  <tr><th scope="row">Pon un timeout</th><td><code>waitFor(t, unidad)</code> y <code>destroyForcibly()</code> si se pasa</td></tr>
-                  <tr><th scope="row">Comprueba el código</th><td>un <code>exitValue()</code> distinto de 0 es un fallo</td></tr>
-                  <tr><th scope="row">Cierra los streams</th><td>usa try-with-resources (ver <a href="excepciones.html">Excepciones</a>)</td></tr>
-                  <tr><th scope="row">No asumas el SO</th><td>detecta <code>os.name</code> o usa librerías multiplataforma</td></tr>
+                  <tr><th scope="row" class="larga"><code>IOException: Cannot run program</code></th><td>no está en el <code>PATH</code>, es un comando interno de <code>cmd</code>, o en Windows falta <code>.cmd</code></td></tr>
+                  <tr><th scope="row" class="larga">Todo el comando en una cadena</th><td><code>new ProcessBuilder("ls -l")</code> busca un programa llamado <code>"ls -l"</code>: un argumento por elemento</td></tr>
+                  <tr><th scope="row" class="larga">El programa se queda colgado</th><td>falta leer la salida, hacer <code>flush</code> o cerrar la entrada (secciones 5, 6 y 8)</td></tr>
+                  <tr><th scope="row" class="larga">"Paralelo" que tarda lo mismo</th><td><code>waitFor()</code> dentro del bucle de <code>start()</code></td></tr>
+                  <tr><th scope="row" class="larga">No sale nada al leer</th><td>la salida está redirigida, o el programa escribe en stderr</td></tr>
+                  <tr><th scope="row" class="larga">Usar <code>|</code> o <code>&gt;</code> como argumento</th><td>sin shell son texto normal: usa redirecciones, <code>startPipeline</code> o <code>sh -c</code></td></tr>
+                  <tr><th scope="row" class="larga">Ignorar el código de salida</th><td>un hijo que falla no lanza excepción en el padre: comprueba <code>waitFor() != 0</code></td></tr>
+                  <tr><th scope="row" class="larga">Esperar sin límite</th><td>usa <code>waitFor(t, unidad)</code> y <code>destroyForcibly()</code> si se pasa</td></tr>
+                  <tr><th scope="row" class="larga">Tildes rotas</th><td>codificación distinta en el hijo: indícala en <code>inputReader(charset)</code></td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="aviso"><strong>Inyección de comandos:</strong> si construyes el comando concatenando texto del usuario y lo pasas a un shell, pueden colar órdenes propias. Pasa siempre los argumentos por separado y evita el intérprete si no lo necesitas. Relacionado: <a href="../hacking/shells.html">shells</a>.</p>
+            <p class="aviso"><strong>Inyección de comandos:</strong> nunca montes una cadena con datos del usuario para pasarla a <code>sh -c</code> o <code>cmd /c</code>: con un <code>; rm -rf ~</code> o un <code>&amp; del</code> pueden colar sus propias órdenes. Pasa cada dato como argumento separado y sin intérprete. Relacionado: <a href="../hacking/shells.html">Shells</a>.</p>
           </div>
         </section>
       </div>
-      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="random.html">← Números aleatorios</a><a class="siguiente" href="maven.html">Maven →</a></nav>
-      <footer class="pie">Los flujos que se leen y escriben están en <a href="lectura-escritura.html">Lectura y escritura</a>. Documentación: <code>java.lang.ProcessBuilder</code>.</footer>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="random.html">← Números aleatorios</a><a class="siguiente" href="hilos.html">Hilos →</a></nav>
+      <footer class="pie">Los flujos que se leen y escriben están en <a href="lectura-escritura.html">Lectura y escritura</a>; los errores, en <a href="excepciones.html">Excepciones</a>. Documentación: <code>java.lang.ProcessBuilder</code>, <code>Process</code> y <code>ProcessHandle</code>.</footer>
     </main>
     <script src="../assets/chuletas.js" defer></script>
   </body>

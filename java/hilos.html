@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hilos · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="java">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Java</a><span aria-hidden="true">›</span><span>Hilos</span></nav>
+          <h1>Hilos</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Programación concurrente en Java: crear y esperar hilos, ejecutarlos en secuencia o en paralelo, compartir datos sin condiciones de carrera, comunicarlos con <code>wait</code>/<code>notify</code> y colas, y los pools de <code>java.util.concurrent</code>.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Java">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="arrays.html">Arrays y matrices</a><a href="strings.html">Strings</a><a href="metodos.html">Métodos y recursividad</a><a href="poo.html">Fundamentos de POO</a><a href="poo-avanzada.html">POO avanzada</a><a href="excepciones.html">Excepciones</a><a href="colecciones.html">Colecciones</a><a href="streams.html">Lambdas y streams</a><a href="ficheros-directorios.html">Ficheros y directorios</a><a href="lectura-escritura.html">Lectura y escritura</a><a href="xml.html">XML</a><a href="json.html">JSON</a><a href="fechas.html">Fechas y horas</a><a href="math.html">Math</a><a href="random.html">Números aleatorios</a><a href="procesos.html">Procesos</a><a href="hilos.html" aria-current="page">Hilos</a><a href="maven.html">Maven</a><a href="junit.html">JUnit</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Hilo frente a proceso</a><a href="#s2"><b>2</b>Crear y lanzar un hilo</a><a href="#s3"><b>3</b>Métodos de Thread</a><a href="#s4"><b>4</b>Estados de un hilo</a><a href="#s5"><b>5</b>En secuencia o en paralelo: join</a><a href="#s6"><b>6</b>Pasar datos y recoger resultados</a><a href="#s7"><b>7</b>Interrumpir y parar un hilo</a><a href="#s8"><b>8</b>Condiciones de carrera</a><a href="#s9"><b>9</b>synchronized</a><a href="#s10"><b>10</b>wait y notify: productor-consumidor</a><a href="#s11"><b>11</b>Locks y Condition</a><a href="#s12"><b>12</b>volatile y variables atómicas</a><a href="#s13"><b>13</b>Colecciones concurrentes y BlockingQueue</a><a href="#s14"><b>14</b>Pools: ExecutorService</a><a href="#s15"><b>15</b>CompletableFuture</a><a href="#s16"><b>16</b>Sincronizadores</a><a href="#s17"><b>17</b>Interbloqueo y otros problemas</a><a href="#s18"><b>18</b>Errores habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <p class="banda-titulo">Varios hilos, una sola memoria</p>
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Lo que comparten y lo que no</p>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">PROCESO</span> (una JVM)
+┌──────────────────────────────────────────────┐
+│ <span class="tok-tipo">Memoria compartida (heap)</span>                    │
+│   objetos, atributos, static  <span class="tok-coment">← aquí chocan</span>  │
+│                                              │
+│  hilo main     hilo-1        hilo-2          │
+│  ┌────────┐   ┌────────┐   ┌────────┐        │
+│  │ pila   │   │ pila   │   │ pila   │        │
+│  │ locales│   │ locales│   │ locales│ <span class="tok-coment">propias</span>│
+│  └────────┘   └────────┘   └────────┘        │
+└──────────────────────────────────────────────┘
+<span class="tok-coment">Las variables locales son de cada hilo.</span>
+<span class="tok-coment">Los objetos que se pasan entre hilos, de todos.</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Secuencial frente a paralelo</p>
+            <figure class="codigo"><pre data-lang="text"><code><span class="tok-clave">Secuencial</span>   start → join, start → join...
+  A ████████
+            B ████
+                 C ██████        <span class="tok-coment">total = A + B + C</span>
+
+<span class="tok-clave">Paralelo</span>     start, start, start → join todos
+  A ████████
+  B ████
+  C ██████                       <span class="tok-coment">total ≈ el más lento</span>
+
+<span class="tok-clave">Sección crítica</span>  (synchronized)
+  A ██░░░░██      <span class="tok-coment">░ = esperando el cerrojo</span>
+  B ░░████░░</code></pre></figure>
+          </div>
+        </div>
+        <p class="banda-titulo">Ciclo de vida de un hilo (Thread.State)</p>
+        <div class="flujo">
+          <div class="caja caja-1">NEW<small>creado, sin start()</small></div>
+          <div class="flecha"><span class="ida">start()</span><br><span class="linea">──────▶</span><br><span class="vuelta">el planificador lo elige</span></div>
+          <div class="caja caja-2">RUNNABLE<small>ejecutándose o listo</small></div>
+          <div class="flecha"><span class="ida">sleep, wait, join, lock</span><br><span class="linea">◀─────▶</span><br><span class="vuelta">BLOCKED · WAITING · TIMED_WAITING</span></div>
+          <div class="caja caja-3">esperando<small>no gasta CPU</small></div>
+          <div class="flecha"><span class="ida">run() acaba</span><br><span class="linea">──────▶</span><br><span class="vuelta">o lanza excepción</span></div>
+          <div class="caja caja-4">TERMINATED<small>no se puede relanzar</small></div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Hilo frente a proceso -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Hilo frente a proceso</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Memoria</th><td>proceso: la suya, aislada · hilo: comparte el heap con los demás hilos del proceso</td></tr>
+                  <tr><th scope="row">Comunicación</th><td>proceso: tuberías, ficheros, sockets · hilo: objetos compartidos</td></tr>
+                  <tr><th scope="row">Coste de crear</th><td>proceso: alto · hilo: bajo (y un hilo virtual, casi nada)</td></tr>
+                  <tr><th scope="row">Si falla</th><td>proceso: no afecta a los demás · hilo: una excepción mata solo ese hilo, pero puede dejar datos a medias</td></tr>
+                  <tr><th scope="row">Clases</th><td>proceso: <a href="procesos.html"><code>ProcessBuilder</code></a> · hilo: <code>Thread</code>, <code>ExecutorService</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Concurrencia</th><td>varias tareas avanzan a la vez, aunque sea turnándose en un solo núcleo</td></tr>
+                  <tr><th scope="row">Paralelismo</th><td>varias tareas se ejecutan en el mismo instante, en núcleos distintos</td></tr>
+                  <tr><th scope="row">Sección crítica</th><td>trozo de código que toca datos compartidos: solo debe ejecutarlo un hilo a la vez</td></tr>
+                  <tr><th scope="row">Hilo <code>main</code></th><td>el que ejecuta <code>main</code>; el programa acaba cuando terminan todos los hilos no demonio</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Casi todo lo que no es <code>Thread</code> está en <code>java.util.concurrent</code>, <code>java.util.concurrent.atomic</code> y <code>java.util.concurrent.locks</code>.</p>
+          </div>
+        </section>
+        <!-- 2. Crear y lanzar un hilo -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Crear y lanzar un hilo</h2>
+          <div class="cuerpo">
+            <p class="txt">El trabajo del hilo va en un método <code>run()</code>. Se le puede dar de varias formas, pero siempre se arranca con <strong><code>start()</code></strong>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// 1. heredar de Thread</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Contador</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Thread</span> {
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> run() {
+        <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">1</span>; i &lt;= <span class="tok-numero">3</span>; i++) {
+            <span class="tok-tipo">IO</span>.println(getName() + <span class="tok-texto">": "</span> + i);
+        }
+    }
+}
+<span class="tok-clave">new</span> <span class="tok-tipo">Contador</span>().start();
+
+<span class="tok-coment">// 2. implementar Runnable (mejor: la clase puede heredar de otra)</span>
+<span class="tok-clave">class</span> <span class="tok-tipo">Tarea</span> <span class="tok-clave">implements</span> <span class="tok-tipo">Runnable</span> {
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> run() {
+        <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Soy "</span> + <span class="tok-tipo">Thread</span>.currentThread().getName());
+    }
+}
+<span class="tok-tipo">Thread</span> t = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(<span class="tok-clave">new</span> <span class="tok-tipo">Tarea</span>(), <span class="tok-texto">"trabajador-1"</span>);   <span class="tok-coment">// con nombre</span>
+t.start();
+
+<span class="tok-coment">// 3. lambda: Runnable es una interfaz funcional</span>
+<span class="tok-tipo">Thread</span> t2 = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Hola desde un hilo"</span>));
+t2.start();
+
+<span class="tok-coment">// 4. constructores con nombre (Java 21)</span>
+<span class="tok-tipo">Thread</span> t3 = <span class="tok-tipo">Thread</span>.ofPlatform().name(<span class="tok-texto">"descarga"</span>).start(() -&gt; descargar());
+<span class="tok-tipo">Thread</span> v  = <span class="tok-tipo">Thread</span>.ofVirtual().start(() -&gt; atender(peticion));   <span class="tok-coment">// hilo virtual</span>
+<span class="tok-tipo">Thread</span> v2 = <span class="tok-tipo">Thread</span>.startVirtualThread(() -&gt; atender(peticion));</code></pre></figure>
+            <p class="aviso"><strong><code>run()</code> no crea ningún hilo:</strong> llamarlo directamente ejecuta el código en el hilo actual, como un método normal. Y <code>start()</code> solo se puede llamar una vez: la segunda lanza <code>IllegalThreadStateException</code>.</p>
+            <h3>Hilos virtuales (Java 21)</h3>
+            <p class="txt">Los gestiona la JVM, no el sistema operativo: se pueden crear cientos de miles. Son ideales para tareas que pasan casi todo el tiempo esperando (red, disco, base de datos). Para cálculo intensivo no aportan nada frente a un pool de hilos normales.</p>
+          </div>
+        </section>
+        <!-- 3. Métodos de Thread -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Métodos de Thread</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>start()</code></th><td>crea el hilo y ejecuta <code>run()</code> en él</td></tr>
+                  <tr><th scope="row"><code>join()</code></th><td>el hilo actual espera a que este termine</td></tr>
+                  <tr><th scope="row"><code>join(ms)</code></th><td>espera como mucho ese tiempo</td></tr>
+                  <tr><th scope="row"><code>Thread.sleep(ms)</code></th><td>duerme el hilo <strong>actual</strong> (es <code>static</code>); también con <code>Duration</code></td></tr>
+                  <tr><th scope="row"><code>interrupt()</code></th><td>pide al hilo que pare (sección 7)</td></tr>
+                  <tr><th scope="row"><code>isInterrupted()</code></th><td>si le han pedido parar</td></tr>
+                  <tr><th scope="row"><code>isAlive()</code></th><td>si ha arrancado y aún no ha terminado</td></tr>
+                  <tr><th scope="row"><code>getState()</code></th><td>su estado: <code>NEW</code>, <code>RUNNABLE</code>...</td></tr>
+                  <tr><th scope="row"><code>Thread.currentThread()</code></th><td>el hilo que está ejecutando esa línea</td></tr>
+                  <tr><th scope="row"><code>getName()  setName(n)</code></th><td>nombre; por defecto <code>Thread-0</code>, <code>Thread-1</code>...</td></tr>
+                  <tr><th scope="row"><code>threadId()</code></th><td>identificador único (Java 19+; antes <code>getId()</code>)</td></tr>
+                  <tr><th scope="row"><code>setPriority(1..10)</code></th><td>prioridad: solo una sugerencia al planificador</td></tr>
+                  <tr><th scope="row"><code>setDaemon(true)</code></th><td>demonio: no impide que el programa acabe. Antes de <code>start()</code></td></tr>
+                  <tr><th scope="row"><code>Thread.yield()</code></th><td>sugiere ceder la CPU a otro hilo</td></tr>
+                  <tr><th scope="row"><code>isVirtual()</code></th><td>si es un hilo virtual (Java 21)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">El orden en que se ejecutan los hilos lo decide el planificador del sistema y <strong>cambia en cada ejecución</strong>. Si el resultado depende del orden, hay que sincronizar.</p>
+          </div>
+        </section>
+        <!-- 4. Estados de un hilo -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Estados de un hilo</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>NEW</code></th><td>creado, todavía sin <code>start()</code></td></tr>
+                  <tr><th scope="row"><code>RUNNABLE</code></th><td>ejecutándose, o listo esperando su turno de CPU</td></tr>
+                  <tr><th scope="row"><code>BLOCKED</code></th><td>esperando para entrar en un <code>synchronized</code> que tiene otro hilo</td></tr>
+                  <tr><th scope="row"><code>WAITING</code></th><td>esperando sin límite: <code>wait()</code>, <code>join()</code>, <code>LockSupport.park()</code></td></tr>
+                  <tr><th scope="row"><code>TIMED_WAITING</code></th><td>esperando con límite: <code>sleep(ms)</code>, <code>wait(ms)</code>, <code>join(ms)</code></td></tr>
+                  <tr><th scope="row"><code>TERMINATED</code></th><td><code>run()</code> ha acabado, normalmente o con una excepción</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Thread</span> t = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; {
+    <span class="tok-clave">try</span> { <span class="tok-tipo">Thread</span>.sleep(<span class="tok-numero">500</span>); } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) { }
+});
+<span class="tok-tipo">IO</span>.println(t.getState());   <span class="tok-coment">// NEW</span>
+t.start();
+<span class="tok-tipo">Thread</span>.sleep(<span class="tok-numero">100</span>);
+<span class="tok-tipo">IO</span>.println(t.getState());   <span class="tok-coment">// TIMED_WAITING</span>
+t.join();
+<span class="tok-tipo">IO</span>.println(t.getState());   <span class="tok-coment">// TERMINATED</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 5. En secuencia o en paralelo: join -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>En secuencia o en paralelo: join</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>start()</code> no espera: el hilo que lo llama sigue a lo suyo. Para esperar a que un hilo acabe se usa <code>join()</code>. Dónde se pone el <code>join</code> decide si van en secuencia o en paralelo.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Runnable</span> tarea = () -&gt; {
+    <span class="tok-tipo">String</span> yo = <span class="tok-tipo">Thread</span>.currentThread().getName();
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">1</span>; i &lt;= <span class="tok-numero">3</span>; i++) {
+        <span class="tok-tipo">IO</span>.println(yo + <span class="tok-texto">" paso "</span> + i);
+        <span class="tok-clave">try</span> { <span class="tok-tipo">Thread</span>.sleep(<span class="tok-numero">300</span>); } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) { <span class="tok-clave">return</span>; }
+    }
+};
+
+<span class="tok-coment">// EN SECUENCIA: start y join seguidos → cada uno espera al anterior</span>
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> nombre : <span class="tok-tipo">List</span>.of(<span class="tok-texto">"A"</span>, <span class="tok-texto">"B"</span>, <span class="tok-texto">"C"</span>)) {
+    <span class="tok-tipo">Thread</span> t = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(tarea, nombre);
+    t.start();
+    t.join();                       <span class="tok-coment">// ← espera aquí antes de lanzar el siguiente</span>
+}                                   <span class="tok-coment">// ~2,7 s: A1 A2 A3 B1 B2 B3 C1 C2 C3</span>
+
+<span class="tok-coment">// EN PARALELO: primero lanzar todos, después esperar a todos</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Thread</span>&gt; hilos = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+<span class="tok-clave">for</span> (<span class="tok-tipo">String</span> nombre : <span class="tok-tipo">List</span>.of(<span class="tok-texto">"A"</span>, <span class="tok-texto">"B"</span>, <span class="tok-texto">"C"</span>)) {
+    <span class="tok-tipo">Thread</span> t = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(tarea, nombre);
+    t.start();
+    hilos.add(t);
+}
+<span class="tok-clave">for</span> (<span class="tok-tipo">Thread</span> t : hilos) {
+    t.join();                       <span class="tok-coment">// el orden de los join da igual</span>
+}                                   <span class="tok-coment">// ~0,9 s: A1 C1 B1 B2 A2 C2... (cada vez distinto)</span>
+<span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Todos han terminado"</span>);</code></pre></figure>
+            <h3>Un orden fijo entre hilos que van a la vez</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// B arranca ya, pero no empieza su parte hasta que A termina</span>
+<span class="tok-tipo">Thread</span> a = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"A: preparo los datos"</span>));
+<span class="tok-tipo">Thread</span> b = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; {
+    <span class="tok-clave">try</span> {
+        a.join();                   <span class="tok-coment">// un hilo puede esperar a otro, no solo main</span>
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) {
+        <span class="tok-clave">return</span>;
+    }
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"B: uso los datos"</span>);
+});
+b.start();
+a.start();</code></pre></figure>
+            <p class="nota">Si <code>main</code> no hace <code>join</code>, sigue y puede terminar antes que los hilos. El programa no se cierra hasta que acaban todos los hilos que no sean demonio.</p>
+          </div>
+        </section>
+        <!-- 6. Pasar datos y recoger resultados -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Pasar datos y recoger resultados</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>run()</code> no recibe parámetros ni devuelve nada. Los datos de entrada se pasan por el constructor (o los captura la lambda) y el resultado se deja en un atributo que se lee <strong>después del <code>join</code></strong>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">class</span> <span class="tok-tipo">Sumador</span> <span class="tok-clave">extends</span> <span class="tok-tipo">Thread</span> {
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">int</span>[] datos;
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">int</span> desde, hasta;
+    <span class="tok-clave">private</span> <span class="tok-tipo">long</span> resultado;                          <span class="tok-coment">// lo rellena el hilo</span>
+
+    <span class="tok-tipo">Sumador</span>(<span class="tok-tipo">int</span>[] datos, <span class="tok-tipo">int</span> desde, <span class="tok-tipo">int</span> hasta) {
+        <span class="tok-clave">this</span>.datos = datos; <span class="tok-clave">this</span>.desde = desde; <span class="tok-clave">this</span>.hasta = hasta;
+    }
+
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> run() {
+        <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = desde; i &lt; hasta; i++) resultado += datos[i];
+    }
+
+    <span class="tok-tipo">long</span> getResultado() { <span class="tok-clave">return</span> resultado; }
+}
+
+<span class="tok-coment">// repartir un array grande entre 4 hilos</span>
+<span class="tok-tipo">int</span> n = <span class="tok-numero">4</span>, trozo = datos.length / n;
+<span class="tok-tipo">Sumador</span>[] hilos = <span class="tok-clave">new</span> <span class="tok-tipo">Sumador</span>[n];
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; n; i++) {
+    <span class="tok-tipo">int</span> fin = (i == n - <span class="tok-numero">1</span>) ? datos.length : (i + <span class="tok-numero">1</span>) * trozo;
+    hilos[i] = <span class="tok-clave">new</span> <span class="tok-tipo">Sumador</span>(datos, i * trozo, fin);
+    hilos[i].start();
+}
+<span class="tok-tipo">long</span> total = <span class="tok-numero">0</span>;
+<span class="tok-clave">for</span> (<span class="tok-tipo">Sumador</span> s : hilos) {
+    s.join();                                       <span class="tok-coment">// join garantiza que el resultado ya se ve</span>
+    total += s.getResultado();
+}
+
+<span class="tok-coment">// la lambda captura variables locales, pero solo si son finales o "efectivamente finales"</span>
+<span class="tok-tipo">String</span> saludo = <span class="tok-texto">"Hola"</span>;
+<span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; <span class="tok-tipo">IO</span>.println(saludo)).start();</code></pre></figure>
+            <h3>Con valor de retorno: Callable y Future</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Callable</span>&lt;<span class="tok-tipo">Long</span>&gt; tarea = () -&gt; sumar(datos, <span class="tok-numero">0</span>, datos.length);   <span class="tok-coment">// como Runnable, pero devuelve algo</span>
+<span class="tok-clave">try</span> (<span class="tok-tipo">ExecutorService</span> pool = <span class="tok-tipo">Executors</span>.newFixedThreadPool(<span class="tok-numero">2</span>)) {
+    <span class="tok-tipo">Future</span>&lt;<span class="tok-tipo">Long</span>&gt; futuro = pool.submit(tarea);   <span class="tok-coment">// arranca ya</span>
+    <span class="tok-coment">// ... el hilo actual hace otras cosas ...</span>
+    <span class="tok-tipo">long</span> resultado = futuro.get();               <span class="tok-coment">// espera y recoge (como join + getter)</span>
+}</code></pre></figure>
+            <p class="nota"><code>Callable</code> puede lanzar excepciones comprobadas; <code>Future.get()</code> las devuelve envueltas en <code>ExecutionException</code> (la original en <code>getCause()</code>).</p>
+          </div>
+        </section>
+        <!-- 7. Interrumpir y parar un hilo -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Interrumpir y parar un hilo</h2>
+          <div class="cuerpo">
+            <p class="txt">No se puede matar un hilo desde fuera (<code>stop()</code> está eliminado). Se le <strong>pide</strong> que pare con <code>interrupt()</code> y el propio hilo lo comprueba y termina de forma ordenada.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-tipo">Thread</span> t = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; {
+    <span class="tok-clave">while</span> (!<span class="tok-tipo">Thread</span>.currentThread().isInterrupted()) {    <span class="tok-coment">// 1. lo comprueba en el bucle</span>
+        trabajar();
+        <span class="tok-clave">try</span> {
+            <span class="tok-tipo">Thread</span>.sleep(<span class="tok-numero">1000</span>);
+        } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) {               <span class="tok-coment">// 2. o le llega aquí si dormía</span>
+            <span class="tok-tipo">Thread</span>.currentThread().interrupt();          <span class="tok-coment">//    sleep borra la marca: se vuelve a poner</span>
+        }
+    }
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Parado limpiamente"</span>);
+});
+t.start();
+<span class="tok-tipo">Thread</span>.sleep(<span class="tok-numero">3500</span>);
+t.interrupt();                                           <span class="tok-coment">// pide que pare</span>
+t.join();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>t.interrupt()</code></th><td>pone la marca de interrupción; si el hilo está en <code>sleep</code>, <code>wait</code> o <code>join</code>, le lanza <code>InterruptedException</code></td></tr>
+                  <tr><th scope="row"><code>t.isInterrupted()</code></th><td>consulta la marca sin borrarla</td></tr>
+                  <tr><th scope="row"><code>Thread.interrupted()</code></th><td>consulta la marca del hilo actual <strong>y la borra</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Con una bandera propia</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">class</span> <span class="tok-tipo">Reloj</span> <span class="tok-clave">implements</span> <span class="tok-tipo">Runnable</span> {
+    <span class="tok-clave">private</span> volatile <span class="tok-tipo">boolean</span> activo = <span class="tok-clave">true</span>;     <span class="tok-coment">// volatile: el cambio se ve desde el otro hilo</span>
+
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> parar() { activo = <span class="tok-clave">false</span>; }
+
+    <span class="tok-atributo">@Override</span>
+    <span class="tok-clave">public</span> <span class="tok-clave">void</span> run() {
+        <span class="tok-clave">while</span> (activo) { tic(); }
+    }
+}</code></pre></figure>
+            <p class="aviso"><strong>No te tragues la <code>InterruptedException</code></strong> con un <code>catch</code> vacío: el hilo nunca se entera de que le pidieron parar. O terminas (<code>return</code>), o la relanzas, o vuelves a marcar con <code>interrupt()</code>.</p>
+          </div>
+        </section>
+        <!-- 8. Condiciones de carrera -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Condiciones de carrera</h2>
+          <div class="cuerpo">
+            <p class="txt">Cuando dos hilos modifican el mismo dato a la vez, el resultado depende de cómo se intercalen: es una <strong>condición de carrera</strong>. <code>contador++</code> parece una operación, pero son tres: leer, sumar y escribir.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">class</span> <span class="tok-tipo">Cuenta</span> {
+    <span class="tok-tipo">int</span> contador = <span class="tok-numero">0</span>;
+    <span class="tok-clave">void</span> incrementar() { contador++; }       <span class="tok-coment">// ¡no es atómico!</span>
+}
+
+<span class="tok-tipo">Cuenta</span> c = <span class="tok-clave">new</span> <span class="tok-tipo">Cuenta</span>();
+<span class="tok-tipo">Runnable</span> sumarMil = () -&gt; { <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; 1_000_000; i++) c.incrementar(); };
+<span class="tok-tipo">Thread</span> a = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(sumarMil), b = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(sumarMil);
+a.start(); b.start();
+a.join();  b.join();
+<span class="tok-tipo">IO</span>.println(c.contador);                       <span class="tok-coment">// esperado 2000000; sale 1184503, 1376211...</span></code></pre></figure>
+            <figure class="codigo"><pre data-lang="text"><code>hilo A                hilo B                contador
+lee 41                                      41
+                      lee 41                41
+suma → 42                                   41
+                      suma → 42             41
+escribe 42                                  42
+                      escribe 42            42   <span class="tok-coment">← se ha perdido un incremento</span></code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Un contador o un número</th><td><code>AtomicInteger</code> / <code>AtomicLong</code> (sección 12)</td></tr>
+                  <tr><th scope="row" class="larga">Varias operaciones que deben ir juntas</th><td><code>synchronized</code> (sección 9) o un <code>Lock</code> (sección 11)</td></tr>
+                  <tr><th scope="row" class="larga">Una colección compartida</th><td><code>ConcurrentHashMap</code>, <code>BlockingQueue</code>... (sección 13)</td></tr>
+                  <tr><th scope="row" class="larga">Mejor aún: no compartir</th><td>cada hilo trabaja con sus datos y se juntan al final (sección 6)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 9. synchronized -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>synchronized</h2>
+          <div class="cuerpo">
+            <p class="txt">Todo objeto tiene un <strong>cerrojo</strong> (monitor). Un bloque <code>synchronized</code> lo coge al entrar y lo suelta al salir: mientras un hilo lo tiene, los demás que quieran el mismo cerrojo esperan en estado <code>BLOCKED</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">class</span> <span class="tok-tipo">Cuenta</span> {
+    <span class="tok-clave">private</span> <span class="tok-tipo">int</span> saldo;
+
+    <span class="tok-coment">// método sincronizado: el cerrojo es this</span>
+    <span class="tok-clave">public</span> synchronized <span class="tok-clave">void</span> ingresar(<span class="tok-tipo">int</span> cantidad) {
+        saldo += cantidad;
+    }
+
+    <span class="tok-clave">public</span> synchronized <span class="tok-tipo">boolean</span> retirar(<span class="tok-tipo">int</span> cantidad) {
+        <span class="tok-clave">if</span> (saldo &lt; cantidad) <span class="tok-clave">return</span> <span class="tok-clave">false</span>;   <span class="tok-coment">// comprobar y cambiar, sin que nadie se cuele</span>
+        saldo -= cantidad;
+        <span class="tok-clave">return</span> <span class="tok-clave">true</span>;
+    }
+
+    <span class="tok-coment">// leer también: si no, otro hilo puede ver un valor antiguo</span>
+    <span class="tok-clave">public</span> synchronized <span class="tok-tipo">int</span> getSaldo() { <span class="tok-clave">return</span> saldo; }
+}
+
+<span class="tok-coment">// bloque sincronizado: solo la parte crítica, con el cerrojo que elijas</span>
+<span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">Object</span> cerrojo = <span class="tok-clave">new</span> <span class="tok-tipo">Object</span>();
+
+<span class="tok-clave">void</span> registrar(<span class="tok-tipo">String</span> evento) {
+    <span class="tok-tipo">String</span> linea = <span class="tok-tipo">LocalTime</span>.now() + <span class="tok-texto">" "</span> + evento;   <span class="tok-coment">// fuera: no necesita exclusión</span>
+    synchronized (cerrojo) {
+        log.add(linea);
+        contador++;
+    }
+}
+
+<span class="tok-coment">// static synchronized: el cerrojo es la clase (Cuenta.class), común a todos los objetos</span>
+<span class="tok-clave">public</span> <span class="tok-clave">static</span> synchronized <span class="tok-tipo">int</span> siguienteId() { <span class="tok-clave">return</span> ++ultimoId; }</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Mismo objeto, dos métodos <code>synchronized</code></th><td>se excluyen: comparten el cerrojo <code>this</code></td></tr>
+                  <tr><th scope="row" class="larga">Objetos distintos</th><td>no se excluyen: cada uno tiene su cerrojo</td></tr>
+                  <tr><th scope="row" class="larga">Método sin <code>synchronized</code></th><td>no espera a nadie, aunque otro hilo tenga el cerrojo</td></tr>
+                  <tr><th scope="row" class="larga">El mismo hilo vuelve a entrar</th><td>puede: el cerrojo es <strong>reentrante</strong></td></tr>
+                  <tr><th scope="row" class="larga">Salta una excepción dentro</th><td>el cerrojo se suelta igualmente</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Sincroniza lo justo: cuanto más código dentro, más tiempo esperan los demás hilos. Y nunca sincronices sobre un <code>String</code> literal ni un <code>Integer</code>: pueden ser el mismo objeto en sitios que no conoces.</p>
+          </div>
+        </section>
+        <!-- 10. wait y notify -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>wait y notify: productor-consumidor</h2>
+          <div class="cuerpo">
+            <p class="txt">Para que un hilo espere a que otro le avise. Se llaman <strong>dentro de un <code>synchronized</code></strong> sobre el mismo objeto: <code>wait()</code> suelta el cerrojo y duerme; <code>notifyAll()</code> despierta a los que esperan, que vuelven a competir por el cerrojo.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">class</span> <span class="tok-tipo">Buffer</span> {
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">Queue</span>&lt;<span class="tok-tipo">Integer</span>&gt; cola = <span class="tok-clave">new</span> <span class="tok-tipo">LinkedList</span>&lt;&gt;();
+    <span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">int</span> capacidad;
+
+    <span class="tok-tipo">Buffer</span>(<span class="tok-tipo">int</span> capacidad) { <span class="tok-clave">this</span>.capacidad = capacidad; }
+
+    <span class="tok-clave">public</span> synchronized <span class="tok-clave">void</span> poner(<span class="tok-tipo">int</span> dato) <span class="tok-clave">throws</span> <span class="tok-tipo">InterruptedException</span> {
+        <span class="tok-clave">while</span> (cola.size() == capacidad) {   <span class="tok-coment">// lleno: el productor espera</span>
+            wait();
+        }
+        cola.add(dato);
+        notifyAll();                         <span class="tok-coment">// avisa a los consumidores</span>
+    }
+
+    <span class="tok-clave">public</span> synchronized <span class="tok-tipo">int</span> sacar() <span class="tok-clave">throws</span> <span class="tok-tipo">InterruptedException</span> {
+        <span class="tok-clave">while</span> (cola.isEmpty()) {             <span class="tok-coment">// vacío: el consumidor espera</span>
+            wait();
+        }
+        <span class="tok-tipo">int</span> dato = cola.remove();
+        notifyAll();                         <span class="tok-coment">// avisa a los productores</span>
+        <span class="tok-clave">return</span> dato;
+    }
+}
+
+<span class="tok-tipo">Buffer</span> buffer = <span class="tok-clave">new</span> <span class="tok-tipo">Buffer</span>(<span class="tok-numero">5</span>);
+
+<span class="tok-tipo">Thread</span> productor = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; {
+    <span class="tok-clave">try</span> {
+        <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">1</span>; i &lt;= <span class="tok-numero">20</span>; i++) {
+            buffer.poner(i);
+            <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Producido "</span> + i);
+        }
+        buffer.poner(-<span class="tok-numero">1</span>);                    <span class="tok-coment">// "píldora venenosa": aviso de fin</span>
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) { }
+});
+
+<span class="tok-tipo">Thread</span> consumidor = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; {
+    <span class="tok-clave">try</span> {
+        <span class="tok-tipo">int</span> dato;
+        <span class="tok-clave">while</span> ((dato = buffer.sacar()) != -<span class="tok-numero">1</span>) {
+            <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"    Consumido "</span> + dato);
+        }
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) { }
+});
+
+productor.start();
+consumidor.start();
+productor.join();
+consumidor.join();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>wait()</code></th><td>suelta el cerrojo y espera a un <code>notify</code>; al despertar, lo recupera antes de seguir</td></tr>
+                  <tr><th scope="row"><code>wait(ms)</code></th><td>igual, con límite de tiempo</td></tr>
+                  <tr><th scope="row"><code>notify()</code></th><td>despierta a <strong>uno</strong> cualquiera de los que esperan</td></tr>
+                  <tr><th scope="row"><code>notifyAll()</code></th><td>despierta a todos (lo más seguro)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Siempre <code>while</code>, nunca <code>if</code></strong>, alrededor de <code>wait()</code>: al despertar, otro hilo puede haberse adelantado y la condición vuelve a no cumplirse. Además existen despertares espurios. Llamar a <code>wait</code> o <code>notify</code> sin tener el cerrojo lanza <code>IllegalMonitorStateException</code>.</p>
+            <p class="nota">En código real, un <code>BlockingQueue</code> (sección 13) ya hace todo esto. Aquí se ve cómo funciona por dentro.</p>
+          </div>
+        </section>
+        <!-- 11. Locks y Condition -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Locks y Condition</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>ReentrantLock</code> es un <code>synchronized</code> con más opciones: intentar coger el cerrojo sin quedarse esperando, esperar con tiempo límite y varias condiciones de espera.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">Lock</span> lock = <span class="tok-clave">new</span> <span class="tok-tipo">ReentrantLock</span>();
+
+<span class="tok-clave">void</span> ingresar(<span class="tok-tipo">int</span> cantidad) {
+    lock.lock();
+    <span class="tok-clave">try</span> {
+        saldo += cantidad;
+    } <span class="tok-clave">finally</span> {
+        lock.unlock();                   <span class="tok-coment">// SIEMPRE en finally</span>
+    }
+}
+
+<span class="tok-coment">// intentar sin bloquearse</span>
+<span class="tok-clave">if</span> (lock.tryLock(<span class="tok-numero">1</span>, <span class="tok-tipo">TimeUnit</span>.<span class="tok-tipo">SECONDS</span>)) {
+    <span class="tok-clave">try</span> { ... } <span class="tok-clave">finally</span> { lock.unlock(); }
+} <span class="tok-clave">else</span> {
+    <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Ocupado, lo intento luego"</span>);
+}</code></pre></figure>
+            <h3>Buffer con dos condiciones</h3>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">Lock</span> lock = <span class="tok-clave">new</span> <span class="tok-tipo">ReentrantLock</span>();
+<span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">Condition</span> noLleno = lock.newCondition();
+<span class="tok-clave">private</span> <span class="tok-clave">final</span> <span class="tok-tipo">Condition</span> noVacio = lock.newCondition();
+
+<span class="tok-clave">public</span> <span class="tok-clave">void</span> poner(<span class="tok-tipo">int</span> dato) <span class="tok-clave">throws</span> <span class="tok-tipo">InterruptedException</span> {
+    lock.lock();
+    <span class="tok-clave">try</span> {
+        <span class="tok-clave">while</span> (cola.size() == capacidad) noLleno.await();   <span class="tok-coment">// como wait()</span>
+        cola.add(dato);
+        noVacio.signal();                                    <span class="tok-coment">// solo despierta a consumidores</span>
+    } <span class="tok-clave">finally</span> {
+        lock.unlock();
+    }
+}
+
+<span class="tok-clave">public</span> <span class="tok-tipo">int</span> sacar() <span class="tok-clave">throws</span> <span class="tok-tipo">InterruptedException</span> {
+    lock.lock();
+    <span class="tok-clave">try</span> {
+        <span class="tok-clave">while</span> (cola.isEmpty()) noVacio.await();
+        <span class="tok-tipo">int</span> dato = cola.remove();
+        noLleno.signal();                                    <span class="tok-coment">// solo despierta a productores</span>
+        <span class="tok-clave">return</span> dato;
+    } <span class="tok-clave">finally</span> {
+        lock.unlock();
+    }
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>lock()  unlock()</code></th><td>coger y soltar el cerrojo</td></tr>
+                  <tr><th scope="row"><code>tryLock()  tryLock(t, u)</code></th><td>lo intenta; <code>false</code> si no lo consigue</td></tr>
+                  <tr><th scope="row"><code>lockInterruptibly()</code></th><td>espera, pero se puede interrumpir</td></tr>
+                  <tr><th scope="row"><code>new ReentrantLock(true)</code></th><td>justo (<em>fair</em>): entra el que lleva más tiempo esperando</td></tr>
+                  <tr><th scope="row"><code>newCondition()</code></th><td>crea una <code>Condition</code>: <code>await</code>, <code>signal</code>, <code>signalAll</code></td></tr>
+                  <tr><th scope="row"><code>ReentrantReadWriteLock</code></th><td>muchos lectores a la vez o un solo escritor: <code>readLock()</code> y <code>writeLock()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 12. volatile y variables atómicas -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>volatile y variables atómicas</h2>
+          <div class="cuerpo">
+            <p class="txt">Cada hilo puede guardar copias de las variables en la caché de su núcleo, así que un cambio hecho por un hilo puede no verse en otro. Es un problema de <strong>visibilidad</strong>, distinto del de atomicidad.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// volatile: cada lectura ve la última escritura. Vale para banderas</span>
+<span class="tok-clave">private</span> volatile <span class="tok-tipo">boolean</span> terminado = <span class="tok-clave">false</span>;
+
+<span class="tok-coment">// pero NO hace atómico contador++ : sigue siendo leer + sumar + escribir</span>
+<span class="tok-clave">private</span> volatile <span class="tok-tipo">int</span> contador;              <span class="tok-coment">// contador++ sigue fallando</span>
+
+<span class="tok-coment">// atómicas: operaciones completas sin synchronized</span>
+<span class="tok-tipo">AtomicInteger</span> contador = <span class="tok-clave">new</span> <span class="tok-tipo">AtomicInteger</span>();
+contador.incrementAndGet();                 <span class="tok-coment">// ++contador, atómico</span>
+contador.getAndIncrement();                 <span class="tok-coment">// contador++</span>
+contador.addAndGet(<span class="tok-numero">5</span>);
+contador.compareAndSet(<span class="tok-numero">10</span>, <span class="tok-numero">0</span>);              <span class="tok-coment">// si vale 10, ponlo a 0</span>
+contador.updateAndGet(x -&gt; x * <span class="tok-numero">2</span>);
+<span class="tok-tipo">int</span> valor = contador.get();
+
+<span class="tok-coment">// muchos hilos sumando mucho: LongAdder es más rápido</span>
+<span class="tok-tipo">LongAdder</span> visitas = <span class="tok-clave">new</span> <span class="tok-tipo">LongAdder</span>();
+visitas.increment();
+<span class="tok-tipo">long</span> total = visitas.sum();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>volatile</code></th><td>visibilidad: sí · atomicidad: no. Banderas de parada, valores que solo escribe un hilo</td></tr>
+                  <tr><th scope="row"><code>Atomic…</code></th><td>visibilidad y atomicidad de una sola variable: <code>AtomicInteger</code>, <code>AtomicLong</code>, <code>AtomicBoolean</code>, <code>AtomicReference</code></td></tr>
+                  <tr><th scope="row"><code>synchronized</code>, <code>Lock</code></th><td>visibilidad y atomicidad de varias operaciones juntas</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 13. Colecciones concurrentes y BlockingQueue -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Colecciones concurrentes y BlockingQueue</h2>
+          <div class="cuerpo">
+            <p class="txt"><code>ArrayList</code>, <code>HashMap</code> y compañía no están preparadas para varios hilos: se corrompen o lanzan <code>ConcurrentModificationException</code>. Para compartirlas, usa las de <code>java.util.concurrent</code>.</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>ConcurrentHashMap</code></th><td>mapa para muchos hilos; usa <code>merge</code>, <code>compute</code> y <code>putIfAbsent</code> para operaciones atómicas</td></tr>
+                  <tr><th scope="row"><code>CopyOnWriteArrayList</code></th><td>lista que copia el array en cada escritura: para muchas lecturas y pocas escrituras</td></tr>
+                  <tr><th scope="row"><code>ConcurrentLinkedQueue</code></th><td>cola sin bloqueos</td></tr>
+                  <tr><th scope="row"><code>ArrayBlockingQueue</code></th><td>cola de tamaño fijo que bloquea al estar llena o vacía</td></tr>
+                  <tr><th scope="row"><code>LinkedBlockingQueue</code></th><td>igual, con capacidad opcional</td></tr>
+                  <tr><th scope="row"><code>Collections.synchronizedList(l)</code></th><td>envoltorio antiguo: cada método sincronizado, pero recorrerla requiere <code>synchronized</code> a mano</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// contar palabras desde varios hilos</span>
+<span class="tok-tipo">ConcurrentHashMap</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">Integer</span>&gt; cuenta = <span class="tok-clave">new</span> <span class="tok-tipo">ConcurrentHashMap</span>&lt;&gt;();
+cuenta.merge(palabra, <span class="tok-numero">1</span>, <span class="tok-tipo">Integer</span>::sum);       <span class="tok-coment">// atómico; cuenta.put(p, cuenta.get(p) + 1) NO</span>
+
+<span class="tok-coment">// productor-consumidor sin wait/notify</span>
+<span class="tok-tipo">BlockingQueue</span>&lt;<span class="tok-tipo">String</span>&gt; cola = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayBlockingQueue</span>&lt;&gt;(<span class="tok-numero">10</span>);
+
+<span class="tok-tipo">Thread</span> productor = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; {
+    <span class="tok-clave">try</span> {
+        <span class="tok-clave">for</span> (<span class="tok-tipo">String</span> linea : lineas) cola.put(linea);   <span class="tok-coment">// espera si está llena</span>
+        cola.put(<span class="tok-texto">"FIN"</span>);
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) { }
+});
+
+<span class="tok-tipo">Thread</span> consumidor = <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; {
+    <span class="tok-clave">try</span> {
+        <span class="tok-tipo">String</span> linea;
+        <span class="tok-clave">while</span> (!(linea = cola.take()).equals(<span class="tok-texto">"FIN"</span>)) { <span class="tok-coment">// espera si está vacía</span>
+            procesar(linea);
+        }
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) { }
+});</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>put(x)  take()</code></th><td>bloquean hasta que haya sitio o haya elemento</td></tr>
+                  <tr><th scope="row"><code>offer(x)  poll()</code></th><td>no bloquean: <code>false</code> o <code>null</code> si no se puede</td></tr>
+                  <tr><th scope="row"><code>offer(x, t, u)  poll(t, u)</code></th><td>esperan como mucho ese tiempo</td></tr>
+                  <tr><th scope="row"><code>add(x)  remove()</code></th><td>lanzan excepción si no se puede</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 14. Pools: ExecutorService -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Pools: ExecutorService</h2>
+          <div class="cuerpo">
+            <p class="txt">Crear un hilo por tarea es caro y no tiene límite. Un <strong>pool</strong> mantiene unos cuantos hilos que van cogiendo tareas de una cola. Se le mandan <code>Runnable</code> o <code>Callable</code> y devuelve <code>Future</code>.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-clave">try</span> (<span class="tok-tipo">ExecutorService</span> pool = <span class="tok-tipo">Executors</span>.newFixedThreadPool(<span class="tok-numero">4</span>)) {   <span class="tok-coment">// 4 hilos</span>
+    <span class="tok-coment">// tareas sin resultado</span>
+    <span class="tok-clave">for</span> (<span class="tok-tipo">String</span> url : urls) {
+        pool.submit(() -&gt; descargar(url));
+    }
+
+    <span class="tok-coment">// tareas con resultado</span>
+    <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Future</span>&lt;<span class="tok-tipo">Integer</span>&gt;&gt; futuros = <span class="tok-clave">new</span> <span class="tok-tipo">ArrayList</span>&lt;&gt;();
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Path</span> f : ficheros) {
+        futuros.add(pool.submit(() -&gt; contarLineas(f)));
+    }
+    <span class="tok-tipo">int</span> total = <span class="tok-numero">0</span>;
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Future</span>&lt;<span class="tok-tipo">Integer</span>&gt; fut : futuros) {
+        total += fut.get();                    <span class="tok-coment">// espera a cada una</span>
+    }
+
+    <span class="tok-coment">// o todas de golpe</span>
+    <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Callable</span>&lt;<span class="tok-tipo">Integer</span>&gt;&gt; tareas = ficheros.stream()
+            .map(f -&gt; (<span class="tok-tipo">Callable</span>&lt;<span class="tok-tipo">Integer</span>&gt;) () -&gt; contarLineas(f))
+            .toList();
+    <span class="tok-clave">for</span> (<span class="tok-tipo">Future</span>&lt;<span class="tok-tipo">Integer</span>&gt; fut : pool.invokeAll(tareas)) total += fut.get();
+}   <span class="tok-coment">// close (Java 19+): no admite más tareas y espera a que acaben</span>
+
+<span class="tok-coment">// antes de Java 19: cerrar a mano</span>
+<span class="tok-tipo">ExecutorService</span> pool = <span class="tok-tipo">Executors</span>.newFixedThreadPool(<span class="tok-numero">4</span>);
+<span class="tok-coment">// ... submit ...</span>
+pool.shutdown();                                   <span class="tok-coment">// no admite más, termina las pendientes</span>
+<span class="tok-clave">if</span> (!pool.awaitTermination(<span class="tok-numero">1</span>, <span class="tok-tipo">TimeUnit</span>.<span class="tok-tipo">MINUTES</span>)) {
+    pool.shutdownNow();                            <span class="tok-coment">// interrumpe las que sigan</span>
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>newFixedThreadPool(n)</code></th><td>n hilos fijos; para cálculo, n = núcleos (<code>Runtime.getRuntime().availableProcessors()</code>)</td></tr>
+                  <tr><th scope="row"><code>newCachedThreadPool()</code></th><td>crea hilos según haga falta y reutiliza los libres</td></tr>
+                  <tr><th scope="row"><code>newSingleThreadExecutor()</code></th><td>un solo hilo: las tareas van en secuencia, en orden</td></tr>
+                  <tr><th scope="row"><code>newVirtualThreadPerTaskExecutor()</code></th><td>un hilo virtual por tarea (Java 21): miles de tareas que esperan E/S</td></tr>
+                  <tr><th scope="row"><code>newScheduledThreadPool(n)</code></th><td>tareas con retraso o periódicas: <code>schedule</code>, <code>scheduleAtFixedRate</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>submit(tarea)</code></th><td>la encola y devuelve un <code>Future</code></td></tr>
+                  <tr><th scope="row"><code>execute(runnable)</code></th><td>la encola, sin <code>Future</code></td></tr>
+                  <tr><th scope="row"><code>invokeAll(tareas)</code></th><td>lanza todas y espera a que acaben</td></tr>
+                  <tr><th scope="row"><code>invokeAny(tareas)</code></th><td>devuelve el resultado de la primera que acabe bien</td></tr>
+                  <tr><th scope="row"><code>future.get()  get(t, u)</code></th><td>espera el resultado</td></tr>
+                  <tr><th scope="row"><code>future.isDone()  cancel(true)</code></th><td>si acabó; cancelarla (interrumpiéndola)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// tarea periódica: cada 5 segundos, empezando ya</span>
+<span class="tok-tipo">ScheduledExecutorService</span> reloj = <span class="tok-tipo">Executors</span>.newScheduledThreadPool(<span class="tok-numero">1</span>);
+reloj.scheduleAtFixedRate(() -&gt; <span class="tok-tipo">IO</span>.println(<span class="tok-tipo">LocalTime</span>.now()), <span class="tok-numero">0</span>, <span class="tok-numero">5</span>, <span class="tok-tipo">TimeUnit</span>.<span class="tok-tipo">SECONDS</span>);</code></pre></figure>
+            <p class="aviso"><strong>Excepciones perdidas:</strong> si una tarea mandada con <code>submit</code> lanza una excepción, no se ve en ningún sitio hasta que llamas a <code>future.get()</code>. Si nunca lo llamas, el error desaparece en silencio.</p>
+          </div>
+        </section>
+        <!-- 15. CompletableFuture -->
+        <section id="s15" class="tarjeta">
+          <h2><span class="num">15</span>CompletableFuture</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <code>Future</code> que se puede encadenar: «cuando acabe esto, haz aquello», sin bloquear el hilo actual. Por defecto se ejecuta en el pool común de la JVM.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// lanzar en segundo plano y encadenar pasos</span>
+<span class="tok-tipo">CompletableFuture</span>&lt;<span class="tok-tipo">Void</span>&gt; cf = <span class="tok-tipo">CompletableFuture</span>
+        .supplyAsync(() -&gt; descargar(url))              <span class="tok-coment">// en otro hilo</span>
+        .thenApply(html -&gt; extraerTitulo(html))          <span class="tok-coment">// transforma el resultado</span>
+        .thenAccept(titulo -&gt; <span class="tok-tipo">IO</span>.println(titulo))        <span class="tok-coment">// lo consume</span>
+        .exceptionally(e -&gt; { <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Error: "</span> + e.getMessage()); <span class="tok-clave">return</span> <span class="tok-clave">null</span>; });
+cf.join();                                               <span class="tok-coment">// esperar (sin excepción comprobada)</span>
+
+<span class="tok-coment">// dos en paralelo y combinar</span>
+<span class="tok-tipo">CompletableFuture</span>&lt;<span class="tok-tipo">Integer</span>&gt; precio = <span class="tok-tipo">CompletableFuture</span>.supplyAsync(() -&gt; consultarPrecio(id));
+<span class="tok-tipo">CompletableFuture</span>&lt;<span class="tok-tipo">Integer</span>&gt; stock  = <span class="tok-tipo">CompletableFuture</span>.supplyAsync(() -&gt; consultarStock(id));
+<span class="tok-tipo">int</span> valor = precio.thenCombine(stock, (p, s) -&gt; p * s).join();
+
+<span class="tok-coment">// muchas en paralelo y esperar a todas</span>
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">CompletableFuture</span>&lt;<span class="tok-tipo">String</span>&gt;&gt; todas = urls.stream()
+        .map(u -&gt; <span class="tok-tipo">CompletableFuture</span>.supplyAsync(() -&gt; descargar(u), pool))   <span class="tok-coment">// con tu pool</span>
+        .toList();
+<span class="tok-tipo">CompletableFuture</span>.allOf(todas.toArray(<span class="tok-tipo">CompletableFuture</span>[]::<span class="tok-clave">new</span>)).join();
+<span class="tok-tipo">List</span>&lt;<span class="tok-tipo">String</span>&gt; paginas = todas.stream().map(<span class="tok-tipo">CompletableFuture</span>::join).toList();</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>runAsync(r)  supplyAsync(s)</code></th><td>lanzar sin o con resultado; opcionalmente, en un pool tuyo</td></tr>
+                  <tr><th scope="row"><code>thenApply(f)</code></th><td>transformar el resultado</td></tr>
+                  <tr><th scope="row"><code>thenAccept(c)  thenRun(r)</code></th><td>consumir el resultado / hacer algo después</td></tr>
+                  <tr><th scope="row"><code>thenCompose(f)</code></th><td>encadenar otra tarea asíncrona</td></tr>
+                  <tr><th scope="row"><code>thenCombine(otro, f)</code></th><td>juntar el resultado de dos</td></tr>
+                  <tr><th scope="row"><code>allOf(...)  anyOf(...)</code></th><td>esperar a todos o al primero</td></tr>
+                  <tr><th scope="row"><code>exceptionally(f)  handle(f)</code></th><td>tratar el error</td></tr>
+                  <tr><th scope="row"><code>join()  get()</code></th><td>esperar; <code>join</code> lanza excepciones no comprobadas</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 16. Sincronizadores -->
+        <section id="s16" class="tarjeta">
+          <h2><span class="num">16</span>Sincronizadores</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// CountDownLatch: esperar a que N cosas ocurran (no se reinicia)</span>
+<span class="tok-tipo">CountDownLatch</span> listos = <span class="tok-clave">new</span> <span class="tok-tipo">CountDownLatch</span>(<span class="tok-numero">3</span>);
+<span class="tok-clave">for</span> (<span class="tok-tipo">int</span> i = <span class="tok-numero">0</span>; i &lt; <span class="tok-numero">3</span>; i++) {
+    <span class="tok-clave">new</span> <span class="tok-tipo">Thread</span>(() -&gt; { cargar(); listos.countDown(); }).start();
+}
+listos.await();                               <span class="tok-coment">// main espera a que lleguen a 0</span>
+<span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Los 3 han cargado"</span>);
+
+<span class="tok-coment">// Semaphore: como mucho N hilos a la vez dentro</span>
+<span class="tok-tipo">Semaphore</span> plazas = <span class="tok-clave">new</span> <span class="tok-tipo">Semaphore</span>(<span class="tok-numero">2</span>);          <span class="tok-coment">// 2 permisos</span>
+<span class="tok-tipo">Runnable</span> usarImpresora = () -&gt; {
+    <span class="tok-clave">try</span> {
+        plazas.acquire();                     <span class="tok-coment">// coge un permiso o espera</span>
+        <span class="tok-clave">try</span> { imprimir(); } <span class="tok-clave">finally</span> { plazas.release(); }
+    } <span class="tok-clave">catch</span> (<span class="tok-tipo">InterruptedException</span> e) { }
+};
+
+<span class="tok-coment">// CyclicBarrier: todos esperan a todos en un punto, y se reinicia</span>
+<span class="tok-tipo">CyclicBarrier</span> meta = <span class="tok-clave">new</span> <span class="tok-tipo">CyclicBarrier</span>(<span class="tok-numero">4</span>, () -&gt; <span class="tok-tipo">IO</span>.println(<span class="tok-texto">"Fase completada"</span>));
+<span class="tok-tipo">Runnable</span> corredor = () -&gt; {
+    <span class="tok-clave">for</span> (<span class="tok-tipo">int</span> fase = <span class="tok-numero">1</span>; fase &lt;= <span class="tok-numero">3</span>; fase++) {
+        correr(fase);
+        <span class="tok-clave">try</span> { meta.await(); } <span class="tok-clave">catch</span> (<span class="tok-tipo">Exception</span> e) { <span class="tok-clave">return</span>; }   <span class="tok-coment">// espera a los otros 3</span>
+    }
+};</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>CountDownLatch</code></th><td>uno o varios esperan a que otros hagan <code>countDown()</code> N veces</td></tr>
+                  <tr><th scope="row"><code>Semaphore</code></th><td>limita cuántos hilos usan un recurso a la vez; con 1 permiso es un cerrojo</td></tr>
+                  <tr><th scope="row"><code>CyclicBarrier</code></th><td>N hilos se esperan entre sí en un punto, una y otra vez</td></tr>
+                  <tr><th scope="row"><code>Phaser</code></th><td>como <code>CyclicBarrier</code>, pero los participantes pueden cambiar</td></tr>
+                  <tr><th scope="row"><code>Exchanger</code></th><td>dos hilos se intercambian un objeto</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 17. Interbloqueo y otros problemas -->
+        <section id="s17" class="tarjeta">
+          <h2><span class="num">17</span>Interbloqueo y otros problemas</h2>
+          <div class="cuerpo">
+            <p class="txt">Un <strong>interbloqueo</strong> (<em>deadlock</em>) ocurre cuando cada hilo tiene un cerrojo y espera el que tiene el otro. Ninguno lo suelta, y el programa se queda congelado para siempre sin dar ningún error.</p>
+            <figure class="codigo"><pre data-lang="java"><code><span class="tok-coment">// hilo 1: transferir(a, b)     hilo 2: transferir(b, a)</span>
+<span class="tok-clave">void</span> transferir(<span class="tok-tipo">Cuenta</span> origen, <span class="tok-tipo">Cuenta</span> destino, <span class="tok-tipo">int</span> cantidad) {
+    synchronized (origen) {                 <span class="tok-coment">// hilo 1 coge a      hilo 2 coge b</span>
+        synchronized (destino) {            <span class="tok-coment">// hilo 1 espera b    hilo 2 espera a  → ¡bloqueados!</span>
+            origen.retirar(cantidad);
+            destino.ingresar(cantidad);
+        }
+    }
+}
+
+<span class="tok-coment">// solución: coger siempre los cerrojos en el mismo orden</span>
+<span class="tok-clave">void</span> transferir(<span class="tok-tipo">Cuenta</span> origen, <span class="tok-tipo">Cuenta</span> destino, <span class="tok-tipo">int</span> cantidad) {
+    <span class="tok-tipo">Cuenta</span> primera = origen.getId() &lt; destino.getId() ? origen : destino;
+    <span class="tok-tipo">Cuenta</span> segunda = primera == origen ? destino : origen;
+    synchronized (primera) {
+        synchronized (segunda) {
+            origen.retirar(cantidad);
+            destino.ingresar(cantidad);
+        }
+    }
+}</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row">Interbloqueo</th><td>esperas circulares entre cerrojos. Se evita con un orden fijo, con <code>tryLock</code> y tiempo límite, o cogiendo un solo cerrojo</td></tr>
+                  <tr><th scope="row">Inanición</th><td>un hilo nunca consigue el recurso porque otros siempre se le adelantan. Se evita con cerrojos justos (<code>new ReentrantLock(true)</code>)</td></tr>
+                  <tr><th scope="row">Bloqueo activo</th><td>(<em>livelock</em>) los hilos no paran, pero se ceden el paso uno al otro sin avanzar nunca</td></tr>
+                  <tr><th scope="row">Condición de carrera</th><td>datos compartidos sin sincronizar (sección 8)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Para ver dónde está parado cada hilo: <code>jstack &lt;pid&gt;</code> o <code>jcmd &lt;pid&gt; Thread.print</code>. Al final del volcado aparece <code>Found one Java-level deadlock</code> si hay un interbloqueo.</p>
+          </div>
+        </section>
+        <!-- 18. Errores habituales -->
+        <section id="s18" class="tarjeta">
+          <h2><span class="num">18</span>Errores habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Llamar a <code>run()</code> en vez de <code>start()</code></th><td>se ejecuta en el hilo actual: no hay concurrencia</td></tr>
+                  <tr><th scope="row" class="larga">"Paralelo" que tarda lo mismo</th><td><code>join()</code> dentro del mismo bucle que <code>start()</code></td></tr>
+                  <tr><th scope="row" class="larga">Leer el resultado sin <code>join</code></th><td>el hilo aún no ha terminado: sale 0, <code>null</code> o un valor a medias</td></tr>
+                  <tr><th scope="row" class="larga"><code>start()</code> dos veces</th><td><code>IllegalThreadStateException</code>: crea otro <code>Thread</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>contador++</code> compartido</th><td>condición de carrera: <code>AtomicInteger</code> o <code>synchronized</code></td></tr>
+                  <tr><th scope="row" class="larga">Sincronizar sobre objetos distintos</th><td>cada hilo coge su propio cerrojo: no se excluyen</td></tr>
+                  <tr><th scope="row" class="larga"><code>wait()</code> dentro de un <code>if</code></th><td>usa <code>while</code>: la condición puede haber cambiado al despertar</td></tr>
+                  <tr><th scope="row" class="larga"><code>wait</code> / <code>notify</code> fuera de <code>synchronized</code></th><td><code>IllegalMonitorStateException</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>unlock()</code> fuera de <code>finally</code></th><td>si salta una excepción, el cerrojo no se suelta nunca</td></tr>
+                  <tr><th scope="row" class="larga"><code>catch (InterruptedException e) { }</code></th><td>el hilo no se entera de que debe parar</td></tr>
+                  <tr><th scope="row" class="larga">Pool sin cerrar</th><td>sus hilos siguen vivos y el programa no termina: <code>try</code>-with-resources o <code>shutdown()</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>ArrayList</code> o <code>HashMap</code> compartidos</th><td>datos corruptos: colecciones concurrentes</td></tr>
+                  <tr><th scope="row" class="larga">Bandera de parada sin <code>volatile</code></th><td>el bucle puede no ver nunca el cambio</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="procesos.html">← Procesos</a><a class="siguiente" href="maven.html">Maven →</a></nav>
+      <footer class="pie">Para lanzar otros programas en vez de hilos, mira <a href="procesos.html">Procesos</a>. Las lambdas que se pasan a los hilos están en <a href="streams.html">Lambdas y streams</a>. Documentación: <code>java.lang.Thread</code> y <code>java.util.concurrent</code>.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>

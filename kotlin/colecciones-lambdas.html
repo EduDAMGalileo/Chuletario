@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lambdas y colecciones · Chuletario</title>
+    <link rel="stylesheet" href="../assets/chuletas.css">
+    <link rel="icon" href="../assets/favicon.svg">
+  </head>
+  <body data-tema="kotlin">
+    <!-- Cabecera de la chuleta -->
+    <header class="top">
+      <div class="wrap">
+        <div class="titulo">
+          <nav class="miga" aria-label="Ruta"><a href="../index.html">Chuletario</a><span aria-hidden="true">›</span><a href="../programacion/index.html">Programación</a><span aria-hidden="true">›</span><a href="index.html">Kotlin</a><span aria-hidden="true">›</span><span>Lambdas y colecciones</span></nav>
+          <h1>Lambdas y colecciones</h1>
+        </div>
+        <div class="apoyo">
+          <p class="sub">Lambdas, funciones de orden superior, las operaciones de colecciones (transformar, filtrar, agrupar, ordenar, sumar), mapas, secuencias y las funciones de ámbito <code>let</code>, <code>apply</code>, <code>also</code>, <code>run</code> y <code>with</code>.</p>
+          <div class="herramientas"><button type="button" data-accion="tema">Tema oscuro</button><button type="button" data-accion="imprimir">Imprimir</button></div>
+        </div>
+      </div>
+    </header>
+    <nav class="nav-tema" aria-label="Chuletas de Kotlin">
+      <div class="wrap"><a href="sintaxis.html">Sintaxis básica</a><a href="poo.html">Clases y objetos</a><a href="colecciones-lambdas.html" aria-current="page">Lambdas y colecciones</a></div>
+    </nav>
+    <main class="wrap">
+      <!-- Índice de secciones -->
+      <nav class="toc" aria-label="Secciones"><a href="#s1"><b>1</b>Lambdas y tipos de función</a><a href="#s2"><b>2</b>Funciones de orden superior</a><a href="#s3"><b>3</b>Crear colecciones</a><a href="#s4"><b>4</b>Leer sin excepciones</a><a href="#s5"><b>5</b>Transformar</a><a href="#s6"><b>6</b>Filtrar y trocear</a><a href="#s7"><b>7</b>Comprobar y buscar</a><a href="#s8"><b>8</b>Sumar, contar y reducir</a><a href="#s9"><b>9</b>Agrupar y asociar</a><a href="#s10"><b>10</b>Ordenar</a><a href="#s11"><b>11</b>Mapas</a><a href="#s12"><b>12</b>Secuencias</a><a href="#s13"><b>13</b>Funciones de ámbito</a><a href="#s14"><b>14</b>Despistes habituales</a></nav>
+      <!-- Banda destacada -->
+      <div class="banda">
+        <div class="cols">
+          <div>
+            <p class="banda-titulo">Los datos de ejemplo</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">data</span> <span class="tok-clave">class</span> <span class="tok-tipo">Alumno</span>(<span class="tok-clave">val</span> nombre: <span class="tok-tipo">String</span>, <span class="tok-clave">val</span> curso: <span class="tok-tipo">String</span>, <span class="tok-clave">val</span> nota: <span class="tok-tipo">Double</span>)
+
+<span class="tok-clave">val</span> alumnos = <span class="tok-funcion">listOf</span>(
+    <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-texto">"1A"</span>, <span class="tok-numero">8.5</span>),
+    <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Luis"</span>, <span class="tok-texto">"1B"</span>, <span class="tok-numero">4.0</span>),
+    <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Marta"</span>, <span class="tok-texto">"1A"</span>, <span class="tok-numero">9.2</span>),
+    <span class="tok-tipo">Alumno</span>(<span class="tok-texto">"Pedro"</span>, <span class="tok-texto">"1B"</span>, <span class="tok-numero">6.1</span>),
+)
+
+<span class="tok-coment">// aprobados de 1A, ordenados por nota, solo el nombre</span>
+<span class="tok-clave">val</span> mejores = alumnos
+    .<span class="tok-funcion">filter</span> { it.curso == <span class="tok-texto">"1A"</span> &amp;&amp; it.nota &gt;= <span class="tok-numero">5</span> }
+    .<span class="tok-funcion">sortedByDescending</span> { it.nota }
+    .<span class="tok-funcion">map</span> { it.nombre }                 <span class="tok-coment">// [Marta, Ana]</span></code></pre></figure>
+          </div>
+          <div>
+            <p class="banda-titulo">Qué operación usar</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Cambiar cada elemento</th><td><code>map</code>, <code>mapNotNull</code>, <code>flatMap</code></td></tr>
+                  <tr><th scope="row" class="larga">Quedarse con algunos</th><td><code>filter</code>, <code>take</code>, <code>drop</code>, <code>distinct</code></td></tr>
+                  <tr><th scope="row" class="larga">Partir en grupos</th><td><code>groupBy</code>, <code>partition</code>, <code>chunked</code></td></tr>
+                  <tr><th scope="row" class="larga">Un solo resultado</th><td><code>sumOf</code>, <code>count</code>, <code>maxByOrNull</code>, <code>fold</code></td></tr>
+                  <tr><th scope="row" class="larga">Preguntar</th><td><code>any</code>, <code>all</code>, <code>none</code>, <code>find</code></td></tr>
+                  <tr><th scope="row" class="larga">Ordenar</th><td><code>sortedBy</code>, <code>sortedWith(compareBy(...))</code></td></tr>
+                  <tr><th scope="row" class="larga">Pasar a mapa</th><td><code>associateBy</code>, <code>associate</code>, <code>groupBy</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="nota">Ninguna de estas operaciones modifica la lista original: todas devuelven una colección nueva. Son como los <a href="../java/streams.html">streams</a> de Java, pero sin <code>stream()</code> ni <code>collect()</code>.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Secciones -->
+      <div class="rejilla">
+        <!-- 1. Lambdas y tipos de función -->
+        <section id="s1" class="tarjeta">
+          <h2><span class="num">1</span>Lambdas y tipos de función</h2>
+          <div class="cuerpo">
+            <p class="txt">Una <strong>lambda</strong> es una función sin nombre que se guarda en una variable o se pasa como argumento. Va entre llaves: parámetros, flecha y cuerpo. La <strong>última expresión</strong> es lo que devuelve.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> suma: (<span class="tok-tipo">Int</span>, <span class="tok-tipo">Int</span>) -&gt; <span class="tok-tipo">Int</span> = { a, b -&gt; a + b }
+<span class="tok-funcion">suma</span>(<span class="tok-numero">2</span>, <span class="tok-numero">3</span>)                                   <span class="tok-coment">// 5</span>
+
+<span class="tok-clave">val</span> saludo = { nombre: <span class="tok-tipo">String</span> -&gt; <span class="tok-texto">"Hola, $nombre"</span> }   <span class="tok-coment">// el tipo se deduce</span>
+<span class="tok-clave">val</span> aleatorio: () -&gt; <span class="tok-tipo">Int</span> = { (<span class="tok-numero">1</span>..<span class="tok-numero">6</span>).<span class="tok-funcion">random</span>() }      <span class="tok-coment">// sin parámetros</span>
+<span class="tok-clave">val</span> log: (<span class="tok-tipo">String</span>) -&gt; <span class="tok-tipo">Unit</span> = { <span class="tok-funcion">println</span>(it) }          <span class="tok-coment">// Unit = no devuelve nada</span>
+
+<span class="tok-coment">// con un solo parámetro se puede omitir y llamarlo it</span>
+<span class="tok-clave">val</span> doble: (<span class="tok-tipo">Int</span>) -&gt; <span class="tok-tipo">Int</span> = { it * <span class="tok-numero">2</span> }
+
+<span class="tok-coment">// varias líneas: devuelve la última expresión (sin return)</span>
+<span class="tok-clave">val</span> clasificar = { nota: <span class="tok-tipo">Double</span> -&gt;
+    <span class="tok-clave">val</span> redondeada = <span class="tok-tipo">Math</span>.<span class="tok-funcion">round</span>(nota)
+    <span class="tok-clave">if</span> (redondeada &gt;= <span class="tok-numero">5</span>) <span class="tok-texto">"Aprobado"</span> <span class="tok-clave">else</span> <span class="tok-texto">"Suspenso"</span>
+}
+
+<span class="tok-coment">// referencias a funciones con ::</span>
+<span class="tok-clave">fun</span> <span class="tok-funcion">esPar</span>(n: <span class="tok-tipo">Int</span>) = n % <span class="tok-numero">2</span> == <span class="tok-numero">0</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>).<span class="tok-funcion">filter</span>(::esPar)              <span class="tok-coment">// función de nivel superior</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-texto">"a"</span>, <span class="tok-texto">"b"</span>).<span class="tok-funcion">map</span>(<span class="tok-tipo">String</span>::uppercase)      <span class="tok-coment">// método de una clase</span>
+alumnos.<span class="tok-funcion">map</span>(<span class="tok-tipo">Alumno</span>::nombre)                  <span class="tok-coment">// propiedad</span>
+<span class="tok-clave">val</span> crear = ::<span class="tok-tipo">Alumno</span>                          <span class="tok-coment">// constructor</span>
+
+<span class="tok-coment">// función anónima: cuando se necesita return explícito</span>
+<span class="tok-clave">val</span> valida = <span class="tok-clave">fun</span>(s: <span class="tok-tipo">String</span>): <span class="tok-tipo">Boolean</span> {
+    <span class="tok-clave">if</span> (s.<span class="tok-funcion">isBlank</span>()) <span class="tok-clave">return</span> <span class="tok-clave">false</span>
+    <span class="tok-clave">return</span> s.length &lt;= <span class="tok-numero">20</span>
+}
+
+<span class="tok-coment">// tipo de función que admite null</span>
+<span class="tok-clave">val</span> callback: ((<span class="tok-tipo">String</span>) -&gt; <span class="tok-tipo">Unit</span>)? = <span class="tok-clave">null</span>
+callback?.<span class="tok-funcion">invoke</span>(<span class="tok-texto">"dato"</span>)</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>(A, B) -&gt; R</code></th><td>función que recibe A y B y devuelve R</td></tr>
+                  <tr><th scope="row"><code>() -&gt; Unit</code></th><td>sin parámetros ni resultado (como <code>Runnable</code>)</td></tr>
+                  <tr><th scope="row"><code>it</code></th><td>nombre implícito del único parámetro</td></tr>
+                  <tr><th scope="row"><code>_</code></th><td>parámetro que no se usa: <code>{ _, valor -&gt; ... }</code></td></tr>
+                  <tr><th scope="row"><code>::funcion</code></th><td>referencia a una función, propiedad o constructor</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- 2. Funciones de orden superior -->
+        <section id="s2" class="tarjeta">
+          <h2><span class="num">2</span>Funciones de orden superior</h2>
+          <div class="cuerpo">
+            <p class="txt">Funciones que reciben o devuelven otras funciones. Si la lambda es el <strong>último parámetro</strong>, se escribe fuera de los paréntesis (<em>trailing lambda</em>); si es el único, sobran los paréntesis.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">fun</span> <span class="tok-funcion">repetir</span>(veces: <span class="tok-tipo">Int</span>, accion: (<span class="tok-tipo">Int</span>) -&gt; <span class="tok-tipo">Unit</span>) {
+    <span class="tok-clave">for</span> (i <span class="tok-clave">in</span> <span class="tok-numero">1</span>..veces) <span class="tok-funcion">accion</span>(i)
+}
+
+<span class="tok-funcion">repetir</span>(<span class="tok-numero">3</span>, { <span class="tok-funcion">println</span>(<span class="tok-texto">"vuelta $it"</span>) })        <span class="tok-coment">// así funciona...</span>
+<span class="tok-funcion">repetir</span>(<span class="tok-numero">3</span>) { <span class="tok-funcion">println</span>(<span class="tok-texto">"vuelta $it"</span>) }         <span class="tok-coment">// ...pero se escribe así</span>
+
+<span class="tok-coment">// una función que devuelve otra</span>
+<span class="tok-clave">fun</span> <span class="tok-funcion">multiplicador</span>(factor: <span class="tok-tipo">Int</span>): (<span class="tok-tipo">Int</span>) -&gt; <span class="tok-tipo">Int</span> = { it * factor }
+<span class="tok-clave">val</span> triple = <span class="tok-funcion">multiplicador</span>(<span class="tok-numero">3</span>)
+<span class="tok-funcion">triple</span>(<span class="tok-numero">5</span>)                                    <span class="tok-coment">// 15</span>
+
+<span class="tok-coment">// medir cuánto tarda un bloque</span>
+<span class="tok-clave">fun</span> &lt;<span class="tok-tipo">T</span>&gt; <span class="tok-funcion">cronometrar</span>(bloque: () -&gt; <span class="tok-tipo">T</span>): <span class="tok-tipo">T</span> {
+    <span class="tok-clave">val</span> inicio = <span class="tok-tipo">System</span>.<span class="tok-funcion">nanoTime</span>()
+    <span class="tok-clave">val</span> resultado = <span class="tok-funcion">bloque</span>()
+    <span class="tok-funcion">println</span>(<span class="tok-texto">"${(System.nanoTime() - inicio) / 1_000_000} ms"</span>)
+    <span class="tok-clave">return</span> resultado
+}
+<span class="tok-clave">val</span> datos = <span class="tok-funcion">cronometrar</span> { <span class="tok-funcion">cargarDatos</span>() }
+
+<span class="tok-coment">// las lambdas pueden modificar variables de fuera (al revés que en Java)</span>
+<span class="tok-clave">var</span> total = <span class="tok-numero">0</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>).<span class="tok-funcion">forEach</span> { total += it }</code></pre></figure>
+            <p class="nota">Con <code>inline fun</code> el compilador copia el código de la lambda en el sitio de la llamada: no se crea ningún objeto y dentro se puede usar <code>return</code> para salir de la función de fuera. Casi todas las operaciones de colecciones son <code>inline</code>.</p>
+          </div>
+        </section>
+        <!-- 3. Crear colecciones -->
+        <section id="s3" class="tarjeta">
+          <h2><span class="num">3</span>Crear colecciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// solo lectura                    // modificables</span>
+<span class="tok-clave">val</span> l = <span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>)           <span class="tok-clave">val</span> ml = <span class="tok-funcion">mutableListOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>)
+<span class="tok-clave">val</span> s = <span class="tok-funcion">setOf</span>(<span class="tok-texto">"a"</span>, <span class="tok-texto">"b"</span>)           <span class="tok-clave">val</span> ms = <span class="tok-funcion">mutableSetOf</span>(<span class="tok-texto">"a"</span>, <span class="tok-texto">"b"</span>)
+<span class="tok-clave">val</span> m = <span class="tok-funcion">mapOf</span>(<span class="tok-texto">"es"</span> to <span class="tok-texto">"España"</span>)   <span class="tok-clave">val</span> mm = <span class="tok-funcion">mutableMapOf</span>(<span class="tok-texto">"es"</span> to <span class="tok-texto">"España"</span>)
+
+<span class="tok-clave">val</span> vacia = <span class="tok-funcion">emptyList</span>&lt;String&gt;()
+<span class="tok-clave">val</span> sinNulos = <span class="tok-funcion">listOfNotNull</span>(a, b, c)         <span class="tok-coment">// descarta los null</span>
+<span class="tok-clave">val</span> cuadrados = <span class="tok-tipo">List</span>(<span class="tok-numero">5</span>) { it * it }           <span class="tok-coment">// [0, 1, 4, 9, 16]</span>
+<span class="tok-clave">val</span> rango = (<span class="tok-numero">1</span>..<span class="tok-numero">10</span>).<span class="tok-funcion">toList</span>()
+<span class="tok-clave">val</span> pares = (<span class="tok-numero">0</span>..<span class="tok-numero">20</span> step <span class="tok-numero">2</span>).<span class="tok-funcion">toList</span>()
+
+<span class="tok-coment">// construir una lista de solo lectura paso a paso</span>
+<span class="tok-clave">val</span> menu = <span class="tok-funcion">buildList</span> {
+    <span class="tok-funcion">add</span>(<span class="tok-texto">"Inicio"</span>)
+    <span class="tok-clave">if</span> (logueado) <span class="tok-funcion">add</span>(<span class="tok-texto">"Perfil"</span>)
+    <span class="tok-funcion">addAll</span>(extras)
+}
+
+<span class="tok-coment">// modificar una mutable</span>
+ml += <span class="tok-numero">4</span>                   <span class="tok-coment">// add</span>
+ml -= <span class="tok-numero">1</span>                   <span class="tok-coment">// remove (el valor 1)</span>
+ml.<span class="tok-funcion">add</span>(<span class="tok-numero">0</span>, <span class="tok-numero">99</span>)             <span class="tok-coment">// en una posición</span>
+ml[<span class="tok-numero">0</span>] = <span class="tok-numero">100</span>               <span class="tok-coment">// set</span>
+ml.<span class="tok-funcion">removeIf</span> { it &gt; <span class="tok-numero">50</span> }
+ml.<span class="tok-funcion">clear</span>()
+
+<span class="tok-coment">// convertir</span>
+l.<span class="tok-funcion">toMutableList</span>()   l.<span class="tok-funcion">toSet</span>()   s.<span class="tok-funcion">toList</span>()   l.<span class="tok-funcion">toTypedArray</span>()   <span class="tok-funcion">arrayOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>).<span class="tok-funcion">toList</span>()</code></pre></figure>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>List</code></th><td>ordenada, admite repetidos, acceso por posición</td></tr>
+                  <tr><th scope="row"><code>Set</code></th><td>sin repetidos; <code>setOf</code> mantiene el orden de inserción</td></tr>
+                  <tr><th scope="row"><code>Map</code></th><td>pares clave → valor; <code>"clave" to valor</code> crea un <code>Pair</code></td></tr>
+                  <tr><th scope="row"><code>Array</code></th><td>tamaño fijo, como los arrays de Java; mejor <code>List</code> salvo para rendimiento</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="aviso"><strong>Solo lectura no es inmutable:</strong> <code>List</code> no tiene <code>add</code>, pero si por debajo es una <code>MutableList</code>, otro código con acceso a ella puede cambiarla. Y <code>val</code> solo impide reasignar la variable, no cambiar la lista.</p>
+          </div>
+        </section>
+        <!-- 4. Leer sin excepciones -->
+        <section id="s4" class="tarjeta">
+          <h2><span class="num">4</span>Leer sin excepciones</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> l = <span class="tok-funcion">listOf</span>(<span class="tok-texto">"a"</span>, <span class="tok-texto">"b"</span>, <span class="tok-texto">"c"</span>)
+
+l[<span class="tok-numero">5</span>]                         <span class="tok-coment">// IndexOutOfBoundsException</span>
+l.<span class="tok-funcion">getOrNull</span>(<span class="tok-numero">5</span>)               <span class="tok-coment">// null</span>
+l.<span class="tok-funcion">getOrElse</span>(<span class="tok-numero">5</span>) { <span class="tok-texto">"?"</span> }       <span class="tok-coment">// "?"</span>
+
+l.<span class="tok-funcion">first</span>()   l.<span class="tok-funcion">last</span>()         <span class="tok-coment">// NoSuchElementException si está vacía</span>
+l.<span class="tok-funcion">firstOrNull</span>()              <span class="tok-coment">// null si está vacía</span>
+l.<span class="tok-funcion">firstOrNull</span> { it &gt; <span class="tok-texto">"a"</span> }   <span class="tok-coment">// el primero que cumpla, o null</span>
+l.<span class="tok-funcion">single</span>()                   <span class="tok-coment">// el único; excepción si hay 0 o más de 1</span>
+l.<span class="tok-funcion">random</span>()
+
+l.<span class="tok-funcion">indexOf</span>(<span class="tok-texto">"b"</span>)               <span class="tok-coment">// 1; -1 si no está</span>
+<span class="tok-texto">"b"</span> <span class="tok-clave">in</span> l                     <span class="tok-coment">// contains</span>
+l.<span class="tok-funcion">isEmpty</span>()   l.<span class="tok-funcion">isNotEmpty</span>()   l.size
+l.lastIndex                  <span class="tok-coment">// 2</span>
+l.indices                    <span class="tok-coment">// 0..2</span>
+
+<span class="tok-coment">// combinadas con el operador elvis</span>
+<span class="tok-clave">val</span> primero = l.<span class="tok-funcion">firstOrNull</span>() ?: <span class="tok-texto">"lista vacía"</span></code></pre></figure>
+            <p class="nota">Regla de nombres: las funciones que acaban en <code>OrNull</code> devuelven <code>null</code> en vez de lanzar una excepción. Úsalas con <code>?:</code> o <code>?.let</code>.</p>
+          </div>
+        </section>
+        <!-- 5. Transformar -->
+        <section id="s5" class="tarjeta">
+          <h2><span class="num">5</span>Transformar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> nombres = alumnos.<span class="tok-funcion">map</span> { it.nombre }                 <span class="tok-coment">// [Ana, Luis, Marta, Pedro]</span>
+<span class="tok-clave">val</span> conIndice = alumnos.<span class="tok-funcion">mapIndexed</span> { i, a -&gt; <span class="tok-texto">"${i + 1}. ${a.nombre}"</span> }
+
+<span class="tok-coment">// map que descarta los null</span>
+<span class="tok-clave">val</span> numeros = <span class="tok-funcion">listOf</span>(<span class="tok-texto">"1"</span>, <span class="tok-texto">"dos"</span>, <span class="tok-texto">"3"</span>).<span class="tok-funcion">mapNotNull</span> { it.<span class="tok-funcion">toIntOrNull</span>() }   <span class="tok-coment">// [1, 3]</span>
+
+<span class="tok-coment">// cada elemento da una lista, y se juntan todas</span>
+<span class="tok-clave">val</span> palabras = <span class="tok-funcion">listOf</span>(<span class="tok-texto">"hola mundo"</span>, <span class="tok-texto">"adiós"</span>).<span class="tok-funcion">flatMap</span> { it.<span class="tok-funcion">split</span>(<span class="tok-texto">" "</span>) }   <span class="tok-coment">// [hola, mundo, adiós]</span>
+<span class="tok-clave">val</span> todas = <span class="tok-funcion">listOf</span>(<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>), <span class="tok-funcion">listOf</span>(<span class="tok-numero">3</span>)).<span class="tok-funcion">flatten</span>()                    <span class="tok-coment">// [1, 2, 3]</span>
+
+<span class="tok-coment">// emparejar dos listas</span>
+<span class="tok-clave">val</span> notas = <span class="tok-funcion">listOf</span>(<span class="tok-numero">7.0</span>, <span class="tok-numero">8.5</span>)
+<span class="tok-clave">val</span> pares = <span class="tok-funcion">listOf</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-texto">"Luis"</span>).<span class="tok-funcion">zip</span>(notas)      <span class="tok-coment">// [(Ana, 7.0), (Luis, 8.5)]</span>
+<span class="tok-clave">val</span> textos = <span class="tok-funcion">listOf</span>(<span class="tok-texto">"Ana"</span>, <span class="tok-texto">"Luis"</span>).<span class="tok-funcion">zip</span>(notas) { n, nota -&gt; <span class="tok-texto">"$n: $nota"</span> }
+
+<span class="tok-coment">// de pares a dos listas</span>
+<span class="tok-clave">val</span> (claves, valores) = pares.<span class="tok-funcion">unzip</span>()
+
+<span class="tok-coment">// a un texto</span>
+alumnos.<span class="tok-funcion">joinToString</span>(<span class="tok-texto">", "</span>) { it.nombre }          <span class="tok-coment">// "Ana, Luis, Marta, Pedro"</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>).<span class="tok-funcion">joinToString</span>(prefix = <span class="tok-texto">"["</span>, postfix = <span class="tok-texto">"]"</span>, separator = <span class="tok-texto">" | "</span>)</code></pre></figure>
+          </div>
+        </section>
+        <!-- 6. Filtrar y trocear -->
+        <section id="s6" class="tarjeta">
+          <h2><span class="num">6</span>Filtrar y trocear</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> aprobados = alumnos.<span class="tok-funcion">filter</span> { it.nota &gt;= <span class="tok-numero">5</span> }
+<span class="tok-clave">val</span> suspensos = alumnos.<span class="tok-funcion">filterNot</span> { it.nota &gt;= <span class="tok-numero">5</span> }
+<span class="tok-clave">val</span> (si, no) = alumnos.<span class="tok-funcion">partition</span> { it.nota &gt;= <span class="tok-numero">5</span> }    <span class="tok-coment">// las dos listas de una vez</span>
+
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-clave">null</span>, <span class="tok-numero">3</span>).<span class="tok-funcion">filterNotNull</span>()                   <span class="tok-coment">// [1, 3]</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-texto">"a"</span>, <span class="tok-numero">2.0</span>).<span class="tok-funcion">filterIsInstance</span>&lt;Int&gt;()          <span class="tok-coment">// [1]</span>
+
+<span class="tok-clave">val</span> l = (<span class="tok-numero">1</span>..<span class="tok-numero">10</span>).<span class="tok-funcion">toList</span>()
+l.<span class="tok-funcion">take</span>(<span class="tok-numero">3</span>)                  <span class="tok-coment">// [1, 2, 3]</span>
+l.<span class="tok-funcion">takeLast</span>(<span class="tok-numero">2</span>)              <span class="tok-coment">// [9, 10]</span>
+l.<span class="tok-funcion">drop</span>(<span class="tok-numero">8</span>)                  <span class="tok-coment">// [9, 10]</span>
+l.<span class="tok-funcion">takeWhile</span> { it &lt; <span class="tok-numero">4</span> }     <span class="tok-coment">// [1, 2, 3]</span>
+l.<span class="tok-funcion">dropWhile</span> { it &lt; <span class="tok-numero">8</span> }     <span class="tok-coment">// [8, 9, 10]</span>
+l.<span class="tok-funcion">slice</span>(<span class="tok-numero">2</span>..<span class="tok-numero">4</span>)              <span class="tok-coment">// [3, 4, 5]</span>
+l.<span class="tok-funcion">chunked</span>(<span class="tok-numero">3</span>)               <span class="tok-coment">// [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]</span>
+l.<span class="tok-funcion">windowed</span>(<span class="tok-numero">3</span>)              <span class="tok-coment">// [[1, 2, 3], [2, 3, 4], ...]</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">1</span>, <span class="tok-numero">2</span>).<span class="tok-funcion">distinct</span>() <span class="tok-coment">// [1, 2]</span>
+alumnos.<span class="tok-funcion">distinctBy</span> { it.curso }
+
+<span class="tok-coment">// operaciones de conjuntos</span>
+<span class="tok-clave">val</span> a = <span class="tok-funcion">setOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>); <span class="tok-clave">val</span> b = <span class="tok-funcion">setOf</span>(<span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">4</span>)
+a union b          <span class="tok-coment">// [1, 2, 3, 4]</span>
+a intersect b      <span class="tok-coment">// [2, 3]</span>
+a subtract b       <span class="tok-coment">// [1]</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 7. Comprobar y buscar -->
+        <section id="s7" class="tarjeta">
+          <h2><span class="num">7</span>Comprobar y buscar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code>alumnos.<span class="tok-funcion">any</span> { it.nota == <span class="tok-numero">10.0</span> }        <span class="tok-coment">// ¿alguno?</span>
+alumnos.<span class="tok-funcion">all</span> { it.nota &gt;= <span class="tok-numero">0</span> }           <span class="tok-coment">// ¿todos?</span>
+alumnos.<span class="tok-funcion">none</span> { it.curso == <span class="tok-texto">"2A"</span> }      <span class="tok-coment">// ¿ninguno?</span>
+
+<span class="tok-clave">val</span> marta = alumnos.<span class="tok-funcion">find</span> { it.nombre == <span class="tok-texto">"Marta"</span> }          <span class="tok-coment">// el primero, o null</span>
+<span class="tok-clave">val</span> ultimo = alumnos.<span class="tok-funcion">findLast</span> { it.curso == <span class="tok-texto">"1B"</span> }
+<span class="tok-clave">val</span> pos = alumnos.<span class="tok-funcion">indexOfFirst</span> { it.nota &lt; <span class="tok-numero">5</span> }             <span class="tok-coment">// -1 si no hay</span>
+
+<span class="tok-coment">// búsqueda binaria en una lista ordenada</span>
+<span class="tok-clave">val</span> ordenada = <span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">4</span>, <span class="tok-numero">9</span>, <span class="tok-numero">16</span>)
+ordenada.<span class="tok-funcion">binarySearch</span>(<span class="tok-numero">9</span>)                                   <span class="tok-coment">// 2</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 8. Sumar, contar y reducir -->
+        <section id="s8" class="tarjeta">
+          <h2><span class="num">8</span>Sumar, contar y reducir</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>).<span class="tok-funcion">sum</span>()                          <span class="tok-coment">// 6</span>
+alumnos.<span class="tok-funcion">sumOf</span> { it.nota }                      <span class="tok-coment">// suma de un campo</span>
+alumnos.<span class="tok-funcion">map</span> { it.nota }.<span class="tok-funcion">average</span>()              <span class="tok-coment">// media</span>
+alumnos.<span class="tok-funcion">count</span> { it.nota &gt;= <span class="tok-numero">5</span> }                 <span class="tok-coment">// cuántos cumplen</span>
+
+alumnos.<span class="tok-funcion">maxByOrNull</span> { it.nota }                <span class="tok-coment">// el alumno con más nota (null si vacía)</span>
+alumnos.<span class="tok-funcion">minOf</span> { it.nota }                      <span class="tok-coment">// la nota mínima</span>
+alumnos.<span class="tok-funcion">maxOfOrNull</span> { it.nota }
+
+<span class="tok-coment">// reduce: combina los elementos de dos en dos (falla si está vacía)</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>, <span class="tok-numero">4</span>).<span class="tok-funcion">reduce</span> { acc, n -&gt; acc * n }          <span class="tok-coment">// 24</span>
+
+<span class="tok-coment">// fold: lo mismo, con un valor inicial (y el resultado puede ser de otro tipo)</span>
+<span class="tok-clave">val</span> resumen = alumnos.<span class="tok-funcion">fold</span>(<span class="tok-texto">""</span>) { acc, a -&gt; acc + a.nombre.<span class="tok-funcion">first</span>() }   <span class="tok-coment">// "ALMP"</span>
+
+<span class="tok-coment">// acumulados paso a paso</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>).<span class="tok-funcion">runningFold</span>(<span class="tok-numero">0</span>) { acc, n -&gt; acc + n }    <span class="tok-coment">// [0, 1, 3, 6]</span></code></pre></figure>
+          </div>
+        </section>
+        <!-- 9. Agrupar y asociar -->
+        <section id="s9" class="tarjeta">
+          <h2><span class="num">9</span>Agrupar y asociar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// groupBy: mapa de clave → lista de elementos con esa clave</span>
+<span class="tok-clave">val</span> porCurso: <span class="tok-tipo">Map</span>&lt;<span class="tok-tipo">String</span>, <span class="tok-tipo">List</span>&lt;<span class="tok-tipo">Alumno</span>&gt;&gt; = alumnos.<span class="tok-funcion">groupBy</span> { it.curso }
+<span class="tok-coment">// {1A=[Ana, Marta], 1B=[Luis, Pedro]}</span>
+
+<span class="tok-clave">val</span> nombresPorCurso = alumnos.<span class="tok-funcion">groupBy</span>({ it.curso }, { it.nombre })
+<span class="tok-coment">// {1A=[Ana, Marta], 1B=[Luis, Pedro]}</span>
+
+<span class="tok-coment">// estadísticas por grupo</span>
+<span class="tok-clave">val</span> mediaPorCurso = porCurso.<span class="tok-funcion">mapValues</span> { (_, lista) -&gt; lista.<span class="tok-funcion">map</span> { it.nota }.<span class="tok-funcion">average</span>() }
+<span class="tok-clave">val</span> cuantosPorCurso = alumnos.<span class="tok-funcion">groupingBy</span> { it.curso }.<span class="tok-funcion">eachCount</span>()   <span class="tok-coment">// {1A=2, 1B=2}</span>
+
+<span class="tok-coment">// associate: un elemento → una entrada del mapa</span>
+<span class="tok-clave">val</span> porNombre = alumnos.<span class="tok-funcion">associateBy</span> { it.nombre }             <span class="tok-coment">// nombre → Alumno</span>
+<span class="tok-clave">val</span> notaDe = alumnos.<span class="tok-funcion">associate</span> { it.nombre to it.nota }       <span class="tok-coment">// nombre → nota</span>
+<span class="tok-clave">val</span> longitudes = <span class="tok-funcion">listOf</span>(<span class="tok-texto">"sol"</span>, <span class="tok-texto">"luna"</span>).<span class="tok-funcion">associateWith</span> { it.length }   <span class="tok-coment">// {sol=3, luna=4}</span></code></pre></figure>
+            <p class="aviso"><strong><code>associateBy</code> con claves repetidas</strong> se queda solo con el último elemento de cada clave. Si puede haber varios, usa <code>groupBy</code>.</p>
+          </div>
+        </section>
+        <!-- 10. Ordenar -->
+        <section id="s10" class="tarjeta">
+          <h2><span class="num">10</span>Ordenar</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-funcion">listOf</span>(<span class="tok-numero">3</span>, <span class="tok-numero">1</span>, <span class="tok-numero">2</span>).<span class="tok-funcion">sorted</span>()                        <span class="tok-coment">// [1, 2, 3]</span>
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">3</span>, <span class="tok-numero">1</span>, <span class="tok-numero">2</span>).<span class="tok-funcion">sortedDescending</span>()
+alumnos.<span class="tok-funcion">sortedBy</span> { it.nombre }
+alumnos.<span class="tok-funcion">sortedByDescending</span> { it.nota }
+
+<span class="tok-coment">// varios criterios: por curso y, dentro del curso, por nota de mayor a menor</span>
+alumnos.<span class="tok-funcion">sortedWith</span>(<span class="tok-funcion">compareBy</span>&lt;Alumno&gt; { it.curso }.<span class="tok-funcion">thenByDescending</span> { it.nota })
+alumnos.<span class="tok-funcion">sortedWith</span>(<span class="tok-funcion">compareBy</span>({ it.curso }, { it.nombre }))
+
+<span class="tok-coment">// textos sin distinguir mayúsculas</span>
+nombres.<span class="tok-funcion">sortedWith</span>(<span class="tok-tipo">String</span>.<span class="tok-tipo">CASE_INSENSITIVE_ORDER</span>)
+
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>).<span class="tok-funcion">reversed</span>()
+<span class="tok-funcion">listOf</span>(<span class="tok-numero">1</span>, <span class="tok-numero">2</span>, <span class="tok-numero">3</span>).<span class="tok-funcion">shuffled</span>()
+
+<span class="tok-coment">// en una lista mutable, ordenar en el sitio (sin crear otra)</span>
+<span class="tok-clave">val</span> ml = <span class="tok-funcion">mutableListOf</span>(<span class="tok-numero">3</span>, <span class="tok-numero">1</span>, <span class="tok-numero">2</span>)
+ml.<span class="tok-funcion">sort</span>()
+ml.<span class="tok-funcion">sortBy</span> { -it }</code></pre></figure>
+            <p class="nota"><code>sorted…</code> devuelve una lista nueva; <code>sort…</code> (sin <em>ed</em>) ordena la propia lista mutable y no devuelve nada.</p>
+          </div>
+        </section>
+        <!-- 11. Mapas -->
+        <section id="s11" class="tarjeta">
+          <h2><span class="num">11</span>Mapas</h2>
+          <div class="cuerpo">
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-clave">val</span> precios = <span class="tok-funcion">mutableMapOf</span>(<span class="tok-texto">"pan"</span> to <span class="tok-numero">1.2</span>, <span class="tok-texto">"leche"</span> to <span class="tok-numero">0.9</span>)
+
+precios[<span class="tok-texto">"pan"</span>]                         <span class="tok-coment">// 1.2; null si no existe</span>
+precios.<span class="tok-funcion">getValue</span>(<span class="tok-texto">"pan"</span>)                <span class="tok-coment">// NoSuchElementException si no existe</span>
+precios.<span class="tok-funcion">getOrDefault</span>(<span class="tok-texto">"agua"</span>, <span class="tok-numero">0.0</span>)
+precios.<span class="tok-funcion">getOrElse</span>(<span class="tok-texto">"agua"</span>) { <span class="tok-numero">0.0</span> }
+<span class="tok-texto">"pan"</span> <span class="tok-clave">in</span> precios                       <span class="tok-coment">// containsKey</span>
+
+precios[<span class="tok-texto">"agua"</span>] = <span class="tok-numero">0.5</span>                  <span class="tok-coment">// put</span>
+precios += <span class="tok-texto">"café"</span> to <span class="tok-numero">1.5</span>
+precios -= <span class="tok-texto">"leche"</span>                     <span class="tok-coment">// remove</span>
+precios.<span class="tok-funcion">getOrPut</span>(<span class="tok-texto">"sal"</span>) { <span class="tok-numero">0.3</span> }        <span class="tok-coment">// lo crea si no estaba y lo devuelve</span>
+
+<span class="tok-coment">// recorrer, con desestructuración</span>
+<span class="tok-clave">for</span> ((producto, precio) <span class="tok-clave">in</span> precios) <span class="tok-funcion">println</span>(<span class="tok-texto">"$producto: $precio €"</span>)
+precios.<span class="tok-funcion">forEach</span> { (producto, precio) -&gt; <span class="tok-funcion">println</span>(<span class="tok-texto">"$producto: $precio"</span>) }
+
+<span class="tok-coment">// transformar</span>
+precios.<span class="tok-funcion">filterValues</span> { it &gt; <span class="tok-numero">1.0</span> }
+precios.<span class="tok-funcion">filterKeys</span> { it.<span class="tok-funcion">startsWith</span>(<span class="tok-texto">"p"</span>) }
+precios.<span class="tok-funcion">mapValues</span> { (_, p) -&gt; p * <span class="tok-numero">1.21</span> }        <span class="tok-coment">// mismo mapa con IVA</span>
+precios.keys    precios.values    precios.entries
+precios.<span class="tok-funcion">maxByOrNull</span> { it.<span class="tok-clave">value</span> }?.key            <span class="tok-coment">// el producto más caro</span>
+precios.<span class="tok-funcion">toList</span>().<span class="tok-funcion">sortedBy</span> { it.second }          <span class="tok-coment">// ordenar por valor</span>
+
+<span class="tok-coment">// contar apariciones</span>
+<span class="tok-clave">val</span> texto = <span class="tok-texto">"hola que tal"</span>
+<span class="tok-clave">val</span> frecuencia = texto.<span class="tok-funcion">filter</span> { it != <span class="tok-texto">' '</span> }.<span class="tok-funcion">groupingBy</span> { it }.<span class="tok-funcion">eachCount</span>()</code></pre></figure>
+          </div>
+        </section>
+        <!-- 12. Secuencias -->
+        <section id="s12" class="tarjeta">
+          <h2><span class="num">12</span>Secuencias</h2>
+          <div class="cuerpo">
+            <p class="txt">Las operaciones de colecciones crean una lista nueva en cada paso. Una <strong>secuencia</strong> procesa los elementos de uno en uno por toda la cadena y solo hasta donde haga falta: como un stream de Java.</p>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// lista: filtra los 1 000 000, luego mapea todos los que pasan, luego coge 3</span>
+(<span class="tok-numero">1</span>..<span class="tok-numero">1_000_000</span>).<span class="tok-funcion">filter</span> { it % <span class="tok-numero">7</span> == <span class="tok-numero">0</span> }.<span class="tok-funcion">map</span> { it * <span class="tok-numero">2</span> }.<span class="tok-funcion">take</span>(<span class="tok-numero">3</span>)
+
+<span class="tok-coment">// secuencia: se para en cuanto tiene 3</span>
+(<span class="tok-numero">1</span>..<span class="tok-numero">1_000_000</span>).<span class="tok-funcion">asSequence</span>()
+    .<span class="tok-funcion">filter</span> { it % <span class="tok-numero">7</span> == <span class="tok-numero">0</span> }
+    .<span class="tok-funcion">map</span> { it * <span class="tok-numero">2</span> }
+    .<span class="tok-funcion">take</span>(<span class="tok-numero">3</span>)
+    .<span class="tok-funcion">toList</span>()                         <span class="tok-coment">// [14, 28, 42]: nada se calcula hasta aquí</span>
+
+<span class="tok-coment">// secuencias infinitas</span>
+<span class="tok-clave">val</span> potencias = <span class="tok-funcion">generateSequence</span>(<span class="tok-numero">1</span>) { it * <span class="tok-numero">2</span> }      <span class="tok-coment">// 1, 2, 4, 8...</span>
+potencias.<span class="tok-funcion">take</span>(<span class="tok-numero">10</span>).<span class="tok-funcion">toList</span>()
+
+<span class="tok-coment">// leer un fichero grande línea a línea</span>
+<span class="tok-tipo">File</span>(<span class="tok-texto">"datos.csv"</span>).<span class="tok-funcion">useLines</span> { lineas -&gt;
+    lineas.<span class="tok-funcion">drop</span>(<span class="tok-numero">1</span>).<span class="tok-funcion">map</span> { it.<span class="tok-funcion">split</span>(<span class="tok-texto">";"</span>) }.<span class="tok-funcion">filter</span> { it[<span class="tok-numero">2</span>] == <span class="tok-texto">"ES"</span> }.<span class="tok-funcion">count</span>()
+}</code></pre></figure>
+            <p class="nota">Para listas pequeñas, las colecciones normales son igual de rápidas y más simples. Usa secuencias con muchos elementos, cadenas largas de operaciones o cuando cortas pronto (<code>take</code>, <code>first</code>).</p>
+          </div>
+        </section>
+        <!-- 13. Funciones de ámbito -->
+        <section id="s13" class="tarjeta">
+          <h2><span class="num">13</span>Funciones de ámbito</h2>
+          <div class="cuerpo">
+            <p class="txt">Ejecutan un bloque sobre un objeto. Se diferencian en cómo se llama al objeto dentro (<code>it</code> o <code>this</code>) y en qué devuelven (el resultado del bloque o el propio objeto).</p>
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row"><code>x.let { it... }</code></th><td>objeto: <code>it</code> · devuelve: el bloque · para: trabajar con algo que puede ser null (<code>?.let</code>)</td></tr>
+                  <tr><th scope="row"><code>x.apply { this... }</code></th><td>objeto: <code>this</code> · devuelve: el objeto · para: configurar un objeto recién creado</td></tr>
+                  <tr><th scope="row"><code>x.also { it... }</code></th><td>objeto: <code>it</code> · devuelve: el objeto · para: algo extra sin cortar la cadena (un log)</td></tr>
+                  <tr><th scope="row"><code>x.run { this... }</code></th><td>objeto: <code>this</code> · devuelve: el bloque · para: calcular algo con el objeto</td></tr>
+                  <tr><th scope="row"><code>with(x) { this... }</code></th><td>como <code>run</code>, pero sin ser extensión: varias llamadas sobre el mismo objeto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figure class="codigo"><pre data-lang="kotlin"><code><span class="tok-coment">// let: solo si no es null</span>
+<span class="tok-clave">val</span> email: <span class="tok-tipo">String</span>? = <span class="tok-funcion">buscarEmail</span>(id)
+email?.<span class="tok-funcion">let</span> { <span class="tok-funcion">enviarCorreo</span>(it) }
+<span class="tok-clave">val</span> longitud = email?.<span class="tok-funcion">let</span> { it.length } ?: <span class="tok-numero">0</span>
+
+<span class="tok-coment">// apply: configurar y devolver el objeto</span>
+<span class="tok-clave">val</span> p = <span class="tok-tipo">Persona</span>(<span class="tok-texto">"Ana"</span>).<span class="tok-funcion">apply</span> {
+    edad = <span class="tok-numero">20</span>
+    ciudad = <span class="tok-texto">"Burgos"</span>
+}
+<span class="tok-clave">val</span> sb = <span class="tok-tipo">StringBuilder</span>().<span class="tok-funcion">apply</span> { <span class="tok-funcion">append</span>(<span class="tok-texto">"Hola"</span>); <span class="tok-funcion">append</span>(<span class="tok-texto">", mundo"</span>) }
+
+<span class="tok-coment">// also: un efecto lateral sin romper la cadena</span>
+<span class="tok-clave">val</span> lista = <span class="tok-funcion">cargar</span>()
+    .<span class="tok-funcion">also</span> { <span class="tok-funcion">println</span>(<span class="tok-texto">"Cargados ${it.size}"</span>) }
+    .<span class="tok-funcion">filter</span> { it.activo }
+
+<span class="tok-coment">// run: un bloque que calcula un resultado</span>
+<span class="tok-clave">val</span> total = carrito.<span class="tok-funcion">run</span> { lineas.<span class="tok-funcion">sumOf</span> { it.precio * it.cantidad } - descuento }
+
+<span class="tok-coment">// with: muchas llamadas seguidas al mismo objeto</span>
+<span class="tok-funcion">with</span>(canvas) {
+    color = <span class="tok-texto">"rojo"</span>
+    <span class="tok-funcion">dibujarCirculo</span>(<span class="tok-numero">10</span>)
+    <span class="tok-funcion">dibujarCuadrado</span>(<span class="tok-numero">20</span>)
+}
+
+<span class="tok-coment">// takeIf / takeUnless: el objeto si cumple la condición, si no null</span>
+<span class="tok-clave">val</span> edadValida = edad.<span class="tok-funcion">takeIf</span> { it <span class="tok-clave">in</span> <span class="tok-numero">0</span>..<span class="tok-numero">120</span> } ?: <span class="tok-funcion">error</span>(<span class="tok-texto">"Edad no válida"</span>)</code></pre></figure>
+          </div>
+        </section>
+        <!-- 14. Despistes habituales -->
+        <section id="s14" class="tarjeta">
+          <h2><span class="num">14</span>Despistes habituales</h2>
+          <div class="cuerpo">
+            <div class="tabla-scroll">
+              <table class="ref ">
+                <tbody>
+                  <tr><th scope="row" class="larga">Llamar a <code>map</code> y esperar que cambie la lista</th><td>devuelve otra lista: asígnala a una variable</td></tr>
+                  <tr><th scope="row" class="larga"><code>add</code> sobre un <code>listOf</code></th><td>no existe: usa <code>mutableListOf</code> o crea otra con <code>+</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>first()</code>, <code>max()</code> o <code>reduce</code> en una lista vacía</th><td>excepción: usa <code>firstOrNull</code>, <code>maxOrNull</code>, <code>fold</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>return</code> dentro de un <code>forEach</code></th><td>sale de la función entera, no solo de esa vuelta: usa <code>return@forEach</code></td></tr>
+                  <tr><th scope="row" class="larga"><code>it</code> dentro de lambdas anidadas</th><td>se refiere a la de dentro: ponles nombre (<code>{ alumno -&gt; ... }</code>)</td></tr>
+                  <tr><th scope="row" class="larga">Usar <code>apply</code> para obtener un resultado</th><td><code>apply</code> devuelve el objeto: para el resultado del bloque, <code>let</code> o <code>run</code></td></tr>
+                  <tr><th scope="row" class="larga">Encadenar muchos <code>?.let</code></th><td>se vuelve ilegible: a veces un <code>if (x != null)</code> es más claro</td></tr>
+                  <tr><th scope="row" class="larga">Secuencia que no hace nada</th><td>son perezosas: falta una operación final (<code>toList</code>, <code>count</code>, <code>first</code>...)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <nav class="paginacion" aria-label="Chuleta anterior y siguiente"><a class="anterior" href="poo.html">← Clases y objetos</a><span></span></nav>
+      <footer class="pie">Lo mismo en Java, en <a href="../java/streams.html">Lambdas y streams</a>. Documentación: <a href="https://kotlinlang.org/docs/collections-overview.html">colecciones</a> y <a href="https://kotlinlang.org/docs/scope-functions.html">funciones de ámbito</a> en kotlinlang.org.</footer>
+    </main>
+    <script src="../assets/chuletas.js" defer></script>
+  </body>
+</html>
